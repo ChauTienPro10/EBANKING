@@ -1,0 +1,25 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-ebanking-container
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root@123
+      MYSQL_DATABASE: DTB_EBANKING
+      MYSQL_USER: developer
+      MYSQL_PASSWORD: developer@123
+    volumes:
+      - mysql-data-ebanking:/var/lib/mysql
+      - ./mysql-conf/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./sql-dump:/docker-entrypoint-initdb.d
+    networks:
+      - ebanking-network
+
+volumes:
+  mysql-data-ebanking:
+
+networks:
+  ebanking-network:
+    external: true

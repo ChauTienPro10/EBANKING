@@ -1,0 +1,16 @@
+version: "3.8"
+
+services:
+  react-web:
+    build:
+      context: ./FRONTEND/ebanking-fe
+      dockerfile: Dockerfile
+    container_name: ebanking-react-web
+    ports:
+      - "3000:80"
+    networks:
+      - ebanking-network
+
+networks:
+  ebanking-network:
+    external: true
