@@ -49,6 +49,10 @@ IF %ERRORLEVEL% NEQ 0 (
     echo Docker is installed:
     docker -v
 )
+
+:: buile docker network
+docker network create ebanking-network
+
 :: docker install
 echo.
 echo === Starting Docker Compose in ./DB ===
@@ -84,6 +88,19 @@ IF EXIST docker-compose.yml (
     echo Docker kafka containers started.
 ) ELSE (
     echo ERROR: docker-compose.yml not found in DB
+    pause
+    exit /b 1
+)
+
+:: i NGINX-BE
+echo.
+echo === Starting Docker Compose in ./NGINX-BE ===
+cd /d "%~dp0NGINX-BE"
+IF EXIST docker-compose.yml (
+    docker-compose up -d
+    echo Docker kafka containers started.
+) ELSE (
+    echo ERROR: docker-compose.yml not found in NGINX-BE
     pause
     exit /b 1
 )

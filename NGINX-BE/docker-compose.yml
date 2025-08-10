@@ -1,0 +1,27 @@
+version: "3.8"
+services:
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "8080:8080"
+    # depends_on:
+    #   - auth_service
+    #   - user_service
+    #   - email_service
+
+  # auth_service:
+  #   image: your-auth-service-image
+  #   ports:
+  #     - "8000:8000"
+
+  # user_service:
+  #   image: your-user-service-image
+  #   ports:
+  #     - "8001:8001"
+
+  # email_service:
+  #   image: your-email-service-image
+  #   ports:
+  #     - "8002:8002"
