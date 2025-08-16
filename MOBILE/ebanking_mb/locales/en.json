@@ -1,0 +1,10 @@
+{
+  "text_welcome": "Welcome",
+  "home": {
+    "title": "Home Screen",
+    "subtitle": "Welcome to the app"
+  },
+  "profile": {
+    "greeting": "Hello, user"
+  }
+}

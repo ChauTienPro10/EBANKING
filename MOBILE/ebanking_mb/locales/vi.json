@@ -1,0 +1,10 @@
+{
+  "text_welcome": "xin chao",
+  "home": {
+    "title": "man hinh home",
+    "subtitle": "chao mung toi app"
+  },
+  "profile": {
+    "greeting": "xin chao, user"
+  }
+}
