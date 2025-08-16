@@ -10,4 +10,6 @@ import lombok.*;
 public class RegisterRequest {
     String username;
     String password;
+    String citizenId;
+    String typeVerify;
 }

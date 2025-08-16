@@ -8,10 +8,10 @@
 		<version>3.5.4</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.example</groupId>
-	<artifactId>auth</artifactId>
+	<groupId>com.banking</groupId>
+	<artifactId>userService</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>auth</name>
+	<name>userService</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
 	<licenses>
@@ -26,12 +26,16 @@
 		<tag/>
 		<url/>
 	</scm>
+
+
 	<properties>
 		<java.version>17</java.version>
 		<grpc.version>1.72.0</grpc.version>
 		<protobuf-java.version>4.30.2</protobuf-java.version>
-		<spring-grpc.version>0.9.0</spring-grpc.version>
+		<spring-grpc.version>0.10.0</spring-grpc.version>
 	</properties>
+
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -46,13 +50,18 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>io.grpc</groupId>
-			<artifactId>grpc-services</artifactId>
+			<groupId>net.devh</groupId>
+			<artifactId>grpc-server-spring-boot-starter</artifactId>
+			<version>3.1.0.RELEASE</version>
 		</dependency>
-<!--		<dependency>-->
-<!--			<groupId>org.springframework.grpc</groupId>-->
-<!--			<artifactId>spring-grpc-server-web-spring-boot-starter</artifactId>-->
-<!--		</dependency>-->
+
+		<!--grpc-->
+		<dependency>
+			<groupId>io.grpc</groupId>
+			<artifactId>grpc-stub</artifactId>
+			<version>${grpc.version}</version>
+		</dependency>
+
 
 		<dependency>
 			<groupId>com.mysql</groupId>
@@ -60,13 +69,13 @@
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.grpc</groupId>
-			<artifactId>spring-grpc-test</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -75,24 +84,14 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
 			<groupId>jakarta.annotation</groupId>
 			<artifactId>jakarta.annotation-api</artifactId>
 			<version>2.1.1</version>
 		</dependency>
 		<dependency>
-			<groupId>io.grpc</groupId>
-			<artifactId>grpc-stub</artifactId>
-			<version>${grpc.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>net.devh</groupId>
-			<artifactId>grpc-server-spring-boot-starter</artifactId>
-			<version>3.1.0.RELEASE</version>
+			<groupId>javax.annotation</groupId>
+			<artifactId>javax.annotation-api</artifactId>
+			<version>1.3.2</version>
 		</dependency>
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
@@ -100,6 +99,8 @@
 			<version>0.9.1</version>
 		</dependency>
 	</dependencies>
+
+
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -114,76 +115,55 @@
 	</dependencyManagement>
 
 	<build>
+
+
 		<plugins>
-			<!-- Protobuf + gRPC -->
-			<plugin>
-				<groupId>io.github.ascopes</groupId>
-				<artifactId>protobuf-maven-plugin</artifactId>
-				<version>3.4.2</version>
-				<configuration>
-					<protocVersion>${protobuf-java.version}</protocVersion>
-					<binaryMavenPlugins>
-						<binaryMavenPlugin>
-							<groupId>io.grpc</groupId>
-							<artifactId>protoc-gen-grpc-java</artifactId>
-							<version>${grpc.version}</version>
-							<options>@generated=omit</options>
-						</binaryMavenPlugin>
-					</binaryMavenPlugins>
-				</configuration>
-				<executions>
-					<execution>
-						<id>generate</id>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-
-			<!--Tu dong them protobuf vao source root-->
-			<plugin>
-				<groupId>io.github.ascopes</groupId>
-				<artifactId>protobuf-maven-plugin</artifactId>
-				<version>3.4.2</version>
-				<configuration>
-					<protocVersion>${protobuf-java.version}</protocVersion>
-					<binaryMavenPlugins>
-						<binaryMavenPlugin>
-							<groupId>io.grpc</groupId>
-							<artifactId>protoc-gen-grpc-java</artifactId>
-							<version>${grpc.version}</version>
-							<options>@generated=omit</options>
-						</binaryMavenPlugin>
-					</binaryMavenPlugins>
-				</configuration>
-				<executions>
-					<execution>
-						<id>generate</id>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-
-			<!-- Compiler + Lombok -->
+			<!-- Plugin để compile Java + hỗ trợ annotation (Lombok) -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.11.0</version>
 				<configuration>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
 					<annotationProcessorPaths>
 						<path>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
-							<version>${lombok.version}</version>
+							<version>1.18.28</version>
 						</path>
 					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
 
-			<!-- Spring Boot -->
+			<!-- Plugin để generate Java code từ .proto -->
+
+			<plugin>
+				<groupId>io.github.ascopes</groupId>
+				<artifactId>protobuf-maven-plugin</artifactId>
+				<version>3.4.2</version>
+				<configuration>
+					<protocVersion>4.30.2</protocVersion> <!-- protobuf version -->
+					<binaryMavenPlugins>
+						<binaryMavenPlugin>
+							<groupId>io.grpc</groupId>
+							<artifactId>protoc-gen-grpc-java</artifactId>
+							<version>1.72.0</version> <!-- grpc version -->
+							<options>@generated=omit</options>
+						</binaryMavenPlugin>
+					</binaryMavenPlugins>
+				</configuration>
+				<executions>
+					<execution>
+						<id>generate</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- Plugin Spring Boot -->
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
@@ -194,14 +174,6 @@
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.0.0-M8</version> <!-- hoặc phiên bản bạn đang dùng -->
-				<configuration>
-					<skipTests>true</skipTests>
 				</configuration>
 			</plugin>
 		</plugins>

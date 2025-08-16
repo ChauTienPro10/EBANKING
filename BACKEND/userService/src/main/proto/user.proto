@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option java_package = "com.example.auth.protopkg";
+option java_package = "com.banking.userService.grpc";
 option java_outer_classname = "UserProto";
 
 message User {
@@ -34,7 +34,18 @@ message NewUserResponse {
   User user = 1;
 }
 
+message LoginRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message LoginResponse {
+  User user = 1;
+  string jwt = 2;
+}
+
 service UserService {
   rpc getUserById(GetUserRequestById) returns (UserResponse);
   rpc newUser(NewUserRequest) returns (NewUserResponse);
+  rpc login(LoginRequest) returns (LoginResponse);
 }
