@@ -11,6 +11,7 @@ import com.banking.userService.repository.IUserInfoRepository;
 import com.banking.userService.repository.IUserRepository;
 import com.banking.userService.utils.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -31,6 +32,13 @@ public class UserService {
 
     private static final String EMAIL_REGEX = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
     private static final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
+
+    private final KafkaTemplate<String, String> kafkaTemplate;
+
+    @Autowired
+    public UserService(KafkaTemplate<String, String> kafkaTemplate) {
+        this.kafkaTemplate = kafkaTemplate;
+    }
 
     @Autowired
     private IUserInfoRepository userInfoRepository;
@@ -83,6 +91,8 @@ public class UserService {
 
         newUser.setUserInfo(userInfo);
         userRepository.save(newUser);
+
+        kafkaTemplate.send("send-email", "hello world! ");
 
         return UserResponse.builder()
                 .id(newUser.getId())

@@ -5,32 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c9d3feb1-1ff3-4faa-881a-4e43b0a55be0" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/dto/request/LoginRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/dto/response/LoginResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/mapper/UserMapper.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/config/GrpcSecurityConfig.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/utils/DateTimeUtils.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/BACKEND.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/controller/AuthController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/services/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/services/AuthService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authService/src/main/proto/user.proto" beforeDir="false" afterPath="$PROJECT_DIR$/authService/src/main/proto/user.proto" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/emailService/src/main/java/com/ebanking/emailService/entity/EmailTemplate.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/emailService/src/main/java/com/ebanking/emailService/kafkaConsumer/EmailConsumer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/emailService/src/main/java/com/ebanking/emailService/repository/EmailTemplateRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/emailService/src/main/java/com/ebanking/emailService/service/EmailService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/emailService/src/main/proto/email.proto" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authService/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/authService/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/userService/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/userService/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/config/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/mapper/UserMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/mapper/UserMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/repository/IUserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/repository/IUserRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/service/UserService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/service/grpcService/UserGrpcService.java" beforeDir="false" afterPath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/service/grpcService/UserGrpcService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/utils/JwtTokenProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/utils/JwtTokenProvider.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/userService/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/userService/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../KAFKA/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../KAFKA/docker-compose.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,6 +35,13 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHomeTypeForPersistence" value="WRAPPER" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 5
 }</component>
@@ -59,6 +53,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Application.AuthApplication.executor": "Run",
+    "Application.EmailServiceApplication.executor": "Run",
     "Application.GatewayApplication.executor": "Run",
     "Application.UserServiceApplication.executor": "Run",
     "Application.UserServicesApplication.executor": "Run",
@@ -66,6 +61,9 @@
     "Maven.auth [clean].executor": "Run",
     "Maven.auth [compile].executor": "Run",
     "Maven.auth [install].executor": "Run",
+    "Maven.emailService [clean].executor": "Run",
+    "Maven.emailService [compile].executor": "Run",
+    "Maven.emailService [install].executor": "Run",
     "Maven.gateway [clean].executor": "Run",
     "Maven.gateway [compile].executor": "Run",
     "Maven.gateway [install].executor": "Run",
@@ -79,11 +77,12 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "feature/signin-signup-ui",
-    "last_opened_file_path": "C:/Users/chaud/OneDrive/Desktop/DATN/BACKEND/gateway/src/main/java/com/example/gateway/dto",
-    "project.structure.last.edited": "Project",
+    "git-widget-placeholder": "feature/add__email__service",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "C:/Users/chaud/OneDrive/Desktop/DATN/BACKEND",
+    "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.0"
+    "project.structure.side.proportion": "0.2"
   }
 }]]></component>
   <component name="RecentsManager">
@@ -97,13 +96,26 @@
       <recent name="com.banking.userService.config" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.AuthApplication">
+  <component name="RunManager" selected="Application.UserServiceApplication">
     <configuration name="AuthApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.example.auth.AuthApplication" />
       <module name="auth" />
       <extension name="coverage">
         <pattern>
           <option name="PATTERN" value="com.example.auth.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="EmailServiceApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.ebanking.emailService.EmailServiceApplication" />
+      <module name="emailService" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.ebanking.emailService.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -126,8 +138,9 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.AuthApplication" />
         <item itemvalue="Application.UserServiceApplication" />
+        <item itemvalue="Application.AuthApplication" />
+        <item itemvalue="Application.EmailServiceApplication" />
       </list>
     </recent_temporary>
   </component>
@@ -148,11 +161,6 @@
           <url>file://$PROJECT_DIR$/authService/src/main/java/com/example/auth/filter/JwtAuthenticationFilter.java</url>
           <line>32</line>
           <option name="timeStamp" value="2" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/userService/src/main/java/com/banking/userService/service/UserService.java</url>
-          <line>104</line>
-          <option name="timeStamp" value="3" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/authService/src/main/java/com/example/auth/controller/AuthController.java</url>
