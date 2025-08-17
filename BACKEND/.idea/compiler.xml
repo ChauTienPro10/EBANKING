@@ -14,20 +14,29 @@
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.38/lombok-1.18.38.jar" />
-          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.38/lombok-1.18.38.jar" />
         </processorPath>
         <module name="auth" />
-        <module name="userServices" />
+      </profile>
+      <profile name="Annotation profile for userService" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.28/lombok-1.18.28.jar" />
+        </processorPath>
+        <module name="userService" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="gateway" target="24" />
+      <module name="userServices" target="24" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="auth" options="-parameters" />
       <module name="gateway" options="-parameters" />
+      <module name="userService" options="-parameters" />
       <module name="userServices" options="-parameters" />
     </option>
   </component>

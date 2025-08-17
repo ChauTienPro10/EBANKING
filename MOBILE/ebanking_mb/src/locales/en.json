@@ -1,0 +1,43 @@
+{
+  "auth": {
+    "signIn": {
+      "title": "Sign In",
+      "greeting": "Hello there, sign in to continue",
+      "emailPlaceholder": "Email or phone number",
+      "passwordPlaceholder": "Password",
+      "forgotPassword": "Forgot your password?",
+      "signInButton": "Sign In",
+      "biometricText": "Sign in with fingerprint",
+      "noAccount": "Don't have an account?",
+      "signUpLink": "Sign Up"
+    },
+    "signUp": {
+      "title": "Sign Up",
+      "greeting": "Hello there, create new account",
+      "namePlaceholder": "Full name",
+      "emailPlaceholder": "Email or phone number",
+      "passwordPlaceholder": "Password",
+      "termsText": "By creating an account you agree to our",
+      "termsLink": "Terms and Conditions",
+      "signUpButton": "Sign Up",
+      "hasAccount": "Have an account?",
+      "signInLink": "Sign In"
+    },
+    "forgotPassword": {
+      "title": "Forgot Password",
+      "phoneInstruction": "Type your phone number",
+      "phonePlaceholder": "Phone number",
+      "verificationText": "We texted you a code to verify your phone number",
+      "sendButton": "Send",
+      "codeInstruction": "Type a code",
+      "codePlaceholder": "Verification code",
+      "codeVerificationText": "We texted your phone number. This code will expire in 5 minutes. If you don't receive the message, please check your phone number."
+    },
+    "common": {
+      "back": "Back",
+      "loading": "Loading...",
+      "error": "An error occurred",
+      "success": "Success"
+    }
+  }
+}

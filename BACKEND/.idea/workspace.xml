@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="c9d3feb1-1ff3-4faa-881a-4e43b0a55be0" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/dto/request/LoginRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/dto/response/LoginResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/mapper/UserMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/config/GrpcSecurityConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/utils/DateTimeUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/BACKEND.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/controller/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/services/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/services/AuthService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authService/src/main/proto/user.proto" beforeDir="false" afterPath="$PROJECT_DIR$/authService/src/main/proto/user.proto" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/userService/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/userService/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/mapper/UserMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/mapper/UserMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/repository/IUserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/repository/IUserRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/service/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/service/grpcService/UserGrpcService.java" beforeDir="false" afterPath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/service/grpcService/UserGrpcService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/utils/JwtTokenProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/utils/JwtTokenProvider.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/userService/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/userService/src/main/resources/application.properties" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Interface" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 5
+}</component>
+  <component name="ProjectId" id="30lPcrnaKjrtuEj4Hvv50NGnjLo" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.AuthApplication.executor": "Run",
+    "Application.GatewayApplication.executor": "Run",
+    "Application.UserServiceApplication.executor": "Run",
+    "Application.UserServicesApplication.executor": "Run",
+    "Application.com.example.auth.AuthApplication.executor": "Run",
+    "Maven.auth [clean].executor": "Run",
+    "Maven.auth [compile].executor": "Run",
+    "Maven.auth [install].executor": "Run",
+    "Maven.gateway [clean].executor": "Run",
+    "Maven.gateway [compile].executor": "Run",
+    "Maven.gateway [install].executor": "Run",
+    "Maven.userService [clean].executor": "Run",
+    "Maven.userService [compile].executor": "Run",
+    "Maven.userService [install].executor": "Run",
+    "Maven.userServices [clean].executor": "Run",
+    "Maven.userServices [compile].executor": "Run",
+    "Maven.userServices [install].executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "feature/signin-signup-ui",
+    "last_opened_file_path": "C:/Users/chaud/OneDrive/Desktop/DATN/BACKEND/gateway/src/main/java/com/example/gateway/dto",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.0"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\chaud\OneDrive\Desktop\DATN\BACKEND\gateway\src\main\java\com\example\gateway\dto" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\chaud\OneDrive\Desktop\DATN\BACKEND\gateway\src\main" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.banking.userService.config" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Application.AuthApplication">
+    <configuration name="AuthApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.example.auth.AuthApplication" />
+      <module name="auth" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.example.auth.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="UserServiceApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.banking.userService.UserServiceApplication" />
+      <module name="userService" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.banking.userService.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.AuthApplication" />
+        <item itemvalue="Application.UserServiceApplication" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="c9d3feb1-1ff3-4faa-881a-4e43b0a55be0" name="Changes" comment="" />
+      <created>1754199272448</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1754199272448</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/authService/src/main/java/com/example/auth/filter/JwtAuthenticationFilter.java</url>
+          <line>32</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/userService/src/main/java/com/banking/userService/service/UserService.java</url>
+          <line>104</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/authService/src/main/java/com/example/auth/controller/AuthController.java</url>
+          <line>31</line>
+          <option name="timeStamp" value="41" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/authService/src/main/java/com/example/auth/controller/AuthController.java</url>
+          <line>30</line>
+          <option name="timeStamp" value="42" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>

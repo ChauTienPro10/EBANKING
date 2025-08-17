@@ -4,7 +4,7 @@ services:
     container_name: mysql-ebanking-container
     restart: always
     ports:
-      - "3306:3306"
+      - "3307:3306"
     environment:
       MYSQL_ROOT_PASSWORD: root@123
       MYSQL_DATABASE: DTB_EBANKING
@@ -12,7 +12,7 @@ services:
       MYSQL_PASSWORD: developer@123
     volumes:
       - mysql-data-ebanking:/var/lib/mysql
-      - ./mysql-conf/my.cnf:/etc/mysql/conf.d/my.cnf
+#      - ./mysql-conf/my.cnf:/etc/mysql/conf.d/my.cnf
       - ./sql-dump:/docker-entrypoint-initdb.d
     networks:
       - ebanking-network

@@ -1,18 +1,51 @@
 syntax = "proto3";
 
-option java_multiple_files = true;
 option java_package = "com.example.auth.protopkg";
 option java_outer_classname = "UserProto";
 
-service UserService {
-  rpc GetUser (UserRequest) returns (UserResponse);
+message User {
+  int64 id = 1;
+  string fullName = 2;
+  string username = 3;
+  string address = 4;
+  string citizenId = 5;
+  string birthday = 6;
+  bool isMale = 7;
+  string createAt = 8;
+  repeated string roles = 9;
 }
 
-message UserRequest {
-  string id = 1;
+message GetUserRequestById {
+  int64 userId = 1;
 }
 
 message UserResponse {
-  string id = 1;
-  string name = 2;
+  User user = 1;
+}
+
+message NewUserRequest {
+  string username = 1;
+  string password = 2;
+  string citizenId = 3;
+  string typeVerify = 4;
+}
+
+message NewUserResponse {
+  User user = 1;
+}
+
+message LoginRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message LoginResponse {
+  User user = 1;
+  string jwt = 2;
+}
+
+service UserService {
+  rpc getUserById(GetUserRequestById) returns (UserResponse);
+  rpc newUser(NewUserRequest) returns (NewUserResponse);
+  rpc login(LoginRequest) returns (LoginResponse);
 }

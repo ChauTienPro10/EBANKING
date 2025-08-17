@@ -27,7 +27,7 @@
 		<url/>
 	</scm>
 	<properties>
-		<java.version>24</java.version>
+		<java.version>17</java.version>
 		<grpc.version>1.72.0</grpc.version>
 		<protobuf-java.version>4.30.2</protobuf-java.version>
 		<spring-grpc.version>0.9.0</spring-grpc.version>
@@ -94,6 +94,11 @@
 			<artifactId>grpc-server-spring-boot-starter</artifactId>
 			<version>3.1.0.RELEASE</version>
 		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt</artifactId>
+			<version>0.9.1</version>
+		</dependency>
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>
@@ -111,6 +116,32 @@
 	<build>
 		<plugins>
 			<!-- Protobuf + gRPC -->
+			<plugin>
+				<groupId>io.github.ascopes</groupId>
+				<artifactId>protobuf-maven-plugin</artifactId>
+				<version>3.4.2</version>
+				<configuration>
+					<protocVersion>${protobuf-java.version}</protocVersion>
+					<binaryMavenPlugins>
+						<binaryMavenPlugin>
+							<groupId>io.grpc</groupId>
+							<artifactId>protoc-gen-grpc-java</artifactId>
+							<version>${grpc.version}</version>
+							<options>@generated=omit</options>
+						</binaryMavenPlugin>
+					</binaryMavenPlugins>
+				</configuration>
+				<executions>
+					<execution>
+						<id>generate</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!--Tu dong them protobuf vao source root-->
 			<plugin>
 				<groupId>io.github.ascopes</groupId>
 				<artifactId>protobuf-maven-plugin</artifactId>
