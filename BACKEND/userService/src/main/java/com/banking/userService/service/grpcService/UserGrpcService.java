@@ -47,4 +47,11 @@ public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
         responseObserver.onNext(response);
         responseObserver.onCompleted();
     }
+
+    @Override
+    public void login (UserProto.LoginRequest rq, StreamObserver<UserProto.LoginResponse> responseObserver) {
+        UserProto.LoginResponse loginResponse = userService.login(rq);
+        responseObserver.onNext(loginResponse);
+        responseObserver.onCompleted();
+    }
 }

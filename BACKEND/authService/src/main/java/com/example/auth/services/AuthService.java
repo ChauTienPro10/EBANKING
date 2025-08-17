@@ -1,11 +1,15 @@
 package com.example.auth.services;
 
 import com.example.auth.consts.grpcPath;
+import com.example.auth.dto.request.LoginRequest;
+import com.example.auth.dto.response.LoginResponse;
 import com.example.auth.dto.response.RegisterResponse;
+import com.example.auth.mapper.UserMapper;
 import com.example.auth.protopkg.UserProto;
 import com.example.auth.protopkg.UserServiceGrpc;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -13,6 +17,9 @@ import java.util.HashSet;
 @Service
 public class AuthService {
     private final UserServiceGrpc.UserServiceBlockingStub userStub;
+
+    @Autowired
+    private UserMapper userMapper;
 
     public AuthService() {
         ManagedChannel channel = ManagedChannelBuilder
@@ -41,5 +48,14 @@ public class AuthService {
         response.setCitizenId(userProto.getCitizenId());
         response.setCreateAt(userProto.getCreateAt());
         return response;
+    }
+
+    public LoginResponse login(LoginRequest request) {
+        UserProto.LoginRequest loginRequest = UserProto.LoginRequest.newBuilder()
+                .setUsername(request.getUsername())
+                .setPassword(request.getPassword())
+                .build();
+        UserProto.LoginResponse loginResponse = userStub.login(loginRequest);
+        return userMapper.fromProto(loginResponse);
     }
 }

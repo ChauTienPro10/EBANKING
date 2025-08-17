@@ -5,6 +5,7 @@ import com.banking.userService.entity.Role;
 import com.banking.userService.entity.User;
 import com.banking.userService.entity.UserInfo;
 import com.banking.userService.grpc.UserProto;
+import com.banking.userService.mapper.UserMapper;
 import com.banking.userService.repository.IRoleRepository;
 import com.banking.userService.repository.IUserInfoRepository;
 import com.banking.userService.repository.IUserRepository;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -32,6 +34,9 @@ public class UserService {
 
     @Autowired
     private IUserInfoRepository userInfoRepository;
+
+    @Autowired
+    private UserMapper userMapper;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -63,14 +68,17 @@ public class UserService {
         Set<Role> defaultRoles = new HashSet<>();
         defaultRoles.add(roleRepository.findByName("ROLE_USER"));
         newUser.setRoles(defaultRoles);
-
+        newUser.setUsername(username);
         newUser.setPassword(passwordEncoder.encode(pass));
         newUser.setCreateAt(new Date().getTime());
         newUser.setUserInfo(null);
+        userRepository.save(newUser);
 
         UserInfo userInfo = new UserInfo();
         userInfo.setEmail(username);
         userInfo.setCitizenId(citizenId);
+        userInfo.setUser(newUser);
+        userInfo.setCreateAt(new Date().getTime());
         userInfoRepository.save(userInfo);
 
         newUser.setUserInfo(userInfo);
@@ -97,32 +105,21 @@ public class UserService {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
             );
-
             SecurityContextHolder.getContext().setAuthentication(authentication);
-
             String token = jwtTokenProvider.generateToken(authentication);
-
             User user = userRepository.findByUsername(loginRequest.getUsername());
-            UserInfo userInfo = userInfoRepository.findByUser(user);
-
+            Optional<UserInfo> userInfo = userInfoRepository.findById(user.getUserInfo().getId());
             Set<String> roleNames = user.getRoles().stream()
                     .map(Role::getName)
                     .collect(Collectors.toSet());
-            UserProto.User userProto = UserProto.User.newBuilder()
-                    .setUsername(loginRequest.getUsername())
-                    .setCitizenId(userInfo.getCitizenId())
-                    .addAllRoles(roleNames)
-                    .build();
-
-            UserProto.LoginResponse rs = UserProto.LoginResponse.newBuilder()
+            UserProto.User userProto = userMapper.toUserProto(userInfo.get());
+            return UserProto.LoginResponse.newBuilder()
                     .setJwt(token)
+                    .setUser(userProto)
                     .build();
-
-
         } catch (BadCredentialsException e) {
             throw  new RuntimeException(e);
         }
-        return null;
     }
 
 }
