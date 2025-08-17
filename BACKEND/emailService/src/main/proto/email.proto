@@ -1,0 +1,4 @@
+syntax = "proto3";
+
+option java_package = "com.ebanking.emailService.grpc";
+option java_outer_classname = "UserProto";
