@@ -5,4 +5,5 @@ public interface IURL {
     String AUTH_URL = HOST_PREFIX + "/auth";
     String REGISTER_URL = "/register";
     String LOGIN_URL = "/login";
+    String UPDATE_URL = "/update";
 }

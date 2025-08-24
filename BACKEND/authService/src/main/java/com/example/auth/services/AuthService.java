@@ -58,4 +58,12 @@ public class AuthService {
         UserProto.LoginResponse loginResponse = userStub.login(loginRequest);
         return userMapper.fromProto(loginResponse);
     }
+
+    public Boolean checkUserExist(String username) {
+        UserProto.CheckUserExistRequest request = UserProto.CheckUserExistRequest.newBuilder()
+                .setUsername(username)
+                .build();
+        UserProto.CheckUserExistResponse  rs = userStub.checkUserExist(request);
+        return rs.getIsExist();
+    }
 }

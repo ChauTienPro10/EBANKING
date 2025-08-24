@@ -5,19 +5,26 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c9d3feb1-1ff3-4faa-881a-4e43b0a55be0" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/emailService/src/main/java/com/ebanking/emailService/entity/EmailTemplate.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/emailService/src/main/java/com/ebanking/emailService/kafkaConsumer/EmailConsumer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/emailService/src/main/java/com/ebanking/emailService/repository/EmailTemplateRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/emailService/src/main/java/com/ebanking/emailService/service/EmailService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/emailService/src/main/proto/email.proto" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/authService/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/authService/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/userService/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/userService/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/configs/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/configs/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/consts/IURL.java" beforeDir="false" afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/consts/IURL.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/consts/PermitPath.java" beforeDir="false" afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/consts/PermitPath.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/controller/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/dto/request/UpdateUserRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/dto/request/UpdateUserRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/dto/response/UpdateUserResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/dto/response/UpdateUserResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/filter/JwtAuthenticationFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/filter/JwtAuthenticationFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/services/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/services/AuthService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/services/MyUserDetailsService.java" beforeDir="false" afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/services/MyUserDetailsService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/utils/JWTUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/utils/JWTUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authService/src/main/proto/user.proto" beforeDir="false" afterPath="$PROJECT_DIR$/authService/src/main/proto/user.proto" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authService/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/authService/src/main/resources/application.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/service/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/service/grpcService/UserGrpcService.java" beforeDir="false" afterPath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/service/grpcService/UserGrpcService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/utils/JwtTokenProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/utils/JwtTokenProvider.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/userService/src/main/proto/user.proto" beforeDir="false" afterPath="$PROJECT_DIR$/userService/src/main/proto/user.proto" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/userService/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/userService/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../KAFKA/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../KAFKA/docker-compose.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -77,7 +84,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "feature/add__email__service",
+    "git-widget-placeholder": "develop",
     "ignore.virus.scanning.warn.message": "true",
     "last_opened_file_path": "C:/Users/chaud/OneDrive/Desktop/DATN/BACKEND",
     "project.structure.last.edited": "Modules",
@@ -96,7 +103,7 @@
       <recent name="com.banking.userService.config" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.UserServiceApplication">
+  <component name="RunManager" selected="Application.AuthApplication">
     <configuration name="AuthApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.example.auth.AuthApplication" />
       <module name="auth" />
@@ -138,8 +145,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.UserServiceApplication" />
         <item itemvalue="Application.AuthApplication" />
+        <item itemvalue="Application.UserServiceApplication" />
         <item itemvalue="Application.EmailServiceApplication" />
       </list>
     </recent_temporary>
@@ -158,19 +165,49 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/authService/src/main/java/com/example/auth/services/AuthService.java</url>
+          <line>62</line>
+          <option name="timeStamp" value="61" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/authService/src/main/java/com/example/auth/services/AuthService.java</url>
+          <line>66</line>
+          <option name="timeStamp" value="62" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/userService/src/main/java/com/banking/userService/service/UserService.java</url>
+          <line>135</line>
+          <option name="timeStamp" value="64" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/userService/src/main/java/com/banking/userService/service/UserService.java</url>
+          <line>136</line>
+          <option name="timeStamp" value="65" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/userService/src/main/java/com/banking/userService/service/grpcService/UserGrpcService.java</url>
+          <line>60</line>
+          <option name="timeStamp" value="70" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/authService/src/main/java/com/example/auth/services/AuthService.java</url>
+          <line>65</line>
+          <option name="timeStamp" value="71" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/authService/src/main/java/com/example/auth/filter/JwtAuthenticationFilter.java</url>
-          <line>32</line>
-          <option name="timeStamp" value="2" />
+          <line>79</line>
+          <option name="timeStamp" value="72" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/authService/src/main/java/com/example/auth/filter/JwtAuthenticationFilter.java</url>
+          <line>61</line>
+          <option name="timeStamp" value="73" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/authService/src/main/java/com/example/auth/controller/AuthController.java</url>
-          <line>31</line>
-          <option name="timeStamp" value="41" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/authService/src/main/java/com/example/auth/controller/AuthController.java</url>
-          <line>30</line>
-          <option name="timeStamp" value="42" />
+          <line>38</line>
+          <option name="timeStamp" value="74" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

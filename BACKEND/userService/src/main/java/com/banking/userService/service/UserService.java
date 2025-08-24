@@ -132,4 +132,11 @@ public class UserService {
         }
     }
 
+    public UserProto.CheckUserExistResponse checkUserExist(UserProto.CheckUserExistRequest request) {
+        boolean rs = userRepository.existsByUsername(request.getUsername());
+        return UserProto.CheckUserExistResponse.newBuilder()
+                .setIsExist(rs)
+                .build();
+    }
+
 }

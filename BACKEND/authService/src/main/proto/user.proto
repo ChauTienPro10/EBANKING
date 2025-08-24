@@ -44,8 +44,17 @@ message LoginResponse {
   string jwt = 2;
 }
 
+message CheckUserExistRequest {
+  string username = 1;
+}
+
+message CheckUserExistResponse {
+  bool isExist = 1;
+}
+
 service UserService {
   rpc getUserById(GetUserRequestById) returns (UserResponse);
   rpc newUser(NewUserRequest) returns (NewUserResponse);
   rpc login(LoginRequest) returns (LoginResponse);
+  rpc CheckUserExist(CheckUserExistRequest) returns (CheckUserExistResponse);
 }

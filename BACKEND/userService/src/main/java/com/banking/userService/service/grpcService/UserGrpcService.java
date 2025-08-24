@@ -54,4 +54,10 @@ public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
         responseObserver.onNext(loginResponse);
         responseObserver.onCompleted();
     }
+    @Override
+    public void checkUserExist(UserProto.CheckUserExistRequest request, StreamObserver<UserProto.CheckUserExistResponse> responseObserver) {
+        UserProto.CheckUserExistResponse rs= userService.checkUserExist(request);
+        responseObserver.onNext(rs);
+        responseObserver.onCompleted();
+    }
 }
