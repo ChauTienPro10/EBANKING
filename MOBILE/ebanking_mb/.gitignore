@@ -1,5 +1,9 @@
 # OSX
 #
+
+.vscode/
+.idea/
+
 .DS_Store
 
 # Xcode

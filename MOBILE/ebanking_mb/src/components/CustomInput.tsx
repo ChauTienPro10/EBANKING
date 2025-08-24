@@ -9,6 +9,7 @@ import {
   ViewStyle,
   TextStyle,
 } from 'react-native';
+import Colors from '../constants/color';
 
 interface CustomInputProps extends TextInputProps {
   label?: string;
@@ -56,7 +57,6 @@ const CustomInput: React.FC<CustomInputProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 16,
   },
   label: {
     fontSize: 14,
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#F9FAFB',
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: Colors.grey2,
     borderRadius: 12,
     paddingHorizontal: 16,
     minHeight: 56,

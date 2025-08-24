@@ -1,10 +1,32 @@
 {
-  "text_welcome": "xin chao",
   "home": {
     "title": "man hinh home",
     "subtitle": "chao mung toi app"
   },
   "profile": {
     "greeting": "xin chao, user"
+  },
+
+  "sign_in": {
+    "text_login": "Đăng nhập",
+    "text_forgot_password": "Quên mật khẩu?",
+    "text_fingerint_login": "Đăng nhập bằng vân tay",
+    "text_password": "Mật khẩu",
+    "text_email": "Email",
+    "text_not_have_account": "Bạn chưa có tài khoản?",
+    "text_sign_up": "Đăng ký",
+    "text_email_or_phone": "Email hoặc số điện thoại",
+    "text_fullname": "Họ và tên",
+    "text_by_the_confirm_policy": "Bằng việc tạo tài khoản, bạn đồng ý với",
+    "text_policy_and_term": "Điều khoản và Điều kiện",
+    "text_of_us": "của chúng tôi",
+    "text_have_account": "Đã có tài khoản?",
+    "text_phone": "Số điện thoại",
+    "text_otp_was_send": "Mã xác thực đã được gửi đến",
+    "text_of_you": "của bạn.",
+    "text_send_otp": "Gửi OTP",
+    "text_not_get_otp": "Không nhận được mã?",
+    "text_send_again": "Gửi lại",
+    "text_auth": "Xác thực" 
   }
 }

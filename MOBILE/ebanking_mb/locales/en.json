@@ -6,5 +6,15 @@
   },
   "profile": {
     "greeting": "Hello, user"
+  },
+
+  "sign_in": {
+    "text_login": "Sign In",
+    "text_forgot_password": "Forgot Password?",
+    "text_fingerint_login": "Sign in with fingerprint",
+    "text_password": "Password",
+    "text_email": "Email",
+    "text_not_have_account": "Don't have an account?",
+    "text_sign_up": "Sign Up"
   }
 }

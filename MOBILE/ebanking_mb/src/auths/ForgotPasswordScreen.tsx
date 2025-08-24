@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -12,12 +12,21 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import LeftIcon from '../components/icon/LeftIcon';
+import { useTranslation } from 'react-i18next';
 import LockIcon from '../components/icon/LockIcon';
 import UserIcon from '../components/icon/UserIcon';
 import CustomInput from '../components/CustomInput';
 import CustomButton from '../components/CustomButton';
 import BackgroundDecoration from '../components/BackgroundDecoration';
+import Header from '../components/Header';
+import Colors from '../constants/color';
+import PhoneInput from '../components/PhoneInput';
+import { CountryCode } from 'react-native-country-picker-modal';
+import MailIcon from '../components/icon/MailIcon';
+import PhoneIcon from '../components/icon/PhoneIcon';
+import GText from '../components/GText';
+import ReloadIcon from '../components/icon/ReloadIcon';
+
 
 type AuthStackParamList = {
   SignIn: undefined;
@@ -28,15 +37,23 @@ type AuthStackParamList = {
 type ForgotPasswordScreenNavigationProp = StackNavigationProp<AuthStackParamList, 'ForgotPassword'>;
 
 const ForgotPasswordScreen: React.FC = () => {
+  const { t } = useTranslation();
   const navigation = useNavigation<ForgotPasswordScreenNavigationProp>();
   const [step, setStep] = useState<'phone' | 'code'>('phone');
   const [phone, setPhone] = useState('');
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [isLoading, setIsLoading] = useState(false);
-  
+  const [typeVerify, setTypeVerify] = useState('phone');
+  const [countDown, setCountDown] = useState(90);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const handlePhonePrefixChange = (countryCode: CountryCode, callingCode: string) => {
+    console.log('Mã quốc gia:', countryCode);
+    console.log('Mã vùng:', callingCode);
+  };
+
   const otpRefs = useRef<TextInput[]>([]);
 
-  const handleSendCode = () => {
+  const handleSendCode = async () => {
     if (phone.length >= 10) {
       setIsLoading(true);
       setTimeout(() => {
@@ -44,6 +61,7 @@ const ForgotPasswordScreen: React.FC = () => {
         setStep('code');
       }, 2000);
     }
+    startTimer();
   };
 
   const handleVerifyCode = () => {
@@ -57,51 +75,103 @@ const ForgotPasswordScreen: React.FC = () => {
     }
   };
 
+
+
+
+  const startTimer = () => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+
+    setCountDown(90);
+    timerRef.current = setInterval(() => {
+      setCountDown(prev => {
+        if (prev === 1) {
+          clearInterval(timerRef.current!);
+          stopTimer();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
+
+  const stopTimer = () => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+  };
+
   const handleOtpChange = (text: string, index: number) => {
     const newOtp = [...otp];
     newOtp[index] = text;
     setOtp(newOtp);
 
-    // Auto-focus next input
     if (text && index < 5) {
       otpRefs.current[index + 1]?.focus();
     }
   };
 
   const handleOtpKeyPress = (e: any, index: number) => {
-    if (e.nativeEvent.key === 'Backspace' && !otp[index] && index > 0) {
-      otpRefs.current[index - 1]?.focus();
+    if (e.nativeEvent.key === 'Backspace') {
+      const newOtp = [...otp];
+
+      if (otp[index]) {
+        newOtp[index] = '';
+        setOtp(newOtp);
+        if (index > 0) {
+          otpRefs.current[index - 1]?.focus();
+        }
+      } else if (index > 0) {
+        newOtp[index - 1] = '';
+        setOtp(newOtp);
+        otpRefs.current[index - 1]?.focus();
+      }
+    }
+  };
+  const handleOtpFocus = (index: number) => {
+    const lastFilledIndex = getLastFilledIndex(otp);
+
+    if (index > lastFilledIndex + 1) {
+      const nextIndex = Math.min(lastFilledIndex + 1, otp.length - 1);
+      otpRefs.current[nextIndex]?.focus();
     }
   };
 
+  const getLastFilledIndex = (arr: string[]): number => {
+    for (let i = arr.length - 1; i >= 0; i--) {
+      if (arr[i] !== '') {
+        return i;
+      }
+    }
+    return -1;
+  };
+
+
   const renderPhoneStep = () => (
     <>
-      <Text style={styles.instruction}>
-        Nhập số điện thoại của bạn để nhận mã xác thực
-      </Text>
-      
+
+
       <View style={styles.phoneInputContainer}>
-        <View style={styles.phonePrefix}>
-          <Text style={styles.phonePrefixText}>+84</Text>
-        </View>
+        {typeVerify === 'phone' && <PhoneInput onChange={handlePhonePrefixChange} />}
         <CustomInput
-          placeholder="Số điện thoại"
+          placeholder={typeVerify === 'phone' ? t('sign_in.text_phone') : t('sign_in.text_email')}
           value={phone}
           onChangeText={setPhone}
-          keyboardType="phone-pad"
+          keyboardType={typeVerify === 'phone' ? "phone-pad" : "default"}
           autoCapitalize="none"
-          maxLength={10}
           containerStyle={styles.phoneInput}
-          leftIcon={<UserIcon size={20} color="#6B7280" />}
+          leftIcon={typeVerify === 'phone' ? <PhoneIcon size={20} color={Colors.grey3} /> : <MailIcon size={20} color={Colors.grey3} />}
         />
       </View>
 
-      <Text style={styles.verificationText}>
-        Chúng tôi sẽ gửi mã xác thực 6 số qua tin nhắn SMS
-      </Text>
+      <GText type='systemLight_14' color={Colors.grey1} style={{ padding: 12 }}>
+        {t('sign_in.text_otp_was_send')}{' '}<GText type='systemLight_14' color={Colors.main_bule}>{typeVerify === 'phone' ? t('sign_in.text_phone') : t('sign_in.text_email')}</GText>{' '}{t('sign_in.text_of_you')}
+      </GText>
 
       <CustomButton
-        title="Gửi mã xác thực"
+        title={t('sign_in.text_send_otp')}
         onPress={handleSendCode}
         loading={isLoading}
         disabled={phone.length < 10}
@@ -112,9 +182,6 @@ const ForgotPasswordScreen: React.FC = () => {
 
   const renderCodeStep = () => (
     <>
-      <Text style={styles.instruction}>
-        Nhập mã xác thực 6 số đã được gửi đến {phone}
-      </Text>
 
       <View style={styles.otpContainer}>
         {otp.map((digit, index) => (
@@ -131,6 +198,7 @@ const ForgotPasswordScreen: React.FC = () => {
             onChangeText={(text) => handleOtpChange(text, index)}
             onKeyPress={(e) => handleOtpKeyPress(e, index)}
             keyboardType="number-pad"
+            onFocus={() => handleOtpFocus(index)}
             maxLength={1}
             textAlign="center"
             selectTextOnFocus
@@ -138,30 +206,34 @@ const ForgotPasswordScreen: React.FC = () => {
         ))}
       </View>
 
-      <Text style={styles.verificationText}>
-        Mã xác thực sẽ hết hạn sau 5 phút
-      </Text>
-
       <View style={styles.resendContainer}>
-        <Text style={styles.resendText}>Không nhận được mã? </Text>
-        <TouchableOpacity>
-          <Text style={styles.resendLink}>Gửi lại</Text>
+        <GText type='systemLight_14' color={Colors.grey1}>{t('sign_in.text_not_get_otp')}</GText>
+        <TouchableOpacity disabled={countDown !== 0} onPress={async () => { await setCountDown(90); startTimer() }}>
+          <GText type='systemLight_14' color={countDown === 0 ? Colors.main_bule : Colors.grey1}>{' '}{t('sign_in.text_send_again')}</GText>
         </TouchableOpacity>
       </View>
 
       <CustomButton
-        title="Xác thực"
+        title={t('sign_in.text_auth')}
         onPress={handleVerifyCode}
         loading={isLoading}
         disabled={otp.join('').length !== 6}
         containerStyle={styles.verifyButton}
       />
+      {countDown !== 0 && <GText type='systemLight_14' color={Colors.black} style={{
+        width: '100%',
+        textAlign: 'center',
+      }}>{countDown}{'(s)'}</GText>}
+
     </>
+
   );
 
   return (
     <BackgroundDecoration>
       <SafeAreaView style={styles.container}>
+        <Header title='Khôi phục mật khẩu' showBackButton={true} />
+
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={styles.keyboardView}
@@ -170,24 +242,11 @@ const ForgotPasswordScreen: React.FC = () => {
             contentContainerStyle={styles.scrollContent}
             showsVerticalScrollIndicator={false}
           >
-            <View style={styles.header}>
-              <TouchableOpacity 
-                style={styles.backButton}
-                onPress={() => navigation.goBack()}
-              >
-                <LeftIcon size={24} color="#FFFFFF" />
-                <Text style={styles.backText}>Quay lại</Text>
-              </TouchableOpacity>
-            </View>
-
             <View style={styles.content}>
-              <Text style={styles.title}>
-                {step === 'phone' ? 'Quên mật khẩu' : 'Xác thực mã'}
-              </Text>
 
               <View style={styles.centralIconContainer}>
                 <View style={styles.lockIconContainer}>
-                  <LockIcon size={50} color="#FFFFFF" />
+                  <ReloadIcon size={50} color={Colors.grey1} />
                 </View>
               </View>
 
@@ -205,6 +264,7 @@ const ForgotPasswordScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: Colors.white
   },
   keyboardView: {
     flex: 1,
@@ -229,6 +289,8 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     alignItems: 'center',
+    marginTop: 40
+
   },
   title: {
     color: '#FFFFFF',
@@ -265,23 +327,9 @@ const styles = StyleSheet.create({
   },
   phoneInputContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 24,
   },
-  phonePrefix: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-    borderRadius: 12,
-    marginRight: 12,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-  },
-  phonePrefixText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '600',
-  },
+
+
   phoneInput: {
     flex: 1,
   },
@@ -299,7 +347,7 @@ const styles = StyleSheet.create({
   otpContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 24,
+    marginVertical: 24
   },
   otpInput: {
     width: 50,
@@ -309,15 +357,15 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#FFFFFF',
+    color: Colors.white,
   },
   otpInputEmpty: {
-    borderColor: 'rgba(255, 255, 255, 0.3)',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderColor: Colors.grey1,
+    backgroundColor: Colors.grey1,
   },
   otpInputFilled: {
-    borderColor: '#FFFFFF',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: Colors.main_bule,
+    backgroundColor: Colors.main_bule,
   },
   resendContainer: {
     flexDirection: 'row',

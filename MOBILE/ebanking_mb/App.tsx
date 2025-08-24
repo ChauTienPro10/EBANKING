@@ -1,25 +1,53 @@
-
-
 import React from 'react';
-import { StatusBar, useColorScheme } from 'react-native';
+import {
+  StatusBar,
+  useColorScheme,
+  View,
+  StyleSheet,
+  Platform,
+} from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import AuthNavigator from './src/navigation/AuthNavigator';
+import { Provider, useSelector } from 'react-redux';
+import Colors from './src/constants/color';
 
-function App() {
+import { store, RootState } from './src/store';
+import AuthNavigator from './src/navigation/AuthNavigator';
+import MainStack from './src/navigation/MainStack';
+import './i18n';
+
+function AppContent() {
   const isDarkMode = useColorScheme() === 'dark';
+  const isLoggedIn = useSelector((state: RootState) => state.app.isLoggedIn);
 
   return (
-    <SafeAreaProvider>
+    <View style={styles.container}>
+      <StatusBar
+        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+        translucent
+        backgroundColor="transparent"
+      />
       <NavigationContainer>
-        <StatusBar
-          barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-          backgroundColor="#1E293B"
-        />
-        <AuthNavigator />
+        {isLoggedIn ? <MainStack /> : <AuthNavigator />}
       </NavigationContainer>
-    </SafeAreaProvider>
+    </View>
   );
 }
 
-export default App;
+export default function App() {
+  return (
+    <Provider store={store}>
+      <SafeAreaProvider>
+        <AppContent />
+      </SafeAreaProvider>
+    </Provider>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: Colors.main_bule, 
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
+  },
+});

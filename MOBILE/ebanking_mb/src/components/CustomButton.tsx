@@ -8,7 +8,7 @@ import {
   TextStyle,
   ActivityIndicator,
 } from 'react-native';
-
+import Colors from '../constants/color';
 interface CustomButtonProps extends TouchableOpacityProps {
   title: string;
   variant?: 'primary' | 'secondary' | 'outline';
@@ -72,7 +72,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({
     >
       {loading ? (
         <ActivityIndicator
-          color={variant === 'outline' ? '#1E40AF' : '#FFFFFF'}
+          color={variant === 'outline' ? `${Colors.main_bule}` : `${Colors.white}`}
           size="small"
         />
       ) : (
@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
   },
   // Color variants
   primary: {
-    backgroundColor: '#1E40AF',
+    backgroundColor: Colors.main_bule,
   },
   secondary: {
     backgroundColor: '#6B7280',
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
   outline: {
     backgroundColor: 'transparent',
     borderWidth: 2,
-    borderColor: '#1E40AF',
+    borderColor: Colors.main_bule,
   },
   disabled: {
     backgroundColor: '#D1D5DB',
@@ -136,10 +136,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   primaryText: {
-    color: '#FFFFFF',
+    color: Colors.white,
   },
   outlineText: {
-    color: '#1E40AF',
+    color: Colors.main_bule,
   },
   disabledText: {
     color: '#9CA3AF',

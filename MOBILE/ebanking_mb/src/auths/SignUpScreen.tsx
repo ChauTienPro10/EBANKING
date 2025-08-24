@@ -11,13 +11,17 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import LeftIcon from '../components/icon/LeftIcon';
-import Fingerprint from '../components/icon/Fingerprint';
 import LockIcon from '../components/icon/LockIcon';
 import UserIcon from '../components/icon/UserIcon';
 import CustomInput from '../components/CustomInput';
 import CustomButton from '../components/CustomButton';
 import BackgroundDecoration from '../components/BackgroundDecoration';
+import Header from '../components/Header';
+import { useTranslation } from 'react-i18next';
+import Colors from '../constants/color';
+import GText from '../components/GText';
+import Checkbox from '../components/CheckBox';
+import MailIcon from '../components/icon/MailIcon';
 
 type AuthStackParamList = {
   SignIn: undefined;
@@ -28,6 +32,8 @@ type AuthStackParamList = {
 type SignUpScreenNavigationProp = StackNavigationProp<AuthStackParamList, 'SignUp'>;
 
 const SignUpScreen: React.FC = () => {
+  const { t } = useTranslation();
+
   const navigation = useNavigation<SignUpScreenNavigationProp>();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -46,6 +52,8 @@ const SignUpScreen: React.FC = () => {
 
   return (
     <BackgroundDecoration>
+      <Header title={t('sign_in.text_login')} showBackButton={true} />
+
       <SafeAreaView style={styles.container}>
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -55,70 +63,59 @@ const SignUpScreen: React.FC = () => {
             contentContainerStyle={styles.scrollContent}
             showsVerticalScrollIndicator={false}
           >
-            <View style={styles.header}>
-              <TouchableOpacity 
-                style={styles.backButton}
-                onPress={() => navigation.goBack()}
-              >
-                <LeftIcon size={24} color="#FFFFFF" />
-                <Text style={styles.backText}>Quay lại</Text>
-              </TouchableOpacity>
-            </View>
-
             <View style={styles.content}>
-              <Text style={styles.greeting}>Xin chào, tạo tài khoản mới</Text>
 
               <View style={styles.centralIconContainer}>
                 <View style={styles.userIconContainer}>
-                  <UserIcon size={60} color="#FFFFFF" />
+                  <UserIcon size={60} color={Colors.main_bule} />
                 </View>
               </View>
-
               <View style={styles.form}>
                 <CustomInput
-                  placeholder="Họ và tên"
+                  placeholder={t('sign_in.text_fullname')}
                   value={name}
                   onChangeText={setName}
                   autoCapitalize="words"
                   leftIcon={<UserIcon size={20} color="#6B7280" />}
                 />
+                <View style={{ height: 10 }}> </View>
 
                 <CustomInput
-                  placeholder="Email hoặc số điện thoại"
+                  placeholder={t('sign_in.text_email_or_phone')}
                   value={email}
                   onChangeText={setEmail}
                   autoCapitalize="none"
                   keyboardType="email-address"
-                  leftIcon={<UserIcon size={20} color="#6B7280" />}
+                  leftIcon={<MailIcon size={20} color="#6B7280" />}
                 />
+                <View style={{ height: 10 }}> </View>
 
                 <CustomInput
-                  placeholder="Mật khẩu"
+                  placeholder={t('sign_in.text_password')}
                   value={password}
                   onChangeText={setPassword}
                   secureTextEntry
                   autoCapitalize="none"
                   leftIcon={<LockIcon size={20} color="#6B7280" />}
                 />
+                <View style={{ height: 10 }}> </View>
 
                 {/* Terms and Conditions Checkbox */}
-                <TouchableOpacity
+                <View
                   style={styles.termsCheckboxContainer}
-                  onPress={() => setAcceptTerms(!acceptTerms)}
                 >
-                  <View style={[styles.checkbox, acceptTerms && styles.checkboxChecked]}>
-                    {acceptTerms && <Text style={styles.tickMark}>✓</Text>}
-                  </View>
+                  <Checkbox checked={acceptTerms} onChange={setAcceptTerms} style={{ marginHorizontal: 5 }} />
                   <View style={styles.termsTextContainer}>
-                    <Text style={styles.termsText}>
-                      Bằng việc tạo tài khoản, bạn đồng ý với{' '}
-                      <Text style={styles.termsLink}>Điều khoản và Điều kiện</Text>
-                    </Text>
+                    <GText type='systemLight_14' color={Colors.grey1}>
+                      {t('sign_in.text_by_the_confirm_policy')}{' '}
+                      <GText type='systemLight_14' color={Colors.main_bule} >{t('sign_in.text_policy_and_term')}</GText>{' '}
+                      {t('sign_in.text_of_us')}
+                    </GText>
                   </View>
-                </TouchableOpacity>
+                </View>
 
                 <CustomButton
-                  title="Đăng ký"
+                  title={t('sign_in.text_sign_up')}
                   onPress={handleSignUp}
                   loading={isLoading}
                   disabled={!isFormValid}
@@ -127,9 +124,9 @@ const SignUpScreen: React.FC = () => {
               </View>
 
               <View style={styles.signInContainer}>
-                <Text style={styles.signInText}>Đã có tài khoản? </Text>
+                <GText type='systemLight_14' color={Colors.grey1}>{t('sign_in.text_have_account')}{' '}</GText>
                 <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
-                  <Text style={styles.signInLink}>Đăng nhập</Text>
+                  <GText type='systemLight_14' color={Colors.main_bule}>{t('sign_in.text_login')}</GText>
                 </TouchableOpacity>
               </View>
             </View>
@@ -142,7 +139,9 @@ const SignUpScreen: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: {
+    paddingTop: 50,
     flex: 1,
+    backgroundColor: Colors.white
   },
   keyboardView: {
     flex: 1,
@@ -182,7 +181,7 @@ const styles = StyleSheet.create({
   userIconContainer: {
     width: 120,
     height: 80,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: Colors.grey2,
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
@@ -210,6 +209,7 @@ const styles = StyleSheet.create({
   },
   signUpButton: {
     marginBottom: 24,
+    // backgroundColor: Colors.main_bule,
   },
   signInContainer: {
     flexDirection: 'row',
@@ -217,20 +217,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 40,
   },
-  signInText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    opacity: 0.8,
-  },
   signInLink: {
-    color: '#FFFFFF',
+    color: Colors.white,
     fontSize: 14,
     fontWeight: '600',
     textDecorationLine: 'underline',
   },
   termsCheckboxContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     marginBottom: 24,
   },
   checkbox: {

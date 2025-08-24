@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
+import Colors from '../constants/color';
 
 interface BackgroundDecorationProps {
   children: React.ReactNode;
@@ -24,7 +25,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     position: 'relative',
-    backgroundColor: '#1E40AF', // Deep blue base
+    backgroundColor: Colors.main_bule, 
   },
   gradientLayer1: {
     position: 'absolute',
@@ -32,7 +33,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: '#1E40AF', // Deep blue
+    backgroundColor: Colors.main_bule, // Deep blue
   },
   gradientLayer2: {
     position: 'absolute',
@@ -40,7 +41,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: '#3B82F6', // Medium blue
+    backgroundColor: Colors.main_bule, // Medium blue
     opacity: 0.4,
   },
   contentOverlay: {
