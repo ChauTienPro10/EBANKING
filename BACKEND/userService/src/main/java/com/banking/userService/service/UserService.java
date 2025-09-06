@@ -1,5 +1,6 @@
 package com.banking.userService.service;
 
+import com.banking.userService.dto.OtpRegister;
 import com.banking.userService.dto.response.UserResponse;
 import com.banking.userService.entity.Role;
 import com.banking.userService.entity.User;
@@ -10,6 +11,7 @@ import com.banking.userService.repository.IRoleRepository;
 import com.banking.userService.repository.IUserInfoRepository;
 import com.banking.userService.repository.IUserRepository;
 import com.banking.userService.utils.JwtTokenProvider;
+import com.banking.userService.utils.OtpUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -33,10 +35,10 @@ public class UserService {
     private static final String EMAIL_REGEX = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
     private static final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
 
-    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
     @Autowired
-    public UserService(KafkaTemplate<String, String> kafkaTemplate) {
+    public UserService(KafkaTemplate<String, Object> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 
@@ -61,10 +63,13 @@ public class UserService {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
-    public UserResponse createUser(String username,
-                                   String pass,
-                                   String citizenId,
-                                   String typeVerify) {
+    @Autowired
+    private OtpUtils otpUtils;
+
+    public Boolean genOTP(String username,
+                          String pass,
+                          String citizenId,
+                          String typeVerify) {
         if ("phone".equals(typeVerify)) {
             return null;
         }
@@ -72,19 +77,35 @@ public class UserService {
 
         if (userInfoRepository.existsByCitizenId(citizenId)) throw new RuntimeException("Citizen ID is existed!");
 
+        OtpRegister otpRegister = OtpRegister.builder()
+                .username(username)
+                .citizenId(citizenId)
+                .pass(pass)
+                .typeVerify(typeVerify)
+                .build();
+        otpRegister = otpUtils.genOtp(username, otpRegister, 300);
+        kafkaTemplate.send("send-otp", otpRegister);
+        return true;
+    }
+
+    public UserResponse registerVerifyOtp(String username,
+                                   String otpValue) {
+
+        OtpRegister otpRegister = otpUtils.verifyOtpRegister(username, otpValue);
+
         User newUser = new User();
         Set<Role> defaultRoles = new HashSet<>();
         defaultRoles.add(roleRepository.findByName("ROLE_USER"));
         newUser.setRoles(defaultRoles);
         newUser.setUsername(username);
-        newUser.setPassword(passwordEncoder.encode(pass));
+        newUser.setPassword(passwordEncoder.encode(otpRegister.getPass()));
         newUser.setCreateAt(new Date().getTime());
         newUser.setUserInfo(null);
         userRepository.save(newUser);
 
         UserInfo userInfo = new UserInfo();
         userInfo.setEmail(username);
-        userInfo.setCitizenId(citizenId);
+        userInfo.setCitizenId(otpRegister.getCitizenId());
         userInfo.setUser(newUser);
         userInfo.setCreateAt(new Date().getTime());
         userInfoRepository.save(userInfo);
@@ -92,7 +113,7 @@ public class UserService {
         newUser.setUserInfo(userInfo);
         userRepository.save(newUser);
 
-        kafkaTemplate.send("send-email", "hello world! ");
+        kafkaTemplate.send("send-email", username);
 
         return UserResponse.builder()
                 .id(newUser.getId())

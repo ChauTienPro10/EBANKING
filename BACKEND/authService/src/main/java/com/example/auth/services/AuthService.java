@@ -2,6 +2,7 @@ package com.example.auth.services;
 
 import com.example.auth.consts.grpcPath;
 import com.example.auth.dto.request.LoginRequest;
+import com.example.auth.dto.response.CreateUserOtpResponse;
 import com.example.auth.dto.response.LoginResponse;
 import com.example.auth.dto.response.RegisterResponse;
 import com.example.auth.mapper.UserMapper;
@@ -30,24 +31,34 @@ public class AuthService {
         this.userStub = UserServiceGrpc.newBlockingStub(channel);
     }
 
-    public RegisterResponse register(String username, String password, String citizenId) {
+    public CreateUserOtpResponse register(String username, String password, String citizenId, String typeVerify) {
         UserProto.NewUserRequest request = UserProto.NewUserRequest.newBuilder()
                 .setUsername(username)
                 .setPassword(password)
                 .setCitizenId(citizenId)
+                .setTypeVerify(typeVerify)
                 .build();
 
-        UserProto.NewUserResponse rs = userStub.newUser(request);
+        UserProto.NewUserGenOtpResponse rs = userStub.newUserGenOtp(request);
+        return CreateUserOtpResponse.builder()
+                .success(rs.getSuccess())
+                .message(rs.getMessage())
+                .build();
+    }
 
-        UserProto.User userProto = rs.getUser();
-
-        RegisterResponse response = new RegisterResponse();
-        response.setId(userProto.getId());
-        response.setUsername(userProto.getUsername());
-        response.setRoles(new HashSet<>(userProto.getRolesList()));
-        response.setCitizenId(userProto.getCitizenId());
-        response.setCreateAt(userProto.getCreateAt());
-        return response;
+    public RegisterResponse verifyOtpRegister(String username, String optValue) {
+        UserProto.verifyOtpRegisterRequest request = UserProto.verifyOtpRegisterRequest.newBuilder()
+                .setUsername(username)
+                .setOtpValue(optValue)
+                .build();
+        UserProto.NewUserResponse newUserResponse = userStub.verifyOtpRegister(request);
+        return RegisterResponse.builder()
+                .id(newUserResponse.getUser().getId())
+                .citizenId(newUserResponse.getUser().getCitizenId())
+                .username(newUserResponse.getUser().getUsername())
+                .createAt(newUserResponse.getUser().getCreateAt())
+                .roles(new HashSet<>(newUserResponse.getUser().getRolesList()))
+                .build();
     }
 
     public LoginResponse login(LoginRequest request) {

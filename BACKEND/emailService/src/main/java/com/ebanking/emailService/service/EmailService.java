@@ -32,7 +32,8 @@ public class EmailService {
             content = content.replace("${" + entry.getKey() + "}", entry.getValue());
         }
         switch (type) {
-            case "create_user":
+            case "create_user" :
+            case "gen_otp":
                 message.setTo(to);
                 message.setSubject(emailTemplate.getTitle());
                 message.setText(content);

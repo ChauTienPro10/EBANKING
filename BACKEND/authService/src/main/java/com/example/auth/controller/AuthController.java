@@ -3,7 +3,9 @@ package com.example.auth.controller;
 import com.example.auth.consts.IURL;
 import com.example.auth.dto.request.LoginRequest;
 import com.example.auth.dto.request.RegisterRequest;
+import com.example.auth.dto.request.RegisterVerifyOtpRequest;
 import com.example.auth.dto.request.UpdateUserRequest;
+import com.example.auth.dto.response.CreateUserOtpResponse;
 import com.example.auth.dto.response.LoginResponse;
 import com.example.auth.dto.response.RegisterResponse;
 import com.example.auth.dto.response.UpdateUserResponse;
@@ -24,8 +26,14 @@ public class AuthController {
     AuthService authService;
 
     @PostMapping(IURL.REGISTER_URL)
-    public ResponseEntity<RegisterResponse> register(@RequestBody RegisterRequest data) {
-        return ResponseEntity.status(HttpStatus.OK).body(authService.register(data.getUsername(), data.getPassword(), data.getCitizenId()));
+    public ResponseEntity<CreateUserOtpResponse> register(@RequestBody RegisterRequest data) {
+        return ResponseEntity.status(HttpStatus.OK).body(authService.register(data.getUsername(), data.getPassword(), data.getCitizenId(), data.getTypeVerify()));
+    }
+
+    @PostMapping(IURL.REGISTER_VERIFY_OTP_URL)
+    public ResponseEntity<RegisterResponse> registeVerifyOtp(@RequestBody RegisterVerifyOtpRequest r) {
+        RegisterResponse rs = authService.verifyOtpRegister(r.getUsername(), r.getOtpValue());
+        return ResponseEntity.status(HttpStatus.OK).body(rs);
     }
 
     @PostMapping(IURL.LOGIN_URL)

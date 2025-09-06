@@ -61,10 +61,22 @@ message CheckUserExistResponse {
   bool isExist = 1;
 }
 
+message NewUserGenOtpResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message verifyOtpRegisterRequest {
+  string username = 1;
+  string otpValue = 2;
+}
+
 service UserService {
   rpc getUserById(GetUserRequestById) returns (UserResponse);
   rpc newUser(NewUserRequest) returns (NewUserResponse);
+  rpc newUserGenOtp(NewUserRequest) returns (NewUserGenOtpResponse);
   rpc login(LoginRequest) returns (LoginResponse);
   rpc update(UpdateUserRequest) returns (User);
   rpc CheckUserExist(CheckUserExistRequest) returns (CheckUserExistResponse);
+  rpc verifyOtpRegister(verifyOtpRegisterRequest) returns (NewUserResponse);
 }

@@ -26,9 +26,44 @@ public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
     }
 
     @Override
-    public void newUser(UserProto.NewUserRequest request, StreamObserver<UserProto.NewUserResponse> responseObserver) {
-        UserResponse newUser = userService.createUser(request.getUsername(), request.getPassword(), request.getCitizenId(), request.getTypeVerify());
+    public void newUserGenOtp(UserProto.NewUserRequest request, StreamObserver<UserProto.NewUserGenOtpResponse> responseObserver) {
+        Boolean otpRes = userService.genOTP(request.getUsername(), request.getPassword(), request.getCitizenId(), request.getTypeVerify());
+        UserProto.NewUserGenOtpResponse res;
+        if (otpRes) {
+            res = UserProto.NewUserGenOtpResponse.newBuilder()
+                    .setSuccess(true)
+                    .setMessage("OTP has been send to " + request.getUsername())
+                    .build();
+        } else {
+            res = UserProto.NewUserGenOtpResponse.newBuilder()
+                    .setSuccess(false)
+                    .setMessage("Can not generate OTP")
+                    .build();
+        }
 
+//        Set<String> roleNames = newUser.getRoles().stream()
+//                .map(Role::getName)
+//                .collect(Collectors.toSet());
+//        UserProto.User userProto = UserProto.User.newBuilder()
+//                .setId(newUser.getId())
+//                .setCitizenId(newUser.getCitizenId())
+//                .addAllRoles(roleNames)
+//                .setCreateAt(newUser.getCreateAt().toString())
+//                .setUsername(newUser.getUsername())
+//                .build();
+//
+//        var response = UserProto.NewUserResponse.newBuilder()
+//                .setUser(userProto)
+//                .build();
+
+        responseObserver.onNext(res);
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void verifyOtpRegister(UserProto.verifyOtpRegisterRequest request, StreamObserver<UserProto.NewUserResponse> responseObserver) {
+
+        UserResponse newUser = userService.registerVerifyOtp(request.getUsername(), request.getOtpValue());
         Set<String> roleNames = newUser.getRoles().stream()
                 .map(Role::getName)
                 .collect(Collectors.toSet());
