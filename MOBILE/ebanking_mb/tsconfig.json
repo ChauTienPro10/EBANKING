@@ -1,4 +1,12 @@
 {
   "extends": "@react-native/typescript-config",
-  "include": ["src", "env.d.ts"]
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true
+  },
+  "include": [
+    "src",
+    "env.d.ts"
+  ]
 }

@@ -1,11 +1,14 @@
 import React from 'react';
-import Feather from 'react-native-vector-icons/Feather';
+import Icon from 'react-native-vector-icons/Ionicons';
 
-type Props = {
-    size?: number;
-    color?: string;
+interface EyeOffIconProps {
+  size?: number;
+  color?: string;
+  [key: string]: any;
+}
+
+const EyeOffIcon: React.FC<EyeOffIconProps> = ({ size = 24, color = '#000', ...props }) => {
+  return <Icon name="eye-off" size={size} color={color} {...props} />;
 };
 
-export default function EyeOffIcon({ size = 24, color = "#000" }: Props) {
-    return <Feather name="eye-off" size={size} color={color} />;
-}
+export default EyeOffIcon;

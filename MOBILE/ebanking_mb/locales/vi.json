@@ -1,12 +1,149 @@
 {
+  "menu": {
+    "title": "Menu",
+    "greeting": "Xin chào, {userName}",
+    "view_profile": "Xem hồ sơ",
+    "logout": "Đăng xuất",
+    "user_email": "Email người dùng",
+    "promo_title": "Ưu đãi đặc biệt",
+    "promo_subtitle": "Lãi suất tiết kiệm cao nhất"
+  },
   "home": {
-    "title": "man hinh home",
-    "subtitle": "chao mung toi app"
+    "title": "Trang chủ",
+    "subtitle": "Chào mừng đến với ứng dụng eBanking",
+    "welcome": "Chào mừng đến với eBanking",
+    "balance": "Số dư khả dụng",
+    "view_details": "Xem chi tiết",
+    "total_balance_vnd": "Tổng số dư VND",
+    "earn_daily": "SINH LỜI MỖI NGÀY",
+    "upgrade_rank": "NÂNG HẠNG",
+    "services_title": "Mua sắm - Giải trí - Đầu tư",
+    "lottery_king": "Vua xổ số",
+    "data_4g": "Data 4G/Nạp tiền",
+    "game_card": "Megatek - Thẻ game",
+    "flight_tickets": "Vé máy bay",
+    "fortune_tag": "TÀI LỘC",
+    "wind_tag": "NHƯ GIÓ",
+    "quick_actions": "Thao tác nhanh",
+    "recent_transactions": "Giao dịch gần đây",
+    "transfer_money": "Chuyển tiền",
+    "mobile_prepaid": "Nạp tiền điện thoại",
+    "today": "Hôm nay",
+    "yesterday": "Hôm qua",
+    "promotions": "Ưu đãi",
+    "promotion_title": "Ưu đãi đặc biệt",
+    "promotion_subtitle": "Lãi suất tiết kiệm cao nhất thị trường",
+    "quick_stats": "Thống kê nhanh",
+    "monthly_growth": "Tăng trưởng tháng",
+    "new_notifications": "Thông báo mới"
+  },
+  "action_grid": {
+    "account_and_card": "Tài khoản & Thẻ",
+    "transfer": "Chuyển tiền",
+    "withdraw": "Rút tiền",
+    "mobile_prepaid": "Nạp tiền điện thoại",
+    "pay_bill": "Thanh toán hóa đơn",
+    "save_online": "Gửi tiết kiệm trực tuyến",
+    "credit_card": "Thẻ tín dụng",
+    "transaction_report": "Lịch sử giao dịch",
+    "beneficiary": "Người thụ hưởng",
+    "loan": "Vay vốn",
+    "investments": "Đầu tư",
+    "insurance": "Bảo hiểm"
+  },
+  "bottom_navigation": {
+    "home": "Trang chủ",
+    "menu": "Menu",
+    "search": "Tìm kiếm",
+    "settings": "Cài đặt",
+    "support": "Hỗ trợ"
+  },
+  "settings": {
+    "title": "Cài đặt",
+    "language": "Ngôn ngữ",
+    "security": "Bảo mật",
+    "notifications": "Thông báo",
+    "account_management": "Quản lý tài khoản",
+    "biometric": "Sinh trắc học",
+    "privacy": "Quyền riêng tư",
+    "about": "Giới thiệu",
+    "help": "Trợ giúp",
+    "logout": "Đăng xuất"
+  },
+  "support": {
+    "title": "Hỗ trợ",
+    "welcome": "Hỗ trợ khách hàng",
+    "subtitle": "Chúng tôi luôn sẵn sàng hỗ trợ bạn",
+    "chatbot": "Chatbot AI",
+    "chatbot_desc": "Trò chuyện với trợ lý ảo",
+    "hotline": "Hotline",
+    "hotline_desc": "Gọi điện thoại hỗ trợ",
+    "email": "Email",
+    "email_desc": "Gửi email hỗ trợ",
+    "faq": "Câu hỏi thường gặp",
+    "faq_desc": "Tìm câu trả lời nhanh"
   },
   "profile": {
-    "greeting": "xin chao, user"
+    "title": "Hồ sơ",
+    "edit_profile": "Chỉnh sửa hồ sơ",
+    "personal_info": "Thông tin cá nhân",
+    "kyc": "Xác minh danh tính"
   },
-
+  "notifications": {
+    "title": "Thông báo",
+    "no_notifications": "Không có thông báo mới",
+    "mark_all_read": "Đánh dấu tất cả đã đọc"
+  },
+  "search": {
+    "placeholder": "Tìm kiếm chức năng...",
+    "no_results": "Không tìm thấy kết quả"
+  },
+  "transfer": {
+    "title": "Chuyển tiền",
+    "transfer_type": "Loại chuyển tiền",
+    "internal_transfer": "Chuyển nội bộ",
+    "external_transfer": "Chuyển liên ngân hàng",
+    "select_bank": "Chọn ngân hàng",
+    "select_bank_placeholder": "Chọn ngân hàng thụ hưởng",
+    "search_bank_placeholder": "Tìm kiếm ngân hàng...",
+    "recipient_account": "Số tài khoản người nhận",
+    "recipient_account_placeholder": "Nhập số tài khoản",
+    "amount": "Số tiền",
+    "amount_placeholder": "Nhập số tiền",
+    "content": "Nội dung chuyển tiền",
+    "content_placeholder": "Nhập nội dung chuyển tiền",
+    "quick_amount": "Số tiền nhanh",
+    "transfer_button": "Chuyển tiền",
+    "validation": {
+      "account_required": "Vui lòng nhập số tài khoản",
+      "account_invalid": "Số tài khoản không hợp lệ (10-16 chữ số)",
+      "amount_required": "Vui lòng nhập số tiền",
+      "amount_invalid": "Số tiền không hợp lệ",
+      "amount_minimum": "Số tiền tối thiểu là 10,000 VND",
+      "amount_maximum": "Số tiền tối đa là 500,000,000 VND",
+      "content_required": "Vui lòng nhập nội dung chuyển tiền",
+      "bank_required": "Vui lòng chọn ngân hàng thụ hưởng",
+      "content_too_long": "Nội dung không được quá 200 ký tự"
+    },
+    "success": {
+      "title": "Chuyển tiền thành công",
+      "message": "Bạn đã chuyển {{amount}} VND đến tài khoản {{account}}"
+    },
+    "error": {
+      "title": "Lỗi chuyển tiền",
+      "message": "Có lỗi xảy ra khi chuyển tiền. Vui lòng thử lại."
+    }
+  },
+  "categories": {
+    "banking": "Ngân hàng",
+    "personal": "Cá nhân",
+    "support": "Hỗ trợ",
+    "general": "Chung",
+    "security": "Bảo mật",
+    "privacy": "Quyền riêng tư",
+    "info": "Thông tin",
+    "account": "Tài khoản"
+  },
   "sign_in": {
     "text_login": "Đăng nhập",
     "text_forgot_password": "Quên mật khẩu?",
@@ -27,6 +164,106 @@
     "text_send_otp": "Gửi OTP",
     "text_not_get_otp": "Không nhận được mã?",
     "text_send_again": "Gửi lại",
-    "text_auth": "Xác thực" 
+    "text_auth": "Xác thực"
+  },
+  "ui": {
+    "bank_name": "eBanking",
+    "card_brand": "VISA",
+    "valid_thru": "VALID THRU",
+    "expiry_date": "12/25",
+    "tap_to_view": "Tap để xem chi tiết",
+    "more_actions": "↓",
+    "balance_arrow": "→",
+    "masked_text": "••••••••",
+    "default_pin": "1234"
+  },
+  "labels": {
+    "available_balance": "Số dư khả dụng",
+    "ledger_balance": "Số dư sổ cái",
+    "pending_balance": "Chờ xử lý",
+    "total_balance": "Tổng số dư VND",
+    "earn_daily": "SINH LỜI MỖI NGÀY",
+    "services_title": "Mua sắm - Giải trí - Đầu tư"
+  },
+  "placeholders": {
+    "balance_format": "{{amount}} {{currency}}",
+    "account_format": "{{account}}",
+    "welcome_message": "Xin chào, {{name}}",
+    "notification_count": "{{count}}",
+    "search_placeholder": "Tìm kiếm chức năng...",
+    "action_tag": "{{tag}}"
+  },
+  "greetings": {
+    "welcome_to_ebanking": "Chào mừng đến với eBanking",
+    "hello_user": "Xin chào, {{name}}"
+  },
+  "common": {
+    "ok": "OK",
+    "cancel": "Hủy",
+    "confirm": "Xác nhận",
+    "back": "Quay lại",
+    "next": "Tiếp theo",
+    "done": "Hoàn thành",
+    "loading": "Đang tải...",
+    "error": "Lỗi",
+    "success": "Thành công"
+  },
+  "mock_data": {
+    "user": {
+      "name": "Nguyên Anh"
+    },
+    "accounts": {
+      "primary": {
+        "id": "1",
+        "accountNumber": "1234567890123456",
+        "accountName": "Tài khoản thanh toán chính",
+        "availableBalance": 50000000,
+        "ledgerBalance": 50000000,
+        "pendingBalance": 0,
+        "currency": "VND"
+      },
+      "savings": {
+        "id": "2",
+        "accountNumber": "9876543210987654",
+        "accountName": "Tài khoản tiết kiệm",
+        "availableBalance": 100000000,
+        "ledgerBalance": 100000000,
+        "pendingBalance": 5000000,
+        "currency": "VND"
+      }
+    },
+    "balance": {
+      "total": "15,420,000",
+      "masked": "*** ***"
+    },
+    "messages": {
+      "logout_confirm": "Bạn có chắc chắn muốn đăng xuất?",
+      "cancel": "Hủy",
+      "support_connecting": "Kết nối với hỗ trợ viên...",
+      "navigation": "Điều hướng đến",
+      "logout_success": "Đăng xuất thành công",
+      "logout_cancelled": "Hủy đăng xuất",
+      "pin_auth": "Xác thực",
+      "pin_prompt": "Nhập PIN để xem thông tin chi tiết",
+      "pin_confirm": "Xác nhận",
+      "pin_error": "Lỗi",
+      "pin_incorrect": "PIN không đúng",
+      "search_results": "Kết quả tìm kiếm",
+      "notification_pressed": "Thông báo được nhấn",
+      "support_notification_pressed": "Thông báo hỗ trợ được nhấn",
+      "search_notification_pressed": "Thông báo tìm kiếm được nhấn",
+      "action_pressed": "Hành động được nhấn: {{action}}",
+      "menu_item_selected": "Mục menu được chọn: {{item}}",
+      "route": "Tuyến đường: {{route}}",
+      "label": "Nhãn: {{label}}",
+      "tab_changed": "Tab thay đổi từ {{from}} sang {{to}}",
+      "navigate_to_tab": "Điều hướng đến tab: {{tab}}",
+      "unknown_tab": "Tab không xác định: {{tab}}",
+      "logout_pressed": "Nút đăng xuất được nhấn",
+      "support_pressed": "Nút hỗ trợ được nhấn",
+      "profile_pressed": "Avatar hồ sơ được nhấn",
+      "menu_mounted": "MenuScreen được mount",
+      "current_tab": "Tab hiện tại: {{tab}}"
+    }
   }
 }

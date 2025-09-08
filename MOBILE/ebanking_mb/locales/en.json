@@ -1,13 +1,149 @@
 {
-  "text_welcome": "Welcome",
+  "menu": {
+    "title": "Menu",
+    "greeting": "Hello, {userName}",
+    "view_profile": "View Profile",
+    "logout": "Logout",
+    "user_email": "User email",
+    "promo_title": "Special Offer",
+    "promo_subtitle": "Highest savings interest rate"
+  },
   "home": {
-    "title": "Home Screen",
-    "subtitle": "Welcome to the app"
+    "title": "Home",
+    "subtitle": "Welcome to eBanking app",
+    "welcome": "Welcome to eBanking",
+    "balance": "Available Balance",
+    "view_details": "View Details",
+    "total_balance_vnd": "Total Balance VND",
+    "earn_daily": "EARN DAILY",
+    "upgrade_rank": "UPGRADE RANK",
+    "services_title": "Shopping - Entertainment - Investment",
+    "lottery_king": "Lottery King",
+    "data_4g": "4G Data/Top up",
+    "game_card": "Megatek - Game Card",
+    "flight_tickets": "Flight Tickets",
+    "fortune_tag": "FORTUNE",
+    "wind_tag": "LIKE WIND",
+    "quick_actions": "Quick Actions",
+    "recent_transactions": "Recent Transactions",
+    "transfer_money": "Transfer Money",
+    "mobile_prepaid": "Mobile Prepaid",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "promotions": "Promotions",
+    "promotion_title": "Special Offer",
+    "promotion_subtitle": "Highest savings interest rate in the market",
+    "quick_stats": "Quick Stats",
+    "monthly_growth": "Monthly Growth",
+    "new_notifications": "New Notifications"
+  },
+  "action_grid": {
+    "account_and_card": "Account & Card",
+    "transfer": "Transfer",
+    "withdraw": "Withdraw",
+    "mobile_prepaid": "Mobile Prepaid",
+    "pay_bill": "Pay Bill",
+    "save_online": "Online Savings",
+    "credit_card": "Credit Card",
+    "transaction_report": "Transaction History",
+    "beneficiary": "Beneficiary",
+    "loan": "Loan",
+    "investments": "Investments",
+    "insurance": "Insurance"
+  },
+  "bottom_navigation": {
+    "home": "Home",
+    "menu": "Menu",
+    "search": "Search",
+    "settings": "Settings",
+    "support": "Support"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "security": "Security",
+    "notifications": "Notifications",
+    "account_management": "Account Management",
+    "biometric": "Biometric",
+    "privacy": "Privacy",
+    "about": "About",
+    "help": "Help",
+    "logout": "Logout"
+  },
+  "support": {
+    "title": "Support",
+    "welcome": "Customer Support",
+    "subtitle": "We're always ready to help you",
+    "chatbot": "AI Chatbot",
+    "chatbot_desc": "Chat with virtual assistant",
+    "hotline": "Hotline",
+    "hotline_desc": "Call support hotline",
+    "email": "Email",
+    "email_desc": "Send support email",
+    "faq": "FAQ",
+    "faq_desc": "Find quick answers"
   },
   "profile": {
-    "greeting": "Hello, user"
+    "title": "Profile",
+    "edit_profile": "Edit Profile",
+    "personal_info": "Personal Information",
+    "kyc": "Identity Verification"
   },
-
+  "notifications": {
+    "title": "Notifications",
+    "no_notifications": "No new notifications",
+    "mark_all_read": "Mark all as read"
+  },
+  "search": {
+    "placeholder": "Search functions...",
+    "no_results": "No results found"
+  },
+  "transfer": {
+    "title": "Transfer Money",
+    "transfer_type": "Transfer Type",
+    "internal_transfer": "Internal Transfer",
+    "external_transfer": "External Transfer",
+    "select_bank": "Select Bank",
+    "select_bank_placeholder": "Select beneficiary bank",
+    "search_bank_placeholder": "Search bank...",
+    "recipient_account": "Recipient Account",
+    "recipient_account_placeholder": "Enter account number",
+    "amount": "Amount",
+    "amount_placeholder": "Enter amount",
+    "content": "Transfer Content",
+    "content_placeholder": "Enter transfer content",
+    "quick_amount": "Quick Amount",
+    "transfer_button": "Transfer",
+    "validation": {
+      "account_required": "Please enter account number",
+      "account_invalid": "Invalid account number (10-16 digits)",
+      "amount_required": "Please enter amount",
+      "amount_invalid": "Invalid amount",
+      "amount_minimum": "Minimum amount is 10,000 VND",
+      "amount_maximum": "Maximum amount is 500,000,000 VND",
+      "content_required": "Please enter transfer content",
+      "bank_required": "Please select beneficiary bank",
+      "content_too_long": "Content cannot exceed 200 characters"
+    },
+    "success": {
+      "title": "Transfer Successful",
+      "message": "You have transferred {{amount}} VND to account {{account}}"
+    },
+    "error": {
+      "title": "Transfer Error",
+      "message": "An error occurred while transferring. Please try again."
+    }
+  },
+  "categories": {
+    "banking": "Banking",
+    "personal": "Personal",
+    "support": "Support",
+    "general": "General",
+    "security": "Security",
+    "privacy": "Privacy",
+    "info": "Information",
+    "account": "Account"
+  },
   "sign_in": {
     "text_login": "Sign In",
     "text_forgot_password": "Forgot Password?",
@@ -15,6 +151,119 @@
     "text_password": "Password",
     "text_email": "Email",
     "text_not_have_account": "Don't have an account?",
-    "text_sign_up": "Sign Up"
+    "text_sign_up": "Sign Up",
+    "text_email_or_phone": "Email or phone number",
+    "text_fullname": "Full name",
+    "text_by_the_confirm_policy": "By creating an account, you agree to our",
+    "text_policy_and_term": "Terms and Conditions",
+    "text_of_us": "",
+    "text_have_account": "Already have an account?",
+    "text_phone": "Phone number",
+    "text_otp_was_send": "Verification code has been sent to",
+    "text_of_you": "",
+    "text_send_otp": "Send OTP",
+    "text_not_get_otp": "Didn't receive the code?",
+    "text_send_again": "Send again",
+    "text_auth": "Authentication"
+  },
+  "ui": {
+    "bank_name": "eBanking",
+    "card_brand": "VISA",
+    "valid_thru": "VALID THRU",
+    "expiry_date": "12/25",
+    "tap_to_view": "Tap to view details",
+    "more_actions": "↓",
+    "balance_arrow": "→",
+    "masked_text": "••••••••",
+    "default_pin": "1234"
+  },
+  "labels": {
+    "available_balance": "Available Balance",
+    "ledger_balance": "Ledger Balance",
+    "pending_balance": "Pending Balance",
+    "total_balance": "Total Balance VND",
+    "earn_daily": "EARN DAILY",
+    "services_title": "Shopping - Entertainment - Investment"
+  },
+  "placeholders": {
+    "balance_format": "{{amount}} {{currency}}",
+    "account_format": "{{account}}",
+    "welcome_message": "Hello, {{name}}",
+    "notification_count": "{{count}}",
+    "search_placeholder": "Search functions...",
+    "action_tag": "{{tag}}"
+  },
+  "greetings": {
+    "welcome_to_ebanking": "Welcome to eBanking",
+    "hello_user": "Hello, {{name}}"
+  },
+  "common": {
+    "ok": "OK",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "done": "Done",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success"
+  },
+  "mock_data": {
+    "user": {
+      "name": "Nguyen Anh"
+    },
+    "accounts": {
+      "primary": {
+        "id": "1",
+        "accountNumber": "1234567890123456",
+        "accountName": "Primary Payment Account",
+        "availableBalance": 50000000,
+        "ledgerBalance": 50000000,
+        "pendingBalance": 0,
+        "currency": "VND"
+      },
+      "savings": {
+        "id": "2",
+        "accountNumber": "9876543210987654",
+        "accountName": "Savings Account",
+        "availableBalance": 100000000,
+        "ledgerBalance": 100000000,
+        "pendingBalance": 5000000,
+        "currency": "VND"
+      }
+    },
+    "balance": {
+      "total": "15,420,000",
+      "masked": "*** ***"
+    },
+    "messages": {
+      "logout_confirm": "Are you sure you want to logout?",
+      "cancel": "Cancel",
+      "support_connecting": "Connecting to support agent...",
+      "navigation": "Navigate to",
+      "logout_success": "Logged out successfully",
+      "logout_cancelled": "Logout cancelled",
+      "pin_auth": "Authentication",
+      "pin_prompt": "Enter PIN to view detailed information",
+      "pin_confirm": "Confirm",
+      "pin_error": "Error",
+      "pin_incorrect": "Incorrect PIN",
+      "search_results": "Search Results",
+      "notification_pressed": "Notification pressed",
+      "support_notification_pressed": "Support notification pressed",
+      "search_notification_pressed": "Search notification pressed",
+      "action_pressed": "Action pressed: {{action}}",
+      "menu_item_selected": "Menu item selected: {{item}}",
+      "route": "Route: {{route}}",
+      "label": "Label: {{label}}",
+      "tab_changed": "Tab changed from {{from}} to {{to}}",
+      "navigate_to_tab": "Navigate to tab: {{tab}}",
+      "unknown_tab": "Unknown tab: {{tab}}",
+      "logout_pressed": "Logout button pressed",
+      "support_pressed": "Support button pressed",
+      "profile_pressed": "Profile avatar pressed",
+      "menu_mounted": "MenuScreen mounted",
+      "current_tab": "Current tab: {{tab}}"
+    }
   }
 }

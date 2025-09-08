@@ -1,24 +1,32 @@
 import React from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/Ionicons';
 import GText from './GText';
 import Colors from '../constants/color';
+import { BellIcon, ChevronBackIcon } from './icon';
 
 interface HeaderProps {
     title: string;
     showBackButton?: boolean;
-
+    showNotification?: boolean;
+    notificationCount?: number;
+    onNotificationPress?: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ title, showBackButton = true }) => {
+const Header: React.FC<HeaderProps> = ({ 
+    title, 
+    showBackButton = true, 
+    showNotification = false, 
+    notificationCount = 0,
+    onNotificationPress 
+}) => {
     const navigation = useNavigation();
 
     return (
         <View style={styles.container}>
             {showBackButton ? (
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                    <Icon name="chevron-back" size={24} style={styles.iconStyle} />
+                    <ChevronBackIcon size={24} color={Colors.white} />
                 </TouchableOpacity>
             ) : (
                 <View style={styles.placeholder} />
@@ -28,7 +36,24 @@ const Header: React.FC<HeaderProps> = ({ title, showBackButton = true }) => {
                 {title}
             </GText>
 
-            <View style={styles.placeholder} />
+            {showNotification ? (
+                <TouchableOpacity 
+                    onPress={onNotificationPress} 
+                    style={styles.notificationButton}
+                    activeOpacity={0.7}
+                >
+                    <BellIcon size={24} color={Colors.white} />
+                    {notificationCount > 0 && (
+                        <View style={styles.badge}>
+                            <GText type="systemBold_10" color={Colors.white} style={styles.badgeText}>
+                                {notificationCount > 99 ? '99+' : notificationCount}
+                            </GText>
+                        </View>
+                    )}
+                </TouchableOpacity>
+            ) : (
+                <View style={styles.placeholder} />
+            )}
         </View>
     );
 };
@@ -55,8 +80,25 @@ const styles = StyleSheet.create({
         width: 24,
     },
 
-    iconStyle: {
-        color: Colors.white,
+    notificationButton: {
+        padding: 4,
+        position: 'relative',
+    },
+    badge: {
+        position: 'absolute',
+        top: -2,
+        right: -2,
+        backgroundColor: Colors.red,
+        borderRadius: 10,
+        minWidth: 20,
+        height: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingHorizontal: 4,
+    },
+    badgeText: {
+        fontSize: 10,
+        fontWeight: 'bold',
     }
 });
 

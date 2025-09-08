@@ -37,6 +37,13 @@ const TextStyles: Record<string, RNTextStyle> = {
         fontWeight: 'normal',
         color: Colors.black
     },
+    systemLight_12: {
+        fontSize: 12,
+        fontFamily: 'System',
+        lineHeight: 16,
+        fontWeight: 'normal',
+        color: Colors.black
+    },
 };
 
 export default TextStyles;
