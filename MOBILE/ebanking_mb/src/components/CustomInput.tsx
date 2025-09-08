@@ -14,8 +14,8 @@ import Colors from '../constants/color';
 interface CustomInputProps extends TextInputProps {
   label?: string;
   error?: string;
-  containerStyle?: StyleProp<ViewStyle>; // fix type
-  inputStyle?: StyleProp<TextStyle>;     // fix type
+  containerStyle?: StyleProp<ViewStyle>;
+  inputStyle?: StyleProp<TextStyle>;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
 }

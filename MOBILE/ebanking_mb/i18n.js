@@ -6,7 +6,7 @@ import en from './locales/en.json';
 import vi from './locales/vi.json';
 
 const resources = {
-  en: { translation: en },  
+  en: { translation: en },
   vi: { translation: vi },
 };
 
@@ -19,6 +19,7 @@ i18n
     resources,
     lng: systemLang,
     fallbackLng: 'en',
+    compatibilityJSON: 'v3',
     interpolation: {
       escapeValue: false,
     },

@@ -12,6 +12,8 @@ import { Provider, useSelector } from 'react-redux';
 import Colors from './src/constants/color';
 
 import { store, RootState } from './src/store';
+import { DataProvider } from './src/context/DataContext';
+import { createDataService } from './src/services/APIService';
 import AuthNavigator from './src/navigation/AuthNavigator';
 import MainStack from './src/navigation/MainStack';
 import './i18n';
@@ -35,11 +37,15 @@ function AppContent() {
 }
 
 export default function App() {
+  const dataService = createDataService();
+
   return (
     <Provider store={store}>
-      <SafeAreaProvider>
-        <AppContent />
-      </SafeAreaProvider>
+      <DataProvider dataService={dataService}>
+        <SafeAreaProvider>
+          <AppContent />
+        </SafeAreaProvider>
+      </DataProvider>
     </Provider>
   );
 }

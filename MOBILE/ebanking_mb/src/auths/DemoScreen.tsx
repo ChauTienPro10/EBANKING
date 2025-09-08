@@ -10,7 +10,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import { InputIcon, ErrorIcon, HomeIcon, FavoriteIcon, SettingsIcon } from '../components/icon';
 import CustomInput from '../components/CustomInput';
 import CustomButton from '../components/CustomButton';
 import IconButton from '../components/IconButton';
@@ -54,12 +54,12 @@ const DemoScreen: React.FC = () => {
               placeholder="Test input"
               value={inputValue}
               onChangeText={setInputValue}
-              leftIcon={<Icon name="input" size={20} color="#6B7280" />}
+              leftIcon={<InputIcon size={20} color="#6B7280" />}
             />
             <CustomInput
               placeholder="Input with error"
               error="This is an error message"
-              leftIcon={<Icon name="error" size={20} color="#EF4444" />}
+              leftIcon={<ErrorIcon size={20} color="#EF4444" />}
             />
           </View>
 
@@ -100,19 +100,19 @@ const DemoScreen: React.FC = () => {
             <Text style={styles.sectionTitle}>Icon Buttons</Text>
             <View style={styles.iconRow}>
               <IconButton
-                icon={<Icon name="home" size={24} color="#FFFFFF" />}
+                icon={<HomeIcon size={24} color="#FFFFFF" />}
                 onPress={() => {}}
                 variant="primary"
                 size={48}
               />
               <IconButton
-                icon={<Icon name="favorite" size={24} color="#1E40AF" />}
+                icon={<FavoriteIcon size={24} color="#1E40AF" />}
                 onPress={() => {}}
                 variant="outline"
                 size={48}
               />
               <IconButton
-                icon={<Icon name="settings" size={24} color="#FFFFFF" />}
+                icon={<SettingsIcon size={24} color="#FFFFFF" />}
                 onPress={() => {}}
                 variant="secondary"
                 size={48}

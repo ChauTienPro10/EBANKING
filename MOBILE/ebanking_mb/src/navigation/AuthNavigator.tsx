@@ -1,5 +1,5 @@
 import React from 'react';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import SignInScreen from '../auths/SignInScreen';
 import SignUpScreen from '../auths/SignUpScreen';
 import ForgotPasswordScreen from '../auths/ForgotPasswordScreen';
@@ -10,7 +10,7 @@ export type AuthStackParamList = {
   ForgotPassword: undefined;
 };
 
-const Stack = createStackNavigator<AuthStackParamList>();
+const Stack = createNativeStackNavigator<AuthStackParamList>();
 
 const AuthNavigator: React.FC = () => {
   return (
@@ -18,8 +18,6 @@ const AuthNavigator: React.FC = () => {
       initialRouteName="SignIn"
       screenOptions={{
         headerShown: false,
-        cardStyle: { backgroundColor: 'transparent' },
-        cardOverlayEnabled: false,
       }}
     >
       <Stack.Screen name="SignIn" component={SignInScreen} />

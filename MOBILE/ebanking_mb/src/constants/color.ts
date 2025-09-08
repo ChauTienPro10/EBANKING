@@ -8,7 +8,14 @@ const Colors = {
   main_grey: '#dfe2e4c2',
   grey1: '#a3a7a1ff',
   grey2: '#d3dfdbff',
-  grey3: '#6B7280'
+  grey3: '#6B7280',
+  orange: '#FF6B35',
+  purple: '#8B5CF6',
+  yellow: '#FCD34D',
+  background: '#F8F9FA',
+  textPrimary: '#1F2937',
+  textSecondary: '#6B7280',
+  border: '#E5E7EB'
 };
 
 export default Colors;

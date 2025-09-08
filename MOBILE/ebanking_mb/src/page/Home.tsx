@@ -1,4 +1,3 @@
-// src/screens/Home.tsx
 import React, {useEffect} from 'react';
 import { View, Text } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -12,7 +11,7 @@ export default function Home() {
     if (language) {
       i18n.changeLanguage(language);
     }
-  }, [language]);
+  }, [language, i18n]);
   return (
     <View>
       <Text>{t('text_welcome')}</Text>

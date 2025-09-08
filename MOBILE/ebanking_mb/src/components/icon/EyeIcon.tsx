@@ -1,11 +1,14 @@
 import React from 'react';
-import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
+import Icon from 'react-native-vector-icons/Ionicons';
 
-type Props = {
-    size?: number;
-    color?: string;
+interface EyeIconProps {
+  size?: number;
+  color?: string;
+  [key: string]: any;
+}
+
+const EyeIcon: React.FC<EyeIconProps> = ({ size = 24, color = '#000', ...props }) => {
+  return <Icon name="eye" size={size} color={color} {...props} />;
 };
 
-export default function EyeIcon({ size = 24, color = "#000" }: Props) {
-    return <SimpleLineIcons name="eye" size={size} color={color} />;
-}
+export default EyeIcon;
