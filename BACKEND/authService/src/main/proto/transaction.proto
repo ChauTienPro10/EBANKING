@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+option java_package = "com.example.auth.protopkg";
+option java_outer_classname = "TransactionProto";
+
+message TransferRequest {
+  string senderAccountNumber = 1;
+  string receiverAccountNumber = 2;
+  string amount = 3;
+  string currency = 4;
+  string transactionType = 5;
+  string description = 6;
+}
+
+message TransferResponse {
+  int64 transactionId = 1;
+  string senderAccountNumber = 2;
+  string receiverAccountNumber = 3;
+  string amount = 4;
+  string currency = 5;
+  string transactionType = 6;
+  string description = 7;
+  string status = 8;
+  string transactionAt = 9;
+}
+
+service TransactionService {
+  rpc transfer(TransferRequest) returns (TransferResponse);
+}

@@ -31,7 +31,7 @@ public class AuthController {
     }
 
     @PostMapping(IURL.REGISTER_VERIFY_OTP_URL)
-    public ResponseEntity<RegisterResponse> registeVerifyOtp(@RequestBody RegisterVerifyOtpRequest r) {
+    public ResponseEntity<RegisterResponse> registerVerifyOtp(@RequestBody RegisterVerifyOtpRequest r) {
         RegisterResponse rs = authService.verifyOtpRegister(r.getUsername(), r.getOtpValue());
         return ResponseEntity.status(HttpStatus.OK).body(rs);
     }

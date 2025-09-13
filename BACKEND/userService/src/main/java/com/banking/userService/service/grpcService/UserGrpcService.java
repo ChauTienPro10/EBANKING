@@ -6,6 +6,7 @@ import com.banking.userService.entity.Role;
 import com.banking.userService.grpc.UserProto;
 import com.banking.userService.grpc.UserServiceGrpc;
 import com.banking.userService.service.UserService;
+import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import jakarta.annotation.PostConstruct;
 import net.devh.boot.grpc.server.service.GrpcService;
@@ -22,77 +23,99 @@ public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
 
     @PostConstruct
     public void init() {
-        System.out.println("✅ gRPC service initialized");
+        System.out.println("gRPC service initialized");
     }
 
     @Override
     public void newUserGenOtp(UserProto.NewUserRequest request, StreamObserver<UserProto.NewUserGenOtpResponse> responseObserver) {
-        Boolean otpRes = userService.genOTP(request.getUsername(), request.getPassword(), request.getCitizenId(), request.getTypeVerify());
-        UserProto.NewUserGenOtpResponse res;
-        if (otpRes) {
-            res = UserProto.NewUserGenOtpResponse.newBuilder()
-                    .setSuccess(true)
-                    .setMessage("OTP has been send to " + request.getUsername())
-                    .build();
-        } else {
-            res = UserProto.NewUserGenOtpResponse.newBuilder()
-                    .setSuccess(false)
-                    .setMessage("Can not generate OTP")
-                    .build();
+        try {
+            Boolean otpRes = userService.genOTP(request.getUsername(), request.getPassword(), request.getCitizenId(), request.getTypeVerify());
+            UserProto.NewUserGenOtpResponse res;
+            if (otpRes) {
+                res = UserProto.NewUserGenOtpResponse.newBuilder()
+                        .setSuccess(true)
+                        .setMessage("OTP has been send to " + request.getUsername())
+                        .build();
+            } else {
+                res = UserProto.NewUserGenOtpResponse.newBuilder()
+                        .setSuccess(false)
+                        .setMessage("Can not generate OTP")
+                        .build();
+            }
+            responseObserver.onNext(res);
+            responseObserver.onCompleted();
+        } catch (Exception e) {
+            responseObserver.onError(
+                    Status.UNAUTHENTICATED
+                            .withDescription(e.getMessage())
+                            .asRuntimeException()
+            );
         }
-
-//        Set<String> roleNames = newUser.getRoles().stream()
-//                .map(Role::getName)
-//                .collect(Collectors.toSet());
-//        UserProto.User userProto = UserProto.User.newBuilder()
-//                .setId(newUser.getId())
-//                .setCitizenId(newUser.getCitizenId())
-//                .addAllRoles(roleNames)
-//                .setCreateAt(newUser.getCreateAt().toString())
-//                .setUsername(newUser.getUsername())
-//                .build();
-//
-//        var response = UserProto.NewUserResponse.newBuilder()
-//                .setUser(userProto)
-//                .build();
-
-        responseObserver.onNext(res);
-        responseObserver.onCompleted();
     }
 
     @Override
     public void verifyOtpRegister(UserProto.verifyOtpRegisterRequest request, StreamObserver<UserProto.NewUserResponse> responseObserver) {
+        try {
+            UserResponse newUser = userService.registerVerifyOtp(request.getUsername(), request.getOtpValue());
+            Set<String> roleNames = newUser.getRoles().stream()
+                    .map(Role::getName)
+                    .collect(Collectors.toSet());
+            UserProto.User userProto = UserProto.User.newBuilder()
+                    .setId(newUser.getId())
+                    .setCitizenId(newUser.getCitizenId())
+                    .addAllRoles(roleNames)
+                    .setCreateAt(newUser.getCreateAt().toString())
+                    .setUsername(newUser.getUsername())
+                    .build();
 
-        UserResponse newUser = userService.registerVerifyOtp(request.getUsername(), request.getOtpValue());
-        Set<String> roleNames = newUser.getRoles().stream()
-                .map(Role::getName)
-                .collect(Collectors.toSet());
-        UserProto.User userProto = UserProto.User.newBuilder()
-                .setId(newUser.getId())
-                .setCitizenId(newUser.getCitizenId())
-                .addAllRoles(roleNames)
-                .setCreateAt(newUser.getCreateAt().toString())
-                .setUsername(newUser.getUsername())
-                .build();
+            var response = UserProto.NewUserResponse.newBuilder()
+                    .setUser(userProto)
+                    .build();
 
-        var response = UserProto.NewUserResponse.newBuilder()
-                .setUser(userProto)
-                .build();
-
-        responseObserver.onNext(response);
-        responseObserver.onCompleted();
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+        } catch (Exception e) {
+            responseObserver.onError(
+                    Status.UNAUTHENTICATED
+                            .withDescription(e.getMessage())
+                            .asRuntimeException()
+            );
+        }
     }
 
     @Override
     public void login (UserProto.LoginRequest rq, StreamObserver<UserProto.LoginResponse> responseObserver) {
-        UserProto.LoginResponse loginResponse = userService.login(rq);
-        responseObserver.onNext(loginResponse);
-        responseObserver.onCompleted();
+        try {
+            UserProto.LoginResponse loginResponse = userService.login(rq);
+            responseObserver.onNext(loginResponse);
+            responseObserver.onCompleted();
+        } catch (Exception e) {
+            responseObserver.onError(
+                    Status.UNAUTHENTICATED
+                            .withDescription(e.getMessage())
+                            .asRuntimeException()
+            );
+        }
+
     }
     @Override
     public void checkUserExist(UserProto.CheckUserExistRequest request, StreamObserver<UserProto.CheckUserExistResponse> responseObserver) {
         UserProto.CheckUserExistResponse rs= userService.checkUserExist(request);
         responseObserver.onNext(rs);
         responseObserver.onCompleted();
+    }
+
+    public void getUserById(UserProto.GetUserRequestById rq, StreamObserver<UserProto.UserResponse> responseObserver) {
+        try {
+            UserProto.UserResponse rs = userService.getUserById(rq.getUserId());
+            responseObserver.onNext(rs);
+            responseObserver.onCompleted();
+        } catch (Exception e) {
+            responseObserver.onError(
+                    Status.UNAUTHENTICATED
+                            .withDescription(e.getMessage())
+                            .asRuntimeException()
+            );
+        }
     }
 }

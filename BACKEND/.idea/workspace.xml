@@ -5,25 +5,55 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c9d3feb1-1ff3-4faa-881a-4e43b0a55be0" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/dto/request/RegisterVerifyOtpRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/dto/response/CreateUserOtpResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/emailService/src/main/java/com/ebanking/emailService/dto/OtpRegister.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/config/RedisConfig.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/dto/OtpRegister.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/utils/OtpUtils.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/controller/AccountTransactionController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/controller/GlobalExceptionHandler.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/controller/TransactionController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/dto/request/NewAccountRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/dto/request/TransferRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/dto/response/NewAccountResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/dto/response/TransferResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/mapper/AccountTransactionMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/mapper/TransactionMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/services/AccountTransactionService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/services/AuthenticationService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/services/TransactionService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authService/src/main/proto/account.proto" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authService/src/main/proto/transaction.proto" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/entity/Account.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/entity/Transaction.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/enums/AccountType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/enums/Currency.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/enums/KafkaTopic.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/enums/Status.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/enums/TransactionStatus.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/enums/TransactionType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/exception/TransactionException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/kafkaConsumer/TransactionConsumer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/mappers/AccountMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/mappers/TransactionMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/repository/AccountRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/repository/TransactionRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/service/AccountService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/service/TransactionService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/service/grpc/AccountGrpcService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/service/grpc/TransactionGrpcService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/transactionService/src/main/proto/account.proto" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/transactionService/src/main/proto/transaction.proto" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/enums/KafkaTopic.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/enums/UserRole.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/enums/VerifyType.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/consts/IURL.java" beforeDir="false" afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/consts/IURL.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/consts/PermitPath.java" beforeDir="false" afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/consts/PermitPath.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/consts/grpcPath.java" beforeDir="false" afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/consts/grpcPath.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/controller/AuthController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/services/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/services/AuthService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authService/src/main/proto/user.proto" beforeDir="false" afterPath="$PROJECT_DIR$/authService/src/main/proto/user.proto" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/emailService/src/main/java/com/ebanking/emailService/kafkaConsumer/EmailConsumer.java" beforeDir="false" afterPath="$PROJECT_DIR$/emailService/src/main/java/com/ebanking/emailService/kafkaConsumer/EmailConsumer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/emailService/src/main/java/com/ebanking/emailService/service/EmailService.java" beforeDir="false" afterPath="$PROJECT_DIR$/emailService/src/main/java/com/ebanking/emailService/service/EmailService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/emailService/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/emailService/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/userService/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/userService/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/mapper/UserMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/mapper/UserMapper.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/service/UserService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/service/grpcService/UserGrpcService.java" beforeDir="false" afterPath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/service/grpcService/UserGrpcService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/userService/src/main/proto/user.proto" beforeDir="false" afterPath="$PROJECT_DIR$/userService/src/main/proto/user.proto" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/userService/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/userService/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -35,7 +65,9 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Interface" />
+        <option value="Exception" />
         <option value="Class" />
+        <option value="Enum" />
       </list>
     </option>
   </component>
@@ -65,6 +97,7 @@
     "Application.AuthApplication.executor": "Run",
     "Application.EmailServiceApplication.executor": "Run",
     "Application.GatewayApplication.executor": "Run",
+    "Application.TransactionServiceApplication.executor": "Run",
     "Application.UserServiceApplication.executor": "Run",
     "Application.UserServicesApplication.executor": "Run",
     "Application.com.example.auth.AuthApplication.executor": "Run",
@@ -77,6 +110,7 @@
     "Maven.gateway [clean].executor": "Run",
     "Maven.gateway [compile].executor": "Run",
     "Maven.gateway [install].executor": "Run",
+    "Maven.transactionService [compile].executor": "Run",
     "Maven.userService [clean].executor": "Run",
     "Maven.userService [compile].executor": "Run",
     "Maven.userService [install].executor": "Run",
@@ -92,7 +126,8 @@
     "last_opened_file_path": "C:/Users/chaud/OneDrive/Desktop/DATN/BACKEND",
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2"
+    "project.structure.side.proportion": "0.2",
+    "run.code.analysis.last.selected.profile": "pProject Default"
   }
 }]]></component>
   <component name="RecentsManager">
@@ -106,7 +141,7 @@
       <recent name="com.banking.userService.config" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.UserServiceApplication">
+  <component name="RunManager" selected="Application.TransactionServiceApplication">
     <configuration name="AuthApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.example.auth.AuthApplication" />
       <module name="auth" />
@@ -133,12 +168,25 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="TransactionServiceApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.ebanking.transactionService.TransactionServiceApplication" />
+      <module name="transactionService" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.ebanking.transactionService.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="UserServiceApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.banking.userService.UserServiceApplication" />
       <module name="userService" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="com.banking.userService.*" />
+          <option name="PATTERN" value="com.ebanking.transactionService.enums.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -148,8 +196,9 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.UserServiceApplication" />
+        <item itemvalue="Application.TransactionServiceApplication" />
         <item itemvalue="Application.AuthApplication" />
+        <item itemvalue="Application.UserServiceApplication" />
         <item itemvalue="Application.EmailServiceApplication" />
       </list>
     </recent_temporary>
@@ -168,14 +217,29 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/userService/src/main/java/com/banking/userService/service/grpcService/UserGrpcService.java</url>
-          <line>95</line>
-          <option name="timeStamp" value="70" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/authService/src/main/java/com/example/auth/filter/JwtAuthenticationFilter.java</url>
           <line>61</line>
           <option name="timeStamp" value="73" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/userService/src/main/java/com/banking/userService/service/grpcService/UserGrpcService.java</url>
+          <line>109</line>
+          <option name="timeStamp" value="77" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/userService/src/main/java/com/banking/userService/service/UserService.java</url>
+          <line>170</line>
+          <option name="timeStamp" value="79" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/userService/src/main/java/com/banking/userService/mapper/UserMapper.java</url>
+          <line>59</line>
+          <option name="timeStamp" value="80" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/userService/src/main/java/com/banking/userService/service/grpcService/UserGrpcService.java</url>
+          <line>110</line>
+          <option name="timeStamp" value="81" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

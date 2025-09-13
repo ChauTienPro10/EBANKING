@@ -77,4 +77,11 @@ public class AuthService {
         UserProto.CheckUserExistResponse  rs = userStub.checkUserExist(request);
         return rs.getIsExist();
     }
+
+    public UserProto.UserResponse getUserById(Long id) {
+        UserProto.GetUserRequestById rq = UserProto.GetUserRequestById.newBuilder()
+                .setUserId(id)
+                .build();
+        return userStub.getUserById(rq);
+    }
 }

@@ -9,6 +9,7 @@ import com.banking.userService.utils.DateTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
@@ -42,7 +43,7 @@ public class UserMapper {
                 .collect(Collectors.toSet());
 
         return UserProto.User.newBuilder()
-                .setId(Optional.ofNullable(userInfo.getId()).orElse(0L))
+                .setId(Optional.ofNullable(user.getId()).orElse(0L))
                 .addAllRoles(roleNames)
                 .setCreateAt(Optional.of(DateTimeUtils.toDateFormated(userInfo.getCreateAt())).orElse(""))
                 .setUsername(Optional.ofNullable(user.getUsername()).orElse(""))
@@ -53,5 +54,41 @@ public class UserMapper {
                 .setIsMale(Optional.ofNullable(userInfo.getIsMale()).orElse(false))
                 .build();
     }
+
+
+    public UserProto.UserResponse UsertoProtoUserResponse(User user) {
+        UserInfo info = user.getUserInfo();
+
+        String createAtStr = user.getCreateAt() != null
+                ? Instant.ofEpochMilli(user.getCreateAt()).toString()
+                : "";
+        String birthdayStr = (info != null && info.getBirthday() != null)
+                ? Instant.ofEpochMilli(info.getBirthday()).toString()
+                : "";
+
+        UserProto.User protoUser = UserProto.User.newBuilder()
+                .setId(user.getId() != null ? user.getId() : 0L)
+                .setUsername(user.getUsername() != null ? user.getUsername() : "")
+                .setFullName(info != null && info.getFullName() != null ? info.getFullName() : "")
+                .setAddress(info != null && info.getAddress() != null ? info.getAddress() : "")
+                .setCitizenId(info != null && info.getCitizenId() != null ? info.getCitizenId() : "")
+                .setBirthday(birthdayStr)
+                .setIsMale(info != null && info.getIsMale() != null ? info.getIsMale() : false)
+                .setCreateAt(createAtStr)
+                .addAllRoles(
+                        user.getRoles() != null
+                                ? user.getRoles().stream()
+                                .map(Role::getName)
+                                .collect(Collectors.toList())
+                                : java.util.Collections.emptyList()
+                )
+                .build();
+
+        return UserProto.UserResponse.newBuilder()
+                .setUser(protoUser)
+                .build();
+    }
+
+
 
 }

@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+option java_package = "com.ebanking.transactionService.grpc";
+option java_outer_classname = "AccountProto";
+
+message NewAccountRequest {
+  string accountNumber = 1;
+  string accountType = 2;
+  int64 userId = 3;
+}
+
+message NewAccountResponse {
+  int64 accountId = 1;
+  string accountNumber = 2;
+  string accountType = 3;
+  string balance = 4;
+  string currency = 5;
+  string status = 6;
+  string openedDate = 7;
+  string createdAt = 8;
+}
+
+
+service AccountService {
+  rpc newAccount(NewAccountRequest) returns (NewAccountResponse);
+}
