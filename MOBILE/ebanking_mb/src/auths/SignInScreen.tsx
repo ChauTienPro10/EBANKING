@@ -16,11 +16,14 @@ import UserIcon from "../components/icon/UserIcon";
 import EyeIcon from "../components/icon/EyeIcon";
 import EyeOffIcon from "../components/icon/EyeOffIcon";
 import Header from "../components/Header";
+import api from "../../src/utils/fetch.ts"
 
 import { useTranslation } from 'react-i18next';
 import Colors from "../constants/color";
 import GText from "../components/GText";
-
+import { API } from "../constants/api";
+import { useDispatch } from 'react-redux';  
+import { setLoginStatus, setLoginResponse  } from "../store/slices/appSlice.ts";
 type AuthStackParamList = {
   SignIn: undefined;
   SignUp: undefined;
@@ -30,6 +33,7 @@ type AuthStackParamList = {
 type SignInScreenNavigationProp = StackNavigationProp<AuthStackParamList, "SignIn">;
 
 const SignInScreen: React.FC = () => {
+  const dispatch = useDispatch();
   const { t } = useTranslation();
 
   const navigation = useNavigation<SignInScreenNavigationProp>();
@@ -39,6 +43,19 @@ const SignInScreen: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSignIn = async () => {
+    const url = API.LOGIN;
+    const payload = {
+      username: email,
+      password: password  
+    }
+
+    try {
+      const response = await api.post(url, payload, false)
+      dispatch(setLoginResponse(response));
+      dispatch(setLoginStatus(true));
+    } catch(error) {
+      console.error('Login failed:', error);
+    }
 
   };
 

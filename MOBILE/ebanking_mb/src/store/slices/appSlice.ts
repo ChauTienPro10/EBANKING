@@ -1,10 +1,17 @@
 // src/store/slices/appSlice.js
 import { createSlice } from '@reduxjs/toolkit';
 
-const initialState = {
+
+interface AppState {
+  language: string;
+  isLoggedIn: boolean;
+  loginResponse: LoginResponse | null;
+}
+
+const initialState: AppState = {
   language: 'vi',
-  isLoggedIn: true,
-  user: null,
+  isLoggedIn: false,
+  loginResponse: null,
 };
 
 const appSlice = createSlice({
@@ -17,11 +24,11 @@ const appSlice = createSlice({
     setLoginStatus: (state, action) => {
       state.isLoggedIn = action.payload;
     },
-    setUser: (state, action) => {
-      state.user = action.payload;
+    setLoginResponse: (state, action) => {
+      state.loginResponse = action.payload;
     },
   },
 });
 
-export const { setLanguage, setLoginStatus, setUser } = appSlice.actions;
+export const { setLanguage, setLoginStatus, setLoginResponse } = appSlice.actions;
 export default appSlice.reducer;
