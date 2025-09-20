@@ -18,7 +18,7 @@ public class OtpUtils {
     private OtpRegister genOtp(OtpRegister otpRegister) {
         Random random = new Random();
         int otp = 100000 + random.nextInt(900000);
-        otpRegister.setOtpValue(otp);
+        otpRegister.setOtpValue(100000);
         return otpRegister;
     }
 

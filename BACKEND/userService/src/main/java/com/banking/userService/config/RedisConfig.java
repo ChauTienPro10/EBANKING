@@ -43,11 +43,10 @@ public class RedisConfig {
     public RedisTemplate<String, OtpRegister> redisTemplateOtpRegister(RedisConnectionFactory connectionFactory) {
         RedisTemplate<String, OtpRegister> template = new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory);
-
         template.setKeySerializer(new StringRedisSerializer());
-
         template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
-
+        template.afterPropertiesSet();
         return template;
     }
+
 }
