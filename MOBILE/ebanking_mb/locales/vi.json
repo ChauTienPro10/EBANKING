@@ -146,6 +146,9 @@
   },
   "sign_in": {
     "text_login": "Đăng nhập",
+    "raw_password": "Nhập lại mật khẩu",
+    "otp_was_send": "Mã OTP đã được gửi đến",
+    "text_cccd": "Căn cước công dân",
     "text_forgot_password": "Quên mật khẩu?",
     "text_fingerint_login": "Đăng nhập bằng vân tay",
     "text_password": "Mật khẩu",

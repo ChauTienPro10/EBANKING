@@ -145,8 +145,11 @@
     "account": "Account"
   },
   "sign_in": {
+    "text_cccd": "Citizen ID",
     "text_login": "Sign In",
     "text_forgot_password": "Forgot Password?",
+    "otp_was_send": "OTP has been send to ",
+    "raw_password": "Enter password  again",
     "text_fingerint_login": "Sign in with fingerprint",
     "text_password": "Password",
     "text_email": "Email",

@@ -55,7 +55,6 @@ async function get(url: string, params: any = {}, authRequire: boolean = false) 
     }
   }
 
-  // Convert params object to query string
   const query = new URLSearchParams(params).toString();
   const fullUrl = query ? `${url}?${query}` : url;
 

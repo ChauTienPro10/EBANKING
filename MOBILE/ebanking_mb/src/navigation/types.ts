@@ -21,4 +21,5 @@ export type RootStackParamList = {
     Support: undefined;
     Notifications: undefined;
     Search: undefined;
+    OTPPage: { username: string, targetPage: string };
 };

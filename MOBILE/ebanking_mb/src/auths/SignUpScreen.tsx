@@ -22,33 +22,104 @@ import Colors from '../constants/color';
 import GText from '../components/GText';
 import Checkbox from '../components/CheckBox';
 import MailIcon from '../components/icon/MailIcon';
+import fetch from '../utils/fetch';
+import Toast from 'react-native-toast-message';
+import ToastService from '../components/ToastService';
+import { API } from '../constants/api';
+import { RootStackParamList } from '../navigation/types';
 
-type AuthStackParamList = {
-  SignIn: undefined;
-  SignUp: undefined;
-  ForgotPassword: undefined;
-};
-
-type SignUpScreenNavigationProp = StackNavigationProp<AuthStackParamList, 'SignUp'>;
+type SignUpScreenNavigationProp = StackNavigationProp<RootStackParamList, 'SignUp'>;
 
 const SignUpScreen: React.FC = () => {
   const { t } = useTranslation();
 
   const navigation = useNavigation<SignUpScreenNavigationProp>();
-  const [name, setName] = useState('');
+  const [citizenId, setCitizenId] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
+  const [typeVerify, setTypeVerify] = useState('email');
+  const [rawPassword, setRawPassword] = useState('');
 
-  const handleSignUp = () => {
+  const handleSignUp = async () => {
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 2000);
+    await setTypeVerify(detectInputType(email));
+    if (typeVerify === 'unknown') return 'Số điện thoại hoặc email không đúng';
+    if (!isValidCCCD(citizenId)) return 'Căn cước công dân không hợp lệ';
+
+    const payload = {
+      username: email,
+      password: password,
+      citizenId: citizenId,
+      typeVerify: typeVerify
+    }
+    const handlePostRequest = async () => {
+      try {
+        const data = await fetch.post(API.REGISTER, payload, false);
+        console.log(data);
+      } catch (error) {
+        ToastService.error('Login failed:', (error as Error).message || String(error));
+        return;
+      }
+
+    };
+    await handlePostRequest()
+    return "OK"
   };
 
-  const isFormValid = name.length > 0 && email.length > 0 && password.length > 0 && acceptTerms;
+  const doSignup = async () => {
+    const preHandMess = await handleSignUp();
+    if (preHandMess == 'OK') {
+      ToastService.success('Thông báo', 'OTP đã được gửi đến ' + email);
+      navigation.navigate("OTPPage", {username: "email@gmail.com", targetPage: "SignIn"})
+    }
+    else {
+      ToastService.info("Đăng ký thất bại", preHandMess);
+    }
+    setIsLoading(false);
+  }
+
+  const detectInputType = (input: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^0\d{9}$/;
+
+    if (emailRegex.test(input)) {
+      return "email";
+    } else if (phoneRegex.test(input)) {
+      return "phone";
+    } else {
+      return "unknown";
+    }
+  };
+
+  const isValidCCCD = (cccd: string) => {
+    const cccdRegex = /^\d{12}$/;
+
+    // Kiểm tra đúng 12 chữ số
+    if (!cccdRegex.test(cccd)) {
+      return false;
+    }
+
+    // Kiểm tra mã tỉnh (000 - 999) — bạn có thể tùy chọn kiểm tra sâu hơn
+    const provinceCode = parseInt(cccd.slice(0, 3), 10);
+    if (provinceCode < 1 || provinceCode > 999) {
+      return false;
+    }
+
+    // Kiểm tra giới tính và thế kỷ (1 chữ số thứ 4)
+    const genderCenturyDigit = parseInt(cccd[3], 10);
+    if (genderCenturyDigit < 0 || genderCenturyDigit > 9) {
+      return false;
+    }
+
+    // Nếu cần, bạn có thể kiểm tra thêm logic ngày tháng sinh, mã số cá nhân,…
+
+    return true;
+  };
+
+
+  const isFormValid = citizenId.length > 0 && email.length > 0 && password.length > 0 && acceptTerms && password === rawPassword;
 
   return (
     <BackgroundDecoration>
@@ -72,9 +143,9 @@ const SignUpScreen: React.FC = () => {
               </View>
               <View style={styles.form}>
                 <CustomInput
-                  placeholder={t('sign_in.text_fullname')}
-                  value={name}
-                  onChangeText={setName}
+                  placeholder={t('sign_in.text_cccd')}
+                  value={citizenId}
+                  onChangeText={setCitizenId}
                   autoCapitalize="words"
                   leftIcon={<UserIcon size={20} color="#6B7280" />}
                 />
@@ -100,6 +171,16 @@ const SignUpScreen: React.FC = () => {
                 />
                 <View style={{ height: 10 }}> </View>
 
+                <CustomInput
+                  placeholder={t('sign_in.raw_password')}
+                  value={rawPassword}
+                  onChangeText={setRawPassword}
+                  secureTextEntry
+                  autoCapitalize="none"
+                  leftIcon={<LockIcon size={20} color="#6B7280" />}
+                />
+                <View style={{ height: 10 }}> </View>
+
                 {/* Terms and Conditions Checkbox */}
                 <View
                   style={styles.termsCheckboxContainer}
@@ -116,7 +197,7 @@ const SignUpScreen: React.FC = () => {
 
                 <CustomButton
                   title={t('sign_in.text_sign_up')}
-                  onPress={handleSignUp}
+                  onPress={doSignup}
                   loading={isLoading}
                   disabled={!isFormValid}
                   containerStyle={styles.signUpButton}

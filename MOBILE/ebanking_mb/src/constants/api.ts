@@ -1,8 +1,12 @@
 import { API_URL } from '@env';
 
-const BASE_URL = `${API_URL}/authService`;
+const BASE_URL = 'http://192.168.1.3:8000';
+
+const AUTH_SERVICE = 'http://192.168.1.3:8000/authService';
+
 
 export const API = {
-  LOGIN: `http://10.0.5.154:8000/authService/auth/login`,
-  REGISTER: `${BASE_URL}/auth/register`,
+  LOGIN: `${AUTH_SERVICE}/auth/login`,
+  REGISTER: `${AUTH_SERVICE}/auth/register`,
+  REGISTER_VERIFY_OTP: `${AUTH_SERVICE}/auth/register-verify-otp`,
 };

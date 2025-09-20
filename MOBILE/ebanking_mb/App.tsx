@@ -17,22 +17,27 @@ import { createDataService } from './src/services/APIService';
 import AuthNavigator from './src/navigation/AuthNavigator';
 import MainStack from './src/navigation/MainStack';
 import './i18n';
+import Toast from 'react-native-toast-message';
 
 function AppContent() {
   const isDarkMode = useColorScheme() === 'dark';
   const isLoggedIn = useSelector((state: RootState) => state.app.isLoggedIn);
 
   return (
-    <View style={styles.container}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        translucent
-        backgroundColor="transparent"
-      />
-      <NavigationContainer>
-        {isLoggedIn ? <MainStack /> : <AuthNavigator />}
-      </NavigationContainer>
-    </View>
+    <>
+      <View style={styles.container}>
+        <StatusBar
+          barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+          translucent
+          backgroundColor="transparent"
+        />
+        <NavigationContainer>
+          {isLoggedIn ? <MainStack /> : <AuthNavigator />}
+        </NavigationContainer>
+      </View>
+
+      <Toast /> {/* ✅ Di chuyển Toast ra ngoài View */}
+    </>
   );
 }
 
