@@ -24,4 +24,17 @@ public class TransactionMapper {
                 .build();
     }
 
+    public TransactionProto.TransferResponse toTransferResponse(Transaction transaction) {
+        return TransactionProto.TransferResponse.newBuilder()
+                .setTransactionId(transaction.getTransactionId())
+                .setSenderAccountNumber(transaction.getSenderAccountNumber())
+                .setReceiverAccountNumber(transaction.getReceiverAccountNumber())
+                .setAmount(transaction.getAmount().toPlainString()) // BigDecimal -> String
+                .setCurrency(transaction.getCurrency())
+                .setTransactionType(transaction.getTransactionType())
+                .setStatus(transaction.getStatus())
+                .setDescription(transaction.getDescription() != null ? transaction.getDescription() : "")
+                .setTransactionAt(transaction.getTransactionAt() != null ? transaction.getTransactionAt().toString() : "")
+                .build();
+    }
 }

@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+option java_package = "com.ebanking.firebaseService.grpc";
+option java_outer_classname = "FcmProto";
+
+
+service UserService {
+
+}

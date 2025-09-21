@@ -77,6 +77,8 @@ public class UserService {
         if (VerifyType.PHONE.getName().equals(typeVerify)) {
             return null;
         }
+
+        if (!isStrongPassword(pass)) throw new RuntimeException("Password not strong!");
         if (emailNonValid(username)) throw new RuntimeException("Email is existed or not valid!");
 
         if (userInfoRepository.existsByCitizenId(citizenId)) throw new RuntimeException("Citizen ID is existed!");
@@ -91,6 +93,35 @@ public class UserService {
         kafkaTemplate.send(KafkaTopic.SEND_OTP.getTopicName(), otpRegister);
         return true;
     }
+
+    public boolean isStrongPassword(String password) {
+        if (password.length() < 8) {
+            return false;
+        }
+
+        String upperCaseChars = "(.*[A-Z].*)";
+        if (!password.matches(upperCaseChars)) {
+            return false;
+        }
+
+        String lowerCaseChars = "(.*[a-z].*)";
+        if (!password.matches(lowerCaseChars)) {
+            return false;
+        }
+
+        String numbers = "(.*[0-9].*)";
+        if (!password.matches(numbers)) {
+            return false;
+        }
+
+        String specialChars = "(.*[!@#$%^&*()\\-+=<>?{}\\[\\]~].*)";
+        if (!password.matches(specialChars)) {
+            return false;
+        }
+
+        return true;
+    }
+
 
     public UserResponse registerVerifyOtp(String username,
                                    String otpValue) {

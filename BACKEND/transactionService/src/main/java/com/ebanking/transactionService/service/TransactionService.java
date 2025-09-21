@@ -1,4 +1,5 @@
 package com.ebanking.transactionService.service;
+import com.ebanking.transactionService.entity.Account;
 import com.ebanking.transactionService.entity.Transaction;
 import com.ebanking.transactionService.enums.KafkaTopic;
 import com.ebanking.transactionService.enums.TransactionStatus;
@@ -11,6 +12,7 @@ import com.ebanking.transactionService.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import com.ebanking.transactionService.exception.TransactionException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -37,20 +39,7 @@ public class TransactionService {
 
     @Transactional
     public TransactionProto.TransferResponse transfer(TransactionProto.TransferRequest data) {
-//        Account sender = accountRepository.findByAccountNumber(data.getSenderAccountNumber());
-//        Account receiver = accountRepository.findByAccountNumber(data.getReceiverAccountNumber());
-//        if (sender == null || receiver == null) {
-//            throw new TransactionException("Thông tin không hợp lệ");
-//        }
-//        BigDecimal amount = new BigDecimal(data.getAmount());
-//        if (sender.getBalance().compareTo(amount) < 0) {
-//            throw new TransactionException("Số dư không đủ");
-//        }
-//        sender.setBalance(sender.getBalance().subtract(amount));
-//        receiver.setBalance(receiver.getBalance().add(amount));
-//
-//        accountRepository.save(sender);
-//        accountRepository.save(receiver);
+
         BigDecimal amount = new BigDecimal(data.getAmount());
         Transaction transaction =
         transactionRepository.save(Transaction.builder()
@@ -65,5 +54,27 @@ public class TransactionService {
                 .build());
         kafkaTemplate.send(KafkaTopic.TRANSACTION.getTopicName(), transaction);
         return transactionMapper.toTransferRequestProto(transaction);
+    }
+
+    @Transactional
+    public TransactionProto.TransferResponse processTransfer(Transaction transaction) throws TransactionException {
+        Account sender = accountRepository.findByAccountNumber(transaction.getSenderAccountNumber());
+        Account receiver = accountRepository.findByAccountNumber(transaction.getReceiverAccountNumber());
+        if (sender == null || receiver == null) {
+            transaction.setStatus(TransactionStatus.FAILED.name());
+            throw new TransactionException("Thông tin không hợp lệ");
+        }
+        BigDecimal amount = new BigDecimal(String.valueOf(transaction.getAmount()));
+        if (sender.getBalance().compareTo(amount) < 0) {
+            transaction.setStatus(TransactionStatus.FAILED.name());
+            throw new TransactionException("Số dư không đủ");
+        }
+        sender.setBalance(sender.getBalance().subtract(amount));
+        receiver.setBalance(receiver.getBalance().add(amount));
+
+        accountRepository.save(sender);
+        accountRepository.save(receiver);
+        transaction.setStatus(TransactionStatus.SUCCESS.name());
+        return transactionMapper.toTransferResponse(transactionRepository.save(transaction));
     }
 }
