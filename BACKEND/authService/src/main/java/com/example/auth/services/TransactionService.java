@@ -12,6 +12,8 @@ import io.grpc.ManagedChannelBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class TransactionService {
 
@@ -34,7 +36,12 @@ public class TransactionService {
         return transactionMapper.toTranserResponseDto(rs);
     }
 
-    public TransactionProto.TransactionList getHisTrans(TransactionProto.TransHistoryRequest request) {
-        return transactionServiceBlockingStub.history(request);
+    public List<TransferResponse> getHisTrans(TransactionProto.TransHistoryRequest request) {
+        TransactionProto.TransactionList protobufList = transactionServiceBlockingStub.history(request);
+
+        return protobufList.getTransactionsList()
+                .stream()
+                .map(transactionMapper::toTranserResponseDto)
+                .toList();
     }
 }

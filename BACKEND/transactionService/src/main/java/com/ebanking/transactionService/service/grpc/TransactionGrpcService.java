@@ -36,13 +36,13 @@ public class TransactionGrpcService extends TransactionServiceGrpc.TransactionSe
     @Override
     public void history(TransactionProto.TransHistoryRequest request, StreamObserver<TransactionProto.TransactionList> responseObserver) {
         try {
-            LocalDateTime fromDate = LocalDateTime.parse(request.getFromDate());
-            LocalDateTime toDate = LocalDateTime.parse(request.getToDate());
+            LocalDateTime fromDate = LocalDateTime.parse(request.getFromDate() + "T00:00:00");
+            LocalDateTime toDate = LocalDateTime.parse(request.getToDate() + "T23:59:59");
             Page<Transaction> page = transactionService.getTransactionHistory(request.getUsername(),
                     request.getSender(),
                     fromDate,
                     toDate,
-                    request.getPage(),
+                    request.getPage() - 1,
                     request.getLimit());
             List<Transaction> transactions = page.getContent();
             TransactionProto.TransactionList.Builder listBuilder = TransactionProto.TransactionList.newBuilder();
@@ -60,6 +60,7 @@ public class TransactionGrpcService extends TransactionServiceGrpc.TransactionSe
 
                 listBuilder.addTransactions(protoTx);
             }
+            responseObserver.onNext(listBuilder.build());
             responseObserver.onCompleted();
         } catch (Exception e) {
             responseObserver.onError(

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -32,7 +33,7 @@ public class TransactionController {
     }
 
     @GetMapping(IURL.TRANS_HISTOTY)
-    public ResponseEntity<TransactionProto.TransactionList> getHisTransaction(
+    public ResponseEntity<List<TransferResponse>> getHisTransaction(
             @RequestParam("username") String username,
             @RequestParam(value = "sender") String sender,
             @RequestParam(value = "page", defaultValue = "1") int page,
@@ -41,8 +42,8 @@ public class TransactionController {
             @RequestParam(value = "toDate", defaultValue = "") String toDate) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate today = LocalDate.now();
-        if (fromDate.isEmpty()) {
-            fromDate = today.format(formatter);
+        if (fromDate == null || fromDate.isEmpty()) {
+            fromDate = today.minusDays(10).format(formatter);
         }
 
         if (toDate.isEmpty()) {
