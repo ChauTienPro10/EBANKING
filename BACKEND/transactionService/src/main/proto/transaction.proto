@@ -11,6 +11,16 @@ message TransferRequest {
     string currency = 4;
     string transactionType = 5;
     string description = 6;
+    string username = 7;
+}
+
+message TransHistoryRequest {
+  int32 page = 1;
+  int32 limit = 2;
+  string username = 3;
+  string sender = 4;
+  string fromDate = 5;
+  string toDate = 6;
 }
 
 message TransferResponse {
@@ -24,7 +34,11 @@ message TransferResponse {
   string status = 8;
   string transactionAt = 9;
 }
+message TransactionList {
+  repeated TransferResponse transactions = 1;
+}
 
 service TransactionService {
   rpc transfer(TransferRequest) returns (TransferResponse);
+  rpc history(TransHistoryRequest) returns(TransactionList);
 }

@@ -23,6 +23,7 @@ public class TransactionMapper {
                 .setDescription(
                         request.getDescription() != null ? request.getDescription() : ""
                 )
+                .setUsername(request.getUsername())
                 .build();
     }
 

@@ -20,6 +20,9 @@ public class Transaction {
     private Long transactionId;
 
     @Column(nullable = false)
+    String username;
+
+    @Column(nullable = false)
     private String senderAccountNumber;
 
     @Column(nullable = false)

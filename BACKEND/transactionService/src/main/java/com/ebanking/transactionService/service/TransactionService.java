@@ -10,6 +10,10 @@ import com.ebanking.transactionService.mappers.TransactionMapper;
 import com.ebanking.transactionService.repository.AccountRepository;
 import com.ebanking.transactionService.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import com.ebanking.transactionService.exception.TransactionException;
@@ -17,6 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class TransactionService {
@@ -51,6 +57,7 @@ public class TransactionService {
                 .status(TransactionStatus.PENDING.name())
                 .description(data.getDescription())
                 .transactionAt(LocalDateTime.now())
+                .username(data.getUsername())
                 .build());
         kafkaTemplate.send(KafkaTopic.TRANSACTION.getTopicName(), transaction);
         return transactionMapper.toTransferRequestProto(transaction);
@@ -76,5 +83,23 @@ public class TransactionService {
         accountRepository.save(receiver);
         transaction.setStatus(TransactionStatus.SUCCESS.name());
         return transactionMapper.toTransferResponse(transactionRepository.save(transaction));
+    }
+
+    public Page<Transaction> getTransactionHistory(String username,
+                                                   String sender,
+                                                   LocalDateTime fromDate,
+                                                   LocalDateTime toDate,
+                                                   int page,
+                                                   int size) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("transactionAt").descending());
+
+        return transactionRepository.findByUsernameAndSenderAndDateRange(
+                username,
+                sender,
+                fromDate,
+                toDate,
+                pageable
+        );
     }
 }

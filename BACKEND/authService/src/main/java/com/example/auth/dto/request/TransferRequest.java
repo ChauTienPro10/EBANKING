@@ -8,6 +8,7 @@ import lombok.Setter;
 @Setter
 @Builder
 public class TransferRequest {
+    String username;
     String senderAccountNumber;
     String receiverAccountNumber;
     Long amount;

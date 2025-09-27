@@ -12,4 +12,5 @@ public interface IURL {
     String OPEN_ACC_TRANS = "/new";
     String TRANSACTION = HOST_PREFIX + "/transaction";
     String TRANSFER = "/transfer";
+    String TRANS_HISTOTY = "/history";
 }

@@ -17,5 +17,6 @@ public class TransactionConsumer {
     @KafkaListener(topics = KafkaTopic.TRANSACTION_TOPIC, groupId = "transaction-group")
     public void listenTransaction(Transaction transaction) throws TransactionException {
         TransactionProto.TransferResponse response = transactionService.processTransfer(transaction);
+        System.out.println(response.getTransactionId());
     }
 }

@@ -5,25 +5,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c9d3feb1-1ff3-4faa-881a-4e43b0a55be0" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/AIService/src/main/java/com/ebanking/AIService/config/OpenCVConfig.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/firebaseService/src/main/java/com/ebanking/firebaseService/config/FirebaseConfig.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/firebaseService/src/main/java/com/ebanking/firebaseService/entity/FCMToken.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/firebaseService/src/main/java/com/ebanking/firebaseService/repository/FCMTokenRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/firebaseService/src/main/java/com/ebanking/firebaseService/service/FCMService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/firebaseService/src/main/proto/Fcm.proto" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/utils/SecurityUtils.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/dto/request/LoginRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/dto/request/LoginRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authService/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/authService/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/emailService/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/emailService/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/consts/IURL.java" beforeDir="false" afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/consts/IURL.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/controller/TransactionController.java" beforeDir="false" afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/controller/TransactionController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/dto/request/TransferRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/dto/request/TransferRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/filter/JwtAuthenticationFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/filter/JwtAuthenticationFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/mapper/TransactionMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/mapper/TransactionMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/services/TransactionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/services/TransactionService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authService/src/main/proto/transaction.proto" beforeDir="false" afterPath="$PROJECT_DIR$/authService/src/main/proto/transaction.proto" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/entity/Account.java" beforeDir="false" afterPath="$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/entity/Account.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/entity/Transaction.java" beforeDir="false" afterPath="$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/entity/Transaction.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/kafkaConsumer/TransactionConsumer.java" beforeDir="false" afterPath="$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/kafkaConsumer/TransactionConsumer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/mappers/TransactionMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/mappers/TransactionMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/repository/TransactionRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/repository/TransactionRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/service/TransactionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/service/TransactionService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/transactionService/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/transactionService/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/userService/src/main/java/com/banking/userService/service/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/service/grpc/TransactionGrpcService.java" beforeDir="false" afterPath="$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/service/grpc/TransactionGrpcService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/transactionService/src/main/proto/transaction.proto" beforeDir="false" afterPath="$PROJECT_DIR$/transactionService/src/main/proto/transaction.proto" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/userService/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/userService/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -65,12 +62,12 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Application.AiServiceApplication.executor": "Run",
-    "Application.AuthApplication.executor": "Run",
+    "Application.AuthApplication.executor": "Debug",
     "Application.EmailServiceApplication.executor": "Run",
     "Application.FirebaseServiceApplication.executor": "Run",
     "Application.GatewayApplication.executor": "Run",
-    "Application.TransactionServiceApplication.executor": "Run",
-    "Application.UserServiceApplication.executor": "Run",
+    "Application.TransactionServiceApplication.executor": "Debug",
+    "Application.UserServiceApplication.executor": "Debug",
     "Application.UserServicesApplication.executor": "Run",
     "Application.com.example.auth.AuthApplication.executor": "Run",
     "Maven.auth [clean].executor": "Run",
@@ -117,7 +114,7 @@
       <recent name="com.banking.userService.config" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.AiServiceApplication">
+  <component name="RunManager" selected="Application.AuthApplication">
     <configuration name="AiServiceApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.ebanking.AIService.AiServiceApplication" />
       <module name="AIService" />
@@ -185,11 +182,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.AiServiceApplication" />
-        <item itemvalue="Application.FirebaseServiceApplication" />
-        <item itemvalue="Application.UserServiceApplication" />
         <item itemvalue="Application.AuthApplication" />
         <item itemvalue="Application.TransactionServiceApplication" />
+        <item itemvalue="Application.UserServiceApplication" />
+        <item itemvalue="Application.AiServiceApplication" />
+        <item itemvalue="Application.FirebaseServiceApplication" />
       </list>
     </recent_temporary>
   </component>
@@ -207,19 +204,29 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/userService/src/main/java/com/banking/userService/mapper/UserMapper.java</url>
-          <line>59</line>
-          <option name="timeStamp" value="80" />
+          <url>file://$PROJECT_DIR$/userService/src/main/java/com/banking/userService/service/UserService.java</url>
+          <line>92</line>
+          <option name="timeStamp" value="96" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/authService/src/main/java/com/example/auth/filter/JwtAuthenticationFilter.java</url>
-          <line>45</line>
-          <option name="timeStamp" value="82" />
+          <url>file://$PROJECT_DIR$/authService/src/main/java/com/example/auth/controller/TransactionController.java</url>
+          <line>30</line>
+          <option name="timeStamp" value="104" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/userService/src/main/java/com/banking/userService/service/grpcService/UserGrpcService.java</url>
-          <line>58</line>
-          <option name="timeStamp" value="94" />
+          <url>file://$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/service/grpc/TransactionGrpcService.java</url>
+          <line>24</line>
+          <option name="timeStamp" value="105" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/service/TransactionService.java</url>
+          <line>48</line>
+          <option name="timeStamp" value="106" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/authService/src/main/java/com/example/auth/controller/TransactionController.java</url>
+          <line>41</line>
+          <option name="timeStamp" value="107" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

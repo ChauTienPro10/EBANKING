@@ -1,5 +1,6 @@
 package com.ebanking.transactionService.service.grpc;
 
+import com.ebanking.transactionService.entity.Transaction;
 import com.ebanking.transactionService.grpc.TransactionProto;
 import com.ebanking.transactionService.grpc.TransactionServiceGrpc;
 import com.ebanking.transactionService.service.TransactionService;
@@ -7,6 +8,10 @@ import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @GrpcService
 public class TransactionGrpcService extends TransactionServiceGrpc.TransactionServiceImplBase {
@@ -26,5 +31,43 @@ public class TransactionGrpcService extends TransactionServiceGrpc.TransactionSe
                             .asRuntimeException()
             );
         }
+    }
+
+    @Override
+    public void history(TransactionProto.TransHistoryRequest request, StreamObserver<TransactionProto.TransactionList> responseObserver) {
+        try {
+            LocalDateTime fromDate = LocalDateTime.parse(request.getFromDate());
+            LocalDateTime toDate = LocalDateTime.parse(request.getToDate());
+            Page<Transaction> page = transactionService.getTransactionHistory(request.getUsername(),
+                    request.getSender(),
+                    fromDate,
+                    toDate,
+                    request.getPage(),
+                    request.getLimit());
+            List<Transaction> transactions = page.getContent();
+            TransactionProto.TransactionList.Builder listBuilder = TransactionProto.TransactionList.newBuilder();
+            for (Transaction tx : transactions) {
+                TransactionProto.TransferResponse protoTx = TransactionProto.TransferResponse.newBuilder()
+                        .setTransactionId(tx.getTransactionId())
+                        .setSenderAccountNumber(tx.getSenderAccountNumber())
+                        .setReceiverAccountNumber(tx.getReceiverAccountNumber())
+                        .setAmount(tx.getAmount().toString())
+                        .setTransactionAt(tx.getTransactionAt().toString())
+                        .setStatus(tx.getStatus())
+                        .setDescription(tx.getDescription())
+                        .setTransactionType(tx.getTransactionType())
+                        .build();
+
+                listBuilder.addTransactions(protoTx);
+            }
+            responseObserver.onCompleted();
+        } catch (Exception e) {
+            responseObserver.onError(
+                    Status.INTERNAL
+                            .withDescription(e.getMessage())
+                            .asRuntimeException()
+            );
+        }
+
     }
 }

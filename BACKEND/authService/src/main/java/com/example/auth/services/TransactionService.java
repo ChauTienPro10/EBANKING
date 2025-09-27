@@ -33,4 +33,8 @@ public class TransactionService {
         TransactionProto.TransferResponse rs = transactionServiceBlockingStub.transfer(rq);
         return transactionMapper.toTranserResponseDto(rs);
     }
+
+    public TransactionProto.TransactionList getHisTrans(TransactionProto.TransHistoryRequest request) {
+        return transactionServiceBlockingStub.history(request);
+    }
 }
