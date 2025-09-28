@@ -43,10 +43,18 @@ public class TransactionService {
     @Autowired
     TransactionMapper transactionMapper;
 
+    /**
+     *
+     * @param data
+     * @return
+     */
     @Transactional
-    public TransactionProto.TransferResponse transfer(TransactionProto.TransferRequest data) {
-
+    public TransactionProto.TransferResponse transfer(TransactionProto.TransferRequest data) throws TransactionException {
+        Account sender = accountRepository.findByAccountNumber(data.getSenderAccountNumber());
         BigDecimal amount = new BigDecimal(data.getAmount());
+        if (sender.getBalance().compareTo(amount) < 0) {
+            throw new TransactionException("Số dư không đủ");
+        }
         Transaction transaction =
         transactionRepository.save(Transaction.builder()
                 .senderAccountNumber(data.getSenderAccountNumber())
@@ -63,6 +71,12 @@ public class TransactionService {
         return transactionMapper.toTransferRequestProto(transaction);
     }
 
+    /**
+     *
+     * @param transaction
+     * @return
+     * @throws TransactionException
+     */
     @Transactional
     public TransactionProto.TransferResponse processTransfer(Transaction transaction) throws TransactionException {
         Account sender = accountRepository.findByAccountNumber(transaction.getSenderAccountNumber());
@@ -82,9 +96,20 @@ public class TransactionService {
         accountRepository.save(sender);
         accountRepository.save(receiver);
         transaction.setStatus(TransactionStatus.SUCCESS.name());
+        kafkaTemplate.send("transfer-send-email", transaction);
         return transactionMapper.toTransferResponse(transactionRepository.save(transaction));
     }
 
+    /**
+     *
+     * @param username
+     * @param sender
+     * @param fromDate
+     * @param toDate
+     * @param page
+     * @param size
+     * @return
+     */
     public Page<Transaction> getTransactionHistory(String username,
                                                    String sender,
                                                    LocalDateTime fromDate,

@@ -5,15 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c9d3feb1-1ff3-4faa-881a-4e43b0a55be0" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/emailService/src/main/java/com/ebanking/emailService/dto/Transaction.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/emailService/src/main/java/com/ebanking/emailService/kafkaConsumer/TransactionConsumer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authService/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/authService/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/controller/TransactionController.java" beforeDir="false" afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/controller/TransactionController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/services/TransactionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/services/TransactionService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/authService/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/authService/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/service/grpc/TransactionGrpcService.java" beforeDir="false" afterPath="$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/service/grpc/TransactionGrpcService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/emailService/src/main/java/com/ebanking/emailService/service/EmailService.java" beforeDir="false" afterPath="$PROJECT_DIR$/emailService/src/main/java/com/ebanking/emailService/service/EmailService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/emailService/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/emailService/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/enums/KafkaTopic.java" beforeDir="false" afterPath="$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/enums/KafkaTopic.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/service/TransactionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/service/TransactionService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/transactionService/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/transactionService/src/main/resources/application.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/userService/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/userService/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../KAFKA/kafka.cmd" beforeDir="false" afterPath="$PROJECT_DIR$/../KAFKA/kafka.cmd" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,51 +53,51 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.AiServiceApplication.executor": "Run",
-    "Application.AuthApplication.executor": "Debug",
-    "Application.EmailServiceApplication.executor": "Run",
-    "Application.FirebaseServiceApplication.executor": "Run",
-    "Application.GatewayApplication.executor": "Run",
-    "Application.TransactionServiceApplication.executor": "Debug",
-    "Application.UserServiceApplication.executor": "Run",
-    "Application.UserServicesApplication.executor": "Run",
-    "Application.com.example.auth.AuthApplication.executor": "Run",
-    "Maven.auth [clean].executor": "Run",
-    "Maven.auth [compile].executor": "Run",
-    "Maven.auth [install].executor": "Run",
-    "Maven.emailService [clean].executor": "Run",
-    "Maven.emailService [compile].executor": "Run",
-    "Maven.emailService [install].executor": "Run",
-    "Maven.firebaseService [compile].executor": "Run",
-    "Maven.gateway [clean].executor": "Run",
-    "Maven.gateway [compile].executor": "Run",
-    "Maven.gateway [install].executor": "Run",
-    "Maven.transactionService [compile].executor": "Run",
-    "Maven.userService [clean].executor": "Run",
-    "Maven.userService [compile].executor": "Run",
-    "Maven.userService [install].executor": "Run",
-    "Maven.userServices [clean].executor": "Run",
-    "Maven.userServices [compile].executor": "Run",
-    "Maven.userServices [install].executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "develop",
-    "ignore.virus.scanning.warn.message": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/NC/Desktop/DATN/EBANKING/BACKEND",
-    "project.structure.last.edited": "Libraries",
-    "project.structure.proportion": "0.15527344",
-    "project.structure.side.proportion": "0.2",
-    "run.code.analysis.last.selected.profile": "pProject Default",
-    "settings.editor.selected.configurable": "preferences.pluginManager"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.AiServiceApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Application.AuthApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Application.EmailServiceApplication.executor&quot;: &quot;Debug&quot;,
+    &quot;Application.FirebaseServiceApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Application.GatewayApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Application.TransactionServiceApplication.executor&quot;: &quot;Debug&quot;,
+    &quot;Application.UserServiceApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Application.UserServicesApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Application.com.example.auth.AuthApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Maven.auth [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.auth [compile].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.auth [install].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.emailService [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.emailService [compile].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.emailService [install].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.firebaseService [compile].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.gateway [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.gateway [compile].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.gateway [install].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.transactionService [compile].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.userService [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.userService [compile].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.userService [install].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.userServices [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.userServices [compile].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.userServices [install].executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;develop&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/NC/Desktop/DATN/EBANKING/BACKEND&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Libraries&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15527344&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\chaud\OneDrive\Desktop\DATN\BACKEND\gateway\src\main\java\com\example\gateway\dto" />
@@ -107,7 +109,7 @@
       <recent name="com.banking.userService.config" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.AuthApplication">
+  <component name="RunManager" selected="Application.EmailServiceApplication">
     <configuration name="AiServiceApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.ebanking.AIService.AiServiceApplication" />
       <module name="AIService" />
@@ -134,12 +136,12 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="FirebaseServiceApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="com.ebanking.firebaseService.FirebaseServiceApplication" />
-      <module name="firebaseService" />
+    <configuration name="EmailServiceApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.ebanking.emailService.EmailServiceApplication" />
+      <module name="emailService" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="com.ebanking.firebaseService.*" />
+          <option name="PATTERN" value="com.ebanking.emailService.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -175,11 +177,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.AuthApplication" />
+        <item itemvalue="Application.EmailServiceApplication" />
         <item itemvalue="Application.TransactionServiceApplication" />
+        <item itemvalue="Application.AuthApplication" />
         <item itemvalue="Application.UserServiceApplication" />
         <item itemvalue="Application.AiServiceApplication" />
-        <item itemvalue="Application.FirebaseServiceApplication" />
       </list>
     </recent_temporary>
   </component>
@@ -197,9 +199,9 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/userService/src/main/java/com/banking/userService/service/UserService.java</url>
-          <line>92</line>
-          <option name="timeStamp" value="96" />
+          <url>file://$PROJECT_DIR$/emailService/src/main/java/com/ebanking/emailService/kafkaConsumer/TransactionConsumer.java</url>
+          <line>18</line>
+          <option name="timeStamp" value="115" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

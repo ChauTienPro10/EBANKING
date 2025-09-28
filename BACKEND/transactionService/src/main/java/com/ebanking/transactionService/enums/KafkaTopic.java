@@ -2,6 +2,7 @@ package com.ebanking.transactionService.enums;
 
 public enum KafkaTopic {
     TRANSACTION("transaction"),
+    TRANSFER_SEND_EMAIL("transfer-send-email")
     ;
 
     private final String topicName;
