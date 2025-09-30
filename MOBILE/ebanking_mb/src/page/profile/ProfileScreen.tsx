@@ -25,6 +25,8 @@ import { AppDispatch, store } from '../../store';
 import { fetchUserInfo } from '../../store/fetchAPI/UserInfoFetch';
 import Toast from 'react-native-toast-message';
 
+const { width: screenWidth } = Dimensions.get('window');
+
 const ProfileScreen: React.FC = () => {
   const { t, i18n } = useTranslation();
   const language = useSelector((state: RootState) => state.app.language);
@@ -272,6 +274,25 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F8F9FA',
+  },
+  // Header with edit button
+  headerContainer: {
+    position: 'relative',
+  },
+  editButton: {
+    position: 'absolute',
+    top: 10,
+    right: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  editButtonText: {
+    fontSize: 14,
+    fontWeight: '500',
   },
   scrollContent: {
     paddingTop: 20,
