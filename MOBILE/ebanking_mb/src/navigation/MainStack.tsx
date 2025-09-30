@@ -10,24 +10,25 @@ import SearchScreen from '../page/search/SearchScreen';
 import SettingsScreen from '../page/settings/SettingsScreen';
 import SupportScreen from '../page/support/SupportScreen';
 import TransferScreen from '../page/transfer/TransferScreen';
+import ProfileScreen from '../page/profile/ProfileScreen';
 
 const Stack = createNativeStackNavigator();
 
 export default function MainStack() {
   return (
     <Stack.Navigator
-      initialRouteName="Home"// test
+      initialRouteName="Profile" //
       screenOptions={{
         headerShown: false,
       }}
     >
+      <Stack.Screen name="Profile" component={ProfileScreen} />
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="Menu" component={MenuScreen} />
       <Stack.Screen name="Search" component={SearchScreen} />
       <Stack.Screen name="Settings" component={SettingsScreen} />
       <Stack.Screen name="Support" component={SupportScreen} />
       <Stack.Screen name="Transfer" component={TransferScreen} />
-
     </Stack.Navigator>
   );
 }
