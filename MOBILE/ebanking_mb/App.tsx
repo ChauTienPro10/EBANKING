@@ -32,10 +32,10 @@ function AppContent() {
           backgroundColor="transparent"
         />
         <NavigationContainer>
-          {isLoggedIn ? <MainStack /> : <AuthNavigator />}
+          {/* {isLoggedIn ? <MainStack /> : <AuthNavigator />} */}
+          <MainStack />
         </NavigationContainer>
       </View>
-
       <Toast /> {/* ✅ Di chuyển Toast ra ngoài View */}
     </>
   );
@@ -58,7 +58,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.main_bule, 
+    backgroundColor: Colors.main_bule,
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
 });
