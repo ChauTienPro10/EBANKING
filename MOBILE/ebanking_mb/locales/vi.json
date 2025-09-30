@@ -108,6 +108,7 @@
     "phone_placeholder": "Nhập số điện thoại",
     "save_button": "Lưu thông tin",
     "edit": "Sửa",
+    "member_since": "Thành viên từ",
     "validation": {
       "full_name_required": "Họ và tên không được để trống",
       "date_of_birth_required": "Ngày sinh không được để trống",

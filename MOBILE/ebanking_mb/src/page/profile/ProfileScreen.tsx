@@ -7,20 +7,20 @@ import {
   ScrollView,
   ActivityIndicator,
   Dimensions,
+  Animated,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../store';
 import { useCommonUI } from '../../hooks/useCommonUI';
-import {
-  Header,
-  CustomInput,
-  CustomButton,
-  Avatar,
-  GText,
-} from '../../components';
+import { Header, CustomButton } from '../../components';
 import Colors from '../../constants/color';
 import TextStyles from '../../constants/textStyle';
+import ProfileHeader from './components/ProfileHeader';
+import UserInfoCard from './components/UserInfoCard';
+import PersonalInfoSection from './components/PersonalInfoSection';
+import ContactInfoSection from './components/ContactInfoSection';
+import { useProfileAnimations } from './hooks/useProfileAnimations';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -48,6 +48,17 @@ const ProfileScreen: React.FC = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
+  // Use animation hooks
+  const {
+    scrollY,
+    headerHeight,
+    avatarOpacity,
+    avatarScale,
+    cardOpacity,
+    createScrollHandler,
+  } = useProfileAnimations();
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -102,6 +113,9 @@ const ProfileScreen: React.FC = () => {
     }
   };
 
+  // Handle scroll animations
+  const handleScroll = createScrollHandler(isCollapsed, setIsCollapsed);
+
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
     // Clear errors when entering edit mode
@@ -132,222 +146,47 @@ const ProfileScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.headerContainer}>
-        <Header
-          title={t('profile.title')}
-          showBackButton={true}
-          showNotification={false}
-        />
-        <TouchableOpacity onPress={handleEditToggle} style={styles.editButton}>
-          <GText
-            type="systemMedium_14"
-            color={Colors.white}
-            style={styles.editButtonText}
-          >
-            {isEditing ? t('common.cancel') : t('profile.edit')}
-          </GText>
-        </TouchableOpacity>
-      </View>
+      {/* Profile Header with Animation */}
+      <ProfileHeader
+        headerHeight={headerHeight}
+        avatarOpacity={avatarOpacity}
+        avatarScale={avatarScale}
+        isEditing={isEditing}
+        onEditToggle={handleEditToggle}
+        onSelectFromGallery={handleSelectFromGallery}
+        onTakePhoto={handleTakePhoto}
+      />
+
+      {/* User Info Card with Animation */}
+      <UserInfoCard cardOpacity={cardOpacity} fullName={profile.fullName} />
 
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
       >
-        {/* Enhanced Photo Section */}
-        <View style={styles.profileHeader}>
-          <View style={styles.avatarSection}>
-            <View style={styles.avatarContainer}>
-              <Avatar
-                src="https://i.pravatar.cc/150?img=12"
-                size={120}
-                onPress={handleSelectFromGallery}
-              />
-              <TouchableOpacity
-                style={styles.cameraButton}
-                onPress={handleTakePhoto}
-              >
-                <View style={styles.plusIcon}>
-                  <View style={styles.plusHorizontal} />
-                  <View style={styles.plusVertical} />
-                </View>
-              </TouchableOpacity>
-            </View>
-            <GText
-              type="systemBold_18"
-              color={Colors.main_bule}
-              style={styles.userName}
-            >
-              {profile.fullName}
-            </GText>
-          </View>
-        </View>
-
         {/* Personal Information Section */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <GText
-              type="systemBold_18"
-              color={Colors.main_bule}
-              style={styles.sectionTitle}
-            >
-              {t('profile.personal_info')}
-            </GText>
-          </View>
-
-          <View style={styles.formContainer}>
-            {/* Row 1: Full Name */}
-            <View style={styles.inputGroup}>
-              <CustomInput
-                label={t('profile.full_name')}
-                value={profile.fullName}
-                onChangeText={(text: string) =>
-                  handleInputChange('fullName', text)
-                }
-                placeholder={t('profile.full_name_placeholder')}
-                error={errors.fullName}
-                editable={isEditing}
-              />
-            </View>
-
-            {/* Row 2: Date of Birth */}
-            <View style={styles.inputGroup}>
-              <CustomInput
-                label={t('profile.date_of_birth')}
-                value={profile.dateOfBirth}
-                onChangeText={(text: string) =>
-                  handleInputChange('dateOfBirth', text)
-                }
-                placeholder="DD/MM/YYYY"
-                keyboardType="numeric"
-                error={errors.dateOfBirth}
-                editable={isEditing}
-              />
-            </View>
-
-            {/* Row 3: Gender Selection */}
-            <View style={styles.inputGroup}>
-              <GText style={styles.genderLabel}>{t('profile.gender')}</GText>
-              <View
-                style={[
-                  styles.genderInputContainer,
-                  !isEditing && styles.genderInputDisabled,
-                ]}
-              >
-                {['Nam', 'Nữ', 'Khác'].map((gender, index) => (
-                  <TouchableOpacity
-                    key={gender}
-                    style={[
-                      styles.genderOption,
-                      profile.gender === gender && styles.genderOptionSelected,
-                      index === 0 && styles.genderOptionFirst,
-                      index === 2 && styles.genderOptionLast,
-                    ]}
-                    onPress={() =>
-                      isEditing && handleInputChange('gender', gender)
-                    }
-                    disabled={!isEditing}
-                  >
-                    <GText
-                      type="systemLight_14"
-                      color={
-                        profile.gender === gender ? Colors.white : '#6B7280'
-                      }
-                      style={styles.genderOptionText}
-                    >
-                      {gender === 'Nam'
-                        ? t('profile.male')
-                        : gender === 'Nữ'
-                        ? t('profile.female')
-                        : t('profile.other')}
-                    </GText>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </View>
-
-            {/* Row 4: CCCD */}
-            <View style={styles.inputGroup}>
-              <CustomInput
-                label={t('profile.cccd')}
-                value={profile.cccd}
-                onChangeText={(text: string) => handleInputChange('cccd', text)}
-                placeholder={t('profile.cccd_placeholder')}
-                keyboardType="numeric"
-                maxLength={12}
-                error={errors.cccd}
-                editable={isEditing}
-              />
-            </View>
-
-            {/* Row 5: Address */}
-            <View style={styles.inputGroup}>
-              <CustomInput
-                label={t('profile.address')}
-                value={profile.address}
-                onChangeText={(text: string) =>
-                  handleInputChange('address', text)
-                }
-                placeholder={t('profile.address_placeholder')}
-                error={errors.address}
-                multiline={true}
-                numberOfLines={2}
-                editable={isEditing}
-              />
-            </View>
-          </View>
-        </View>
+        <PersonalInfoSection
+          profile={profile}
+          errors={errors}
+          isEditing={isEditing}
+          onInputChange={handleInputChange}
+        />
 
         {/* Contact Information Section */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <GText
-              type="systemBold_18"
-              color={Colors.main_bule}
-              style={styles.sectionTitle}
-            >
-              {t('profile.contact_info')}
-            </GText>
-          </View>
-
-          <View style={styles.formContainer}>
-            {/* Email Input */}
-            <View style={styles.inputGroup}>
-              <CustomInput
-                label={t('profile.email')}
-                value={profile.email}
-                onChangeText={(text: string) =>
-                  handleInputChange('email', text)
-                }
-                placeholder={t('profile.email_placeholder')}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                error={errors.email}
-                editable={isEditing}
-              />
-            </View>
-
-            {/* Phone Input */}
-            <View style={styles.inputGroup}>
-              <CustomInput
-                label={t('profile.phone')}
-                value={profile.phone}
-                onChangeText={(text: string) =>
-                  handleInputChange('phone', text)
-                }
-                placeholder={t('profile.phone_placeholder')}
-                keyboardType="phone-pad"
-                error={errors.phone}
-                editable={isEditing}
-              />
-            </View>
-          </View>
-        </View>
+        <ContactInfoSection
+          profile={profile}
+          errors={errors}
+          isEditing={isEditing}
+          onInputChange={handleInputChange}
+        />
 
         {/* Save Button - Only show when editing */}
         {isEditing && (
           <View style={styles.buttonContainer}>
             <CustomButton
-              title={isLoading ? t('common.loading') : t('profile.save_button')}
+              title={isLoading ? 'Loading...' : 'Save Changes'}
               onPress={handleSave}
               variant="primary"
               size="large"
@@ -365,187 +204,11 @@ const ProfileScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
-  },
-  // Header with edit button
-  headerContainer: {
-    position: 'relative',
-  },
-  editButton: {
-    position: 'absolute',
-    top: 10,
-    right: 20,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
-  },
-  editButtonText: {
-    fontSize: 14,
-    fontWeight: '500',
+    backgroundColor: '#F8F9FA',
   },
   scrollContent: {
-    paddingBottom: 40,
-  },
-  // New modern profile header
-  profileHeader: {
-    backgroundColor: Colors.white,
-    borderBottomLeftRadius: 24,
-    borderBottomRightRadius: 24,
-    paddingBottom: 24,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 8,
-  },
-  avatarSection: {
-    alignItems: 'center',
-    paddingVertical: 32,
-    paddingHorizontal: 20,
-  },
-  avatarContainer: {
-    position: 'relative',
-    marginBottom: 16,
-  },
-  cameraButton: {
-    position: 'absolute',
-    bottom: -6,
-    right: -6,
-    backgroundColor: Colors.main_bule,
-    borderRadius: 22,
-    width: 44,
-    height: 44,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 4,
-    borderColor: Colors.white,
-    shadowColor: Colors.main_bule,
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
-  },
-  plusIcon: {
-    width: 20,
-    height: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  plusHorizontal: {
-    width: 16,
-    height: 3,
-    backgroundColor: Colors.white,
-    borderRadius: 2,
-    position: 'absolute',
-  },
-  plusVertical: {
-    width: 3,
-    height: 16,
-    backgroundColor: Colors.white,
-    borderRadius: 2,
-    position: 'absolute',
-  },
-  userName: {
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  // Enhanced sections
-  section: {
-    backgroundColor: Colors.white,
-    marginHorizontal: 16,
-    marginBottom: 20,
-    borderRadius: 16,
     paddingTop: 20,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  sectionHeader: {
-    paddingHorizontal: 20,
-    paddingBottom: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-    marginBottom: 20,
-  },
-  sectionTitle: {
-    marginBottom: 0,
-  },
-  formContainer: {
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-  },
-  // Enhanced form layouts
-  inputGroup: {
-    marginBottom: 20,
-  },
-  rowContainer: {
-    flexDirection: 'row',
-    gap: 16,
-    marginBottom: 20,
-  },
-  halfWidth: {
-    flex: 1,
-  },
-  inputLabel: {
-    marginBottom: 8,
-  },
-  // New gender selection (CustomInput style)
-  genderLabel: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#374151',
-    marginBottom: 8,
-  },
-  genderInputContainer: {
-    flexDirection: 'row',
-    backgroundColor: '#F9FAFB',
-    borderWidth: 1,
-    borderColor: Colors.grey2,
-    borderRadius: 12,
-    overflow: 'hidden',
-    minHeight: 56,
-  },
-  genderInputDisabled: {
-    backgroundColor: '#F3F4F6',
-    opacity: 0.6,
-  },
-  genderOption: {
-    flex: 1,
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRightWidth: 1,
-    borderRightColor: Colors.grey2,
-    backgroundColor: 'transparent',
-  },
-  genderOptionFirst: {
-    // No additional styles needed
-  },
-  genderOptionLast: {
-    borderRightWidth: 0,
-  },
-  genderOptionSelected: {
-    backgroundColor: Colors.main_bule,
-  },
-  genderOptionText: {
-    fontSize: 16,
-    textAlign: 'center',
+    paddingBottom: 40,
   },
   // Button styling
   buttonContainer: {
