@@ -107,6 +107,7 @@
     "phone": "Phone Number",
     "phone_placeholder": "Enter your phone number",
     "save_button": "Save Information",
+    "edit": "Edit",
     "validation": {
       "full_name_required": "Full name is required",
       "date_of_birth_required": "Date of birth is required",

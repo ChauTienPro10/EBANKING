@@ -6,6 +6,7 @@ import {
   SafeAreaView,
   ScrollView,
   ActivityIndicator,
+  Dimensions,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -21,6 +22,8 @@ import {
 import Colors from '../../constants/color';
 import TextStyles from '../../constants/textStyle';
 
+const { width: screenWidth } = Dimensions.get('window');
+
 const ProfileScreen: React.FC = () => {
   const { t, i18n } = useTranslation();
   const language = useSelector((state: RootState) => state.app.language);
@@ -33,7 +36,7 @@ const ProfileScreen: React.FC = () => {
   }, [language, i18n]);
 
   const [profile, setProfile] = useState({
-    fullName: 'Lê Văn Thắng',
+    fullName: 'Lê Thắng',
     dateOfBirth: '15/03/1995',
     cccd: '123456789012',
     gender: 'Nam',
@@ -44,6 +47,7 @@ const ProfileScreen: React.FC = () => {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -88,6 +92,9 @@ const ProfileScreen: React.FC = () => {
       console.log('Profile saved:', profile);
       // TODO: Call actual API here
       // const response = await api.updateProfile(profile);
+
+      // Exit edit mode after successful save
+      setIsEditing(false);
     } catch (error) {
       console.error('Error saving profile:', error);
     } finally {
@@ -95,9 +102,24 @@ const ProfileScreen: React.FC = () => {
     }
   };
 
-  const handleUploadImage = () => {
-    console.log('Upload image clicked');
-    // TODO: Implement image picker
+  const handleEditToggle = () => {
+    setIsEditing(!isEditing);
+    // Clear errors when entering edit mode
+    if (!isEditing) {
+      setErrors({});
+    }
+  };
+
+  const handleSelectFromGallery = () => {
+    if (!isEditing) return; // Only allow upload in edit mode
+    console.log('Select from gallery clicked');
+    // TODO: Implement image picker from gallery
+  };
+
+  const handleTakePhoto = () => {
+    if (!isEditing) return; // Only allow camera in edit mode
+    console.log('Take photo clicked');
+    // TODO: Implement camera capture
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -110,56 +132,70 @@ const ProfileScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Header
-        title={t('profile.title')}
-        showBackButton={true}
-        showNotification={true}
-        notificationCount={notificationCount}
-      />
+      <View style={styles.headerContainer}>
+        <Header
+          title={t('profile.title')}
+          showBackButton={true}
+          showNotification={false}
+        />
+        <TouchableOpacity onPress={handleEditToggle} style={styles.editButton}>
+          <GText
+            type="systemMedium_14"
+            color={Colors.white}
+            style={styles.editButtonText}
+          >
+            {isEditing ? t('common.cancel') : t('profile.edit')}
+          </GText>
+        </TouchableOpacity>
+      </View>
 
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Photo Section */}
-        <View style={styles.photoSection}>
-          <GText
-            type="systemLight_12"
-            color={Colors.grey3}
-            style={styles.sectionLabel}
-          >
-            {t('profile.photo_label')}
-          </GText>
-          <View style={styles.avatarContainer}>
-            <Avatar
-              src="https://i.pravatar.cc/150?img=12"
-              size={100}
-              onPress={handleUploadImage}
-            />
-          </View>
-          <TouchableOpacity onPress={handleUploadImage}>
+        {/* Enhanced Photo Section */}
+        <View style={styles.profileHeader}>
+          <View style={styles.avatarSection}>
+            <View style={styles.avatarContainer}>
+              <Avatar
+                src="https://i.pravatar.cc/150?img=12"
+                size={120}
+                onPress={handleSelectFromGallery}
+              />
+              <TouchableOpacity
+                style={styles.cameraButton}
+                onPress={handleTakePhoto}
+              >
+                <View style={styles.plusIcon}>
+                  <View style={styles.plusHorizontal} />
+                  <View style={styles.plusVertical} />
+                </View>
+              </TouchableOpacity>
+            </View>
             <GText
-              type="systemLight_14"
+              type="systemBold_18"
               color={Colors.main_bule}
-              style={styles.uploadText}
+              style={styles.userName}
             >
-              {t('profile.upload_photo')}
+              {profile.fullName}
             </GText>
-          </TouchableOpacity>
+          </View>
         </View>
 
         {/* Personal Information Section */}
         <View style={styles.section}>
-          <GText
-            type="systemBold_18"
-            color={Colors.main_bule}
-            style={styles.sectionTitle}
-          >
-            {t('profile.personal_info')}
-          </GText>
+          <View style={styles.sectionHeader}>
+            <GText
+              type="systemBold_18"
+              color={Colors.main_bule}
+              style={styles.sectionTitle}
+            >
+              {t('profile.personal_info')}
+            </GText>
+          </View>
 
           <View style={styles.formContainer}>
-            {/* Full Name Input */}
+            {/* Row 1: Full Name */}
             <View style={styles.inputGroup}>
               <CustomInput
                 label={t('profile.full_name')}
@@ -169,10 +205,11 @@ const ProfileScreen: React.FC = () => {
                 }
                 placeholder={t('profile.full_name_placeholder')}
                 error={errors.fullName}
+                editable={isEditing}
               />
             </View>
 
-            {/* Date of Birth Input */}
+            {/* Row 2: Date of Birth */}
             <View style={styles.inputGroup}>
               <CustomInput
                 label={t('profile.date_of_birth')}
@@ -183,10 +220,52 @@ const ProfileScreen: React.FC = () => {
                 placeholder="DD/MM/YYYY"
                 keyboardType="numeric"
                 error={errors.dateOfBirth}
+                editable={isEditing}
               />
             </View>
 
-            {/* CCCD Input */}
+            {/* Row 3: Gender Selection */}
+            <View style={styles.inputGroup}>
+              <GText style={styles.genderLabel}>{t('profile.gender')}</GText>
+              <View
+                style={[
+                  styles.genderInputContainer,
+                  !isEditing && styles.genderInputDisabled,
+                ]}
+              >
+                {['Nam', 'Nữ', 'Khác'].map((gender, index) => (
+                  <TouchableOpacity
+                    key={gender}
+                    style={[
+                      styles.genderOption,
+                      profile.gender === gender && styles.genderOptionSelected,
+                      index === 0 && styles.genderOptionFirst,
+                      index === 2 && styles.genderOptionLast,
+                    ]}
+                    onPress={() =>
+                      isEditing && handleInputChange('gender', gender)
+                    }
+                    disabled={!isEditing}
+                  >
+                    <GText
+                      type="systemLight_14"
+                      color={
+                        profile.gender === gender ? Colors.white : '#6B7280'
+                      }
+                      style={styles.genderOptionText}
+                    >
+                      {gender === 'Nam'
+                        ? t('profile.male')
+                        : gender === 'Nữ'
+                        ? t('profile.female')
+                        : t('profile.other')}
+                    </GText>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+
+            {/* Row 4: CCCD */}
             <View style={styles.inputGroup}>
               <CustomInput
                 label={t('profile.cccd')}
@@ -196,71 +275,11 @@ const ProfileScreen: React.FC = () => {
                 keyboardType="numeric"
                 maxLength={12}
                 error={errors.cccd}
+                editable={isEditing}
               />
             </View>
 
-            {/* Gender Selection */}
-            <View style={styles.inputGroup}>
-              <GText
-                type="systemLight_14"
-                color={Colors.grey3}
-                style={styles.inputLabel}
-              >
-                {t('profile.gender')}
-              </GText>
-              <View style={styles.genderContainer}>
-                <TouchableOpacity
-                  style={[
-                    styles.genderOption,
-                    profile.gender === 'Nam' && styles.genderOptionSelected,
-                  ]}
-                  onPress={() => handleInputChange('gender', 'Nam')}
-                >
-                  <GText
-                    type="systemLight_14"
-                    color={
-                      profile.gender === 'Nam' ? Colors.white : Colors.grey3
-                    }
-                  >
-                    {t('profile.male')}
-                  </GText>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[
-                    styles.genderOption,
-                    profile.gender === 'Nữ' && styles.genderOptionSelected,
-                  ]}
-                  onPress={() => handleInputChange('gender', 'Nữ')}
-                >
-                  <GText
-                    type="systemLight_14"
-                    color={
-                      profile.gender === 'Nữ' ? Colors.white : Colors.grey3
-                    }
-                  >
-                    {t('profile.female')}
-                  </GText>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[
-                    styles.genderOption,
-                    profile.gender === 'Khác' && styles.genderOptionSelected,
-                  ]}
-                  onPress={() => handleInputChange('gender', 'Khác')}
-                >
-                  <GText
-                    type="systemLight_14"
-                    color={
-                      profile.gender === 'Khác' ? Colors.white : Colors.grey3
-                    }
-                  >
-                    {t('profile.other')}
-                  </GText>
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            {/* Address Input */}
+            {/* Row 5: Address */}
             <View style={styles.inputGroup}>
               <CustomInput
                 label={t('profile.address')}
@@ -270,6 +289,9 @@ const ProfileScreen: React.FC = () => {
                 }
                 placeholder={t('profile.address_placeholder')}
                 error={errors.address}
+                multiline={true}
+                numberOfLines={2}
+                editable={isEditing}
               />
             </View>
           </View>
@@ -277,13 +299,15 @@ const ProfileScreen: React.FC = () => {
 
         {/* Contact Information Section */}
         <View style={styles.section}>
-          <GText
-            type="systemBold_18"
-            color={Colors.main_bule}
-            style={styles.sectionTitle}
-          >
-            {t('profile.contact_info')}
-          </GText>
+          <View style={styles.sectionHeader}>
+            <GText
+              type="systemBold_18"
+              color={Colors.main_bule}
+              style={styles.sectionTitle}
+            >
+              {t('profile.contact_info')}
+            </GText>
+          </View>
 
           <View style={styles.formContainer}>
             {/* Email Input */}
@@ -298,6 +322,7 @@ const ProfileScreen: React.FC = () => {
                 keyboardType="email-address"
                 autoCapitalize="none"
                 error={errors.email}
+                editable={isEditing}
               />
             </View>
 
@@ -312,21 +337,26 @@ const ProfileScreen: React.FC = () => {
                 placeholder={t('profile.phone_placeholder')}
                 keyboardType="phone-pad"
                 error={errors.phone}
+                editable={isEditing}
               />
             </View>
           </View>
         </View>
 
-        {/* Save Button */}
-        <CustomButton
-          title={isLoading ? t('common.loading') : t('profile.save_button')}
-          onPress={handleSave}
-          variant="primary"
-          size="large"
-          containerStyle={styles.saveButton}
-          disabled={isLoading}
-          loading={isLoading}
-        />
+        {/* Save Button - Only show when editing */}
+        {isEditing && (
+          <View style={styles.buttonContainer}>
+            <CustomButton
+              title={isLoading ? t('common.loading') : t('profile.save_button')}
+              onPress={handleSave}
+              variant="primary"
+              size="large"
+              containerStyle={styles.saveButton}
+              disabled={isLoading}
+              loading={isLoading}
+            />
+          </View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -337,99 +367,201 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.background,
   },
+  // Header with edit button
+  headerContainer: {
+    position: 'relative',
+  },
+  editButton: {
+    position: 'absolute',
+    top: 10,
+    right: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  editButtonText: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
   scrollContent: {
     paddingBottom: 40,
   },
-  photoSection: {
-    alignItems: 'center',
+  // New modern profile header
+  profileHeader: {
     backgroundColor: Colors.white,
-    paddingVertical: 30,
-    paddingHorizontal: 20,
-    marginBottom: 20,
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
+    paddingBottom: 24,
+    marginBottom: 16,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 4,
     },
     shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowRadius: 8,
+    elevation: 8,
   },
-  sectionLabel: {
-    marginBottom: 8,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
+  avatarSection: {
+    alignItems: 'center',
+    paddingVertical: 32,
+    paddingHorizontal: 20,
   },
   avatarContainer: {
-    marginVertical: 15,
+    position: 'relative',
+    marginBottom: 16,
   },
-  uploadText: {
-    marginTop: 10,
-    textDecorationLine: 'underline',
+  cameraButton: {
+    position: 'absolute',
+    bottom: -6,
+    right: -6,
+    backgroundColor: Colors.main_bule,
+    borderRadius: 22,
+    width: 44,
+    height: 44,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 4,
+    borderColor: Colors.white,
+    shadowColor: Colors.main_bule,
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
   },
+  plusIcon: {
+    width: 20,
+    height: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  plusHorizontal: {
+    width: 16,
+    height: 3,
+    backgroundColor: Colors.white,
+    borderRadius: 2,
+    position: 'absolute',
+  },
+  plusVertical: {
+    width: 3,
+    height: 16,
+    backgroundColor: Colors.white,
+    borderRadius: 2,
+    position: 'absolute',
+  },
+  userName: {
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  // Enhanced sections
   section: {
     backgroundColor: Colors.white,
-    marginHorizontal: 0,
+    marginHorizontal: 16,
     marginBottom: 20,
+    borderRadius: 16,
     paddingTop: 20,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  sectionHeader: {
+    paddingHorizontal: 20,
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+    marginBottom: 20,
   },
   sectionTitle: {
-    marginBottom: 20,
-    paddingHorizontal: 20,
+    marginBottom: 0,
   },
   formContainer: {
     paddingHorizontal: 20,
     paddingBottom: 20,
   },
+  // Enhanced form layouts
   inputGroup: {
     marginBottom: 20,
+  },
+  rowContainer: {
+    flexDirection: 'row',
+    gap: 16,
+    marginBottom: 20,
+  },
+  halfWidth: {
+    flex: 1,
   },
   inputLabel: {
     marginBottom: 8,
   },
-  genderContainer: {
+  // New gender selection (CustomInput style)
+  genderLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#374151',
+    marginBottom: 8,
+  },
+  genderInputContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 8,
-    gap: 12,
+    backgroundColor: '#F9FAFB',
+    borderWidth: 1,
+    borderColor: Colors.grey2,
+    borderRadius: 12,
+    overflow: 'hidden',
+    minHeight: 56,
+  },
+  genderInputDisabled: {
+    backgroundColor: '#F3F4F6',
+    opacity: 0.6,
   },
   genderOption: {
     flex: 1,
-    paddingVertical: 12,
+    paddingVertical: 16,
     paddingHorizontal: 16,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    backgroundColor: Colors.white,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 1,
+    justifyContent: 'center',
+    borderRightWidth: 1,
+    borderRightColor: Colors.grey2,
+    backgroundColor: 'transparent',
+  },
+  genderOptionFirst: {
+    // No additional styles needed
+  },
+  genderOptionLast: {
+    borderRightWidth: 0,
   },
   genderOptionSelected: {
     backgroundColor: Colors.main_bule,
-    borderColor: Colors.main_bule,
-    shadowColor: Colors.main_bule,
-    shadowOpacity: 0.3,
-    elevation: 3,
+  },
+  genderOptionText: {
+    fontSize: 16,
+    textAlign: 'center',
+  },
+  // Button styling
+  buttonContainer: {
+    paddingHorizontal: 16,
+    paddingTop: 20,
   },
   saveButton: {
-    marginTop: 20,
-    marginHorizontal: 20,
-    marginBottom: 40,
+    borderRadius: 16,
+    shadowColor: Colors.main_bule,
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
   },
 });
 
