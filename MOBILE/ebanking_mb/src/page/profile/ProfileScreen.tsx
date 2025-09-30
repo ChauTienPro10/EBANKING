@@ -5,6 +5,7 @@ import {
   SafeAreaView,
   ScrollView,
   Dimensions,
+  Animated,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';

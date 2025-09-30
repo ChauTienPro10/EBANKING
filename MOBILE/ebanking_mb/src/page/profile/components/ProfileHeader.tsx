@@ -139,12 +139,10 @@ const styles = StyleSheet.create({
   avatarWrapper: {
     alignItems: 'center',
   },
-
   avatarContainer: {
     position: 'relative',
     marginBottom: 16,
   },
-
   modernCameraButton: {
     position: 'absolute',
     bottom: -4,
