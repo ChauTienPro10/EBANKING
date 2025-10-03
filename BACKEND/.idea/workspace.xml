@@ -4,17 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c9d3feb1-1ff3-4faa-881a-4e43b0a55be0" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authService/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/authService/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/controller/TransactionController.java" beforeDir="false" afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/controller/TransactionController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/services/TransactionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/authService/src/main/java/com/example/auth/services/TransactionService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authService/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/authService/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/service/grpc/TransactionGrpcService.java" beforeDir="false" afterPath="$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/service/grpc/TransactionGrpcService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/transactionService/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/transactionService/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/userService/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/userService/src/main/resources/application.properties" afterDir="false" />
-    </list>
+    <list default="true" id="c9d3feb1-1ff3-4faa-881a-4e43b0a55be0" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

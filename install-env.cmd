@@ -66,6 +66,34 @@ IF EXIST docker-compose.yml (
     exit /b 1
 )
 
+:: i jenkins
+echo.
+echo === Start Docker compose in ./JENSKINS ===
+cd /d "%~dp0JENSKINS"
+IF EXIST docker-compose.yml (
+    docker-compose up -d
+    echo Docker jenkins container started.
+) ELSE (
+    echo ERROR: docker-compose.yml not found in DB
+    pause
+    exit /b 1
+)
+echo.
+echo === Install Java 17 inside Jenkins container ===
+
+REM Cài Java 17 trong container (Debian/Ubuntu base)
+docker exec -it jenkins bash -c "apt-get update && apt-get install -y openjdk-17-jdk && java -version"
+
+echo.
+echo === Done ===
+
+echo.
+echo === Install maven ===
+docker exec -it jenkins bash -c "apt-get update && apt-get install -y maven && mvn -version"
+echo.
+echo === Done ===
+
+
 :: i redis
 echo.
 echo === Starting Docker Compose in ./REDIS ===
