@@ -2,14 +2,13 @@ pipeline {
     agent any
 
     tools {
-        // jdk 'java17'        
-        // maven 'maven3'      
+        jdk 'java17'        
+        maven 'maven3'      
     }
 
     stages {
         stage('Checkout') {
             steps {
-                // Lấy code từ Git repo
                 git branch: 'develop', url: 'https://github.com/ChauTienPro10/EBANKING'
             }
         }
