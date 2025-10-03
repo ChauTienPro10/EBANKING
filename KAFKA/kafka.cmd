@@ -1,29 +1,36 @@
-kafka-topics --create --topic transacton --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
-kafka-topics --create --topic send-email --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
-kafka-topics --create --topic send-otp --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+@echo off
+echo Creating Kafka topics...
 
-kafka-topics --list --bootstrap-server localhost:9092
+docker exec -it kafka kafka-topics --create --topic transacton --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+docker exec -it kafka kafka-topics --create --topic send-email --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+docker exec -it kafka kafka-topics --create --topic send-otp --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+docker exec -it kafka kafka-topics --create --topic transfer-send-email --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+
+echo.
+echo Listing all Kafka topics:
+docker exec -it kafka kafka-topics --list --bootstrap-server localhost:9092
+
+pause
 
 
 
+@REM Xin chào {{userName}},
 
-Xin chào {{userName}},
+@REM Mã xác thực OTP của bạn là: {{otpValue}} 
 
-Mã xác thực OTP của bạn là: {{otpValue}} 
+@REM Thông tin chi tiết:
+@REM Email: {{email}}
+@REM Thời gian hiệu lực: {{expireTime}}
 
-Thông tin chi tiết:
-Email: {{email}}
-Thời gian hiệu lực: {{expireTime}}
+@REM Vui lòng không chia sẽ thông tin cho bất cứ ai để tránh gặp vấn đề về bảo mật thông tin.
 
-Vui lòng không chia sẽ thông tin cho bất cứ ai để tránh gặp vấn đề về bảo mật thông tin.
+@REM Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi.
 
-Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi.
+@REM Trân trọng,  
+@REM Đội ngũ hỗ trợ
 
-Trân trọng,  
-Đội ngũ hỗ trợ
+@REM EBANKING HO CHI MINH.
+@REM Nền tảng giao dịch trực tuyến tiện lợi và tin cậy.
 
-EBANKING HO CHI MINH.
-Nền tảng giao dịch trực tuyến tiện lợi và tin cậy.
-
-Hot line : 0812788212.
-Email hổ trợ khách hàng: itchauduongphattien@gmail.com
+@REM Hot line : 0812788212.
+@REM Email hổ trợ khách hàng: itchauduongphattien@gmail.com

@@ -34,6 +34,7 @@ public class EmailService {
         switch (type) {
             case "create_user" :
             case "gen_otp":
+            case "transfer_send_email":
                 message.setTo(to);
                 message.setSubject(emailTemplate.getTitle());
                 message.setText(content);
