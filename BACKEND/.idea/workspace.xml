@@ -4,7 +4,29 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c9d3feb1-1ff3-4faa-881a-4e43b0a55be0" name="Changes" comment="" />
+    <list default="true" id="c9d3feb1-1ff3-4faa-881a-4e43b0a55be0" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/AIService/build.groovy" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authService/build.groovy" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/emailService/build.groovy" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/firebaseService/build.groovy" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/transactionService/build.groovy" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/userService/build.groovy" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Scripts/get-jar-file.cmd" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Scripts/run-jar-file.cmd" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../docker-build-services/authService/Dockerfile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../docker-build-services/userService/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/../.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AIService/Jenkinsfile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/authService/Jenkinsfile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/emailService/Jenkinsfile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/firebaseService/Jenkinsfile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/transactionService/Jenkinsfile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/userService/Jenkinsfile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Jenkinsfile" beforeDir="false" afterPath="$PROJECT_DIR$/../Jenkinsfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../build-final.cmd" beforeDir="false" afterPath="$PROJECT_DIR$/../Scripts/build-final.cmd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../install-env.cmd" beforeDir="false" afterPath="$PROJECT_DIR$/../Scripts/install-env.cmd" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -75,7 +97,7 @@
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "develop",
+    "git-widget-placeholder": "Merging develop",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/NC/Desktop/DATN/EBANKING/BACKEND",

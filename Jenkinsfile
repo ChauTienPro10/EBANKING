@@ -2,45 +2,45 @@ pipeline {
     agent any
 
     tools {
-        jdk 'java17'        
-        maven 'maven3'      
+        jdk 'java17'
+        maven 'maven3'
     }
 
     stages {
-        stage('Checkout') {
+        stage('Build Modules') {
             steps {
-                git branch: 'develop', url: 'https://github.com/ChauTienPro10/EBANKING'
+                script {
+                    def modules = ['BACKEND/authService',
+                     'BACKEND/userService',
+                     'BACKEND/emailService',
+                     'BACKEND/transactionService',
+                     'BACKEND/firebaseService',
+                    ]
+                    for (module in modules) {
+                        dir(module) {
+                            def moduleBuild = load 'build.groovy'
+                            moduleBuild.buildModule()
+                        }
+                    }
+                }
             }
         }
 
-        stage('Build BE - AuthService') {
+        stage('Copy JAR to output') {
             steps {
-                sh 'cd ./BACKEND && ls'
+                script {
+                    sh 'mkdir -p output_jar_file'
+                    def modules = ['authService', 'userService', 'emailService', 'transactionService', 'firebaseService']
+                    for (module in modules) {
+                        def srcPath = "BACKEND/${module}/target/*.jar"
+                        def destPath = "output_jar_file/${module}.jar"
+                        // Copy và rename file jar theo module
+                        sh "cp ${srcPath} ${destPath}"
+                        echo "Copied ${srcPath} to ${destPath}"
+                    }
+                }
             }
         }
-
-        // stage('Build') {
-        //     steps {
-        //         sh 'mvn clean compile'
-        //     }
-        // }
-
-        // stage('Test') {
-        //     steps {
-        //         sh 'mvn test'
-        //     }
-        // }
-
-        // stage('Package') {
-        //     steps {
-        //         sh 'mvn package -DskipTests'
-        //     }
-        //     post {
-        //         success {
-        //             archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
-        //         }
-        //     }
-        // }
     }
 
     post {
