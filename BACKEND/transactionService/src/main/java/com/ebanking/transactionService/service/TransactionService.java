@@ -83,11 +83,17 @@ public class TransactionService {
         Account receiver = accountRepository.findByAccountNumber(transaction.getReceiverAccountNumber());
         if (sender == null || receiver == null) {
             transaction.setStatus(TransactionStatus.FAILED.name());
+            transaction.setFailureReason("Thông tin không hợp lệ");
+            // publish failed transaction event
+            kafkaTemplate.send(KafkaTopic.TRANSACTION.getTopicName(), transaction);
             throw new TransactionException("Thông tin không hợp lệ");
         }
         BigDecimal amount = new BigDecimal(String.valueOf(transaction.getAmount()));
         if (sender.getBalance().compareTo(amount) < 0) {
             transaction.setStatus(TransactionStatus.FAILED.name());
+            transaction.setFailureReason("Số dư không đủ");
+            // publish failed transaction event
+            kafkaTemplate.send(KafkaTopic.TRANSACTION.getTopicName(), transaction);
             throw new TransactionException("Số dư không đủ");
         }
         sender.setBalance(sender.getBalance().subtract(amount));
@@ -96,7 +102,12 @@ public class TransactionService {
         accountRepository.save(sender);
         accountRepository.save(receiver);
         transaction.setStatus(TransactionStatus.SUCCESS.name());
+        
+        // publish success transaction event for notifications
+        kafkaTemplate.send(KafkaTopic.TRANSACTION.getTopicName(), transaction);
+        // send email notification
         kafkaTemplate.send("transfer-send-email", transaction);
+        
         return transactionMapper.toTransferResponse(transactionRepository.save(transaction));
     }
 

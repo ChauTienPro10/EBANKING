@@ -19,6 +19,9 @@ public class FCMService {
 
     @Autowired
     private FCMTokenRepository fcmTokenRepository;
+    
+    @Autowired
+    private NotificationService notificationService;
     //gởi noti toàn bộ token
     public String sendNotificationToDevice(String token, String title, String body) {
         if (token == null || token.trim().isEmpty()) {
@@ -117,12 +120,26 @@ public class FCMService {
         FCMToken fcmToken = getFCMTokenByUserId(userId);
         if (fcmToken == null) {
             log.warn("No FCM token found for user: {}", userId);
+            // Still save to database even if no FCM token
+            notificationService.createNotification(
+                userId, null, 
+                "Giao dịch đang chờ xử lý",
+                String.format("Giao dịch %s với số tiền %s VND đang được xử lý. Vui lòng chờ thông báo tiếp theo.", transactionId, amount),
+                "TRANSACTION", null, transactionId, amount, "PENDING"
+            );
             return null;
         }
 
         String title = "Giao dịch đang chờ xử lý";
         String body = String.format("Giao dịch %s với số tiền %s VND đang được xử lý. Vui lòng chờ thông báo tiếp theo.", 
                 transactionId, amount);
+
+        // Save to database
+        notificationService.createNotification(
+            userId, fcmToken.getUsername(), 
+            title, body, 
+            "TRANSACTION", null, transactionId, amount, "PENDING"
+        );
 
         return sendNotificationToDevice(fcmToken.getToken(), title, body);
     }
@@ -140,14 +157,22 @@ public class FCMService {
         }
         
         FCMToken fcmToken = getFCMTokenByUsername(username);
+        String title = "Giao dịch đang chờ xử lý";
+        String body = String.format("Giao dịch %s với số tiền %s VND đang được xử lý. Vui lòng chờ thông báo tiếp theo.", 
+                transactionId, amount);
+        
+        // Save to database
+        notificationService.createNotification(
+            fcmToken != null ? fcmToken.getUserId() : null, 
+            username, 
+            title, body, 
+            "TRANSACTION", null, transactionId, amount, "PENDING"
+        );
+        
         if (fcmToken == null) {
             log.warn("No FCM token found for username: {}", username);
             return null;
         }
-
-        String title = "Giao dịch đang chờ xử lý";
-        String body = String.format("Giao dịch %s với số tiền %s VND đang được xử lý. Vui lòng chờ thông báo tiếp theo.", 
-                transactionId, amount);
 
         return sendNotificationToDevice(fcmToken.getToken(), title, body);
     }
@@ -155,14 +180,22 @@ public class FCMService {
     //gởi noti cho transaction success
     public String sendTransactionSuccessNotification(Long userId, String transactionId, String amount) {
         FCMToken fcmToken = getFCMTokenByUserId(userId);
+        String title = "Giao dịch thành công";
+        String body = String.format("Giao dịch %s với số tiền %s VND đã được xử lý thành công.", 
+                transactionId, amount);
+        
+        // Save to database
+        notificationService.createNotification(
+            userId, 
+            fcmToken != null ? fcmToken.getUsername() : null, 
+            title, body, 
+            "TRANSACTION", null, transactionId, amount, "SUCCESS"
+        );
+        
         if (fcmToken == null) {
             log.warn("No FCM token found for user: {}", userId);
             return null;
         }
-
-        String title = "Giao dịch thành công";
-        String body = String.format("Giao dịch %s với số tiền %s VND đã được xử lý thành công.", 
-                transactionId, amount);
 
         return sendNotificationToDevice(fcmToken.getToken(), title, body);
     }
@@ -170,14 +203,22 @@ public class FCMService {
     //gởi noti cho transaction success bằng username
     public String sendTransactionSuccessNotificationByUsername(String username, String transactionId, String amount) {
         FCMToken fcmToken = getFCMTokenByUsername(username);
+        String title = "Giao dịch thành công";
+        String body = String.format("Giao dịch %s với số tiền %s VND đã được xử lý thành công.", 
+                transactionId, amount);
+        
+        // Save to database
+        notificationService.createNotification(
+            fcmToken != null ? fcmToken.getUserId() : null, 
+            username, 
+            title, body, 
+            "TRANSACTION", null, transactionId, amount, "SUCCESS"
+        );
+        
         if (fcmToken == null) {
             log.warn("No FCM token found for username: {}", username);
             return null;
         }
-
-        String title = "Giao dịch thành công";
-        String body = String.format("Giao dịch %s với số tiền %s VND đã được xử lý thành công.", 
-                transactionId, amount);
 
         return sendNotificationToDevice(fcmToken.getToken(), title, body);
     }
@@ -185,14 +226,22 @@ public class FCMService {
     //gởi noti cho transaction failed
     public String sendTransactionFailedNotification(Long userId, String transactionId, String amount, String reason) {
         FCMToken fcmToken = getFCMTokenByUserId(userId);
+        String title = "Giao dịch thất bại";
+        String body = String.format("Giao dịch %s với số tiền %s VND đã thất bại. Lý do: %s", 
+                transactionId, amount, reason);
+        
+        // Save to database
+        notificationService.createNotification(
+            userId, 
+            fcmToken != null ? fcmToken.getUsername() : null, 
+            title, body, 
+            "TRANSACTION", null, transactionId, amount, "FAILED"
+        );
+        
         if (fcmToken == null) {
             log.warn("No FCM token found for user: {}", userId);
             return null;
         }
-
-        String title = "Giao dịch thất bại";
-        String body = String.format("Giao dịch %s với số tiền %s VND đã thất bại. Lý do: %s", 
-                transactionId, amount, reason);
 
         return sendNotificationToDevice(fcmToken.getToken(), title, body);
     }
@@ -200,14 +249,22 @@ public class FCMService {
     //gởi noti cho transaction failed bằng username
     public String sendTransactionFailedNotificationByUsername(String username, String transactionId, String amount, String reason) {
         FCMToken fcmToken = getFCMTokenByUsername(username);
+        String title = "Giao dịch thất bại";
+        String body = String.format("Giao dịch %s với số tiền %s VND đã thất bại. Lý do: %s", 
+                transactionId, amount, reason);
+        
+        // Save to database
+        notificationService.createNotification(
+            fcmToken != null ? fcmToken.getUserId() : null, 
+            username, 
+            title, body, 
+            "TRANSACTION", null, transactionId, amount, "FAILED"
+        );
+        
         if (fcmToken == null) {
             log.warn("No FCM token found for username: {}", username);
             return null;
         }
-
-        String title = "Giao dịch thất bại";
-        String body = String.format("Giao dịch %s với số tiền %s VND đã thất bại. Lý do: %s", 
-                transactionId, amount, reason);
 
         return sendNotificationToDevice(fcmToken.getToken(), title, body);
     }
