@@ -19,6 +19,8 @@ public class FCMToken {
 
     private Long userId;
 
+    private String username;
+
     private String deviceId;
 
     @Column(nullable = false, unique = true, length = 512)

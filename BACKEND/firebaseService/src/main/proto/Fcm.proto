@@ -3,7 +3,36 @@ syntax = "proto3";
 option java_package = "com.ebanking.firebaseService.grpc";
 option java_outer_classname = "FcmProto";
 
+message RegisterTokenRequest {
+  int64 user_id = 1;
+  string device_id = 2;
+  string token = 3;
+}
 
-service UserService {
+message SendNotificationRequest {
+  string token = 1;
+  string title = 2;
+  string body = 3;
+  map<string, string> data = 4;
+}
 
+message TransactionNotificationRequest {
+  int64 user_id = 1;
+  string transaction_id = 2;
+  string amount = 3;
+  string status = 4;
+  string reason = 5;
+}
+
+message NotificationResponse {
+  bool success = 1;
+  string message = 2;
+  string message_id = 3;
+  string error = 4;
+}
+
+service NotificationService {
+  rpc RegisterToken(RegisterTokenRequest) returns (NotificationResponse);
+  rpc SendNotification(SendNotificationRequest) returns (NotificationResponse);
+  rpc SendTransactionNotification(TransactionNotificationRequest) returns (NotificationResponse);
 }
