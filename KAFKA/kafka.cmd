@@ -1,10 +1,12 @@
 @echo off
 echo Creating Kafka topics...
 
-docker exec -it kafka kafka-topics --create --topic transacton --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+docker exec -it kafka kafka-topics --create --topic transaction --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
 docker exec -it kafka kafka-topics --create --topic send-email --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
 docker exec -it kafka kafka-topics --create --topic send-otp --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
 docker exec -it kafka kafka-topics --create --topic transfer-send-email --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+docker exec -it kafka kafka-topics --create --topic transaction_notify --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+docker exec -it kafka kafka-topics --create --topic transaction_processer --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
 
 echo.
 echo Listing all Kafka topics:

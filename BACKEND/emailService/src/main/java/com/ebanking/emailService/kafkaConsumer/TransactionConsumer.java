@@ -24,7 +24,6 @@ public class TransactionConsumer {
         placeholders.put("amount", String.valueOf(transaction.getAmount()));
         placeholders.put("transactionAt", String.valueOf(transaction.getTransactionAt()));
         placeholders.put("transaction_note", transaction.getDescription());
-
         emailService.sendSimpleEmail("chauduongphattien2201@gmail.com", "transfer_send_email", placeholders);
     }
 }

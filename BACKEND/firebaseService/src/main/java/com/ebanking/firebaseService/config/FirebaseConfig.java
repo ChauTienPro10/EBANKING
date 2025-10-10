@@ -16,7 +16,7 @@ public class FirebaseConfig {
     public void initialize() {
         try {
             InputStream serviceAccount = new ClassPathResource("ebanking-2ac29-55d51c99ac8f.json").getInputStream();
-
+//            InputStream serviceAccount = new ClassPathResource("ebanking-2ac29-firebase-adminsdk-fbsvc-58f9ad7dd9.json").getInputStream();
             FirebaseOptions options = new FirebaseOptions.Builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                     .build();
@@ -26,7 +26,6 @@ public class FirebaseConfig {
             }
         } catch (Exception e) {
             System.err.println("Failed to initialize Firebase: " + e.getMessage());
-            e.printStackTrace();
             throw new RuntimeException("Firebase initialization failed", e);
         }
     }

@@ -17,12 +17,13 @@ public class Account {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "account_id")
     private Long accountId;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "account_number", nullable = false, unique = true)
     private String accountNumber;
 
-    @Column(nullable = false)
+    @Column(name = "account_type", nullable = false)
     private String accountType;
 
     @Column(nullable = false)
@@ -34,19 +35,24 @@ public class Account {
     @Column(nullable = false)
     private String status;
 
-    @Column(nullable = false)
+    @Column(name = "opened_date", nullable = false)
     private LocalDateTime openedDate;
 
+    @Column(name = "closed_date")
     private LocalDateTime closedDate;
 
+    @Column(name = "is_primary")
     private Boolean isPrimary;
 
-    @Column(nullable = false)
+    @Column(name = "user_id", nullable = false)
     private Long userId;
 
+    @Column(name = "last_transaction_at")
     private LocalDateTime lastTransactionAt;
 
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 }
