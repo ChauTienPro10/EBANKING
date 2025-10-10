@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="c9d3feb1-1ff3-4faa-881a-4e43b0a55be0" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/firebaseService/src/main/java/com/ebanking/firebaseService/dto/Transaction.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AIService/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/AIService/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authService/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/authService/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/emailService/src/main/java/com/ebanking/emailService/kafkaConsumer/TransactionConsumer.java" beforeDir="false" afterPath="$PROJECT_DIR$/emailService/src/main/java/com/ebanking/emailService/kafkaConsumer/TransactionConsumer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/emailService/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/emailService/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/firebaseService/src/main/java/com/ebanking/firebaseService/config/FirebaseConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/firebaseService/src/main/java/com/ebanking/firebaseService/config/FirebaseConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/firebaseService/src/main/java/com/ebanking/firebaseService/controller/NotificationController.java" beforeDir="false" afterPath="$PROJECT_DIR$/firebaseService/src/main/java/com/ebanking/firebaseService/controller/NotificationController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/firebaseService/src/main/java/com/ebanking/firebaseService/controller/NotificationHistoryController.java" beforeDir="false" afterPath="$PROJECT_DIR$/firebaseService/src/main/java/com/ebanking/firebaseService/controller/NotificationHistoryController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/firebaseService/src/main/java/com/ebanking/firebaseService/kafkaConsumer/TransactionNotificationConsumer.java" beforeDir="false" afterPath="$PROJECT_DIR$/firebaseService/src/main/java/com/ebanking/firebaseService/kafkaConsumer/TransactionNotificationConsumer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/firebaseService/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/firebaseService/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/entity/Account.java" beforeDir="false" afterPath="$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/entity/Account.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/enums/KafkaTopic.java" beforeDir="false" afterPath="$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/enums/KafkaTopic.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/service/TransactionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/service/TransactionService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/transactionService/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/transactionService/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/userService/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/userService/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../KAFKA/kafka.cmd" beforeDir="false" afterPath="$PROJECT_DIR$/../KAFKA/kafka.cmd" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Interface" />
+        <option value="Exception" />
+        <option value="Enum" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHomeTypeForPersistence" value="WRAPPER" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="DEPENDENCY_CHECKER_PROBLEMS_TAB" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 5
+}</component>
+  <component name="ProjectId" id="30lPcrnaKjrtuEj4Hvv50NGnjLo" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.AiServiceApplication.executor": "Run",
+    "Application.AuthApplication.executor": "Run",
+    "Application.EmailServiceApplication.executor": "Run",
+    "Application.FirebaseServiceApplication.executor": "Run",
+    "Application.GatewayApplication.executor": "Run",
+    "Application.TransactionServiceApplication.executor": "Run",
+    "Application.UserServiceApplication.executor": "Run",
+    "Application.UserServicesApplication.executor": "Run",
+    "Application.com.example.auth.AuthApplication.executor": "Run",
+    "Maven.auth [clean].executor": "Run",
+    "Maven.auth [compile].executor": "Run",
+    "Maven.auth [install].executor": "Run",
+    "Maven.emailService [clean].executor": "Run",
+    "Maven.emailService [compile].executor": "Run",
+    "Maven.emailService [install].executor": "Run",
+    "Maven.firebaseService [compile].executor": "Run",
+    "Maven.gateway [clean].executor": "Run",
+    "Maven.gateway [compile].executor": "Run",
+    "Maven.gateway [install].executor": "Run",
+    "Maven.transactionService [compile].executor": "Run",
+    "Maven.userService [clean].executor": "Run",
+    "Maven.userService [compile].executor": "Run",
+    "Maven.userService [install].executor": "Run",
+    "Maven.userServices [clean].executor": "Run",
+    "Maven.userServices [compile].executor": "Run",
+    "Maven.userServices [install].executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "develop",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/NC/Desktop/DATN/EBANKING/BACKEND",
+    "project.structure.last.edited": "Libraries",
+    "project.structure.proportion": "0.15527344",
+    "project.structure.side.proportion": "0.2",
+    "run.code.analysis.last.selected.profile": "pProject Default",
+    "settings.editor.selected.configurable": "preferences.pluginManager"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\chaud\OneDrive\Desktop\DATN\BACKEND\gateway\src\main\java\com\example\gateway\dto" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\chaud\OneDrive\Desktop\DATN\BACKEND\gateway\src\main" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.banking.userService.config" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Application.UserServiceApplication">
+    <configuration name="AuthApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.example.auth.AuthApplication" />
+      <module name="auth" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.example.auth.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="EmailServiceApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.ebanking.emailService.EmailServiceApplication" />
+      <module name="emailService" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.ebanking.emailService.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="FirebaseServiceApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.ebanking.firebaseService.FirebaseServiceApplication" />
+      <module name="firebaseService" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.ebanking.firebaseService.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TransactionServiceApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.ebanking.transactionService.TransactionServiceApplication" />
+      <module name="transactionService" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.ebanking.transactionService.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="UserServiceApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.banking.userService.UserServiceApplication" />
+      <module name="userService" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.ebanking.transactionService.enums.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.UserServiceApplication" />
+        <item itemvalue="Application.TransactionServiceApplication" />
+        <item itemvalue="Application.FirebaseServiceApplication" />
+        <item itemvalue="Application.AuthApplication" />
+        <item itemvalue="Application.EmailServiceApplication" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="c9d3feb1-1ff3-4faa-881a-4e43b0a55be0" name="Changes" comment="" />
+      <created>1754199272448</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1754199272448</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/userService/src/main/java/com/banking/userService/service/UserService.java</url>
+          <line>92</line>
+          <option name="timeStamp" value="96" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/firebaseService/src/main/java/com/ebanking/firebaseService/kafkaConsumer/TransactionNotificationConsumer.java</url>
+          <line>35</line>
+          <option name="timeStamp" value="102" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-method">
+          <url>file://$PROJECT_DIR$/transactionService/src/main/java/com/ebanking/transactionService/repository/AccountRepository.java</url>
+          <line>8</line>
+          <properties class="com.ebanking.transactionService.repository.AccountRepository" method="findByAccountNumber">
+            <option name="EMULATED" value="true" />
+            <option name="WATCH_EXIT" value="false" />
+          </properties>
+          <option name="timeStamp" value="100" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>

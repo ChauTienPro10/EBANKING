@@ -42,5 +42,7 @@ public class Transaction {
 
     private String description;
 
+    private String failureReason;
+
     private LocalDateTime transactionAt;
 }

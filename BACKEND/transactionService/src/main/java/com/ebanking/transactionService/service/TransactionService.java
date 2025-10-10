@@ -51,6 +51,7 @@ public class TransactionService {
     @Transactional
     public TransactionProto.TransferResponse transfer(TransactionProto.TransferRequest data) throws TransactionException {
         Account sender = accountRepository.findByAccountNumber(data.getSenderAccountNumber());
+        if (sender == null) throw new TransactionException("Tài khoản không hợp lệ");
         BigDecimal amount = new BigDecimal(data.getAmount());
         if (sender.getBalance().compareTo(amount) < 0) {
             throw new TransactionException("Số dư không đủ");
@@ -67,7 +68,7 @@ public class TransactionService {
                 .transactionAt(LocalDateTime.now())
                 .username(data.getUsername())
                 .build());
-        kafkaTemplate.send(KafkaTopic.TRANSACTION.getTopicName(), transaction);
+        kafkaTemplate.send(KafkaTopic.TRANSACTION_PROCESSER.getTopicName(), transaction);
         return transactionMapper.toTransferRequestProto(transaction);
     }
 
@@ -83,11 +84,17 @@ public class TransactionService {
         Account receiver = accountRepository.findByAccountNumber(transaction.getReceiverAccountNumber());
         if (sender == null || receiver == null) {
             transaction.setStatus(TransactionStatus.FAILED.name());
+            transaction.setFailureReason("Thông tin không hợp lệ");
+            // publish failed transaction event
+            kafkaTemplate.send(KafkaTopic.TRANSACTION_NOTIFY.getTopicName(), transaction);
             throw new TransactionException("Thông tin không hợp lệ");
         }
         BigDecimal amount = new BigDecimal(String.valueOf(transaction.getAmount()));
         if (sender.getBalance().compareTo(amount) < 0) {
             transaction.setStatus(TransactionStatus.FAILED.name());
+            transaction.setFailureReason("Số dư không đủ");
+            // publish failed transaction event
+            kafkaTemplate.send(KafkaTopic.TRANSACTION_NOTIFY.getTopicName(), transaction);
             throw new TransactionException("Số dư không đủ");
         }
         sender.setBalance(sender.getBalance().subtract(amount));
@@ -96,7 +103,12 @@ public class TransactionService {
         accountRepository.save(sender);
         accountRepository.save(receiver);
         transaction.setStatus(TransactionStatus.SUCCESS.name());
-        kafkaTemplate.send("transfer-send-email", transaction);
+        
+        // publish success transaction event for notifications
+        kafkaTemplate.send(KafkaTopic.TRANSACTION_NOTIFY.getTopicName(), transaction);
+        // send email notification
+        kafkaTemplate.send(KafkaTopic.TRANSFER_SEND_EMAIL.getTopicName(), transaction);
+        
         return transactionMapper.toTransferResponse(transactionRepository.save(transaction));
     }
 
