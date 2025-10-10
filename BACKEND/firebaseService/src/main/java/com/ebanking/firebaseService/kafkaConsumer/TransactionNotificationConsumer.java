@@ -24,7 +24,7 @@ public class TransactionNotificationConsumer {
 
    //kafka listener with retry mechanism for transaction events
     @KafkaListener(
-        topics = "transaction_notify",
+        topics = "transaction-notify",
         groupId = "firebase-group"
     )
     @Retryable(
