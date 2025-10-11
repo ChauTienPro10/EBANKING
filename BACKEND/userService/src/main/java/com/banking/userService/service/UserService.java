@@ -202,4 +202,25 @@ public class UserService {
         return userMapper.UsertoProtoUserResponse(user);
     }
 
+    public UserProto.changePasswordResponse changePassword (UserProto.changePasswordRequest changePasswordRequest) {
+        if (changePasswordRequest.getPassword().isEmpty() || changePasswordRequest.getOldPass().isEmpty()) {
+            return UserProto.changePasswordResponse.newBuilder()
+                    .setStatus(false)
+                    .setDescription("password_invalid")
+                    .build();
+        }
+        User user = userRepository.findByUsername(changePasswordRequest.getUsername());
+        if (!passwordEncoder.matches(changePasswordRequest.getOldPass(), user.getPassword())) {
+            return UserProto.changePasswordResponse.newBuilder()
+                    .setStatus(false)
+                    .setDescription("password_invalid")
+                    .build();
+        }
+        user.setPassword(passwordEncoder.encode(changePasswordRequest.getPassword()));
+        userRepository.save(user);
+        return UserProto.changePasswordResponse.newBuilder()
+                .setStatus(true)
+                .setDescription("change_password_success")
+                .build();
+    }
 }

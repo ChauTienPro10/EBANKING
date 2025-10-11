@@ -118,4 +118,19 @@ public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
             );
         }
     }
+
+    @Override
+    public void changPassword(UserProto.changePasswordRequest rq, StreamObserver<UserProto.changePasswordResponse> responseObserver) {
+        try {
+            UserProto.changePasswordResponse rs = userService.changePassword(rq);
+            responseObserver.onNext(rs);
+            responseObserver.onCompleted();
+        } catch (Exception e) {
+            responseObserver.onError(
+                    Status.INTERNAL
+                            .withDescription(e.getMessage())
+                            .asRuntimeException()
+            );
+        }
+    }
 }

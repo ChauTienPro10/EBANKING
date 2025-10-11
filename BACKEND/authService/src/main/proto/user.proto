@@ -62,6 +62,16 @@ message verifyOtpRegisterRequest {
   string otpValue = 2;
 }
 
+message changePasswordRequest {
+  string username = 1;
+  string oldPass = 2;
+  string password = 3;
+}
+
+message changePasswordResponse {
+  bool status = 1;
+  string description = 2;
+}
 service UserService {
   rpc getUserById(GetUserRequestById) returns (UserResponse);
   rpc newUser(NewUserRequest) returns (NewUserResponse);
@@ -69,4 +79,5 @@ service UserService {
   rpc login(LoginRequest) returns (LoginResponse);
   rpc CheckUserExist(CheckUserExistRequest) returns (CheckUserExistResponse);
   rpc verifyOtpRegister(verifyOtpRegisterRequest) returns (NewUserResponse);
+  rpc changePassword(changePasswordRequest) returns (changePasswordResponse);
 }
