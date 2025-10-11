@@ -8,22 +8,28 @@ import com.example.auth.protopkg.AccountProto;
 import com.example.auth.protopkg.AccountServiceGrpc;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class AccountTransactionService {
+    private final AccountTransactionMapper accountTransactionMapper;
     private final AccountServiceGrpc.AccountServiceBlockingStub accountTransStub;
 
     @Autowired
-    AccountTransactionMapper accountTransactionMapper;
+    public AccountTransactionService(grpcPath grpcPath, AccountTransactionMapper accountTransactionMapper) {
+        this.accountTransactionMapper = accountTransactionMapper;
 
-    public AccountTransactionService() {
         ManagedChannel channel = ManagedChannelBuilder
-                .forAddress(grpcPath.TRANSACTION_SERVICE, grpcPath.TRANSACTION_SERVICE_PORT)
+                .forAddress(grpcPath.getTransactionServiceHost(), grpcPath.getTransactionServicePort())
                 .usePlaintext()
                 .build();
+
         this.accountTransStub = AccountServiceGrpc.newBlockingStub(channel);
+        log.info("HOST TRANSACTION::: {}:{}", grpcPath.getTransactionServiceHost(), grpcPath.getTransactionServicePort());
+
     }
 
     public NewAccountResponse newAccount(NewAccountRequest rqData) {

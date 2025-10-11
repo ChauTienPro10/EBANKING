@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: user-service
-          image: tien22012003/userservice:1.0
+          image: tien22012003/userservice:1.1
           imagePullPolicy: Always
           ports:
             - containerPort: 8001   

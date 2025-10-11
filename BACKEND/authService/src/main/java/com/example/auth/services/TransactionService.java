@@ -9,25 +9,29 @@ import com.example.auth.protopkg.TransactionProto;
 import com.example.auth.protopkg.TransactionServiceGrpc;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import lombok.extern.slf4j.Slf4j;
+import lombok.extern.slf4j.XSlf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@Slf4j
 public class TransactionService {
 
-    @Autowired
-    TransactionMapper transactionMapper;
-
+    private final TransactionMapper transactionMapper;
     private final TransactionServiceGrpc.TransactionServiceBlockingStub transactionServiceBlockingStub;
 
-    public TransactionService() {
+    @Autowired
+    public TransactionService(grpcPath grpcPath, TransactionMapper transactionMapper) {
+        this.transactionMapper = transactionMapper;
         ManagedChannel channel = ManagedChannelBuilder
-                .forAddress(grpcPath.TRANSACTION_SERVICE, grpcPath.TRANSACTION_SERVICE_PORT)
+                .forAddress(grpcPath.getTransactionServiceHost(), grpcPath.getTransactionServicePort())
                 .usePlaintext()
                 .build();
         this.transactionServiceBlockingStub = TransactionServiceGrpc.newBlockingStub(channel);
+        log.info("HOST TRANSACTION::: {}:{}", grpcPath.getTransactionServiceHost(), grpcPath.getTransactionServicePort());
     }
 
     public TransferResponse transfer(TransferRequest request) {

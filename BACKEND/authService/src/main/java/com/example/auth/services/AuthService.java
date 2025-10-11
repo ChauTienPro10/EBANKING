@@ -10,26 +10,33 @@ import com.example.auth.protopkg.UserProto;
 import com.example.auth.protopkg.UserServiceGrpc;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 
 @Service
+@Slf4j
 public class AuthService {
     private final UserServiceGrpc.UserServiceBlockingStub userStub;
 
-    @Autowired
-    private UserMapper userMapper;
+    private final UserMapper userMapper;
 
-    public AuthService() {
+    @Autowired
+    public AuthService(grpcPath grpcPath, UserMapper userMapper) {
+        this.userMapper = userMapper;
+
         ManagedChannel channel = ManagedChannelBuilder
-                .forAddress(grpcPath.USER_SERVICE, grpcPath.USER_SERVICE_PORT)
+                .forAddress(grpcPath.getUserServiceHost(), grpcPath.getUserServicePort())
                 .usePlaintext()
                 .build();
 
         this.userStub = UserServiceGrpc.newBlockingStub(channel);
+        log.info("HOST USERSERVICE::: {}:{}", grpcPath.getUserServiceHost(), grpcPath.getUserServicePort());
+
     }
+
 
     public CreateUserOtpResponse register(String username, String password, String citizenId, String typeVerify) {
         UserProto.NewUserRequest request = UserProto.NewUserRequest.newBuilder()
