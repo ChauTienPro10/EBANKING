@@ -7,6 +7,7 @@ public interface IURL {
     String REGISTER_VERIFY_OTP_URL = "/register-verify-otp";
     String LOGIN_URL = "/login";
     String UPDATE_URL = "/update";
+    String CHANGE_PASSWORD_URL = "/change-password";
 
     String ACCOUNT_TRANS = HOST_PREFIX + "/trans/account";
     String OPEN_ACC_TRANS = "/new";

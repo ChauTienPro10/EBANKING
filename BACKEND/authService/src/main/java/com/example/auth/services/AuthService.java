@@ -1,7 +1,9 @@
 package com.example.auth.services;
 
 import com.example.auth.consts.grpcPath;
+import com.example.auth.dto.request.ChangePasswordRequest;
 import com.example.auth.dto.request.LoginRequest;
+import com.example.auth.dto.response.ChangePasswordResponse;
 import com.example.auth.dto.response.CreateUserOtpResponse;
 import com.example.auth.dto.response.LoginResponse;
 import com.example.auth.dto.response.RegisterResponse;
@@ -83,5 +85,10 @@ public class AuthService {
                 .setUserId(id)
                 .build();
         return userStub.getUserById(rq);
+    }
+
+    public ChangePasswordResponse changePassword(ChangePasswordRequest request) {
+        UserProto.ChangePasswordRequest rq = userMapper.toChangePasswordRequestProto(request);
+        return userMapper.toChangePasswordResponseDTO(userStub.changePassword(rq));
     }
 }

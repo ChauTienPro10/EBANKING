@@ -16,7 +16,6 @@ public class TransactionConsumer {
 
     @KafkaListener(topics = "transfer-send-email", groupId = "email-group")
     public void listenTranserSendEmail(Transaction transaction) {
-        System.out.println(transaction.getTransactionAt());
         Map<String, String> placeholders = new HashMap<>();
         placeholders.put("userName", transaction.getUsername());
         placeholders.put("account_sender", transaction.getSenderAccountNumber());
