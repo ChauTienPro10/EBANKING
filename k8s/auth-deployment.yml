@@ -25,10 +25,10 @@ spec:
             - name: SPRING_PROFILES_ACTIVE
               value: "k8s"
             - name: USER_SERVICE
-              value: 192.168.1.3
+              value: user-service
             - name: USER_SERVICE_PORT
-              value: "30091"
+              value: "9001"
             - name: TRANSACTION_SERVICE
-              value: 192.168.1.3
+              value: transaction-service
             - name: TRANSACTION_SERVICE_PORT
-              value: "30093"
+              value: "9003"
