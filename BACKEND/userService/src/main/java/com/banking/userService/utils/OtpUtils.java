@@ -15,11 +15,22 @@ public class OtpUtils {
     @Autowired
     private RedisTemplate<String, OtpRegister> redisTemplateOtpRegister;
 
+    @Autowired
+    private RedisTemplate<String, String> redisTemplateForString;
+
+
     private OtpRegister genOtp(OtpRegister otpRegister) {
         Random random = new Random();
         int otp = 100000 + random.nextInt(900000);
         otpRegister.setOtpValue(100000);
         return otpRegister;
+    }
+
+    public String genOtp(String username, long expireTime) {
+        Random random = new Random();
+        int otp = 100000 + random.nextInt(900000);
+        redisTemplateForString.opsForValue().set("otp-string:" + username, String.valueOf(otp), expireTime, TimeUnit.SECONDS);
+        return String.valueOf(otp);
     }
 
     public OtpRegister genOtp(String username, OtpRegister otpRegister, long expireTime) {

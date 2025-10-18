@@ -62,4 +62,21 @@ public class EmailConsumer {
         emailService.sendSimpleEmail("chauduongphattien2201@gmail.com", "change_password", placeholders);
     }
 
+    @KafkaListener(topics = "otp-forgot-password", groupId = "email-group")
+    @Retryable(
+            value = { Exception.class },
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 2000, multiplier = 2)
+    )
+    public void listenForgotPasswordSendOtp(String message) {
+        System.out.println(message);
+        String[] parts = message.split("\\|");
+        Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("userName", parts[0]);
+        placeholders.put("email", parts[0]);
+        placeholders.put("otpValue", parts[1]);
+        placeholders.put("expireTime", "300");
+        emailService.sendSimpleEmail("chauduongphattien2201@gmail.com", "gen_otp", placeholders);
+    }
+
 }

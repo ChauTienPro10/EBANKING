@@ -16,6 +16,7 @@ import com.banking.userService.repository.IUserRepository;
 import com.banking.userService.utils.JwtTokenProvider;
 import com.banking.userService.utils.OtpUtils;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -33,6 +34,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class UserService {
 
@@ -232,6 +234,26 @@ public class UserService {
         return UserProto.ChangePasswordResponse.newBuilder()
                 .setStatus(true)
                 .setDescription("change_password_success")
+                .build();
+    }
+
+    public UserProto.ForgotPasswordOTPResponse forgotPasswordOtpRequest(UserProto.ForgotPasswordOTPRequest rq) {
+        try {
+            if (rq.getTypeVerify().equals(VerifyType.EMAIL.getName())) {
+                String otp = otpUtils.genOtp(rq.getUsername(), 300);
+                kafkaTemplate.send(KafkaTopic.SEND_OTP_FORGOT_PASSWORD.getTopicName(), rq.getUsername() + "|" + otp);
+                return UserProto.ForgotPasswordOTPResponse.newBuilder()
+                        .setStatus(true)
+                        .build();
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return UserProto.ForgotPasswordOTPResponse.newBuilder()
+                    .setStatus(false)
+                    .build();
+        }
+        return UserProto.ForgotPasswordOTPResponse.newBuilder()
+                .setStatus(false)
                 .build();
     }
 }

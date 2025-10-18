@@ -8,6 +8,9 @@ public interface IURL {
     String LOGIN_URL = "/login";
     String UPDATE_URL = "/update";
     String CHANGE_PASSWORD_URL = "/change-password";
+    String FORGOT_PASSWORD_REQUEST_OTP = "/forgot-password-send-otp";
+    String FORGOT_PASSWORD_VERIFY_OTP = "/forgot-password-verify-otp";
+
 
     String ACCOUNT_TRANS = HOST_PREFIX + "/trans/account";
     String OPEN_ACC_TRANS = "/new";

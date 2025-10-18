@@ -62,4 +62,16 @@ public class AuthController {
         }
         return ResponseEntity.status(HttpStatus.OK).body(authService.changePassword(request));
     }
+
+    @PostMapping(IURL.FORGOT_PASSWORD_REQUEST_OTP)
+    public ResponseEntity<ForgotPasswordResponseOTP> forgotPasswordSendOtp(@RequestBody ForgotPasswordRequestOTP rq) {
+        log.info("POST:::" + IURL.FORGOT_PASSWORD_REQUEST_OTP);
+        return ResponseEntity.status(HttpStatus.OK).body(authService.forgotPasswordRequestOtp(rq));
+    }
+
+    @PostMapping(IURL.FORGOT_PASSWORD_VERIFY_OTP)
+    public ResponseEntity<ForgotPasswordVerifyOtpRes> forgotPasswordVerifyOtp(@RequestBody ForgotPasswordVerifyOtpReq rq) {
+        log.info("POST:::" + IURL.FORGOT_PASSWORD_VERIFY_OTP);
+        return ResponseEntity.status(HttpStatus.OK).body(authService.forgotPasswordVerifyOtp(rq));
+    }
 }

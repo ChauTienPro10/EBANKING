@@ -133,4 +133,20 @@ public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
             );
         }
     }
+
+    @Override
+    public void forgotPasswordRequestOtp(UserProto.ForgotPasswordOTPRequest rq,StreamObserver<UserProto.ForgotPasswordOTPResponse> responseObserver) {
+        try {
+            UserProto.ForgotPasswordOTPResponse rs = userService.forgotPasswordOtpRequest(rq);
+            responseObserver.onNext(rs);
+            responseObserver.onCompleted();
+        } catch (Exception e) {
+            responseObserver.onError(
+                    Status.INTERNAL
+                            .withDescription(e.getMessage())
+                            .asRuntimeException()
+            );
+        }
+    }
+
 }

@@ -2,11 +2,10 @@ package com.example.auth.services;
 
 import com.example.auth.consts.grpcPath;
 import com.example.auth.dto.request.ChangePasswordRequest;
+import com.example.auth.dto.request.ForgotPasswordRequestOTP;
+import com.example.auth.dto.request.ForgotPasswordVerifyOtpReq;
 import com.example.auth.dto.request.LoginRequest;
-import com.example.auth.dto.response.ChangePasswordResponse;
-import com.example.auth.dto.response.CreateUserOtpResponse;
-import com.example.auth.dto.response.LoginResponse;
-import com.example.auth.dto.response.RegisterResponse;
+import com.example.auth.dto.response.*;
 import com.example.auth.mapper.UserMapper;
 import com.example.auth.protopkg.UserProto;
 import com.example.auth.protopkg.UserServiceGrpc;
@@ -90,5 +89,15 @@ public class AuthService {
     public ChangePasswordResponse changePassword(ChangePasswordRequest request) {
         UserProto.ChangePasswordRequest rq = userMapper.toChangePasswordRequestProto(request);
         return userMapper.toChangePasswordResponseDTO(userStub.changePassword(rq));
+    }
+
+    public ForgotPasswordResponseOTP forgotPasswordRequestOtp(ForgotPasswordRequestOTP requestOTP) {
+        UserProto.ForgotPasswordOTPRequest rq = userMapper.toProto(requestOTP);
+        return userMapper.toDto(userStub.forgotPasswordRequestOtp(rq));
+    }
+
+    public ForgotPasswordVerifyOtpRes forgotPasswordVerifyOtp(ForgotPasswordVerifyOtpReq r) {
+        UserProto.VerifyOtpForgotPasswordRequest rq = userMapper.toProto(r);
+        return userMapper.toDto(userStub.verifyOTPForgotPassword(rq));
     }
 }
