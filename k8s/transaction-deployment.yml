@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: transaction-service
+  labels:
+    app: transaction-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: transaction-service
+  template:
+    metadata:
+      labels:
+        app: transaction-service
+    spec:
+      containers:
+        - name: transaction-service
+          image: tien22012003/transactionservice:1.1
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8003   
+            - containerPort: 9003
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "k8s"
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              value: 192.168.1.3:29092
+            - name: MACHINE_HOST
+              value: 192.168.1.3
+  
