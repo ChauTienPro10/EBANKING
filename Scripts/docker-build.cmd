@@ -3,7 +3,7 @@ setlocal enabledelayedexpansion
 
 REM === Config ===
 set DOCKER_USERNAME=tien22012003
-set TAG=1.0
+set TAG=1.1
 
 REM === Build all services in ..\docker-build-services
 for /d %%d in ("..\docker-build-services\*") do (

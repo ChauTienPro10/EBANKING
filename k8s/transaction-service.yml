@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: transaction-service
+spec:
+  selector:
+    app: transaction-service
+  type: NodePort
+  ports:
+    - name: http
+      port: 8003        # port bên trong cluster
+      targetPort: 8003     # port trong container
+      nodePort: 30083      # port để truy cập từ bên ngoài (phải trong khoảng 30000–32767)
+    - name: grpc
+      port: 9003
+      targetPort: 9003
+      nodePort: 30093

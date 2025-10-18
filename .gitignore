@@ -10,3 +10,7 @@ BACKEND/.idea/workspace.xml
 JarFileOutput/
 
 *.jar
+
+# Ignore all Spring Boot configuration files
+**/application.properties
+**/application.yml

@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: auth-service
-          image: tien22012003/authservice:1.0
+          image: tien22012003/authservice:1.1
           imagePullPolicy: Always
           ports:
             - containerPort: 8000   
@@ -24,3 +24,11 @@ spec:
           env:
             - name: SPRING_PROFILES_ACTIVE
               value: "k8s"
+            - name: USER_SERVICE
+              value: user-service
+            - name: USER_SERVICE_PORT
+              value: "9001"
+            - name: TRANSACTION_SERVICE
+              value: transaction-service
+            - name: TRANSACTION_SERVICE_PORT
+              value: "9003"
