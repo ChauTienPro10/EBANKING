@@ -4,8 +4,13 @@ import com.ebanking.emailService.dto.OtpRegister;
 import com.ebanking.emailService.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,4 +44,22 @@ public class EmailConsumer {
 
         emailService.sendSimpleEmail("chauduongphattien2201@gmail.com", "gen_otp", placeholders);
     }
+
+    @KafkaListener(topics = "send-email-change-password", groupId = "email-group")
+    @Retryable(
+            value = { Exception.class },
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 2000, multiplier = 2)
+    )
+    public void listenChangePasswordEvent(String username) {
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+
+        Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("userName", username);
+        placeholders.put("timeUpdate", now.format(formatter));
+
+        emailService.sendSimpleEmail("chauduongphattien2201@gmail.com", "change_password", placeholders);
+    }
+
 }

@@ -10,14 +10,23 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { InputIcon, ErrorIcon, HomeIcon, FavoriteIcon, SettingsIcon } from '../components/icon';
+import {
+  InputIcon,
+  ErrorIcon,
+  HomeIcon,
+  FavoriteIcon,
+  SettingsIcon,
+} from '../components/icon';
 import CustomInput from '../components/CustomInput';
 import CustomButton from '../components/CustomButton';
 import IconButton from '../components/IconButton';
 import BackgroundDecoration from '../components/BackgroundDecoration';
-import { AuthStackParamList } from '../navigation/AuthNavigator';
+import { RootStackParamList } from '../navigation/types';
 
-type DemoScreenNavigationProp = StackNavigationProp<AuthStackParamList, 'SignIn'>;
+type DemoScreenNavigationProp = StackNavigationProp<
+  RootStackParamList,
+  'SignIn'
+>;
 
 const DemoScreen: React.FC = () => {
   const { t, i18n } = useTranslation();
@@ -41,7 +50,10 @@ const DemoScreen: React.FC = () => {
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <View style={styles.header}>
             <Text style={styles.title}>Demo Components</Text>
-            <TouchableOpacity style={styles.langButton} onPress={toggleLanguage}>
+            <TouchableOpacity
+              style={styles.langButton}
+              onPress={toggleLanguage}
+            >
               <Text style={styles.langText}>
                 {i18n.language === 'vi' ? 'EN' : 'VI'}
               </Text>
@@ -141,12 +153,8 @@ const DemoScreen: React.FC = () => {
 
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>i18n Test</Text>
-            <Text style={styles.i18nText}>
-              {t('auth.signIn.greeting')}
-            </Text>
-            <Text style={styles.i18nText}>
-              {t('auth.signUp.greeting')}
-            </Text>
+            <Text style={styles.i18nText}>{t('auth.signIn.greeting')}</Text>
+            <Text style={styles.i18nText}>{t('auth.signUp.greeting')}</Text>
             <Text style={styles.i18nText}>
               {t('auth.forgotPassword.title')}
             </Text>

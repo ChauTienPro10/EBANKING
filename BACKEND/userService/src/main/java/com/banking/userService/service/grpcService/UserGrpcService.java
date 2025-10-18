@@ -120,9 +120,9 @@ public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
     }
 
     @Override
-    public void changePassword(UserProto.changePasswordRequest rq, StreamObserver<UserProto.changePasswordResponse> responseObserver) {
+    public void changePassword(UserProto.ChangePasswordRequest rq, StreamObserver<UserProto.ChangePasswordResponse> responseObserver) {
         try {
-            UserProto.changePasswordResponse rs = userService.changePassword(rq);
+            UserProto.ChangePasswordResponse rs = userService.changePassword(rq);
             responseObserver.onNext(rs);
             responseObserver.onCompleted();
         } catch (Exception e) {

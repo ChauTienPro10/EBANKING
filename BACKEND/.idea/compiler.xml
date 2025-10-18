@@ -28,7 +28,7 @@
         <module name="firebaseService" />
         <module name="AIService" />
       </profile>
-      <profile name="Annotation profile for transactionService" enabled="true">
+      <profile name="Annotation profile for emailService" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
