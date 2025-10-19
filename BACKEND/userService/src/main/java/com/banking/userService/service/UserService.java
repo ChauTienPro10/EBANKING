@@ -256,4 +256,55 @@ public class UserService {
                 .setStatus(false)
                 .build();
     }
+
+    public UserProto.VerifyOtpForgotPasswordResponse verifyOtpForgotPassword(UserProto.VerifyOtpForgotPasswordRequest r) {
+        try {
+            if(!isStrongPassword(r.getPassword())) {
+                return UserProto.VerifyOtpForgotPasswordResponse.newBuilder()
+                        .setStatus(false)
+                        .setError("password_invalid")
+                        .build();
+            }
+            if (!otpUtils.verifyOtpForgotPassword(r.getUsername(), r.getOtp())) {
+                return UserProto.VerifyOtpForgotPasswordResponse.newBuilder()
+                        .setStatus(false)
+                        .setError("otp_not_true")
+                        .build();
+            }
+            String encodePassword = passwordEncoder.encode(r.getPassword());
+            User us = userRepository.findByUsername(r.getUsername());
+            if (us == null) {
+                return UserProto.VerifyOtpForgotPasswordResponse.newBuilder()
+                        .setStatus(false)
+                        .setError("user_not_found")
+                        .build();
+            }
+            us.setPassword(encodePassword);
+            userRepository.save(us);
+            return UserProto.VerifyOtpForgotPasswordResponse.newBuilder()
+                    .setStatus(true)
+                    .setError("")
+                    .build();
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return UserProto.VerifyOtpForgotPasswordResponse.newBuilder()
+                    .setStatus(false)
+                    .setError("internal_error")
+                    .build();
+        }
+    }
+
+    public UserProto.GetUserIdByUsernameResponse getUserIdByUsername (UserProto.GetUserIdByUsernameRequest r) {
+        if (r.getUsername().isEmpty()) {
+            return UserProto.GetUserIdByUsernameResponse.newBuilder()
+                    .setUserId(-1).build();
+        }
+        User us = userRepository.findByUsername(r.getUsername());
+        if (us == null) {
+            return UserProto.GetUserIdByUsernameResponse.newBuilder()
+                    .setUserId(0).build();
+        }
+        return UserProto.GetUserIdByUsernameResponse.newBuilder()
+                .setUserId(us.getId()).build();
+    }
 }

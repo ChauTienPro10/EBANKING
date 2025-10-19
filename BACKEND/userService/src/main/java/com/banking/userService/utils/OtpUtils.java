@@ -55,4 +55,11 @@ public class OtpUtils {
         throw new BadCredentialsException("Xác thực OTP thất bại");
     }
 
+    public boolean verifyOtpForgotPassword(String username, String otp) {
+        String key = "otp-string:" + username;
+        String otpInRedis = redisTemplateForString.opsForValue().get(key);
+        if (otpInRedis == null) return false;
+        return otpInRedis.equals(otp);
+    }
+
 }

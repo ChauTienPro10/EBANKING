@@ -107,4 +107,12 @@ public class AuthService {
         UserProto.VerifyOtpForgotPasswordRequest rq = userMapper.toProto(r);
         return userMapper.toDto(userStub.verifyOTPForgotPassword(rq));
     }
+
+    public long getUserIdByUsername(String username) {
+        UserProto.GetUserIdByUsernameRequest request = UserProto.GetUserIdByUsernameRequest.newBuilder()
+                .setUsername(username)
+                .build();
+        UserProto.GetUserIdByUsernameResponse rs = userStub.getUserIdByUsername(request);
+        return (long) rs.getUserId();
+    }
 }

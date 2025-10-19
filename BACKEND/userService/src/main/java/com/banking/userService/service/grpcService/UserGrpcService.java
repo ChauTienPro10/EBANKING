@@ -9,12 +9,14 @@ import com.banking.userService.service.UserService;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @GrpcService
 public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
 
@@ -45,6 +47,7 @@ public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
             responseObserver.onNext(res);
             responseObserver.onCompleted();
         } catch (Exception e) {
+            log.error(e.getMessage());
             responseObserver.onError(
                     Status.UNAUTHENTICATED
                             .withDescription(e.getMessage())
@@ -75,6 +78,7 @@ public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
             responseObserver.onNext(response);
             responseObserver.onCompleted();
         } catch (Exception e) {
+            log.error(e.getMessage());
             responseObserver.onError(
                     Status.UNAUTHENTICATED
                             .withDescription(e.getMessage())
@@ -90,6 +94,7 @@ public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
             responseObserver.onNext(loginResponse);
             responseObserver.onCompleted();
         } catch (Exception e) {
+            log.error(e.getMessage());
             responseObserver.onError(
                     Status.UNAUTHENTICATED
                             .withDescription(e.getMessage())
@@ -111,6 +116,7 @@ public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
             responseObserver.onNext(rs);
             responseObserver.onCompleted();
         } catch (Exception e) {
+            log.error(e.getMessage());
             responseObserver.onError(
                     Status.UNAUTHENTICATED
                             .withDescription(e.getMessage())
@@ -126,6 +132,7 @@ public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
             responseObserver.onNext(rs);
             responseObserver.onCompleted();
         } catch (Exception e) {
+            log.error(e.getMessage());
             responseObserver.onError(
                     Status.INTERNAL
                             .withDescription(e.getMessage())
@@ -141,7 +148,40 @@ public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
             responseObserver.onNext(rs);
             responseObserver.onCompleted();
         } catch (Exception e) {
+            log.error(e.getMessage());
             responseObserver.onError(
+                    Status.INTERNAL
+                            .withDescription(e.getMessage())
+                            .asRuntimeException()
+            );
+        }
+    }
+
+    @Override
+    public void verifyOTPForgotPassword(UserProto.VerifyOtpForgotPasswordRequest rq, StreamObserver<UserProto.VerifyOtpForgotPasswordResponse> responseStreamObserver) {
+        try {
+            UserProto.VerifyOtpForgotPasswordResponse rs = userService.verifyOtpForgotPassword(rq);
+            responseStreamObserver.onNext(rs);
+            responseStreamObserver.onCompleted();
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            responseStreamObserver.onError(
+                    Status.INTERNAL
+                            .withDescription(e.getMessage())
+                            .asRuntimeException()
+            );
+        }
+    }
+
+    @Override
+    public void getUserIdByUsername(UserProto.GetUserIdByUsernameRequest rq, StreamObserver<UserProto.GetUserIdByUsernameResponse> responseStreamObserver) {
+        try {
+            UserProto.GetUserIdByUsernameResponse rs = userService.getUserIdByUsername(rq);
+            responseStreamObserver.onNext(rs);
+            responseStreamObserver.onCompleted();
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            responseStreamObserver.onError(
                     Status.INTERNAL
                             .withDescription(e.getMessage())
                             .asRuntimeException()

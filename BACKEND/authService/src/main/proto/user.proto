@@ -93,6 +93,14 @@ message VerifyOtpForgotPasswordResponse {
   string error = 2;
 }
 
+message GetUserIdByUsernameRequest {
+  string username = 1;
+}
+
+message GetUserIdByUsernameResponse {
+  float userId = 1;
+}
+
 service UserService {
   rpc getUserById(GetUserRequestById) returns (UserResponse);
   rpc newUser(NewUserRequest) returns (NewUserResponse);
@@ -103,4 +111,5 @@ service UserService {
   rpc changePassword(ChangePasswordRequest) returns (ChangePasswordResponse);
   rpc forgotPasswordRequestOtp(ForgotPasswordOTPRequest) returns (ForgotPasswordOTPResponse);
   rpc verifyOTPForgotPassword(VerifyOtpForgotPasswordRequest) returns (VerifyOtpForgotPasswordResponse);
+  rpc getUserIdByUsername(GetUserIdByUsernameRequest) returns (GetUserIdByUsernameResponse);
 }
