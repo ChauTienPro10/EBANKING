@@ -7,6 +7,8 @@ import Header from '../../components/Header';
 import MenuList from '../../components/MenuList';
 import BottomNavigation from '../../components/BottomNavigation';
 import Colors from '../../constants/color';
+import { useNavigation } from '@react-navigation/native';
+import { MenuItem } from '../../types/data';
 
 const SettingsScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -24,7 +26,9 @@ const SettingsScreen: React.FC = () => {
     { id: 'support', label: t('bottom_navigation.support'), icon: 'help-circle' },
   ];
 
-  const settingsItems = [
+ 
+
+  const settingsItems: MenuItem[] = [
     { id: 'language', label: t('settings.language'), icon: 'globe', route: 'language_settings', category: 'general' },
     { id: 'notifications', label: t('settings.notifications'), icon: 'notifications', route: 'notification_settings', category: 'general' },
     { id: 'security', label: t('settings.security'), icon: 'shield', route: 'security_settings', category: 'security' },
@@ -35,9 +39,11 @@ const SettingsScreen: React.FC = () => {
     { id: 'logout', label: t('settings.logout'), icon: 'log-out', route: 'logout', category: 'account' },
   ];
 
-  const handleSettingSelect = (item: any) => {
-    console.log('Setting selected:', item);
-  };
+  const navigation = useNavigation();
+  const handleSettingSelect = (item: MenuItem) => {
+    // console.log('Setting selected:', item);
+      navigation.navigate(item.route as never);
+    };
 
   return (
     <View style={styles.container}>

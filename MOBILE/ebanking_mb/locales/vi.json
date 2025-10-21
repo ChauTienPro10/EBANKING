@@ -199,6 +199,123 @@
     "text_send_again": "Gửi lại",
     "text_auth": "Xác thực"
   },
+  "language_setting": {
+    "title": "Cài đặt ngôn ngữ",
+    "select_language": "Chọn ngôn ngữ",
+    "language_options": {
+      "vi": "Tiếng Việt",
+      "en": "Tiếng Anh"
+    }
+  },
+  "notifications_setting": {
+  "title": "Cài đặt thông báo",
+  "transaction": "Thông báo giao dịch",
+  "promo": "Tin tức & khuyến mãi",
+  "login": "Xác thực đăng nhập",
+  "enabled": "Đã bật",
+  "disabled": "Đã tắt"
+  },
+  "security": {
+  "title": "Bảo mật",
+  "biometric": "Xác thực sinh trắc học",
+  "reset_pin": "Đặt lại mã PIN",
+  "encryption": "Mã hóa đăng nhập",
+  "enabled": "Đã bật",
+  "disabled": "Đã tắt",
+  "smartOtpEnable": "Kích hoạt Smart OTP",
+  "smartOtpChangePin": "Đổi PIN Smart OTP",
+  "smartOtpForgotPin": "Quên PIN Smart OTP",
+  "smartOtpSync": "Đồng bộ Smart OTP",
+  "changePinMyvib": "Đổi PIN MyVIB",
+  "changePassword": "Đổi mật khẩu đăng nhập"
+  },
+  "change_pin_otp": {
+    "title": "Đổi mã PIN OTP",
+    "enterCurrentPin": "Nhập mã PIN Smart OTP hiện tại",
+    "enterNewPin": "Nhập mã PIN Smart OTP mới",
+    "reenterNewPin": "Nhập lại mã PIN Smart OTP mới",
+    "continue": "Tiếp tục",
+    "errorTitle": "Lỗi",
+    "success": "Đổi mã PIN thành công",
+    "validation": {
+      "empty": "Mã không được để trống",
+      "length": "Mã phải gồm đúng 6 ký tự",
+      "number": "Mã chỉ được chứa số",
+      "duplicate": "Các số không được trùng nhau",
+      "mismatch": "Mã PIN nhập lại không khớp",
+      "not_true": "Mã PIN không đúng"
+    },
+    "warning": {
+      "title": "Lưu ý",
+      "line1": "Bạn vui lòng ghi nhớ mã PIN để xác thực giao dịch qua ứng dụng trên thiết bị này.",
+      "line2": "Mã PIN có độ dài 6 ký tự số khác nhau và không liên tiếp.",
+      "line3": "Không đặt mã PIN là chuỗi số ngày tháng năm sinh."
+    }
+  },
+  "forgot_pin_otp": {
+    "title": "Quên mã PIN",
+    "subtitle": "Nhập email hoặc số điện thoại bạn đã đăng ký để nhận mã OTP đặt lại mã PIN.",
+    "placeholder": "Email hoặc Số điện thoại",
+    "button": "Gửi mã OTP",
+    "errorTitle": "Lỗi",
+    "validation": {
+      "empty": "Vui lòng nhập email hoặc số điện thoại."
+    }
+  },
+  "change_pin_myvib": {
+  
+  },
+  "change_password": {
+    "title": "Đổi mật khẩu",
+    "currentPassword": "Mật khẩu hiện tại",
+    "newPassword": "Mật khẩu mới",
+    "confirmPassword": "Xác nhận mật khẩu mới",
+    "confirmChange": "Xác nhận đổi mật khẩu",
+    "success": "Mật khẩu đã được đổi thành công!",
+    "validation": {
+      "empty": "Vui lòng nhập đầy đủ thông tin.",
+      "notMatch": "Mật khẩu xác nhận không khớp.",
+      "invalid": "Mật khẩu phải bắt đầu bằng chữ in hoa, có ít nhất 1 chữ thường, 1 số, 1 ký tự đặc biệt và dài tối thiểu 8 ký tự."
+    }
+  },
+  "privacy": {
+    "title": "Chính sách quyền riêng tư",
+    "intro": "Chúng tôi cam kết bảo vệ thông tin cá nhân và quyền riêng tư của bạn.",
+    "data_collection": "Thu thập dữ liệu",
+    "data_details": "Chúng tôi chỉ thu thập các dữ liệu cần thiết để cung cấp dịch vụ, như thông tin tài khoản và hành vi sử dụng.",
+    "security": "Bảo mật",
+    "security_details": "Dữ liệu của bạn được mã hóa và lưu trữ an toàn. Chúng tôi tuân thủ các tiêu chuẩn bảo mật cao nhất.",
+    "user_rights": "Quyền của người dùng",
+    "user_rights_details": "Bạn có thể yêu cầu truy cập, chỉnh sửa hoặc xóa thông tin cá nhân bất kỳ lúc nào."
+  },
+  "biometric": {
+    "title": "Xác thực sinh trắc học",
+    "description": "Bật xác thực bằng vân tay hoặc khuôn mặt để đăng nhập nhanh và an toàn hơn.",
+    "enable_label": "Sử dụng sinh trắc học",
+    "activated": "Đã bật sinh trắc học.",
+    "deactivated": "Đã tắt sinh trắc học."
+  },
+  "about": {
+    "title": "Về EBanking",
+    "intro1": "EBanking là ứng dụng ngân hàng di động hiện đại giúp bạn quản lý tài chính dễ dàng và an toàn.",
+    "intro2": "Bạn có thể chuyển tiền, thanh toán hóa đơn, kiểm tra số dư và nhiều hơn nữa.",
+    "vision": "Tầm nhìn của chúng tôi",
+    "visionText": "Chúng tôi hướng tới nền tảng tài chính số bảo mật, thân thiện.",
+    "version": "Phiên bản",
+    "copyright": "© 2025 EBanking. Bản quyền thuộc về công ty."
+  },
+  "help": {
+    "title": "Trợ giúp & Hỗ trợ",
+    "q1": "1. Làm sao để đăng nhập?",
+    "a1": "- Mở ứng dụng, nhập tên đăng nhập và mật khẩu.\n- Nếu quên mật khẩu, dùng chức năng 'Quên mật khẩu'.",
+    "q2": "2. Làm sao để chuyển tiền?",
+    "a2": "- Vào mục 'Chuyển tiền'.\n- Nhập người nhận và số tiền.\n- Xác nhận bằng mã OTP.",
+    "q3": "3. Làm sao bật sinh trắc học?",
+    "a3": "- Vào Cài đặt > Bảo mật > Bật Sinh trắc học.\n- Thiết bị cần hỗ trợ FaceID hoặc vân tay.",
+    "q4": "4. Liên hệ hỗ trợ như thế nào?",
+    "a4": "- Gọi: 1800-1234\n- Email: support@ebanking.com",
+    "footer": "Liên hệ bộ phận hỗ trợ nếu cần thêm trợ giúp."
+  },
   "ui": {
     "bank_name": "eBanking",
     "card_brand": "VISA",

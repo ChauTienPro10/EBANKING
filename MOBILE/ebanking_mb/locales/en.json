@@ -199,6 +199,124 @@
     "text_send_again": "Send again",
     "text_auth": "Authentication"
   },
+  "language_setting": {
+    "title": "Language",
+    "select_language": "Select Language",
+    "language_options": {
+      "en": "English",
+      "vi": "Vietnamese"
+    }
+  },
+  "notifications_setting": {
+  "title": "Notification Settings",
+  "transaction": "Transaction Alerts",
+  "promo": "News & Promotions",
+  "login": "Login Verification",
+  "enabled": "Enabled",
+  "disabled": "Disabled"
+  },
+  "security": {
+    "title": "Security",
+    "biometric": "Biometric Authentication",
+    "reset_pin": "Reset PIN",
+    "encryption": "Encrypted Login",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "smartOtpEnable": "Enable Smart OTP",
+    "smartOtpChangePin": "Change Smart OTP PIN",
+    "smartOtpForgotPin": "Forgot Smart OTP PIN",
+    "smartOtpSync": "Sync Smart OTP",
+    "changePinMyvib": "Change MyVIB PIN",
+    "changePassword": "Change Login Password",
+    "fingerprintLogin": "Login with Fingerprint"
+  },
+  "change_pin_otp": {
+    "title": "Change PIN",
+    "enterCurrentPin": "Enter current Smart OTP PIN",
+    "enterNewPin": "Enter new Smart OTP PIN",
+    "reenterNewPin": "Re-enter new Smart OTP PIN",
+    "continue": "Continue",
+    "errorTitle": "Error",
+    "success": "PIN changed successfully",
+    "validation": {
+      "empty": "Code cannot be empty",
+      "length": "Code must contain exactly 6 digits",
+      "number": "Code must contain only numbers",
+      "duplicate": "Digits cannot be duplicated",
+      "mismatch": "PINs do not match",
+      "not_true": "PIN is not correct"
+    },
+    "warning": {
+      "title": "Notice",
+      "line1": "Please remember your PIN to verify transactions via the app on this device.",
+      "line2": "The PIN must be 6 digits long, with unique and non-sequential numbers.",
+      "line3": "Do not set your PIN as your date of birth or any related number sequence."
+    }
+  },
+  "forgot_pin_otp": {
+    "title": "Forgot PIN",
+    "subtitle": "Enter your registered email or phone number to receive an OTP to reset your PIN.",
+    "placeholder": "Email or Phone number",
+    "button": "Send OTP",
+    "errorTitle": "Error",
+    "validation": {
+      "empty": "Please enter your email or phone number."
+    }
+  },
+  "change_pin_myvib": {
+
+  },
+  "change_password": {
+    "title": "Change Password",
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm new password",
+    "confirmChange": "Confirm password change",
+    "success": "Password changed successfully!",
+    "validation": {
+      "empty": "Please enter all fields.",
+      "notMatch": "Confirmation password does not match.",
+      "invalid": "Password must start with an uppercase letter, include at least one lowercase letter, one number, one special character, and be at least 8 characters long."
+    }
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "intro": "We are committed to protecting your personal information and privacy.",
+    "data_collection": "Data Collection",
+    "data_details": "We only collect the necessary data to provide our services, such as account info and usage behavior.",
+    "security": "Security",
+    "security_details": "Your data is encrypted and stored securely. We comply with top-level security standards.",
+    "user_rights": "User Rights",
+    "user_rights_details": "You can request to access, edit, or delete your personal information at any time."
+  },
+  "biometric": {
+    "title": "Biometric Authentication",
+    "description": "Enable fingerprint or face recognition for faster and more secure login.",
+    "enable_label": "Use Biometrics",
+    "activated": "Biometric authentication enabled.",
+    "deactivated": "Biometric authentication disabled."
+  },
+  "about": {
+    "title": "About EBanking",
+    "intro1": "EBanking is a modern mobile banking app that helps you manage your finances easily and securely.",
+    "intro2": "You can transfer money, pay bills, check balance, and more.",
+    "vision": "Our Vision",
+    "visionText": "We aim to provide a secure, user-friendly digital banking platform.",
+    "version": "Version",
+    "copyright": "© 2025 EBanking. All rights reserved."
+  },
+  "help": {
+    "title": "Help & Support",
+    "q1": "1. How to log in?",
+    "a1": "- Open the app and enter your username and password.\n- If you forgot your password, use 'Forgot password'.",
+    "q2": "2. How to transfer money?",
+    "a2": "- Go to 'Transfer Money'.\n- Enter recipient and amount.\n- Confirm with OTP.",
+    "q3": "3. How to enable biometrics?",
+    "a3": "- Go to Settings > Security > Enable Biometrics.\n- Ensure your device supports biometrics.",
+    "q4": "4. How to contact support?",
+    "a4": "- Call: 1800-1234\n- Email: support@ebanking.com",
+    "footer": "For more help, contact our support team."
+  },
   "ui": {
     "bank_name": "eBanking",
     "card_brand": "VISA",

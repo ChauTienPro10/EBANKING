@@ -4,14 +4,15 @@ import { useTranslation } from 'react-i18next';
 import Icon from 'react-native-vector-icons/Ionicons';
 import GText from './GText';
 import Colors from '../constants/color';
+import { MenuItem } from '../types/data';
 
-interface MenuItem {
-  id: string;
-  label: string;
-  icon: string;
-  route: string;
-  category?: string;
-}
+// export interface MenuItem {
+//   id: string;
+//   label: string;
+//   icon: string;
+//   route: string;
+//   category?: string;
+// }
 
 interface MenuListProps {
   items: MenuItem[];

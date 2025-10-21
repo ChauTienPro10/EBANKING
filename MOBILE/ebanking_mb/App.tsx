@@ -36,7 +36,7 @@ function AppContent() {
           <MainStack />
         </NavigationContainer>
       </View>
-      <Toast /> {/* ✅ Di chuyển Toast ra ngoài View */}
+      {/* <Toast /> ✅ Di chuyển Toast ra ngoài View */}
     </>
   );
 }
