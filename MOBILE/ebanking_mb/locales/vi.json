@@ -263,7 +263,19 @@
     }
   },
   "change_pin_myvib": {
-  
+    "title": "Đổi mã PIN MyVIB",
+    "enterCurrentPin": "Nhập mã PIN MyVIB hiện tại",
+    "enterNewPin": "Nhập mã PIN MyVIB mới",
+    "reenterNewPin": "Nhập lại mã PIN MyVIB mới",
+    "continue": "Tiếp tục",
+    "success": "Đổi mã PIN MyVIB thành công",
+    "validation": {
+      "length": "Mã PIN phải có 6 chữ số.",
+      "duplicate": "Mã PIN không được chứa các ký tự trùng nhau.",
+      "sequential": "Mã PIN không được là chuỗi liên tiếp.",
+      "invalid": "Mã PIN không hợp lệ.",
+      "empty":"Mã không được để trống"
+    }
   },
   "change_password": {
     "title": "Đổi mật khẩu",

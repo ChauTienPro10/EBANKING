@@ -5,28 +5,39 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from 'react-native';
 import Toast from 'react-native-toast-message';
 import SingleInputBoard from './components/SingleInputBoard';
 import MultiInputBoard from './components/MultiInputBoard';
 import { Header } from '../../../components';
+import { validateCodeWithMessage } from '../../../utils/validatecode';
+import { useTranslation } from 'react-i18next';
 
 const ChangePinMyVIBScreen = () => {
-  const [isCheckCurrentPin, setIsCheckCurrentPin] = useState(true);
   const navigation = useNavigation();
+  const { t } = useTranslation();
+
+  const [isCheckCurrentPin, setIsCheckCurrentPin] = useState(true);
 
   const handleCheckCurrentPin = (pin: string[]) => {
-    const pinValue = pin.join('');
-    console.log('PIN hiện tại:', pinValue);
+    const error = validateCodeWithMessage(pin);
+    if (error) {
+      Alert.alert(t('common.error'), t(`change_pin_myvib.validation.${error}`));
+      return;
+    }
     setIsCheckCurrentPin(false);
   };
 
   const handleChangePin = (pin: string[]) => {
-    const pinValue = pin.join('');
-    console.log('PIN mới:', pinValue);
+    const error = validateCodeWithMessage(pin);
+    if (error) {
+      Alert.alert(t('common.error'), t(`change_pin_myvib.validation.${error}`));
+      return;
+    }
     Toast.show({
       type: 'success',
-      text1: 'Đổi mã pin thành công',
+      text1: t('change_pin_myvib.success'),
     });
     navigation.goBack();
   };
@@ -35,26 +46,24 @@ const ChangePinMyVIBScreen = () => {
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <Header title="Đổi mã PIN" showBackButton />
+      <Header title={t('change_pin_myvib.title')} showBackButton />
       <View style={styles.content}>
- {
-        isCheckCurrentPin ? (
-         <SingleInputBoard
-           title="Nhập mã PIN Smart OTP hiện tại"
-           submitText="Tiếp tục"
-           onSubmit={handleCheckCurrentPin}
-         />
-        )
-        : (
-          <MultiInputBoard
-            title_first="Nhập mã PIN Smart OTP mới"
-            title_second="Nhập lại mã PIN Smart OTP mới"
-            submitText="Tiếp tục"
-            onSubmit={handleChangePin}
+        {isCheckCurrentPin ? (
+          <SingleInputBoard
+            title={t('change_pin_myvib.enterCurrentPin')}
+            submitText={t('change_pin_myvib.continue')}
+            onSubmit={handleCheckCurrentPin}
           />
-        )
-      }
-        </View>
+        ) : (
+          <MultiInputBoard
+            title_first={t('change_pin_myvib.enterNewPin')}
+            title_second={t('change_pin_myvib.reenterNewPin')}
+            submitText={t('change_pin_myvib.continue')}
+            onSubmit={handleChangePin}
+            keyword_language="change_pin_myvib.validation"
+          />
+        )}
+      </View>
     </KeyboardAvoidingView>
   );
 };
@@ -67,5 +76,4 @@ const styles = StyleSheet.create({
     paddingTop: 50,
     paddingHorizontal: 20,
   },
- 
 });

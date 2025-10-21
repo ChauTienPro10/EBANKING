@@ -264,8 +264,21 @@
     }
   },
   "change_pin_myvib": {
-
+    "title": "Change MyVIB PIN",
+    "enterCurrentPin": "Enter your current MyVIB PIN",
+    "enterNewPin": "Enter new MyVIB PIN",
+    "reenterNewPin": "Re-enter new MyVIB PIN",
+    "continue": "Continue",
+    "success": "MyVIB PIN changed successfully",
+    "validation": {
+      "empty":"PIN cannot be empty",
+      "length": "PIN must be 6 digits long.",
+      "duplicate": "PIN cannot contain duplicate digits.",
+      "sequential": "PIN cannot be a sequential number.",
+      "invalid": "Invalid PIN format."
+    }
   },
+
   "change_password": {
     "title": "Change Password",
     "currentPassword": "Current password",
