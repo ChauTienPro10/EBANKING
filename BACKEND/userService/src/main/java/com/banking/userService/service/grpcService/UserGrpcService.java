@@ -189,4 +189,35 @@ public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
         }
     }
 
+    @Override
+    public void updateUserInfo(UserProto.User request, StreamObserver<UserProto.User> responseObserver) {
+        try {
+            UserProto.User rs = userService.updateUserInfo(request);
+            responseObserver.onNext(rs);
+            responseObserver.onCompleted();
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            responseObserver.onError(
+                    Status.INTERNAL
+                            .withDescription(e.getMessage())
+                            .asRuntimeException()
+            );
+        }
+    }
+
+    @Override
+    public void verifyPassword(UserProto.VerifyPasswordRequest request, StreamObserver<UserProto.VerifyPasswordResponse> responseObserver) {
+        try {
+            UserProto.VerifyPasswordResponse rs = userService.verifyPassword(request);
+            responseObserver.onNext(rs);
+            responseObserver.onCompleted();
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            responseObserver.onError(
+                    Status.INTERNAL
+                            .withDescription(e.getMessage())
+                            .asRuntimeException()
+            );
+        }
+    }
 }

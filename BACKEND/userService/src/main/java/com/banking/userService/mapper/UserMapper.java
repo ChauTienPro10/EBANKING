@@ -75,6 +75,8 @@ public class UserMapper {
                 .setBirthday(birthdayStr)
                 .setIsMale(info != null && info.getIsMale() != null ? info.getIsMale() : false)
                 .setCreateAt(createAtStr)
+                .setEmail(info != null && info.getEmail() != null ? info.getEmail() : "")
+                .setPhone(info != null && info.getPhone() != null ? info.getPhone() : "")
                 .addAllRoles(
                         user.getRoles() != null
                                 ? user.getRoles().stream()

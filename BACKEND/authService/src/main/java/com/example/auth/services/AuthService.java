@@ -1,10 +1,7 @@
 package com.example.auth.services;
 
 import com.example.auth.consts.grpcPath;
-import com.example.auth.dto.request.ChangePasswordRequest;
-import com.example.auth.dto.request.ForgotPasswordRequestOTP;
-import com.example.auth.dto.request.ForgotPasswordVerifyOtpReq;
-import com.example.auth.dto.request.LoginRequest;
+import com.example.auth.dto.request.*;
 import com.example.auth.dto.response.*;
 import com.example.auth.mapper.UserMapper;
 import com.example.auth.protopkg.UserProto;
@@ -93,6 +90,11 @@ public class AuthService {
         return userStub.getUserById(rq);
     }
 
+    public UpdateUserResponse getUserInfo(Long userId) {
+        UserProto.UserResponse rs = getUserById(userId);
+        return userMapper.protoToUpdateUserResponse(rs);
+    }
+
     public ChangePasswordResponse changePassword(ChangePasswordRequest request) {
         UserProto.ChangePasswordRequest rq = userMapper.toChangePasswordRequestProto(request);
         return userMapper.toChangePasswordResponseDTO(userStub.changePassword(rq));
@@ -114,5 +116,23 @@ public class AuthService {
                 .build();
         UserProto.GetUserIdByUsernameResponse rs = userStub.getUserIdByUsername(request);
         return (long) rs.getUserId();
+    }
+
+    public boolean verifyPassword(String username, String password) {
+        UserProto.VerifyPasswordRequest request = UserProto.VerifyPasswordRequest.newBuilder()
+                .setUsername(username)
+                .setPassword(password)
+                .build();
+        UserProto.VerifyPasswordResponse rs = userStub.verifyPassword(request);
+        return rs.getStatus();
+    }
+
+    public UpdateUserResponse updateUserInfo(UpdateUserRequest request) {
+        if(!verifyPassword(request.getUsername(), request.getPassword())) {
+            return null;
+        }
+        UserProto.User rq = userMapper.fromUpdateUserRequest(request);
+        UserProto.User rs = userStub.updateUserInfo(rq);
+        return userMapper.fromProtoToUpdateUserResponse(rs);
     }
 }

@@ -52,7 +52,7 @@ public class AuthController {
         if (!securityUtils.checkUser(headers, request.getUsername())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        return ResponseEntity.status(HttpStatus.OK).body(null);
+        return ResponseEntity.status(HttpStatus.OK).body(authService.updateUserInfo(request));
     }
 
     @PostMapping(IURL.CHANGE_PASSWORD_URL)
@@ -82,7 +82,7 @@ public class AuthController {
             @PathVariable long userId,
             @RequestHeader Map<String, String> headers
     ) {
-        UserProto.UserResponse userResponse = authService.getUserById(userId);
-        return null;
+        log.info("POST:::" + "user/{userId}");
+        return ResponseEntity.status(HttpStatus.OK).body(authService.getUserInfo(userId));
     }
 }

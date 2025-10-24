@@ -15,4 +15,5 @@ public class UpdateUserRequest {
     String address;
     String birthday;
     Boolean isMale;
+    String password;
 }

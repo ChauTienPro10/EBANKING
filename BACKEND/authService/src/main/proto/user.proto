@@ -13,6 +13,8 @@ message User {
   bool isMale = 7;
   string createAt = 8;
   repeated string roles = 9;
+  string email = 10;
+  string phone = 11;
 }
 
 message GetUserRequestById {
@@ -101,6 +103,15 @@ message GetUserIdByUsernameResponse {
   float userId = 1;
 }
 
+message VerifyPasswordRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message VerifyPasswordResponse {
+  bool status = 1;
+}
+
 service UserService {
   rpc getUserById(GetUserRequestById) returns (UserResponse);
   rpc newUser(NewUserRequest) returns (NewUserResponse);
@@ -112,4 +123,6 @@ service UserService {
   rpc forgotPasswordRequestOtp(ForgotPasswordOTPRequest) returns (ForgotPasswordOTPResponse);
   rpc verifyOTPForgotPassword(VerifyOtpForgotPasswordRequest) returns (VerifyOtpForgotPasswordResponse);
   rpc getUserIdByUsername(GetUserIdByUsernameRequest) returns (GetUserIdByUsernameResponse);
+  rpc updateUserInfo(User) returns (User);
+  rpc verifyPassword(VerifyPasswordRequest) returns (VerifyPasswordResponse);
 }

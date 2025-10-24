@@ -27,6 +27,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Optional;
@@ -307,4 +310,72 @@ public class UserService {
         return UserProto.GetUserIdByUsernameResponse.newBuilder()
                 .setUserId(us.getId()).build();
     }
+
+    public UserProto.User updateUserInfo(UserProto.User us) {
+        User user = userRepository.findByUsername(us.getUsername());
+        if (user == null) return null;
+        UserInfo currentUsInfo = user.getUserInfo();
+        if (currentUsInfo == null) {
+            return null;
+        }
+
+        if (!us.getFullName().isBlank()) {
+            currentUsInfo.setFullName(us.getFullName());
+        }
+        if (!us.getAddress().isBlank()) {
+            currentUsInfo.setAddress(us.getAddress());
+        }
+
+        if (!us.getEmail().isBlank() && !currentUsInfo.getEmail().equals(us.getUsername())) {
+            currentUsInfo.setEmail(us.getEmail());
+        }
+        if (!us.getPhone().isBlank() && !currentUsInfo.getPhone().equals(us.getUsername())) {
+            currentUsInfo.setPhone(us.getPhone());
+        }
+        if (!us.getBirthday().isBlank()) {
+            try {
+                // giả sử birthday là string dạng "yyyy-MM-dd" → convert sang epoch
+                LocalDate date = LocalDate.parse(us.getBirthday());
+                long epoch = date.atStartOfDay(ZoneId.systemDefault()).toEpochSecond();
+                currentUsInfo.setBirthday(epoch);
+            } catch (Exception e) {
+                // log hoặc bỏ qua nếu format sai
+            }
+        }
+
+        currentUsInfo.setIsMale(us.getIsMale());
+        currentUsInfo.setUpdatedAt(System.currentTimeMillis());
+
+        UserInfo saved = userInfoRepository.save(currentUsInfo);
+
+        return UserProto.User.newBuilder()
+                .setId(saved.getId())
+                .setFullName(saved.getFullName() == null ? "" : saved.getFullName())
+                .setUsername(us.getUsername()) // nếu bạn muốn giữ nguyên username
+                .setAddress(saved.getAddress() == null ? "" : saved.getAddress())
+                .setBirthday(saved.getBirthday() == null ? "" :
+                        Instant.ofEpochSecond(saved.getBirthday())
+                                .atZone(ZoneId.systemDefault())
+                                .toLocalDate()
+                                .toString())
+                .setIsMale(saved.getIsMale() != null && saved.getIsMale())
+                .setCreateAt(saved.getCreateAt() == null ? "" : saved.getCreateAt().toString())
+                .addAllRoles(us.getRolesList()) // giữ nguyên roles nếu cần
+                .setEmail(saved.getEmail() == null ? "" : saved.getEmail())
+                .setPhone(saved.getPhone() == null ? "" : saved.getPhone())
+                .build();
+    }
+
+    public UserProto.VerifyPasswordResponse verifyPassword(UserProto.VerifyPasswordRequest request) {
+        User us = userRepository.findByUsername(request.getUsername());
+        if (us == null) {
+            return UserProto.VerifyPasswordResponse.newBuilder()
+                    .setStatus(false)
+                    .build();
+        }
+        return UserProto.VerifyPasswordResponse.newBuilder()
+                .setStatus(passwordEncoder.matches(request.getPassword(), us.getPassword()))
+                .build();
+    }
+
 }

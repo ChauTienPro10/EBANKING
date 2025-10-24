@@ -1,12 +1,12 @@
 package com.example.auth.dto.response;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Builder
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class UpdateUserResponse {
     Long id;
     String fullName;

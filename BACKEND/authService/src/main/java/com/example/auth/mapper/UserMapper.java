@@ -3,10 +3,8 @@ package com.example.auth.mapper;
 import com.example.auth.dto.request.ChangePasswordRequest;
 import com.example.auth.dto.request.ForgotPasswordRequestOTP;
 import com.example.auth.dto.request.ForgotPasswordVerifyOtpReq;
-import com.example.auth.dto.response.ChangePasswordResponse;
-import com.example.auth.dto.response.ForgotPasswordResponseOTP;
-import com.example.auth.dto.response.ForgotPasswordVerifyOtpRes;
-import com.example.auth.dto.response.LoginResponse;
+import com.example.auth.dto.request.UpdateUserRequest;
+import com.example.auth.dto.response.*;
 import com.example.auth.protopkg.UserProto;
 import org.springframework.stereotype.Component;
 
@@ -87,5 +85,79 @@ public class UserMapper {
         dto.setError(response.getError());
         return dto;
     }
+
+    public UpdateUserResponse protoToUpdateUserResponse(UserProto.UserResponse userResponse) {
+        if (userResponse == null || !userResponse.hasUser()) {
+            return null;
+        }
+
+        UserProto.User user = userResponse.getUser();
+
+        UpdateUserResponse response = new UpdateUserResponse();
+        response.setId(user.getId());
+        response.setFullName(user.getFullName());
+        response.setBirthday(user.getBirthday());
+        response.setIsMale(String.valueOf(user.getIsMale()));
+        response.setCitizenId(user.getCitizenId());
+        response.setAddress(user.getAddress());
+
+        // email and phone are not present in the proto, set as null or default
+        response.setEmail(user.getEmail());
+        response.setPhone(user.getPhone());
+
+        return response;
+    }
+
+    public UserProto.User fromUpdateUserRequest(UpdateUserRequest request) {
+        if (request == null) {
+            return null;
+        }
+
+        UserProto.User.Builder builder = UserProto.User.newBuilder();
+
+        if (request.getFullName() != null) {
+            builder.setFullName(request.getFullName());
+        }
+        if (request.getUsername() != null) {
+            builder.setUsername(request.getUsername());
+        }
+        if (request.getAddress() != null) {
+            builder.setAddress(request.getAddress());
+        }
+        if (request.getBirthday() != null) {
+            builder.setBirthday(request.getBirthday()); // giả sử gửi dưới dạng String, ví dụ "2000-05-20"
+        }
+        if (request.getEmail() != null) {
+            builder.setEmail(request.getEmail());
+        }
+        if (request.getPhone() != null) {
+            builder.setPhone(request.getPhone());
+        }
+        if (request.getIsMale() != null) {
+            builder.setIsMale(request.getIsMale());
+        }
+        return builder.build();
+    }
+
+    public UpdateUserResponse fromProtoToUpdateUserResponse(UserProto.User user) {
+        if (user == null) {
+            return null;
+        }
+
+        UpdateUserResponse response = new UpdateUserResponse();
+
+        response.setId(user.getId());
+        response.setFullName(user.getFullName());
+        response.setBirthday(user.getBirthday());
+        response.setIsMale(user.getIsMale() ? "Male" : "Female");
+        response.setEmail(user.getEmail());
+        response.setPhone(user.getPhone());
+        response.setCitizenId(user.getCitizenId());
+        response.setAddress(user.getAddress());
+
+        return response;
+    }
+
+
 
 }
