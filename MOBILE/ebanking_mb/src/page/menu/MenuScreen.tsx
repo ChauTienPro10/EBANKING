@@ -9,10 +9,14 @@ import SupportButton from '../../components/SupportButton';
 import CustomButton from '../../components/CustomButton';
 import AccountCard from '../../components/AccountCard';
 import Colors from '../../constants/color';
-import { SearchIcon, BellIcon, UserIcon} from '../../components/icon';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '../../navigation/types';
+import { SearchIcon, BellIcon, UserIcon } from '../../components/icon';
+
+type ProfileScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Profile'>;
 
 const MenuScreen: React.FC = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<ProfileScreenNavigationProp>();
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('menu');
   const [notificationCount, setNotificationCount] = useState(2);
@@ -68,10 +72,13 @@ const MenuScreen: React.FC = () => {
   ];
 
   const handleMenuSelect = (item: any) => {
-    console.log(t('mock_data.messages.menu_item_selected', { item: item.label }));
-    console.log(t('mock_data.messages.route', { route: item.route }));
-    console.log(t('mock_data.messages.label', { label: item.label }));
-    Alert.alert(t('mock_data.messages.navigation'), `${t('mock_data.messages.navigation')} ${item.label}`);
+    switch (item.id) {
+      case 'profile':
+        navigation.navigate("Profile")
+        break;
+      default:
+        break
+    }
   };
 
   const handleTabChange = (tabId: string) => {
@@ -92,9 +99,11 @@ const MenuScreen: React.FC = () => {
       t('mock_data.messages.logout_confirm'),
       [
         { text: t('mock_data.messages.cancel'), style: 'cancel', onPress: () => console.log(t('mock_data.messages.logout_cancelled')) },
-        { text: t('menu.logout'), style: 'destructive', onPress: () => {
-          console.log(t('mock_data.messages.logout_success'));
-        }},
+        {
+          text: t('menu.logout'), style: 'destructive', onPress: () => {
+            console.log(t('mock_data.messages.logout_success'));
+          }
+        },
       ]
     );
   };
@@ -106,7 +115,7 @@ const MenuScreen: React.FC = () => {
 
   const handleQRPress = () => {
     console.log('QR Code pressed - Open QR Scanner');
- 
+
   };
 
   const handleNotificationPress = () => {

@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, StyleSheet, ScrollView} from 'react-native';
+import React, { useState } from 'react';
+import { View, StyleSheet, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useAppNavigation } from '../../hooks/useNavigation';
 import { useCommonUI } from '../../hooks/useCommonUI';
@@ -7,11 +7,16 @@ import Header from '../../components/Header';
 import MenuList from '../../components/MenuList';
 import BottomNavigation from '../../components/BottomNavigation';
 import Colors from '../../constants/color';
+import { useDispatch } from 'react-redux';
+import { setLoginStatus, setLoginResponse } from '../../store/slices/appSlice';
+import LogoutConfirmPopup from '../../popups/LogoutPopup';
 
 const SettingsScreen: React.FC = () => {
   const { t } = useTranslation();
   const { activeTab, handleTabChange, handleNotificationPress } = useAppNavigation('settings');
   const { notificationCount, clearNotifications } = useCommonUI();
+  const dispatch = useDispatch();
+  const [showLogoutPopup, setShowLogoutPopup] = useState(false);
 
   const handleQRPress = () => {
     console.log('QR Code pressed - Open QR Scanner');
@@ -35,8 +40,21 @@ const SettingsScreen: React.FC = () => {
     { id: 'logout', label: t('settings.logout'), icon: 'log-out', route: 'logout', category: 'account' },
   ];
 
+  const handleLogout = () => {
+    dispatch(setLoginResponse(null));
+    dispatch(setLoginStatus(false));
+  }
+
   const handleSettingSelect = (item: any) => {
-    console.log('Setting selected:', item);
+    switch (item.id) {
+      case 'logout':
+        setShowLogoutPopup(true)
+        break;
+
+      default:
+
+        break;
+    }
   };
 
   return (
@@ -65,6 +83,11 @@ const SettingsScreen: React.FC = () => {
         tabs={bottomTabs}
         onChange={handleTabChange}
         onQRPress={handleQRPress}
+      />
+      <LogoutConfirmPopup
+        visible={showLogoutPopup}
+        onCancel={() => setShowLogoutPopup(false)}
+        onConfirm={handleLogout}
       />
     </View>
   );

@@ -24,6 +24,7 @@ import GText from "../components/GText";
 import { API } from "../constants/api";
 import { useDispatch } from 'react-redux';  
 import { setLoginStatus, setLoginResponse  } from "../store/slices/appSlice.ts";
+import Toast from 'react-native-toast-message';
 type AuthStackParamList = {
   SignIn: undefined;
   SignUp: undefined;
@@ -54,7 +55,12 @@ const SignInScreen: React.FC = () => {
       dispatch(setLoginResponse(response));
       dispatch(setLoginStatus(true));
     } catch(error) {
-      console.error('Login failed:', error);
+      // console.error('Login failed:', error);
+      Toast.show({
+        type: 'error',
+        text1: t('sign_in.text_noti'),
+        text2: t('sign_in.text_login_fail')
+      });
     }
 
   };

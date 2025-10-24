@@ -35,4 +35,10 @@ public class AccountService {
                 .build();
         return accountMapper.accountToNewAccountProto(accountRepository.save(acc));
     }
+
+    public AccountProto.AccountResponse getAccountInfo(AccountProto.GetAccountInfo rq) {
+        Account account = accountRepository.findByUserId(rq.getUserId());
+        return accountMapper.toProto(account);
+    }
+
 }

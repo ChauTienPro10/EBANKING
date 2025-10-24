@@ -37,6 +37,12 @@
     "monthly_growth": "Monthly Growth",
     "new_notifications": "New Notifications"
   },
+  "logout_popup": {
+      "are_you_sure_logout": "Are you sure you want to logout?",
+      "cancel": "Cancel",
+      "logout": "Logout"
+  },
+
   "action_grid": {
     "account_and_card": "Account & Card",
     "transfer": "Transfer",
@@ -197,7 +203,9 @@
     "text_send_otp": "Send OTP",
     "text_not_get_otp": "Didn't receive the code?",
     "text_send_again": "Send again",
-    "text_auth": "Authentication"
+    "text_auth": "Authentication",
+    "text_login_fail": "Login failed",
+    "text_noti": "Notification"
   },
   "ui": {
     "bank_name": "eBanking",

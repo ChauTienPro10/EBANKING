@@ -72,7 +72,7 @@ const SignUpScreen: React.FC = () => {
     const preHandMess = await handleSignUp();
     if (preHandMess == 'OK') {
       ToastService.success('Thông báo', 'OTP đã được gửi đến ' + email);
-      navigation.navigate("OTPPage", {username: "email@gmail.com", targetPage: "SignIn"})
+      navigation.navigate("OTPPage", {username: email, targetPage: "SignIn"})
     }
     else {
       ToastService.info("Đăng ký thất bại", preHandMess);

@@ -1,9 +1,5 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import SignInScreen from '../auths/SignInScreen';
-import SignUpScreen from '../auths/SignUpScreen';
-import ForgotPasswordScreen from '../auths/ForgotPasswordScreen';
-import DemoScreen from '../auths/DemoScreen';
 import HomeScreen from '../page/home/HomeScreen';
 import MenuScreen from '../page/menu/MenuScreen';
 import SearchScreen from '../page/search/SearchScreen';
@@ -17,7 +13,7 @@ const Stack = createNativeStackNavigator();
 export default function MainStack() {
   return (
     <Stack.Navigator
-      initialRouteName="Profile" //
+      initialRouteName="Home" //
       screenOptions={{
         headerShown: false,
       }}

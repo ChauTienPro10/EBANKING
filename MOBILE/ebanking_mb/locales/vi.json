@@ -37,6 +37,12 @@
     "monthly_growth": "Tăng trưởng tháng",
     "new_notifications": "Thông báo mới"
   },
+  "logout_popup": {
+    "are_you_sure_logout": "Bạn có chắc muốn đăng xuẩt?",
+    "cancel": "Hủy",
+    "logout":"Đăng xuất"
+
+  },
   "action_grid": {
     "account_and_card": "Tài khoản & Thẻ",
     "transfer": "Chuyển tiền",
@@ -197,7 +203,9 @@
     "text_send_otp": "Gửi OTP",
     "text_not_get_otp": "Không nhận được mã?",
     "text_send_again": "Gửi lại",
-    "text_auth": "Xác thực"
+    "text_auth": "Xác thực",
+    "text_login_fail": "Đăng nhập thất bại",
+    "text_noti": "Thông báo"
   },
   "ui": {
     "bank_name": "eBanking",

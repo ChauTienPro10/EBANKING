@@ -2,6 +2,7 @@ package com.example.auth.services;
 
 import com.example.auth.consts.grpcPath;
 import com.example.auth.dto.request.NewAccountRequest;
+import com.example.auth.dto.response.AccountResponse;
 import com.example.auth.dto.response.NewAccountResponse;
 import com.example.auth.mapper.AccountTransactionMapper;
 import com.example.auth.protopkg.AccountProto;
@@ -36,5 +37,13 @@ public class AccountTransactionService {
         AccountProto.NewAccountRequest rq = accountTransactionMapper.accountReuestToProto(rqData);
         AccountProto.NewAccountResponse rs = accountTransStub.newAccount(rq);
         return accountTransactionMapper.protoToNewAccountResponse(rs);
+    }
+
+    public AccountResponse getAccountInfo(long userId) {
+        AccountProto.GetAccountInfo rq = AccountProto.GetAccountInfo.newBuilder()
+                .setUserId(userId)
+                .build();
+        AccountProto.AccountResponse rs = accountTransStub.getAccountInfo(rq);
+        return accountTransactionMapper.fromProto(rs);
     }
 }

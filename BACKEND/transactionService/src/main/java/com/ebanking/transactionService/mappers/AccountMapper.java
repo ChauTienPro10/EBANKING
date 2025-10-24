@@ -33,4 +33,19 @@ public class AccountMapper {
         return builder.build();
     }
 
+    public AccountProto.AccountResponse toProto(Account account) {
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+
+        return AccountProto.AccountResponse.newBuilder()
+                .setAccountId(account.getAccountId())
+                .setAccountNumber(account.getAccountNumber())
+                .setAccountType(account.getAccountType())
+                .setBalance(account.getBalance().toPlainString()) // BigDecimal -> String
+                .setCurrency(account.getCurrency())
+                .setStatus(account.getStatus())
+                .setOpenedDate(account.getOpenedDate().format(formatter)) // LocalDateTime -> String
+                .setCreatedAt(account.getCreatedAt().format(formatter)) // LocalDateTime -> String
+                .build();
+    }
+
 }

@@ -20,7 +20,23 @@ message NewAccountResponse {
   string createdAt = 8;
 }
 
+message GetAccountInfo {
+    int64 userId = 1;
+}
+
+message AccountResponse {
+  int64 accountId = 1;
+  string accountNumber = 2;
+  string accountType = 3;
+  string balance = 4;
+  string currency = 5;
+  string status = 6;
+  string openedDate = 7;
+  string createdAt = 8;
+}
+
 
 service AccountService {
   rpc newAccount(NewAccountRequest) returns (NewAccountResponse);
+  rpc getAccountInfo(GetAccountInfo) returns (AccountResponse);
 }

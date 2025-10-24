@@ -3,12 +3,14 @@ package com.ebanking.transactionService.service.grpc;
 import com.ebanking.transactionService.service.AccountService;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
+import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.ebanking.transactionService.grpc.AccountProto;
 import com.ebanking.transactionService.grpc.AccountServiceGrpc;
 
 @GrpcService
+@Slf4j
 public class AccountGrpcService extends AccountServiceGrpc.AccountServiceImplBase {
 
     @Autowired
@@ -22,8 +24,25 @@ public class AccountGrpcService extends AccountServiceGrpc.AccountServiceImplBas
             responseObserver.onNext(rs);
             responseObserver.onCompleted();
         } catch (Exception e) {
+            log.error(e.getMessage());
             responseObserver.onError(
-                    Status.UNAUTHENTICATED
+                    Status.INTERNAL
+                            .withDescription(e.getMessage())
+                            .asRuntimeException()
+            );
+        }
+    }
+
+    @Override
+    public void getAccountInfo(AccountProto.GetAccountInfo rq, StreamObserver<AccountProto.AccountResponse> responseObserver) {
+        try {
+            AccountProto.AccountResponse rs = accountService.getAccountInfo(rq);
+            responseObserver.onNext(rs);
+            responseObserver.onCompleted();
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            responseObserver.onError(
+                    Status.INTERNAL
                             .withDescription(e.getMessage())
                             .asRuntimeException()
             );

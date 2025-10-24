@@ -3,6 +3,8 @@ package com.example.auth.controller;
 import com.example.auth.consts.IURL;
 import com.example.auth.dto.request.*;
 import com.example.auth.dto.response.*;
+import com.example.auth.mapper.UserMapper;
+import com.example.auth.protopkg.UserProto;
 import com.example.auth.services.AuthService;
 import com.example.auth.utils.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -73,5 +75,14 @@ public class AuthController {
     public ResponseEntity<ForgotPasswordVerifyOtpRes> forgotPasswordVerifyOtp(@RequestBody ForgotPasswordVerifyOtpReq rq) {
         log.info("POST:::" + IURL.FORGOT_PASSWORD_VERIFY_OTP);
         return ResponseEntity.status(HttpStatus.OK).body(authService.forgotPasswordVerifyOtp(rq));
+    }
+
+    @GetMapping("user/{userId}")
+    public ResponseEntity<UpdateUserResponse> getUserInfo(
+            @PathVariable long userId,
+            @RequestHeader Map<String, String> headers
+    ) {
+        UserProto.UserResponse userResponse = authService.getUserById(userId);
+        return null;
     }
 }

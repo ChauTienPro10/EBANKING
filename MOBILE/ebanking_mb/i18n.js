@@ -11,7 +11,7 @@ const resources = {
 };
 
 const locales = RNLocalize.getLocales();
-const systemLang = locales[0]?.languageCode || 'en';
+const systemLang = 'vi';
 
 i18n
   .use(initReactI18next)

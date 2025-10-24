@@ -32,8 +32,8 @@ function AppContent() {
           backgroundColor="transparent"
         />
         <NavigationContainer>
-          {/* {isLoggedIn ? <MainStack /> : <AuthNavigator />} */}
-          <MainStack />
+          {isLoggedIn ? <MainStack /> : <AuthNavigator />}
+          {/* <MainStack /> */}
         </NavigationContainer>
       </View>
       <Toast /> {/* ✅ Di chuyển Toast ra ngoài View */}

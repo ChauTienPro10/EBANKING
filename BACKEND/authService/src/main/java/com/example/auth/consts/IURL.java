@@ -17,6 +17,7 @@ public interface IURL {
     String TRANSACTION = HOST_PREFIX + "/transaction";
     String TRANSFER = "/transfer";
     String TRANS_HISTOTY = "/history";
+    String GET_ACCOUNT_INFO = "/account/{userId}";
 
     String PIN_CODE_URL = HOST_PREFIX + "/pin-code";
     String NEW_PIN = "/new";

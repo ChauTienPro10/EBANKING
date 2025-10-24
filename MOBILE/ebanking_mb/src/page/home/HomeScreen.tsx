@@ -1,17 +1,25 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import Colors from '../../constants/color';
 import { TransferIcon, CashIcon, ReceiptIcon, MobileIcon, TrendingUpIcon, BellIcon, EyeIcon, EyeOffIcon, SearchIcon, CardIcon, AirplaneIcon, GameControllerIcon, WifiIcon, UserIcon } from '../../components/icon';
 import BottomNavigation from '../../components/BottomNavigation';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../store';
+import { fetchAccountTransInfo } from '../../store/fetchAPI/AccountFetch';
+import { AppDispatch, store } from '../../store';
+
 
 const HomeScreen: React.FC = () => {
+  const loginResponse = useSelector((state: RootState) => state.app.loginResponse);
+  const account = useSelector((state: RootState) => state.app.accountTransResponse);
   const navigation = useNavigation();
   const { t } = useTranslation();
-  const [notificationCount, setNotificationCount] = React.useState(3);
-  const [isBalanceVisible, setIsBalanceVisible] = React.useState(false);
-  const [activeTab, setActiveTab] = React.useState('home');
+  const [notificationCount, setNotificationCount] = useState(3);
+  const [isBalanceVisible, setIsBalanceVisible] = useState(false);
+  const [activeTab, setActiveTab] = useState('home');
+  const dispatch: AppDispatch = store.dispatch;
 
   const quickActions = [
     { id: 'transfer', title: t('action_grid.transfer'), icon: 'transfer', color: Colors.main_bule, tag: null },
@@ -35,6 +43,12 @@ const HomeScreen: React.FC = () => {
     { id: 'settings', label: t('bottom_navigation.settings'), icon: 'settings' },
     { id: 'support', label: t('bottom_navigation.support'), icon: 'help-circle' },
   ];
+
+  useEffect(() => {
+    if (loginResponse?.id) {
+      dispatch(fetchAccountTransInfo(loginResponse.id));
+    }
+  }, [loginResponse, dispatch]);
 
   const getIconComponent = (iconName: string, color: string) => {
     const iconProps = { size: 24, color: color };
@@ -143,7 +157,7 @@ const HomeScreen: React.FC = () => {
                 <UserIcon size={24} color={Colors.white} />
               </View>
               <View style={styles.profileInfo}>
-                <Text style={styles.profileGreeting}>{t('greetings.hello_user', { name: t('mock_data.user.name') })}</Text>
+                <Text style={styles.profileGreeting}>{t('greetings.hello_user', { name: loginResponse?.fullName || loginResponse?.username })}</Text>
               </View>
             </View>
           </View>
@@ -155,7 +169,7 @@ const HomeScreen: React.FC = () => {
           </View>
           <View style={styles.balanceAmount}>
             <Text style={styles.balanceText}>
-              {isBalanceVisible ? t('mock_data.balance.total') : t('mock_data.balance.masked')} VND
+              {isBalanceVisible ? account?.balance : t('mock_data.balance.masked')} VND
             </Text>
             <TouchableOpacity
               style={styles.eyeButton}

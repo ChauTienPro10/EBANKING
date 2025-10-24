@@ -64,6 +64,7 @@ async function get(url: string, params: any = {}, authRequire: boolean = false) 
   });
 
   if (!response.ok) {
+    console.error(response)
     throw new Error(`GET ${url} failed: ${response.statusText}`);
   }
 
