@@ -35,8 +35,17 @@ message AccountResponse {
   string createdAt = 8;
 }
 
+message CheckAccountExistRequest {
+  string accountNumber = 1;
+}
+
+message CheckAccountExistResponse {
+  bool exist = 1;
+  int64 userId = 2;
+}
 
 service AccountService {
   rpc newAccount(NewAccountRequest) returns (NewAccountResponse);
   rpc getAccountInfo(GetAccountInfo) returns (AccountResponse);
+  rpc checkAccountExist(CheckAccountExistRequest) returns (CheckAccountExistResponse);
 }

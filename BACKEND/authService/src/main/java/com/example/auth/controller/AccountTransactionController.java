@@ -1,8 +1,10 @@
 package com.example.auth.controller;
 
 import com.example.auth.consts.IURL;
+import com.example.auth.dto.request.CheckAccountNumberRequest;
 import com.example.auth.dto.request.NewAccountRequest;
 import com.example.auth.dto.response.AccountResponse;
+import com.example.auth.dto.response.CheckAccountNumberResponse;
 import com.example.auth.dto.response.NewAccountResponse;
 import com.example.auth.services.AccountTransactionService;
 import com.example.auth.services.AuthenticationService;
@@ -40,5 +42,11 @@ public class AccountTransactionController {
                                                           @PathVariable("userId") Long userId) {
         log.info("GET:::/info/" + userId);
         return ResponseEntity.status(HttpStatus.OK).body(accountTransactionService.getAccountInfo(userId));
+    }
+
+    @PostMapping("/checkAccountNumber")
+    public ResponseEntity<CheckAccountNumberResponse> checkAccountNumber(@RequestBody CheckAccountNumberRequest r) {
+        log.info("GET:::/checkAccountNumber/" + r.getAccountNumber());
+        return ResponseEntity.status(HttpStatus.OK).body(accountTransactionService.checkAccountExist(r));
     }
 }

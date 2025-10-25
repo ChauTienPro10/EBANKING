@@ -19,13 +19,21 @@ import CustomInput from '../../components/CustomInput';
 import CustomButton from '../../components/CustomButton';
 import { Header } from '../../components';
 import { ArrowLeftIcon, UserIcon, DollarSignIcon, MessageSquareIcon, CreditCardIcon, SearchIcon, CheckIcon, ChevronDownIcon, CardIcon, PeopleIcon, PersonIcon, CashIcon, BusinessIcon, TrendingUpIcon, ShieldIcon, CrownIcon, StarIcon, AirplaneIcon } from '../../components/icon';
+import ConfirmTransferModal from '../../popups/ConfirmTransferModal';
 
 interface Bank {
   id: string;
   name: string;
   code: string;
-  logo?: React.ComponentType<{size?: number; color?: string}>;
+  logo?: React.ComponentType<{ size?: number; color?: string }>;
 }
+
+const transferData = {
+    'Số tiền': 1000000,
+    'Tài khoản nhận': '123456789',
+    'Tên người nhận': 'Nguyễn Văn A',
+    'Nội dung': 'Chuyển tiền học phí',
+  };
 
 interface TransferFormData {
   recipientAccount: string;
@@ -44,15 +52,31 @@ interface FormErrors {
 const TransferScreen: React.FC = () => {
   const navigation = useNavigation();
   const { t } = useTranslation();
-  
+  const [accountOk, setAccountOk] = useState(false)
+  const [transferModalVisible, setTransferModalVisible] = useState(false);
+
+  const onCheckAccountNumberSuccess = () => {
+    setTransferModalVisible(true);
+  };
+
+  const handleConfirmTransfer = () => {
+    setTransferModalVisible(false);
+    // Gọi API chuyển tiền ở đây
+    console.log('Giao dịch được xác nhận!');
+  };
+
+  const handleCancelTransfer = () => {
+    setTransferModalVisible(false);
+  };
+
   const [formData, setFormData] = useState<TransferFormData>({
     recipientAccount: '',
     amount: '',
-    content: '',
+    content: 'Chuyển tiền',
     transferType: 'internal',
     selectedBank: undefined,
   });
-  
+
   const [errors, setErrors] = useState<FormErrors>({});
   const [isLoading, setIsLoading] = useState(false);
   const [showBankModal, setShowBankModal] = useState(false);
@@ -95,21 +119,21 @@ const TransferScreen: React.FC = () => {
     if (!amount.trim()) {
       return t('transfer.validation.amount_required');
     }
-    
+
     const numericAmount = parseFloat(amount.replace(/[^\d.-]/g, ''));
-    
+
     if (isNaN(numericAmount) || numericAmount <= 0) {
       return t('transfer.validation.amount_invalid');
     }
-    
+
     if (numericAmount < 10000) {
       return t('transfer.validation.amount_minimum');
     }
-    
+
     if (numericAmount > 500000000) {
       return t('transfer.validation.amount_maximum');
     }
-    
+
     return undefined;
   };
 
@@ -117,33 +141,33 @@ const TransferScreen: React.FC = () => {
     if (!content.trim()) {
       return t('transfer.validation.content_required');
     }
-    
+
     if (content.length > 200) {
       return t('transfer.validation.content_too_long');
     }
-    
+
     return undefined;
   };
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
-    
+
     const accountError = validateAccountNumber(formData.recipientAccount);
     if (accountError) newErrors.recipientAccount = accountError;
-    
+
     const amountError = validateAmount(formData.amount);
     if (amountError) newErrors.amount = amountError;
-    
+
     const contentError = validateContent(formData.content);
     if (contentError) newErrors.content = contentError;
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleInputChange = (field: keyof TransferFormData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    
+
     if (errors[field as keyof FormErrors]) {
       setErrors(prev => ({ ...prev, [field]: undefined }));
     }
@@ -180,23 +204,11 @@ const TransferScreen: React.FC = () => {
     }
 
     setIsLoading(true);
-    
+
     try {
       await new Promise<void>(resolve => setTimeout(resolve, 2000));
+        onCheckAccountNumberSuccess();
       
-      Alert.alert(
-        t('transfer.success.title'),
-        t('transfer.success.message', { 
-          amount: formData.amount,
-          account: formData.recipientAccount 
-        }),
-        [
-          {
-            text: t('common.ok'),
-            onPress: () => navigation.goBack(),
-          },
-        ]
-      );
     } catch (error) {
       Alert.alert(
         t('transfer.error.title'),
@@ -210,7 +222,7 @@ const TransferScreen: React.FC = () => {
   const quickAmounts = ['100,000', '500,000', '1,000,000', '5,000,000'];
 
   return (
-    <KeyboardAvoidingView 
+    <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
@@ -218,13 +230,21 @@ const TransferScreen: React.FC = () => {
         title={t('transfer.title')}
         showBackButton={true}
       />
-      
-      <ScrollView 
+
+      <ScrollView
         style={styles.content}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.section}>
+
+          <ConfirmTransferModal
+            visible={transferModalVisible}
+            data={transferData}
+            onConfirm={handleConfirmTransfer}
+            onCancel={handleCancelTransfer}
+          />
+
           <Text style={styles.sectionTitle}>{t('transfer.transfer_type')}</Text>
           <View style={styles.transferTypeContainer}>
             <TouchableOpacity
@@ -242,7 +262,7 @@ const TransferScreen: React.FC = () => {
                 {t('transfer.internal_transfer')}
               </Text>
             </TouchableOpacity>
-            
+
             <TouchableOpacity
               style={[
                 styles.transferTypeButton,
@@ -313,7 +333,7 @@ const TransferScreen: React.FC = () => {
             leftIcon={<CashIcon size={20} color={Colors.grey3} />}
             keyboardType="numeric"
           />
-          
+
           <View style={styles.quickAmountContainer}>
             <Text style={styles.quickAmountLabel}>{t('transfer.quick_amount')}</Text>
             <View style={styles.quickAmountButtons}>

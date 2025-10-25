@@ -1,21 +1,23 @@
-// src/store/slices/appSlice.js
 import { createSlice } from '@reduxjs/toolkit';
 import { AccountTransResponse } from '../AccountTransResponse';
 import { fetchAccountTransInfo } from '../fetchAPI/AccountFetch';
-
+import { UserInfoModel } from '../UserInfoModel';
+import { fetchUserInfo } from '../fetchAPI/UserInfoFetch';
 
 interface AppState {
   language: string;
   isLoggedIn: boolean;
   loginResponse: LoginResponse | null;
-  accountTransResponse: AccountTransResponse | null
+  accountTransResponse: AccountTransResponse | null;
+  userInfoData: UserInfoModel | null;
 }
 
 const initialState: AppState = {
   language: 'vi',
   isLoggedIn: false,
   loginResponse: null,
-  accountTransResponse: null
+  accountTransResponse: null,
+  userInfoData: null,
 };
 
 const appSlice = createSlice({
@@ -33,9 +35,11 @@ const appSlice = createSlice({
     },
     setAccountTransResponse: (state, action) => {
       state.accountTransResponse = action.payload;
-    }
+    },
+    setUserInfoData: (state, action) => {
+      state.userInfoData = action.payload;
+    },
   },
-
   extraReducers: (builder) => {
     builder
       .addCase(fetchAccountTransInfo.fulfilled, (state, action) => {
@@ -43,13 +47,22 @@ const appSlice = createSlice({
       })
       .addCase(fetchAccountTransInfo.rejected, (state, action) => {
         console.error('[FETCH FAILED]', action.payload);
+      })
+      .addCase(fetchUserInfo.fulfilled, (state, action) => {
+        state.userInfoData = action.payload;
+      })
+      .addCase(fetchUserInfo.rejected, (state, action) => {
+        console.error('[FETCH FAILED]', action.payload);
       });
   },
 });
 
 export const {
-  setLanguage, 
+  setLanguage,
   setLoginStatus,
   setLoginResponse,
-  setAccountTransResponse } = appSlice.actions;
+  setAccountTransResponse,
+  setUserInfoData,
+} = appSlice.actions;
+
 export default appSlice.reducer;

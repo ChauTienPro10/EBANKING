@@ -9,5 +9,6 @@ export const API = {
   LOGIN: `${AUTH_SERVICE}/auth/login`,
   REGISTER: `${AUTH_SERVICE}/auth/register`,
   REGISTER_VERIFY_OTP: `${AUTH_SERVICE}/auth/register-verify-otp`,
-  GET_ACCOUNT_TRANS_INFO: `${AUTH_SERVICE}/trans/account/info/`
+  GET_ACCOUNT_TRANS_INFO: `${AUTH_SERVICE}/trans/account/info/`,
+  GET_USER_INFO: `${AUTH_SERVICE}/auth/user/{userId}`
 };

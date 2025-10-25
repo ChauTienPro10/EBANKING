@@ -48,4 +48,20 @@ public class AccountGrpcService extends AccountServiceGrpc.AccountServiceImplBas
             );
         }
     }
+
+    @Override
+    public void checkAccountExist(AccountProto.CheckAccountExistRequest rq, StreamObserver<AccountProto.CheckAccountExistResponse> responseObserver) {
+        try {
+            AccountProto.CheckAccountExistResponse rs = accountService.isAccountExist(rq);
+            responseObserver.onNext(rs);
+            responseObserver.onCompleted();
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            responseObserver.onError(
+                    Status.INTERNAL
+                            .withDescription(e.getMessage())
+                            .asRuntimeException()
+            );
+        }
+    }
 }

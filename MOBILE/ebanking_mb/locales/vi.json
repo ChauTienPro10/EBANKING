@@ -150,6 +150,7 @@
     "content_placeholder": "Nhập nội dung chuyển tiền",
     "quick_amount": "Số tiền nhanh",
     "transfer_button": "Chuyển tiền",
+    "transfer_button_check_success": "Tiếp tục",
     "validation": {
       "account_required": "Vui lòng nhập số tài khoản",
       "account_invalid": "Số tài khoản không hợp lệ (10-16 chữ số)",

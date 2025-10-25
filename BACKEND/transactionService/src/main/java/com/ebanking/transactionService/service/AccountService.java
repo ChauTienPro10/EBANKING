@@ -41,4 +41,18 @@ public class AccountService {
         return accountMapper.toProto(account);
     }
 
+    public AccountProto.CheckAccountExistResponse isAccountExist(AccountProto.CheckAccountExistRequest rq) {
+        Account account = accountRepository.findByAccountNumber(rq.getAccountNumber());
+        if (account == null) {
+            return AccountProto.CheckAccountExistResponse.newBuilder()
+                    .setUserId(-1)
+                    .setExist(false)
+                    .build();
+        }
+        return AccountProto.CheckAccountExistResponse.newBuilder()
+                .setExist(true)
+                .setUserId(account.getUserId())
+                .build();
+    }
+
 }

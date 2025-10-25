@@ -1,9 +1,12 @@
 package com.example.auth.services;
 
 import com.example.auth.consts.grpcPath;
+import com.example.auth.dto.request.CheckAccountNumberRequest;
 import com.example.auth.dto.request.NewAccountRequest;
 import com.example.auth.dto.response.AccountResponse;
+import com.example.auth.dto.response.CheckAccountNumberResponse;
 import com.example.auth.dto.response.NewAccountResponse;
+import com.example.auth.dto.response.UpdateUserResponse;
 import com.example.auth.mapper.AccountTransactionMapper;
 import com.example.auth.protopkg.AccountProto;
 import com.example.auth.protopkg.AccountServiceGrpc;
@@ -33,6 +36,8 @@ public class AccountTransactionService {
 
     }
 
+    @Autowired AuthService authService;
+
     public NewAccountResponse newAccount(NewAccountRequest rqData) {
         AccountProto.NewAccountRequest rq = accountTransactionMapper.accountReuestToProto(rqData);
         AccountProto.NewAccountResponse rs = accountTransStub.newAccount(rq);
@@ -45,5 +50,22 @@ public class AccountTransactionService {
                 .build();
         AccountProto.AccountResponse rs = accountTransStub.getAccountInfo(rq);
         return accountTransactionMapper.fromProto(rs);
+    }
+
+    public CheckAccountNumberResponse checkAccountExist(CheckAccountNumberRequest rq) {
+        AccountProto.CheckAccountExistRequest r = AccountProto.CheckAccountExistRequest.newBuilder()
+                .setAccountNumber(rq.getAccountNumber())
+                .build();
+        AccountProto.CheckAccountExistResponse rs = accountTransStub.checkAccountExist(r);
+        if (!rs.getExist()) {
+            return CheckAccountNumberResponse.builder()
+                    .isExist(false).build();
+        }
+        UpdateUserResponse userInfo = authService.getUserInfo(rs.getUserId());
+        return CheckAccountNumberResponse.builder()
+                .isExist(true)
+                .fullName(userInfo.getFullName())
+                .build();
+
     }
 }

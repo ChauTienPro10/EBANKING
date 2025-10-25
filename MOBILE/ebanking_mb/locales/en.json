@@ -150,6 +150,7 @@
     "content_placeholder": "Enter transfer content",
     "quick_amount": "Quick Amount",
     "transfer_button": "Transfer",
+    "transfer_button_check_success": "Tiếp tục",
     "validation": {
       "account_required": "Please enter account number",
       "account_invalid": "Invalid account number (10-16 digits)",
