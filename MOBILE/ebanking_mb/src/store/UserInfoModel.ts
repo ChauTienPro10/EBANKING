@@ -6,7 +6,7 @@ export interface UserInfoModel {
     citizenId: string;
     birthday: string;
     createAt: string;
-    isMale: boolean;
+    isMale: string;
     email: string;
     phone: string;
 }

@@ -14,7 +14,7 @@ const PinInput: React.FC<PinInputProps> = ({ length = 4, onComplete }) => {
     const inputsRef = useRef<Array<TextInput | null>>([]);
 
     const handleChange = (text: string, index: number) => {
-        if (!/^\d$/.test(text) && text !== '') return; // chỉ cho phép số 0-9
+        if (!/^\d$/.test(text) && text !== '') return;
 
         const newPin = [...pin];
         newPin[index] = text;
@@ -31,11 +31,26 @@ const PinInput: React.FC<PinInputProps> = ({ length = 4, onComplete }) => {
         }
     };
 
-    const handleKeyPress = (e: any, index: number) => {
-        if (e.nativeEvent.key === 'Backspace' && pin[index] === '' && index > 0) {
-            inputsRef.current[index - 1]?.focus();
+    const handleFocus = (index: number) => {
+        const firstEmptyIndex = pin.findIndex((v) => v === '');
+
+        if (firstEmptyIndex !== -1 && index > firstEmptyIndex) {
+            inputsRef.current[firstEmptyIndex]?.focus();
         }
     };
+
+
+    const handleKeyPress = (e: any, index: number) => {
+        if (e.nativeEvent.key === 'Backspace') {
+            if (pin[index] === '' && index > 0) {
+                const newPin = [...pin];
+                newPin[index - 1] = '';
+                setPin(newPin);
+                inputsRef.current[index - 1]?.focus();
+            }
+        }
+    };
+
 
     return (
         <View style={styles.containerMaster}>
@@ -47,6 +62,7 @@ const PinInput: React.FC<PinInputProps> = ({ length = 4, onComplete }) => {
                         keyboardType="number-pad"
                         maxLength={1}
                         value={digit}
+                        onFocus={() => handleFocus(index)}
                         onChangeText={(text) => handleChange(text, index)}
                         onKeyPress={(e) => handleKeyPress(e, index)}
                         ref={(ref) => { inputsRef.current[index] = ref; }} // fix ref type
@@ -81,10 +97,11 @@ const styles = StyleSheet.create({
         width: 50,
         height: 50,
         borderWidth: 1,
-        borderColor: '#ccc',
+        borderColor: Colors.grey1,
         borderRadius: 8,
         textAlign: 'center',
         fontSize: 20,
+        color: Colors.black
     },
     biometricComponent: {
         marginTop: 20,
@@ -108,6 +125,6 @@ const styles = StyleSheet.create({
         color: Colors.grey1,
         fontWeight: '200',
         fontSize: 16,
-        
+
     },
 });

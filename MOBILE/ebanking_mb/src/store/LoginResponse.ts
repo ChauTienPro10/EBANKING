@@ -6,7 +6,7 @@ interface LoginResponse {
     citizenId: string;
     birthday: string;
     createAt: string;
-    isMale: boolean;
+    isMale: string;
     roles: Set<string> | string[];
     jwt: string;
 }

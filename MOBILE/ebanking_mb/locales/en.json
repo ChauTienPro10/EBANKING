@@ -38,11 +38,10 @@
     "new_notifications": "New Notifications"
   },
   "logout_popup": {
-      "are_you_sure_logout": "Are you sure you want to logout?",
-      "cancel": "Cancel",
-      "logout": "Logout"
+    "are_you_sure_logout": "Are you sure you want to logout?",
+    "cancel": "Cancel",
+    "logout": "Logout"
   },
-
   "action_grid": {
     "account_and_card": "Account & Card",
     "transfer": "Transfer",
@@ -224,6 +223,8 @@
     "ledger_balance": "Ledger Balance",
     "pending_balance": "Pending Balance",
     "total_balance": "Total Balance VND",
+    "you_not_has_card": "You don't have a trading account yet",
+    "open_account_now": "Open now",
     "earn_daily": "EARN DAILY",
     "services_title": "Shopping - Entertainment - Investment"
   },

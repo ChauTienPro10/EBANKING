@@ -1,33 +1,36 @@
 import React, { useState, useEffect } from 'react';
 import {
   View,
-  TouchableOpacity,
   StyleSheet,
   SafeAreaView,
   ScrollView,
-  ActivityIndicator,
   Dimensions,
-  Animated,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../store';
 import { useCommonUI } from '../../hooks/useCommonUI';
-import { Header, CustomButton } from '../../components';
+import { CustomButton } from '../../components';
 import Colors from '../../constants/color';
-import TextStyles from '../../constants/textStyle';
 import ProfileHeader from './components/ProfileHeader';
 import UserInfoCard from './components/UserInfoCard';
 import PersonalInfoSection from './components/PersonalInfoSection';
 import ContactInfoSection from './components/ContactInfoSection';
 import { useProfileAnimations } from './hooks/useProfileAnimations';
-
-const { width: screenWidth } = Dimensions.get('window');
+import fetch from '../../utils/fetch';
+import { API } from '../../constants/api';
+import PasswordPopup from '../../popups/RequirePassword';
+import LoadingPopup from '../../popups/LoadingPopup';
+import { AppDispatch, store } from '../../store';
+import { fetchUserInfo } from '../../store/fetchAPI/UserInfoFetch';
+import Toast from 'react-native-toast-message';
 
 const ProfileScreen: React.FC = () => {
   const { t, i18n } = useTranslation();
   const language = useSelector((state: RootState) => state.app.language);
-  const { notificationCount } = useCommonUI();
+  const userInfo = useSelector((state: RootState) => state.app.userInfoData);
+  const loginResponse = useSelector((State: RootState) => State.app.loginResponse);
+  const dispatch: AppDispatch = store.dispatch;
 
   useEffect(() => {
     if (language) {
@@ -35,20 +38,58 @@ const ProfileScreen: React.FC = () => {
     }
   }, [language, i18n]);
 
+  useEffect(() => {
+    setProfile({
+      fullName: userInfo?.fullName ? userInfo.fullName.toUpperCase() : '---',
+      dateOfBirth: userInfo?.birthday ? userInfo.birthday : '---',
+      cccd: userInfo?.citizenId ? userInfo.citizenId : '---',
+      gender: userInfo?.isMale === 'true' ? 'Nam' : 'Nữ',
+      address: userInfo?.address ? userInfo.address : '---',
+      email: userInfo?.email ? userInfo.email : '---',
+      phone: userInfo?.phone ? userInfo.phone : '---',
+    });
+    console.log('mmmm', userInfo, profile.gender)
+
+  }, [userInfo])
+
   const [profile, setProfile] = useState({
-    fullName: 'Lê Thắng',
-    dateOfBirth: '15/03/1995',
-    cccd: '123456789012',
-    gender: 'Nam',
-    address: 'Quận 10, TP. Hồ Chí Minh',
-    email: 'thangle@gmail.com',
-    phone: '+84-123-456-789',
+    fullName: '---',
+    dateOfBirth: '---',
+    cccd: '---',
+    gender: '---',
+    address: '---',
+    email: '---',
+    phone: '---',
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [showPasswordPopup, setShowPasswordPopup] = useState(false);
+
+  const onSubmitUpdate = async (password: string) => {
+    const payload = {
+      fullName: profile.fullName !== '---' ? profile.fullName : '',
+      email: profile.email !== '---' ? profile.email : '',
+      phone: profile.phone !== '---' ? profile.phone : '',
+      address: profile.address !== '---' ? profile.address : '',
+      birthday: profile.dateOfBirth !== '---' ? profile.dateOfBirth : '',
+      isMale: profile.gender === "Nam" ? true : false,
+      username: loginResponse?.username,
+      password: password
+
+    }
+    const data = await fetch.post(API.UPDATE_USER_INFO, payload, true);
+    if (loginResponse?.id !== undefined) {
+      dispatch(fetchUserInfo(loginResponse.id));
+      Toast.show({
+        type: 'info',
+        text1: 'Thông báo',
+        text2: 'Cập nhật thông tin thành công'
+      });
+    }
+  }
 
   // Use animation hooks
   const {
@@ -91,23 +132,21 @@ const ProfileScreen: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSave = async () => {
+  const handleSave = async (password: string) => {
+    setIsLoading(true);
     if (!validateForm()) {
       return;
     }
-
-    setIsLoading(true);
     try {
-      // Simulate API call
-      await new Promise<void>(resolve => setTimeout(resolve, 1000));
-      console.log('Profile saved:', profile);
-      // TODO: Call actual API here
-      // const response = await api.updateProfile(profile);
-
-      // Exit edit mode after successful save
+      await onSubmitUpdate(password);
       setIsEditing(false);
     } catch (error) {
       console.error('Error saving profile:', error);
+      Toast.show({
+        type: 'error',
+        text1: 'Lỗi',
+        text2: 'Update thất bại, Hãy kiểm tra lại thông tin'
+      });
     } finally {
       setIsLoading(false);
     }
@@ -137,8 +176,20 @@ const ProfileScreen: React.FC = () => {
   };
 
   const handleInputChange = (field: string, value: string) => {
-    setProfile(prev => ({ ...prev, [field]: value }));
-    // Clear error when user starts typing
+    let newValue = value;
+
+    if (field === 'dateOfBirth') {
+      let digits = value.replace(/\D/g, '');
+      if (digits.length > 2 && digits.length <= 4) {
+        digits = digits.slice(0, 2) + '-' + digits.slice(2);
+      } else if (digits.length > 4) {
+        digits = digits.slice(0, 2) + '-' + digits.slice(2, 4) + '-' + digits.slice(4, 8);
+      }
+      newValue = digits;
+    }
+
+    setProfile(prev => ({ ...prev, [field]: newValue }));
+
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
@@ -146,6 +197,19 @@ const ProfileScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+
+      <LoadingPopup visible={isLoading} message="Đang xử lý..." />
+
+      <PasswordPopup
+        visible={showPasswordPopup}
+        message="Vui lòng nhập mật khẩu để tiếp tục"
+        onClose={() => setShowPasswordPopup(false)}
+        onSubmit={(password) => {
+          handleSave(password)
+          setShowPasswordPopup(false);
+        }}
+      />
+
       {/* Profile Header with Animation */}
       <ProfileHeader
         headerHeight={headerHeight}
@@ -187,7 +251,7 @@ const ProfileScreen: React.FC = () => {
           <View style={styles.buttonContainer}>
             <CustomButton
               title={isLoading ? 'Loading...' : 'Save Changes'}
-              onPress={handleSave}
+              onPress={() => setShowPasswordPopup(true)}
               variant="primary"
               size="large"
               containerStyle={styles.saveButton}

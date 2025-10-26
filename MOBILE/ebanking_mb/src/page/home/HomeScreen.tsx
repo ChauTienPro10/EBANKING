@@ -1,18 +1,22 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import Colors from '../../constants/color';
 import { TransferIcon, CashIcon, ReceiptIcon, MobileIcon, TrendingUpIcon, BellIcon, EyeIcon, EyeOffIcon, SearchIcon, CardIcon, AirplaneIcon, GameControllerIcon, WifiIcon, UserIcon } from '../../components/icon';
 import BottomNavigation from '../../components/BottomNavigation';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import { fetchAccountTransInfo } from '../../store/fetchAPI/AccountFetch';
 import { AppDispatch, store } from '../../store';
+import ReminderPopup from '../../popups/ReminderPopupProps';
+import { fetchUserInfo } from '../../store/fetchAPI/UserInfoFetch';
+import {PersonIcon} from '../../components/icon';
 
 
 const HomeScreen: React.FC = () => {
   const loginResponse = useSelector((state: RootState) => state.app.loginResponse);
+  const userInfo = useSelector((state: RootState) => state.app.userInfoData);
   const account = useSelector((state: RootState) => state.app.accountTransResponse);
   const navigation = useNavigation();
   const { t } = useTranslation();
@@ -21,12 +25,15 @@ const HomeScreen: React.FC = () => {
   const [activeTab, setActiveTab] = useState('home');
   const dispatch: AppDispatch = store.dispatch;
 
+  const [requireUpdateInfo, setRequireUpdateInfo] = useState(false);
+
+
   const quickActions = [
     { id: 'transfer', title: t('action_grid.transfer'), icon: 'transfer', color: Colors.main_bule, tag: null },
     { id: 'withdraw', title: t('action_grid.withdraw'), icon: 'cash', color: Colors.main_green, tag: null },
     { id: 'pay_bill', title: t('action_grid.pay_bill'), icon: 'receipt', color: Colors.orange, tag: null },
     { id: 'mobile_prepaid', title: t('action_grid.mobile_prepaid'), icon: 'mobile', color: Colors.purple, tag: null },
-    { id: 'save_online', title: t('action_grid.save_online'), icon: 'card', color: Colors.main_bule, tag: t('home.fortune_tag') },
+    { id: 'profile', title: t('action_grid.profile'), icon: 'person', color: Colors.main_bule, tag: null },
     { id: 'loan', title: t('action_grid.loan'), icon: 'cash', color: Colors.main_green, tag: t('home.wind_tag') },
   ];
 
@@ -46,9 +53,16 @@ const HomeScreen: React.FC = () => {
 
   useEffect(() => {
     if (loginResponse?.id) {
-      dispatch(fetchAccountTransInfo(loginResponse.id));
+      // dispatch(fetchAccountTransInfo(loginResponse.id));
+      dispatch(fetchUserInfo(loginResponse.id));
     }
   }, [loginResponse, dispatch]);
+
+  useEffect(() => {
+    if(userInfo?.fullName === '' || userInfo?.birthday === '' || userInfo?.address === '') {
+      setRequireUpdateInfo(true);
+    }
+  }, [userInfo])
 
   const getIconComponent = (iconName: string, color: string) => {
     const iconProps = { size: 24, color: color };
@@ -62,13 +76,14 @@ const HomeScreen: React.FC = () => {
       case 'game-controller': return <GameControllerIcon {...iconProps} />;
       case 'wifi': return <WifiIcon {...iconProps} />;
       case 'airplane': return <AirplaneIcon {...iconProps} />;
+      case 'person': return <PersonIcon {...iconProps} />;
       default: return <TransferIcon {...iconProps} />;
     }
   };
 
   const handleActionPress = (action: any) => {
     console.log(t('mock_data.messages.action_pressed', { action: action.title }));
-    
+
     switch (action.id) {
       case 'transfer':
         navigation.navigate('Transfer' as never);
@@ -82,8 +97,8 @@ const HomeScreen: React.FC = () => {
       case 'mobile_prepaid':
         console.log('Navigate to mobile prepaid screen');
         break;
-      case 'save_online':
-        console.log('Navigate to save online screen');
+      case 'profile':
+        navigation.navigate("Profile" as never);
         break;
       case 'loan':
         console.log('Navigate to loan screen');
@@ -104,7 +119,7 @@ const HomeScreen: React.FC = () => {
 
   const handleTabChange = (tabId: string) => {
     console.log(t('mock_data.messages.tab_changed', { from: activeTab, to: tabId }));
-    
+
     if (tabId !== activeTab) {
       setActiveTab(tabId);
 
@@ -128,6 +143,15 @@ const HomeScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
+
+      <ReminderPopup
+        visible={requireUpdateInfo}
+        message="Vui lòng cập nhật đầy đủ thông tin"
+        onClose={() => {setRequireUpdateInfo(false);
+            navigation.navigate("Profile" as never);
+        }}
+      />
+
       <View style={styles.headerContainer}>
         <View style={styles.headerTop}>
           <View style={styles.headerLeft}>
@@ -165,12 +189,19 @@ const HomeScreen: React.FC = () => {
 
         <View style={styles.balanceCard}>
           <View style={styles.balanceHeader}>
-            <Text style={styles.balanceTitle}>{t('labels.total_balance')}</Text>
+            <Text style={styles.balanceTitle}>{account != null ? t('labels.total_balance') : t('labels.you_not_has_card')}</Text>
           </View>
           <View style={styles.balanceAmount}>
-            <Text style={styles.balanceText}>
-              {isBalanceVisible ? account?.balance : t('mock_data.balance.masked')} VND
-            </Text>
+            {isBalanceVisible ? <Text style={styles.balanceText}>
+              {account?.balance + 'VND'}
+            </Text> :
+              <TouchableOpacity>
+                <Text style={styles.balanceTextOpenAccount}>
+                  {t('labels.open_account_now')}
+                </Text>
+              </TouchableOpacity>
+            }
+
             <TouchableOpacity
               style={styles.eyeButton}
               onPress={() => setIsBalanceVisible(!isBalanceVisible)}
@@ -476,6 +507,13 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     textAlign: 'center',
   },
+
+  balanceTextOpenAccount: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: Colors.main_green,
+    textDecorationLine: 'underline'
+  }
 });
 
 export default HomeScreen;

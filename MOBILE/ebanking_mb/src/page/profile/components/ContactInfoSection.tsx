@@ -3,6 +3,9 @@ import { View, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { CustomInput, GText } from '../../../components';
 import Colors from '../../../constants/color';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../store';
+import LockIcon from '../../../components/icon/LockIcon';
 
 interface ContactInfoSectionProps {
   profile: {
@@ -20,6 +23,11 @@ const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({
   isEditing,
   onInputChange,
 }) => {
+
+  const loginResponse = useSelector((state: RootState) => state.app.loginResponse);
+  const userInfo = useSelector((state: RootState) => state.app.userInfoData);
+
+
   const { t } = useTranslation();
 
   return (
@@ -36,7 +44,9 @@ const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({
 
       <View style={styles.formContainer}>
         {/* Email Input */}
-        <View style={styles.inputGroup}>
+        <View style={userInfo?.email !== loginResponse?.username ?
+          styles.inputGroupHasIcon :
+          styles.inputGroup}>
           <CustomInput
             label={t('profile.email')}
             value={profile.email}
@@ -45,12 +55,17 @@ const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({
             keyboardType="email-address"
             autoCapitalize="none"
             error={errors.email}
-            editable={isEditing}
+            editable={(isEditing && userInfo?.email !== loginResponse?.username)}
           />
+          <LockIcon size={20} color={Colors.grey3} style={userInfo?.email !== loginResponse?.username ?
+            styles.hide :
+            styles.iconRight} />
         </View>
 
         {/* Phone Input */}
-        <View style={styles.inputGroup}>
+        <View style={userInfo?.phone !== loginResponse?.username ?
+          styles.inputGroupHasIcon :
+          styles.inputGroup}>
           <CustomInput
             label={t('profile.phone')}
             value={profile.phone}
@@ -58,8 +73,11 @@ const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({
             placeholder={t('profile.phone_placeholder')}
             keyboardType="phone-pad"
             error={errors.phone}
-            editable={isEditing}
+            editable={(isEditing && userInfo?.phone !== loginResponse?.username)}
           />
+          <LockIcon size={20} color={Colors.grey3} style={userInfo?.phone !== loginResponse?.username ?
+            styles.hide :
+            styles.iconRight} />
         </View>
       </View>
     </View>
@@ -99,6 +117,23 @@ const styles = StyleSheet.create({
   inputGroup: {
     marginBottom: 20,
   },
+
+
+  inputGroupHasIcon: {
+    marginBottom: 20,
+    position: 'relative', // để icon absolute bên trong
+    width: '100%',
+  },
+
+  iconRight: {
+    position: 'absolute',
+    right: 10, // khoảng cách từ mép phải
+    top: '70%',
+    transform: [{ translateY: -15 }], // căn giữa theo chiều dọc (nếu icon 20px)
+  },
+  hide: {
+    display: 'none'
+  }
 });
 
 export default ContactInfoSection;

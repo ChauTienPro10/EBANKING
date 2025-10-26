@@ -49,7 +49,7 @@
     "withdraw": "Rút tiền",
     "mobile_prepaid": "Nạp tiền điện thoại",
     "pay_bill": "Thanh toán hóa đơn",
-    "save_online": "Gửi tiết kiệm trực tuyến",
+    "profile": "Hồ sơ",
     "credit_card": "Thẻ tín dụng",
     "transaction_report": "Lịch sử giao dịch",
     "beneficiary": "Người thụ hưởng",
@@ -224,6 +224,8 @@
     "ledger_balance": "Số dư sổ cái",
     "pending_balance": "Chờ xử lý",
     "total_balance": "Tổng số dư VND",
+    "you_not_has_card": "Bạn chưa mở tài khoản giao dịch",
+    "open_account_now":"Mở ngay",
     "earn_daily": "SINH LỜI MỖI NGÀY",
     "services_title": "Mua sắm - Giải trí - Đầu tư"
   },

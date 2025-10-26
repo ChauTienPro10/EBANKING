@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
         borderBottomRightRadius: 10,
     },
     backButton: {
-        padding: 4,
+        // padding: 4,
     },
     title: {
         flex: 1,

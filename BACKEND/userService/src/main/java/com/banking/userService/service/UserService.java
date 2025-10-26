@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Optional;
@@ -326,20 +327,20 @@ public class UserService {
             currentUsInfo.setAddress(us.getAddress());
         }
 
-        if (!us.getEmail().isBlank() && !currentUsInfo.getEmail().equals(us.getUsername())) {
+        if (!us.getEmail().isBlank() && (currentUsInfo.getEmail() == null || !currentUsInfo.getEmail().equals(us.getUsername()))) {
             currentUsInfo.setEmail(us.getEmail());
         }
-        if (!us.getPhone().isBlank() && !currentUsInfo.getPhone().equals(us.getUsername())) {
+        if (!us.getPhone().isBlank() && (currentUsInfo.getPhone() == null || !currentUsInfo.getPhone().equals(us.getUsername()))) {
             currentUsInfo.setPhone(us.getPhone());
         }
         if (!us.getBirthday().isBlank()) {
             try {
-                // giả sử birthday là string dạng "yyyy-MM-dd" → convert sang epoch
-                LocalDate date = LocalDate.parse(us.getBirthday());
-                long epoch = date.atStartOfDay(ZoneId.systemDefault()).toEpochSecond();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+                LocalDate date = LocalDate.parse(us.getBirthday(), formatter);
+                long epoch = date.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
                 currentUsInfo.setBirthday(epoch);
             } catch (Exception e) {
-                // log hoặc bỏ qua nếu format sai
+                log.error("Invalid birthday format: {}", e.getMessage());
             }
         }
 

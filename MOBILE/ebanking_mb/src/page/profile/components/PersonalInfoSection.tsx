@@ -3,6 +3,8 @@ import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { CustomInput, GText } from '../../../components';
 import Colors from '../../../constants/color';
+import LockIcon from '../../../components/icon/LockIcon';
+
 
 interface PersonalInfoSectionProps {
   profile: {
@@ -56,7 +58,7 @@ const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
             label={t('profile.date_of_birth')}
             value={profile.dateOfBirth}
             onChangeText={(text: string) => onInputChange('dateOfBirth', text)}
-            placeholder="DD/MM/YYYY"
+            placeholder="DD-MM-YYYY"
             keyboardType="numeric"
             error={errors.dateOfBirth}
             editable={isEditing}
@@ -72,14 +74,14 @@ const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
               !isEditing && styles.genderInputDisabled,
             ]}
           >
-            {['Nam', 'Nữ', 'Khác'].map((gender, index) => (
+            {['Nam', 'Nữ'].map((gender, index) => (
               <TouchableOpacity
                 key={gender}
                 style={[
                   styles.genderOption,
                   profile.gender === gender && styles.genderOptionSelected,
                   index === 0 && styles.genderOptionFirst,
-                  index === 2 && styles.genderOptionLast,
+                  index === 1 && styles.genderOptionLast,
                 ]}
                 onPress={() => isEditing && onInputChange('gender', gender)}
                 disabled={!isEditing}
@@ -92,8 +94,8 @@ const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
                   {gender === 'Nam'
                     ? t('profile.male')
                     : gender === 'Nữ'
-                    ? t('profile.female')
-                    : t('profile.other')}
+                      ? t('profile.female')
+                      : t('profile.other')}
                 </GText>
               </TouchableOpacity>
             ))}
@@ -101,7 +103,7 @@ const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
         </View>
 
         {/* CCCD */}
-        <View style={styles.inputGroup}>
+        <View style={styles.inputGroupHasIcon}>
           <CustomInput
             label={t('profile.cccd')}
             value={profile.cccd}
@@ -110,8 +112,9 @@ const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
             keyboardType="numeric"
             maxLength={12}
             error={errors.cccd}
-            editable={isEditing}
+            editable={false}
           />
+          <LockIcon size={20} color={Colors.grey3} style={styles.iconRight}/>
         </View>
 
         {/* Address */}
@@ -204,6 +207,18 @@ const styles = StyleSheet.create({
   genderOptionText: {
     fontSize: 16,
     textAlign: 'center',
+  },
+  inputGroupHasIcon: {
+    marginBottom: 20,
+    position: 'relative', // để icon absolute bên trong
+    width: '100%',
+  },
+
+  iconRight: {
+    position: 'absolute',
+    right: 10, // khoảng cách từ mép phải
+    top: '70%',
+    transform: [{ translateY: -15 }], // căn giữa theo chiều dọc (nếu icon 20px)
   },
 });
 

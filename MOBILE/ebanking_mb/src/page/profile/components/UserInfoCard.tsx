@@ -23,7 +23,7 @@ const UserInfoCard: React.FC<UserInfoCardProps> = ({
       ]}
     >
       <Text style={styles.userName}>{fullName}</Text>
-      <Text style={styles.memberSince}>{t('profile.member_since')} 2023</Text>
+      <Text style={styles.memberSince}>{t('profile.member_since')} 2025</Text>
     </Animated.View>
   );
 };
@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: 'bold',
     color: '#333',
-    marginBottom: 8,
+    marginVertical: 8,
     textAlign: 'center',
   },
   memberSince: {

@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
@@ -59,11 +61,20 @@ public class UserMapper {
     public UserProto.UserResponse UsertoProtoUserResponse(User user) {
         UserInfo info = user.getUserInfo();
 
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+
         String createAtStr = user.getCreateAt() != null
-                ? Instant.ofEpochMilli(user.getCreateAt()).toString()
+                ? Instant.ofEpochMilli(user.getCreateAt())
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate()
+                .format(dateFormatter)
                 : "";
+
         String birthdayStr = (info != null && info.getBirthday() != null)
-                ? Instant.ofEpochMilli(info.getBirthday()).toString()
+                ? Instant.ofEpochMilli(info.getBirthday())
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate()
+                .format(dateFormatter)
                 : "";
 
         UserProto.User protoUser = UserProto.User.newBuilder()

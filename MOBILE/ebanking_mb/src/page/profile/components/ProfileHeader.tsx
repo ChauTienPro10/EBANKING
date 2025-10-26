@@ -106,7 +106,6 @@ const styles = StyleSheet.create({
   topNavigation: {
     position: 'relative',
     paddingTop: 10,
-    height: 70,
     zIndex: 1001,
   },
   modernEditButton: {
@@ -130,9 +129,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   integratedAvatarSection: {
-    paddingHorizontal: 20,
-    paddingTop: 10,
-    paddingBottom: 20,
     alignItems: 'center',
     position: 'absolute',
     top: 70,
@@ -143,10 +139,12 @@ const styles = StyleSheet.create({
   avatarWrapper: {
     alignItems: 'center',
   },
+
   avatarContainer: {
     position: 'relative',
     marginBottom: 16,
   },
+
   modernCameraButton: {
     position: 'absolute',
     bottom: -4,

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -25,6 +25,8 @@ import { API } from "../constants/api";
 import { useDispatch } from 'react-redux';  
 import { setLoginStatus, setLoginResponse  } from "../store/slices/appSlice.ts";
 import Toast from 'react-native-toast-message';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 type AuthStackParamList = {
   SignIn: undefined;
   SignUp: undefined;
@@ -43,6 +45,17 @@ const SignInScreen: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+ useEffect(() => {
+    const loadLastUsername = async () => {
+       const lastUsername = await AsyncStorage.getItem('lastUsername');
+      if (lastUsername) {
+        setEmail(lastUsername);
+      }
+    };
+
+    loadLastUsername(); 
+  }, []);
+
   const handleSignIn = async () => {
     const url = API.LOGIN;
     const payload = {
@@ -54,8 +67,8 @@ const SignInScreen: React.FC = () => {
       const response = await api.post(url, payload, false)
       dispatch(setLoginResponse(response));
       dispatch(setLoginStatus(true));
+      await AsyncStorage.setItem('lastUsername', response?.username);
     } catch(error) {
-      // console.error('Login failed:', error);
       Toast.show({
         type: 'error',
         text1: t('sign_in.text_noti'),
