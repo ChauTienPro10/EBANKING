@@ -10,5 +10,6 @@ export const API = {
   REGISTER_VERIFY_OTP: `${AUTH_SERVICE}/auth/register-verify-otp`,
   GET_ACCOUNT_TRANS_INFO: `${AUTH_SERVICE}/trans/account/info/`,
   GET_USER_INFO: `${AUTH_SERVICE}/auth/user/{userId}`,
-  UPDATE_USER_INFO: `${AUTH_SERVICE}/auth/update`
+  UPDATE_USER_INFO: `${AUTH_SERVICE}/auth/update`,
+  OPEN_ACCOUNT_TRANSACTION: `${AUTH_SERVICE}/trans/account/new`
 };

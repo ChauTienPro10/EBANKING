@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Touchable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import Colors from '../../constants/color';
@@ -11,14 +11,18 @@ import { fetchAccountTransInfo } from '../../store/fetchAPI/AccountFetch';
 import { AppDispatch, store } from '../../store';
 import ReminderPopup from '../../popups/ReminderPopupProps';
 import { fetchUserInfo } from '../../store/fetchAPI/UserInfoFetch';
-import {PersonIcon} from '../../components/icon';
+import { PersonIcon } from '../../components/icon';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../navigation/types';
+import { setUserInfoData } from '../../store/slices/appSlice';
 
 
 const HomeScreen: React.FC = () => {
   const loginResponse = useSelector((state: RootState) => state.app.loginResponse);
   const userInfo = useSelector((state: RootState) => state.app.userInfoData);
   const account = useSelector((state: RootState) => state.app.accountTransResponse);
-  const navigation = useNavigation();
+  type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>; 
+  const navigation = useNavigation<NavigationProp>();
   const { t } = useTranslation();
   const [notificationCount, setNotificationCount] = useState(3);
   const [isBalanceVisible, setIsBalanceVisible] = useState(false);
@@ -53,13 +57,13 @@ const HomeScreen: React.FC = () => {
 
   useEffect(() => {
     if (loginResponse?.id) {
-      // dispatch(fetchAccountTransInfo(loginResponse.id));
+      dispatch(fetchAccountTransInfo(loginResponse.id));
       dispatch(fetchUserInfo(loginResponse.id));
     }
   }, [loginResponse, dispatch]);
 
   useEffect(() => {
-    if(userInfo?.fullName === '' || userInfo?.birthday === '' || userInfo?.address === '') {
+    if (userInfo?.fullName === '' || userInfo?.birthday === '' || userInfo?.address === '') {
       setRequireUpdateInfo(true);
     }
   }, [userInfo])
@@ -147,8 +151,9 @@ const HomeScreen: React.FC = () => {
       <ReminderPopup
         visible={requireUpdateInfo}
         message="Vui lòng cập nhật đầy đủ thông tin"
-        onClose={() => {setRequireUpdateInfo(false);
-            navigation.navigate("Profile" as never);
+        onClose={() => {
+          setRequireUpdateInfo(false);
+          navigation.navigate("Profile" as never);
         }}
       />
 
@@ -189,15 +194,18 @@ const HomeScreen: React.FC = () => {
 
         <View style={styles.balanceCard}>
           <View style={styles.balanceHeader}>
-            <Text style={styles.balanceTitle}>{account != null ? t('labels.total_balance') : t('labels.you_not_has_card')}</Text>
+            {account != null && <Text style={styles.balanceTitle}>{t('labels.total_balance')}</Text>}
+            {account === null && <TouchableOpacity>
+              <Text style={styles.balanceTitle}>{t('labels.you_not_has_card')}</Text>
+            </TouchableOpacity>}
           </View>
           <View style={styles.balanceAmount}>
             {isBalanceVisible ? <Text style={styles.balanceText}>
-              {account?.balance + 'VND'}
+              {account?.balance.toLocaleString('en-US') + ' VND'}
             </Text> :
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => navigation.navigate('OpenCard', { userInfo })}>
                 <Text style={styles.balanceTextOpenAccount}>
-                  {t('labels.open_account_now')}
+                  {account === null ? t('labels.open_account_now') : "*,***,***"}
                 </Text>
               </TouchableOpacity>
             }
@@ -512,7 +520,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: Colors.main_green,
-    textDecorationLine: 'underline'
+    // textDecorationLine: 'underline'
   }
 });
 

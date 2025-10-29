@@ -1,3 +1,5 @@
+import { UserInfoModel } from "../store/UserInfoModel";
+
 export type RootStackParamList = {
     SignIn: undefined;
     SignUp: undefined;
@@ -21,5 +23,6 @@ export type RootStackParamList = {
     Support: undefined;
     Notifications: undefined;
     Search: undefined;
+    OpenCard: {userInfo: UserInfoModel | null};
     OTPPage: { username: string, targetPage: string };
 };

@@ -27,6 +27,7 @@ import Toast from 'react-native-toast-message';
 import ToastService from '../components/ToastService';
 import { API } from '../constants/api';
 import { RootStackParamList } from '../navigation/types';
+import LoadingPopup from '../popups/LoadingPopup';
 
 type SignUpScreenNavigationProp = StackNavigationProp<RootStackParamList, 'SignUp'>;
 
@@ -72,7 +73,7 @@ const SignUpScreen: React.FC = () => {
     const preHandMess = await handleSignUp();
     if (preHandMess == 'OK') {
       ToastService.success('Thông báo', 'OTP đã được gửi đến ' + email);
-      navigation.navigate("OTPPage", {username: email, targetPage: "SignIn"})
+      navigation.navigate("OTPPage", { username: email, targetPage: "SignIn" })
     }
     else {
       ToastService.info("Đăng ký thất bại", preHandMess);
@@ -123,7 +124,8 @@ const SignUpScreen: React.FC = () => {
 
   return (
     <BackgroundDecoration>
-      <Header title={t('sign_in.text_login')} showBackButton={true} />
+      <LoadingPopup visible={isLoading} message="Đang xử lý..." />
+      <Header title={t('sign_in.text_sign_up')} showBackButton={true} />
 
       <SafeAreaView style={styles.container}>
         <KeyboardAvoidingView

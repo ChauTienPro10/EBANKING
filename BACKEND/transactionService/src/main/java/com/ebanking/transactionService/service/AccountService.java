@@ -22,6 +22,9 @@ public class AccountService {
     AccountMapper accountMapper;
 
     public AccountProto.NewAccountResponse newAccount(AccountProto.NewAccountRequest requestData) {
+        if (accountRepository.findByUserId(requestData.getUserId()) != null) {
+            return null;
+        }
         Account acc = Account.builder()
                 .accountNumber(requestData.getAccountNumber())
                 .accountType(AccountType.fromName(requestData.getAccountType()).name())
@@ -54,5 +57,6 @@ public class AccountService {
                 .setUserId(account.getUserId())
                 .build();
     }
+
 
 }

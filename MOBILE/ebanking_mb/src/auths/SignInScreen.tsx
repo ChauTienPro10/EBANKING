@@ -22,10 +22,12 @@ import { useTranslation } from 'react-i18next';
 import Colors from "../constants/color";
 import GText from "../components/GText";
 import { API } from "../constants/api";
-import { useDispatch } from 'react-redux';  
-import { setLoginStatus, setLoginResponse  } from "../store/slices/appSlice.ts";
+import { useDispatch } from 'react-redux';
+import { setLoginStatus, setLoginResponse } from "../store/slices/appSlice.ts";
 import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ReactNativeBiometrics from 'react-native-biometrics';
+import LoadingPopup from "../popups/LoadingPopup.tsx";
 
 type AuthStackParamList = {
   SignIn: undefined;
@@ -36,6 +38,8 @@ type AuthStackParamList = {
 type SignInScreenNavigationProp = StackNavigationProp<AuthStackParamList, "SignIn">;
 
 const SignInScreen: React.FC = () => {
+
+  const rnBiometrics = new ReactNativeBiometrics();
   const dispatch = useDispatch();
   const { t } = useTranslation();
 
@@ -44,45 +48,85 @@ const SignInScreen: React.FC = () => {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [biometricState, setBiometricState] = useState(false);
+  const [loading, setLoading] = useState(false);
 
- useEffect(() => {
+
+  useEffect(() => {
     const loadLastUsername = async () => {
-       const lastUsername = await AsyncStorage.getItem('lastUsername');
-      if (lastUsername) {
-        setEmail(lastUsername);
+      const lastUsernameString = await AsyncStorage.getItem('lastUsername');
+      if (lastUsernameString) {
+        const lastUsername = JSON.parse(lastUsernameString);
+        await setEmail(lastUsername.username);
+        await setBiometricState(true);
       }
     };
 
-    loadLastUsername(); 
+    loadLastUsername();
   }, []);
 
-  const handleSignIn = async () => {
+
+  const biometricAuthenticate = async () => {
+    try {
+      const resultObject = await rnBiometrics.simplePrompt({ promptMessage: 'Xác thực sinh trắc học' });
+      const { success } = resultObject;
+
+      if (success) {
+        const lastUsernameString = await AsyncStorage.getItem('lastUsername');
+        if (lastUsernameString) {
+          const lastUsername = JSON.parse(lastUsernameString);
+
+          // Option 1: pass directly to login
+          handleSignIn(lastUsername.username, lastUsername.password);
+        }
+      } else {
+        Toast.show({
+          type: 'error',
+          text1: "Lỗi",
+          text2: "Xác thực thất bại!"
+        });
+      }
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: "Lỗi",
+        text2: "Không thể xác thực!"
+      });
+    }
+  };
+
+  const handleSignIn = async (email: string, password: string) => {
+    setLoading(true);
     const url = API.LOGIN;
     const payload = {
       username: email,
-      password: password  
+      password: password
     }
 
     try {
       const response = await api.post(url, payload, false)
       dispatch(setLoginResponse(response));
       dispatch(setLoginStatus(true));
-      await AsyncStorage.setItem('lastUsername', response?.username);
-    } catch(error) {
+      await AsyncStorage.setItem('lastUsername', JSON.stringify({ username: response?.username, password: password }));
+    } catch (error) {
       Toast.show({
         type: 'error',
         text1: t('sign_in.text_noti'),
         text2: t('sign_in.text_login_fail')
       });
+    } finally{
+      setLoading(true);
     }
 
   };
 
   const handleFingerprintLogin = () => {
+    biometricAuthenticate();
   };
 
   return (
     <BackgroundDecoration>
+      <LoadingPopup visible={loading} message="Đang xử lý..." />
       <Header title={t('sign_in.text_login')} showBackButton={true} />
 
       <View style={styles.container}>
@@ -133,7 +177,7 @@ const SignInScreen: React.FC = () => {
         {/* Sign In Button */}
         <TouchableOpacity
           style={styles.signInButton}
-          onPress={handleSignIn}
+          onPress={() => handleSignIn(email, password)}
           disabled={isLoading}
           accessible
           accessibilityLabel="Đăng nhập"
@@ -145,18 +189,18 @@ const SignInScreen: React.FC = () => {
           )}
         </TouchableOpacity>
 
-        {/* Fingerprint Login */}
-        <TouchableOpacity
-          style={styles.fingerprintButton}
-          onPress={handleFingerprintLogin}
-          accessible
-          accessibilityLabel="Đăng nhập bằng vân tay"
-        >
-          <Fingerprint size={32} color={Colors.red} />
-          <GText type="systemLight_18" color={Colors.grey1} style={{ paddingHorizontal: 10 }}>{t('sign_in.text_fingerint_login')}</GText>
-        </TouchableOpacity>
+        {biometricState &&
+          <TouchableOpacity
+            style={styles.fingerprintButton}
+            onPress={handleFingerprintLogin}
+            accessible
+            accessibilityLabel="Đăng nhập bằng vân tay"
+          >
+            <Fingerprint size={32} color={Colors.red} />
+            <GText type="systemLight_18" color={Colors.grey1} style={{ paddingHorizontal: 10 }}>{t('sign_in.text_fingerint_login')}</GText>
+          </TouchableOpacity>
 
-        {/* Sign Up Link */}
+        }
         <View style={styles.signUpContainer}>
           <GText type="systemLight_14" color={Colors.grey1}>{t('sign_in.text_not_have_account')}</GText>
           <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>

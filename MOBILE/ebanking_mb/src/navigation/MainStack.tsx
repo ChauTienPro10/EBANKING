@@ -7,8 +7,10 @@ import SettingsScreen from '../page/settings/SettingsScreen';
 import SupportScreen from '../page/support/SupportScreen';
 import TransferScreen from '../page/transfer/TransferScreen';
 import ProfileScreen from '../page/profile/ProfileScreen';
+import OpenAccountScreen from '../page/transaction/OpenAccountScreen';
+import { RootStackParamList } from './types';
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function MainStack() {
   return (
@@ -25,6 +27,8 @@ export default function MainStack() {
       <Stack.Screen name="Settings" component={SettingsScreen} />
       <Stack.Screen name="Support" component={SupportScreen} />
       <Stack.Screen name="Transfer" component={TransferScreen} />
+      <Stack.Screen name="OpenCard" component={OpenAccountScreen} />
+
     </Stack.Navigator>
   );
 }

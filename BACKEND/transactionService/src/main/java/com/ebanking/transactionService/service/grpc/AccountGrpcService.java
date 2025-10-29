@@ -37,6 +37,14 @@ public class AccountGrpcService extends AccountServiceGrpc.AccountServiceImplBas
     public void getAccountInfo(AccountProto.GetAccountInfo rq, StreamObserver<AccountProto.AccountResponse> responseObserver) {
         try {
             AccountProto.AccountResponse rs = accountService.getAccountInfo(rq);
+            if (rs == null) {
+                log.error("Account đã tồn tại");
+                responseObserver.onError(
+                        Status.INTERNAL
+                                .withDescription("Username đã liên kết tài khoản")
+                                .asRuntimeException()
+                );
+            }
             responseObserver.onNext(rs);
             responseObserver.onCompleted();
         } catch (Exception e) {
