@@ -1,0 +1,30 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:16
+    container_name: my_postgres_ekyc
+    restart: always
+    environment:
+        POSTGRES_DB: ekyc_db
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: root123456
+    ports:
+        - "5432:5432"
+    volumes:
+        - postgres_data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: my_pgadmin_ekyc
+    restart: always
+    environment:
+        PGADMIN_DEFAULT_EMAIL: admin@gmail.com
+        PGADMIN_DEFAULT_PASSWORD: admin123456
+    ports:
+        - "5050:80"
+    depends_on:
+        - postgres
+
+
+volumes:
+    postgres_data:

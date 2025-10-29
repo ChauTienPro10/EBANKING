@@ -1,0 +1,19 @@
+#spring.application.name=ekycService
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ekyc_db
+    username: postgres
+    password: root123456
+    hikari:
+      connection-init-sql: SET TIME ZONE 'UTC'
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          time_zone: UTC
