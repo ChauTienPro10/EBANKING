@@ -32,7 +32,7 @@ function AppContent() {
           backgroundColor="transparent"
         />
         <NavigationContainer>
-          {isLoggedIn ? <MainStack /> : <AuthNavigator />}
+          {isLoggedIn ? <MainStack /> : <MainStack />}
           {/* <MainStack /> */}
         </NavigationContainer>
       </View>

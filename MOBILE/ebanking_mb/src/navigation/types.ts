@@ -23,6 +23,11 @@ export type RootStackParamList = {
     Support: undefined;
     Notifications: undefined;
     Search: undefined;
-    OpenCard: {userInfo: UserInfoModel | null};
+    OpenCard: { userInfo: UserInfoModel | null };
+    TransactionSuccess?: {
+        amount: string;
+        transactionId: string;
+        date: string;
+    };
     OTPPage: { username: string, targetPage: string };
 };

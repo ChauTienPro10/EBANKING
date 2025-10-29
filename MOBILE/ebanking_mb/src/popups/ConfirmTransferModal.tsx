@@ -24,7 +24,7 @@ const ConfirmTransferModal: React.FC<ConfirmTransferModalProps> = ({
 
     const [pinAuth, setPinAuth] = useState(false);
     const handleComplete = (pin: string) => {
-        console.log('PIN nhập xong:', pin);
+        onConfirm();
     };
     return (
         <Modal

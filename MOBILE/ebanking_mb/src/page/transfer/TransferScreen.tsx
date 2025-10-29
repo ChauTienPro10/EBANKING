@@ -20,6 +20,13 @@ import CustomButton from '../../components/CustomButton';
 import { Header } from '../../components';
 import { ArrowLeftIcon, UserIcon, DollarSignIcon, MessageSquareIcon, CreditCardIcon, SearchIcon, CheckIcon, ChevronDownIcon, CardIcon, PeopleIcon, PersonIcon, CashIcon, BusinessIcon, TrendingUpIcon, ShieldIcon, CrownIcon, StarIcon, AirplaneIcon } from '../../components/icon';
 import ConfirmTransferModal from '../../popups/ConfirmTransferModal';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../navigation/types';
+
+type NavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'Transfer' // hoặc màn hình hiện tại bạn đang ở
+>;
 
 interface Bank {
   id: string;
@@ -29,11 +36,11 @@ interface Bank {
 }
 
 const transferData = {
-    'Số tiền': 1000000,
-    'Tài khoản nhận': '123456789',
-    'Tên người nhận': 'Nguyễn Văn A',
-    'Nội dung': 'Chuyển tiền học phí',
-  };
+  'Số tiền': 1000000,
+  'Tài khoản nhận': '123456789',
+  'Tên người nhận': 'Nguyễn Văn A',
+  'Nội dung': 'Chuyển tiền học phí',
+};
 
 interface TransferFormData {
   recipientAccount: string;
@@ -50,7 +57,7 @@ interface FormErrors {
 }
 
 const TransferScreen: React.FC = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp>();
   const { t } = useTranslation();
   const [accountOk, setAccountOk] = useState(false)
   const [transferModalVisible, setTransferModalVisible] = useState(false);
@@ -63,6 +70,11 @@ const TransferScreen: React.FC = () => {
     setTransferModalVisible(false);
     // Gọi API chuyển tiền ở đây
     console.log('Giao dịch được xác nhận!');
+    navigation.navigate('TransactionSuccess', {
+        amount: '₫1.000.000',
+        transactionId: 'TXN987654321',
+        date: '30/10/2025 14:25',
+      });
   };
 
   const handleCancelTransfer = () => {
@@ -207,8 +219,8 @@ const TransferScreen: React.FC = () => {
 
     try {
       await new Promise<void>(resolve => setTimeout(resolve, 2000));
-        onCheckAccountNumberSuccess();
-      
+      onCheckAccountNumberSuccess();
+
     } catch (error) {
       Alert.alert(
         t('transfer.error.title'),
