@@ -5,12 +5,7 @@ import PinInput from '../components/PinInput';
 
 interface ConfirmTransferModalProps {
     visible: boolean;
-    data: {
-        'Số tiền': number;
-        'Tài khoản nhận': string;
-        'Tên người nhận'?: string;
-        'Nội dung'?: string;
-    };
+    data: Record<string, string>;
     onConfirm: () => void;
     onCancel: () => void;
 }

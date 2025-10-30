@@ -115,7 +115,7 @@ const SignInScreen: React.FC = () => {
         text2: t('sign_in.text_login_fail')
       });
     } finally{
-      setLoading(true);
+      setLoading(false);
     }
 
   };

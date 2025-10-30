@@ -22,6 +22,12 @@ import { ArrowLeftIcon, UserIcon, DollarSignIcon, MessageSquareIcon, CreditCardI
 import ConfirmTransferModal from '../../popups/ConfirmTransferModal';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/types';
+import fetch from '../../utils/fetch';
+import { API } from '../../constants/api';
+import Toast from 'react-native-toast-message';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store';
+import TransactionFailedScreen from './Error';
 
 type NavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -42,6 +48,15 @@ const transferData = {
   'Nội dung': 'Chuyển tiền học phí',
 };
 
+const genFormData = (formData: TransferFormData, fullName: string) => {
+  return {
+    'Số tiền': formData.amount,
+    'Tài khoản nhận': formData.recipientAccount,
+    'Tên người nhận': fullName,
+    'Nội dung': formData.content,
+  }
+}
+
 interface TransferFormData {
   recipientAccount: string;
   amount: string;
@@ -58,26 +73,53 @@ interface FormErrors {
 
 const TransferScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
+  const loginResponse = useSelector((state: RootState) => state.app.loginResponse);
+  const account = useSelector((state: RootState) => state.app.accountTransResponse);
+
   const { t } = useTranslation();
   const [accountOk, setAccountOk] = useState(false)
   const [transferModalVisible, setTransferModalVisible] = useState(false);
+  const [receiverName, setReceiverName] = useState('');
 
-  const onCheckAccountNumberSuccess = () => {
+  const onCheckAccountNumberSuccess = (fullName: string) => {
+    setReceiverName(fullName);
     setTransferModalVisible(true);
   };
 
-  const handleConfirmTransfer = () => {
-    setTransferModalVisible(false);
-    // Gọi API chuyển tiền ở đây
-    console.log('Giao dịch được xác nhận!');
-    navigation.navigate('TransactionSuccess', {
-        amount: '₫1.000.000',
-        transactionId: 'TXN987654321',
-        date: '30/10/2025 14:25',
-      });
+  const handleConfirmTransfer = async () => {
+    try {
+      const payload = {
+        username: loginResponse?.username,
+        senderAccountNumber: account?.accountNumber,
+        receiverAccountNumber: formData.recipientAccount,
+        amount: formData.amount.replace(/,/g, ''),
+        currency: 'VND',
+        transactionType: 'TRANSFER',
+        description: formData.content
+      };
+
+      const transferResponse = await fetch.post(API.TRANSFER, payload);
+
+      if (transferResponse?.transactionId) {
+        navigation.navigate('PendingTransactionScreen', {
+          amount: '₫' + formData.amount,
+          content: formData?.content,
+          date: new Date().toISOString(),
+          receiverName: receiverName
+        });
+      } else {
+        navigation.navigate('TransactionFailedScreen');
+      }
+    } catch (error) {
+      navigation.navigate('TransactionFailedScreen');
+    } finally {
+      setTransferModalVisible(false);
+    }
   };
 
-  const handleCancelTransfer = () => {
+
+  const handleCancelTransfer = async () => {
+
     setTransferModalVisible(false);
   };
 
@@ -218,8 +260,19 @@ const TransferScreen: React.FC = () => {
     setIsLoading(true);
 
     try {
-      await new Promise<void>(resolve => setTimeout(resolve, 2000));
-      onCheckAccountNumberSuccess();
+
+      const response = await fetch.post(API.CHECK_ACCOUNT_NUMBER, { accountNumber: formData.recipientAccount });
+      if (response?.isExist) {
+        onCheckAccountNumberSuccess(response?.fullName);
+      }
+      else {
+        Toast.show({
+          type: 'error',
+          text1: "Giao dịch thất bại",
+          text2: "Tài khoản không tồn tại!"
+        });
+      }
+      // onCheckAccountNumberSuccess();
 
     } catch (error) {
       Alert.alert(
@@ -252,7 +305,7 @@ const TransferScreen: React.FC = () => {
 
           <ConfirmTransferModal
             visible={transferModalVisible}
-            data={transferData}
+            data={genFormData(formData, receiverName)}
             onConfirm={handleConfirmTransfer}
             onCancel={handleCancelTransfer}
           />

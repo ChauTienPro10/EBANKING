@@ -10,13 +10,15 @@ import ProfileScreen from '../page/profile/ProfileScreen';
 import OpenAccountScreen from '../page/transaction/OpenAccountScreen';
 import { RootStackParamList } from './types';
 import TransactionSuccessScreen from '../page/transfer/Success';
+import PendingTransactionScreen from '../page/transfer/Pending';
+import TransactionFailedScreen from '../page/transfer/Error';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function MainStack() {
   return (
     <Stack.Navigator
-      initialRouteName="Transfer" //
+      initialRouteName="Home" //
       screenOptions={{
         headerShown: false,
       }}
@@ -30,7 +32,8 @@ export default function MainStack() {
       <Stack.Screen name="Transfer" component={TransferScreen} />
       <Stack.Screen name="OpenCard" component={OpenAccountScreen} />
       <Stack.Screen name="TransactionSuccess" component={TransactionSuccessScreen} />
-
+      <Stack.Screen name="PendingTransactionScreen" component={PendingTransactionScreen} />
+      <Stack.Screen name="TransactionFailedScreen" component={TransactionFailedScreen} />
     </Stack.Navigator>
   );
 }

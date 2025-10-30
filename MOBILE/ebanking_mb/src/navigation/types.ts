@@ -29,5 +29,12 @@ export type RootStackParamList = {
         transactionId: string;
         date: string;
     };
+    PendingTransactionScreen?: {
+        amount: string;
+        content: string;
+        date: string;
+        receiverName: string;
+    };
+    TransactionFailedScreen?: undefined;
     OTPPage: { username: string, targetPage: string };
 };

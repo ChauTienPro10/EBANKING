@@ -11,5 +11,7 @@ export const API = {
   GET_ACCOUNT_TRANS_INFO: `${AUTH_SERVICE}/trans/account/info/`,
   GET_USER_INFO: `${AUTH_SERVICE}/auth/user/{userId}`,
   UPDATE_USER_INFO: `${AUTH_SERVICE}/auth/update`,
-  OPEN_ACCOUNT_TRANSACTION: `${AUTH_SERVICE}/trans/account/new`
+  OPEN_ACCOUNT_TRANSACTION: `${AUTH_SERVICE}/trans/account/new`,
+  CHECK_ACCOUNT_NUMBER: `${AUTH_SERVICE}/trans/account/checkAccountNumber`,
+  TRANSFER: `${AUTH_SERVICE}/transaction/transfer`
 };
