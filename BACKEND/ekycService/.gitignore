@@ -31,3 +31,22 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### eKYC Test Files ###
+# Image files - DO NOT commit personal ID card images
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.bmp
+*.svg
+
+# Base64 encoded files - DO NOT commit encoded personal data
+*.base64
+*.base64.txt
+
+# Temporary test data files
+app.log
+ocr_request.json
+ocr_request_full.json
+

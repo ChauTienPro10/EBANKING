@@ -17,3 +17,17 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         jdbc:
           time_zone: UTC
+server:
+  port: 8080
+
+# FPT.AI Configuration
+fpt:
+  ai:
+    api-key: juexeQ3Q2nVoK59t6SCmp1J5ioXe3GTY
+    ocr-url: https://api.fpt.ai/vision/idr/vnm/
+    liveness-url: https://api.fpt.ai/dmp/liveness/v3
+    face-match-url: https://api.fpt.ai/dmp/checkface/v1
+
+# CORS
+cors:
+  allowed-origins: http://localhost:3000,http://localhost:19006
