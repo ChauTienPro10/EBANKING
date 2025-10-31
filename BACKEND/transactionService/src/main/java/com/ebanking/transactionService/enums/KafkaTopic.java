@@ -4,7 +4,8 @@ public enum KafkaTopic {
     TRANSACTION("transaction"),
     TRANSACTION_NOTIFY("transaction-notify"),
     TRANSACTION_PROCESSER("transaction-processer"),
-    TRANSFER_SEND_EMAIL("transfer-send-email")
+    TRANSFER_SEND_EMAIL("transfer-send-email"),
+    TRANSFER_NOTIFY_REALTIME("notify_transaction_socket")
     ;
 
     private final String topicName;

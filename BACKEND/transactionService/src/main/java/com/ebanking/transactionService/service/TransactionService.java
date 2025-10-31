@@ -28,10 +28,15 @@ import java.util.List;
 public class TransactionService {
 
     private final KafkaTemplate<String, Transaction> kafkaTemplate;
+    private final KafkaTemplate<String, String> stringKafkaTemplate;
 
     @Autowired
-    public TransactionService(KafkaTemplate<String, Transaction> kafkaTemplate) {
+    public TransactionService(
+            KafkaTemplate<String, Transaction> kafkaTemplate,
+            KafkaTemplate<String, String> stringKafkaTemplate
+    ) {
         this.kafkaTemplate = kafkaTemplate;
+        this.stringKafkaTemplate = stringKafkaTemplate;
     }
 
     @Autowired
@@ -103,6 +108,10 @@ public class TransactionService {
         accountRepository.save(sender);
         accountRepository.save(receiver);
         transaction.setStatus(TransactionStatus.SUCCESS.name());
+
+
+
+        stringKafkaTemplate.send(KafkaTopic.TRANSFER_NOTIFY_REALTIME.getTopicName(), "Giao Dich Thanh Cong");
         
         // publish success transaction event for notifications
         kafkaTemplate.send(KafkaTopic.TRANSACTION_NOTIFY.getTopicName(), transaction);

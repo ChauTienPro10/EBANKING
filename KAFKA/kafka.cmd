@@ -9,6 +9,7 @@ docker exec -it kafka kafka-topics --create --topic transaction-notify --bootstr
 docker exec -it kafka kafka-topics --create --topic transaction-processer --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
 docker exec -it kafka kafka-topics --create --topic send-email-change-password --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
 docker exec -it kafka kafka-topics --create --topic otp-forgot-password --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+docker exec -it kafka kafka-topics --create --topic notify_transaction_socket --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
 
 echo.
 echo Listing all Kafka topics:

@@ -9,6 +9,8 @@ docker exec -it kafka kafka-topics --delete --topic transaction-notify --bootstr
 docker exec -it kafka kafka-topics --delete --topic transaction-processer --bootstrap-server localhost:9092
 docker exec -it kafka kafka-topics --delete --topic send-email-change-password --bootstrap-server localhost:9092
 docker exec -it kafka kafka-topics --delete --topic otp-forgot-password --bootstrap-server localhost:9092
+docker exec -it kafka kafka-topics --delete --topic notify_transaction_socket --bootstrap-server localhost:9092
+
 
 echo.
 echo Listing remaining Kafka topics:
