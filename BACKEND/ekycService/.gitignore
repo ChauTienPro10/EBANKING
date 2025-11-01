@@ -50,3 +50,7 @@ app.log
 ocr_request.json
 ocr_request_full.json
 
+### File Storage - DO NOT commit uploaded files ###
+uploads/
+!uploads/.gitkeep
+

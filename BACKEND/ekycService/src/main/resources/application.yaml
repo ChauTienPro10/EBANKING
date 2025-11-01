@@ -18,7 +18,7 @@ spring:
         jdbc:
           time_zone: UTC
 server:
-  port: 8080
+  port: 8081
 
 # FPT.AI Configuration
 fpt:
@@ -31,3 +31,14 @@ fpt:
 # CORS
 cors:
   allowed-origins: http://localhost:3000,http://localhost:19006
+
+# File Upload & Storage Configuration
+app:
+  upload:
+    base-dir: ./uploads              # Thư mục lưu file (relative hoặc absolute path)
+    max-file-size-mb: 10             # Giới hạn kích thước file (MB)
+
+  # Session expiry for cleanup
+  session:
+    expiry-minutes: 10               # Session hết hạn sau 10 phút
+    cleanup-enabled: true            # Tự động xóa file của session hết hạn

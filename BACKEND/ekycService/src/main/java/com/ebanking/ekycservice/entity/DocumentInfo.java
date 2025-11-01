@@ -33,13 +33,10 @@ public class DocumentInfo {
     private LocalDate issueDate;
     private LocalDate expiryDate;
 
-    @Column(columnDefinition = "TEXT")
-    private String frontImageUrl;
-
-    @Column(columnDefinition = "TEXT")
-    private String backImageUrl;
-
-    @Column(columnDefinition = "TEXT")
-    private String portraitImageUrl;
+    // Lưu đường dẫn file thay vì base64 (tối ưu database)
+    // VD: images/sessionId/front_sessionId_20241030_143022.jpg
+    private String frontImagePath;
+    private String backImagePath;
+    private String portraitImagePath;
 }
 

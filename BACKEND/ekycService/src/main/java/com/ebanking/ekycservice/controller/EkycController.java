@@ -1,13 +1,13 @@
 package com.ebanking.ekycservice.controller;
 
-import com.ebanking.ekycservice.dto.request.LivenessRequest;
-import com.ebanking.ekycservice.dto.request.OrcRequest;
 import com.ebanking.ekycservice.dto.response.*;
 import com.ebanking.ekycservice.service.EkycService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/ekyc")
@@ -26,21 +26,33 @@ public class EkycController {
         return ResponseEntity.ok(ApiResponse.success(session));
     }
 
-    @PostMapping("/ocr")
-    public ResponseEntity<ApiResponse<OrcResponse>> processOcr(
-            @RequestBody OrcRequest request) {
+    @GetMapping("/sessions/{sessionId}")
+    public ResponseEntity<ApiResponse<SessionResponse>> getSession(
+            @PathVariable String sessionId) {
 
-        log.info("Processing OCR for session: {}", request.getSessionId());
-        OrcResponse result = ekycService.processOcr(request);
+        log.info("Getting session: {}", sessionId);
+        SessionResponse session = ekycService.getSession(sessionId);
+        return ResponseEntity.ok(ApiResponse.success(session));
+    }
+
+    @PostMapping(value = "/ocr", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<OrcResponse>> processOcr(
+            @RequestParam("sessionId") String sessionId,
+            @RequestParam("frontImage") MultipartFile frontImage,
+            @RequestParam("backImage") MultipartFile backImage) {
+
+        log.info("Processing OCR for session: {} with image files", sessionId);
+        OrcResponse result = ekycService.processOcr(sessionId, frontImage, backImage);
         return ResponseEntity.ok(ApiResponse.success(result));
     }
 
-    @PostMapping("/liveness")
+    @PostMapping(value = "/liveness", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<LivenessResponse>> checkLiveness(
-            @RequestBody LivenessRequest request) {
+            @RequestParam("sessionId") String sessionId,
+            @RequestParam("video") MultipartFile video) {
 
-        log.info("Checking liveness for session: {}", request.getSessionId());
-        LivenessResponse result = ekycService.processLiveness(request);
+        log.info("Checking liveness for session: {} with video file", sessionId);
+        LivenessResponse result = ekycService.processLiveness(sessionId, video);
         return ResponseEntity.ok(ApiResponse.success(result));
     }
 

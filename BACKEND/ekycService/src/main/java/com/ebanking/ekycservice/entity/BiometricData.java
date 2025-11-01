@@ -23,8 +23,9 @@ public class BiometricData {
     @JsonBackReference
     private EkycSession session;
 
-    @Column(columnDefinition = "TEXT")
-    private String selfieVideoUrl;
+    // Lưu đường dẫn file thay vì base64 (tối ưu database)
+    // VD: videos/sessionId/liveness_sessionId_20241030_143022.mp4
+    private String selfieVideoPath;
 
     private Double livenessScore;
     private Double faceMatchScore;

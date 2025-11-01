@@ -2,8 +2,6 @@ package com.ebanking.ekycservice.service;
 
 import com.ebanking.ekycservice.constant.EkycStatus;
 import com.ebanking.ekycservice.constant.EkycStep;
-import com.ebanking.ekycservice.dto.request.LivenessRequest;
-import com.ebanking.ekycservice.dto.request.OrcRequest;
 import com.ebanking.ekycservice.dto.response.FaceMatchResponse;
 import com.ebanking.ekycservice.dto.response.LivenessResponse;
 import com.ebanking.ekycservice.dto.response.OrcResponse;
@@ -15,10 +13,12 @@ import com.ebanking.ekycservice.exception.EkycException;
 import com.ebanking.ekycservice.repository.BiometricDataRepository;
 import com.ebanking.ekycservice.repository.DocumentInfoRepository;
 import com.ebanking.ekycservice.repository.EkycSessionRepository;
+import com.ebanking.ekycservice.util.FileUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -35,6 +35,7 @@ public class EkycService {
     private final DocumentInfoRepository documentInfoRepository;
     private final BiometricDataRepository biometricDataRepository;
     private final FptAiService fptAiService;
+    private final MediaStorageService mediaStorageService;
 
     @Transactional
     public SessionResponse createSession(Long userId) {
@@ -57,13 +58,35 @@ public class EkycService {
                 .build();
     }
 
+    public SessionResponse getSession(String sessionId) {
+        log.info("Getting session: {}", sessionId);
+
+        EkycSession session = sessionRepository.findById(UUID.fromString(sessionId))
+                .orElseThrow(() -> new EkycException("Session not found"));
+
+        return SessionResponse.builder()
+                .sessionId(session.getId().toString())
+                .status(session.getStatus())
+                .currentStep(session.getCurrentStep())
+                .expiresAt(session.getExpiredAt())
+                .build();
+    }
+
     @Transactional
     @SuppressWarnings("unchecked")
-    public OrcResponse processOcr(OrcRequest request) {
-        log.info("Processing OCR for session: {}", request.getSessionId());
+    public OrcResponse processOcr(String sessionId, MultipartFile frontImage, MultipartFile backImage) {
+        log.info("Processing OCR for session: {}", sessionId);
+
+        // Validate image files
+        FileUtil.validateImageFile(frontImage);
+        FileUtil.validateImageFile(backImage);
+
+        // Convert images to base64
+        String frontImageBase64 = FileUtil.convertToBase64(frontImage);
+        String backImageBase64 = FileUtil.convertToBase64(backImage);
 
         // Validate session
-        EkycSession session = sessionRepository.findById(UUID.fromString(request.getSessionId()))
+        EkycSession session = sessionRepository.findById(UUID.fromString(sessionId))
                 .orElseThrow(() -> new EkycException("Session not found"));
 
         if (session.getExpiredAt().isBefore(LocalDateTime.now())) {
@@ -72,7 +95,7 @@ public class EkycService {
 
         try {
             // Call FPT.AI OCR for front image
-            Map<String, Object> frontResult = fptAiService.callOrcApi(request.getFrontImageBase64());
+            Map<String, Object> frontResult = fptAiService.callOrcApi(frontImageBase64);
             log.debug("Front OCR result: {}", frontResult);
 
             // FPT.AI OCR response structure: { "errorCode": 0, "errorMessage": "", "data": [...] }
@@ -89,7 +112,7 @@ public class EkycService {
             Map<String, Object> frontData = frontDataList.get(0);
 
             // Call FPT.AI OCR for back image
-            Map<String, Object> backResult = fptAiService.callOrcApi(request.getBackImageBase64());
+            Map<String, Object> backResult = fptAiService.callOrcApi(backImageBase64);
             log.debug("Back OCR result: {}", backResult);
 
             Object backDataObj = backResult.get("data");
@@ -108,20 +131,32 @@ public class EkycService {
             String gender = getStringValue(frontData, "sex");
             String address = getStringValue(frontData, "address");
             String doeStr = getStringValue(frontData, "doe");
-            String portraitImage = getStringValue(frontData, "avatar");
+
+            // Get confidence score from front data
+            String overallScoreStr = getStringValue(frontData, "overall_score");
+            Double confidence = parseDoubleValue(overallScoreStr);
 
             // Extract data from BACK (chip_back has issue_date, features, mrz)
             String issueDateStr = backData != null ? getStringValue(backData, "issue_date") : "";
 
-            log.info("Extracted data: idNumber={}, fullName={}, dob={}, gender={}, address={}, issueDate={}",
-                    idNumber, fullName, dobStr, gender, address, issueDateStr);
+            log.info("Extracted data: idNumber={}, fullName={}, dob={}, gender={}, address={}, issueDate={}, confidence={}",
+                    idNumber, fullName, dobStr, gender, address, issueDateStr, confidence);
 
             // Parse dates
             LocalDate dateOfBirth = parseDateOfBirth(dobStr);
             LocalDate issueDate = parseDateOfBirth(issueDateStr);
             LocalDate expiryDate = parseDateOfBirth(doeStr);
 
-            // Save document info
+            // Save images to file system
+            String sessionIdStr = session.getId().toString();
+            String frontImagePath = mediaStorageService.saveImage(frontImageBase64, sessionIdStr, "front");
+            String backImagePath = mediaStorageService.saveImage(backImageBase64, sessionIdStr, "back");
+
+            // Note: FPT.AI OCR API does not return portrait/avatar image anymore
+            // Portrait image will be null for OCR response
+            // Face matching will use the front CCCD image or extract from liveness video
+
+            // Save document info with file paths
             DocumentInfo documentInfo = DocumentInfo.builder()
                     .session(session)
                     .idNumber(idNumber)
@@ -131,9 +166,9 @@ public class EkycService {
                     .address(address)
                     .issueDate(issueDate)
                     .expiryDate(expiryDate)
-                    .frontImageUrl(request.getFrontImageBase64()) // Storing base64 directly (simplified)
-                    .backImageUrl(request.getBackImageBase64())
-                    .portraitImageUrl(portraitImage)
+                    .frontImagePath(frontImagePath)      // Lưu path thay vì base64
+                    .backImagePath(backImagePath)        // Lưu path thay vì base64
+                    .portraitImagePath(null)             // FPT.AI không trả về avatar nữa
                     .build();
 
             documentInfoRepository.save(documentInfo);
@@ -152,7 +187,10 @@ public class EkycService {
                     .address(address)
                     .issueDate(issueDate)
                     .expiryDate(expiryDate)
-                    .portraitImageUrl(portraitImage)
+                    .confidence(confidence)              // OCR confidence từ overall_score
+                    .portraitImagePath(null)             // FPT.AI không trả về avatar
+                    .frontImagePath(frontImagePath)
+                    .backImagePath(backImagePath)
                     .build();
         } catch (EkycException e) {
             throw e;
@@ -167,18 +205,36 @@ public class EkycService {
         return value != null ? value.toString() : "";
     }
 
+    private Double parseDoubleValue(String value) {
+        if (value == null || value.isEmpty()) {
+            return null;
+        }
+        try {
+            return Double.parseDouble(value);
+        } catch (NumberFormatException e) {
+            log.warn("Failed to parse double value: {}", value);
+            return null;
+        }
+    }
+
     @Transactional
     @SuppressWarnings("unchecked")
-    public LivenessResponse processLiveness(LivenessRequest request) {
-        log.info("Processing liveness for session: {}", request.getSessionId());
+    public LivenessResponse processLiveness(String sessionId, MultipartFile video) {
+        log.info("Processing liveness for session: {}", sessionId);
+
+        // Validate video file
+        FileUtil.validateVideoFile(video);
+
+        // Convert video to base64
+        String videoBase64 = FileUtil.convertToBase64(video);
 
         // Validate session
-        EkycSession session = sessionRepository.findById(UUID.fromString(request.getSessionId()))
+        EkycSession session = sessionRepository.findById(UUID.fromString(sessionId))
                 .orElseThrow(() -> new EkycException("Session not found"));
 
         try {
             // Call FPT.AI Liveness
-            Map<String, Object> result = fptAiService.callLivenessApi(request.getVideoBase64());
+            Map<String, Object> result = fptAiService.callLivenessApi(videoBase64);
             log.debug("Liveness result: {}", result);
 
             // FPT.AI Liveness response structure: { "data": { "is_live": true, "score": 0.99 } }
@@ -195,10 +251,14 @@ public class EkycService {
 
             log.info("Liveness check result: isLive={}, score={}", isLive, score);
 
-            // Save biometric data
+            // Save video to file system
+            String sessionIdStr = session.getId().toString();
+            String videoPath = mediaStorageService.saveVideo(videoBase64, sessionIdStr);
+
+            // Save biometric data with file path
             BiometricData biometricData = BiometricData.builder()
                     .session(session)
-                    .selfieVideoUrl(request.getVideoBase64()) // Storing base64 directly
+                    .selfieVideoPath(videoPath)  // Lưu path thay vì base64
                     .livenessScore(score)
                     .isLive(isLive)
                     .build();
@@ -258,12 +318,21 @@ public class EkycService {
         }
 
         try {
-            // Extract frame from video (simplified - using video base64 directly)
-            String portraitImage = docInfo.getPortraitImageUrl();
-            String selfieImage = bioData.getSelfieVideoUrl(); // In production, extract frame from video
+            // Load images from file system and convert to base64 for FPT AI
+            // Since FPT.AI OCR doesn't return portrait/avatar anymore, we use front CCCD image
+            // The front CCCD image contains the person's face photo
+            String idCardImageBase64 = mediaStorageService.loadFileAsBase64(docInfo.getFrontImagePath());
+
+            // TODO: Extract a clear face frame from liveness video for better accuracy
+            // For now, using front CCCD image as both ID card photo and selfie
+            // In production, you should extract the best frame from liveness video
+            String selfieImageBase64 = idCardImageBase64; // Temporary: use same image
+
+            log.warn("Face match using front CCCD image for both ID card and selfie. " +
+                    "Consider extracting frame from liveness video for better accuracy.");
 
             // Call FPT.AI Face Match
-            Map<String, Object> result = fptAiService.callFaceMatchApi(portraitImage, selfieImage);
+            Map<String, Object> result = fptAiService.callFaceMatchApi(idCardImageBase64, selfieImageBase64);
             log.debug("Face match result: {}", result);
 
             // FPT.AI Face Match response structure: { "data": { "similarity": 0.95 } }

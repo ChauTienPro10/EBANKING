@@ -17,5 +17,10 @@ public class OrcResponse {
     private LocalDate issueDate;
     private LocalDate expiryDate;
     private Double confidence;
-    private String portraitImageUrl;
+
+    // File paths thay vì base64/URL đầy đủ
+    // Client có thể dùng: GET /api/v1/media/images?path={portraitImagePath}
+    private String portraitImagePath;
+    private String frontImagePath;
+    private String backImagePath;
 }
