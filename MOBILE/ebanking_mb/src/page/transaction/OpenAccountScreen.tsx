@@ -12,6 +12,9 @@ import { API } from '../../constants/api';
 import AccountNumberPickerPopup from '../../popups/AccountNumberPickerPopup';
 import Toast from 'react-native-toast-message';
 import { AppDispatch, store } from '../../store';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store';
+import { fetchAccountTransInfo } from '../../store/fetchAPI/AccountFetch';
 
 type OpenCardNavigationProp = NativeStackNavigationProp<RootStackParamList, 'OpenCard'>;
 type OpenCardRouteProp = RouteProp<RootStackParamList, 'OpenCard'>;
@@ -23,6 +26,8 @@ const OpenAccountScreen: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [popupVisible, setPopupVisible] = useState(false);
     const dispatch: AppDispatch = store.dispatch;
+    const loginResponse = useSelector((State: RootState) => State.app.loginResponse);
+
 
     const handleSubmit = async (code: string, type: string) => {
         setLoading(true);
@@ -35,12 +40,15 @@ const OpenAccountScreen: React.FC = () => {
         try {
             const response = await fetch.post(url, payload, true)
             Toast.show({
-                type: 'success',       
+                type: 'success',
                 text1: 'Liên kết tài khoản thành công!',
                 text2: 'Bạn có thể tiếp tục sử dụng dịch vụ.',
-                visibilityTime: 2000,    
+                visibilityTime: 2000,
             });
-            
+
+            if (loginResponse?.id) {
+                dispatch(fetchAccountTransInfo(loginResponse.id));
+            }
             navigation.navigate('Home' as never);
 
         } catch (error) {
@@ -48,7 +56,7 @@ const OpenAccountScreen: React.FC = () => {
                 type: 'error',
                 text1: 'Liên kết tài khoản thất bại.',
                 text2: 'Vui long liên hệ tư vấn khách hàng để được hộ trợ',
-                visibilityTime: 2000,    
+                visibilityTime: 2000,
             });
         } finally {
             setLoading(false);

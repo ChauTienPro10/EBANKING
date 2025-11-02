@@ -30,32 +30,51 @@ async function post(url: string, body: any, authRequire: boolean = true) {
       body: JSON.stringify(body),
     });
 
+    const rawText = await response.text();
+
     if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`POST ${url} failed: ${response.status} ${response.statusText} - ${errorText}`);
+      let errorMessage = `Lỗi ${response.status}: ${response.statusText}`;
+
+      try {
+        const errorJson = JSON.parse(rawText);
+        if (errorJson.message) {
+          errorMessage = errorJson.message;
+        }
+      } catch {
+        // Không phải JSON, giữ nguyên rawText
+        errorMessage = rawText || errorMessage;
+      }
+
+      // Ghi log lỗi gọn gàng
+      console.error('Fetch error:', errorMessage);
+
+      // Có thể xử lý điều hướng nếu cần
+      if (response.status === 403) {
+        navigate('SignIn' as never);
+      }
+
+      throw new Error(errorMessage);
     }
 
-    // đọc raw text trước
-    const text = await response.text();
-
-    if (text) {
+    if (rawText) {
       try {
-        const data = JSON.parse(text); // parse nếu có nội dung
+        const data = JSON.parse(rawText);
         console.log("Response data:", data);
         return data;
-      } catch (e) {
-        console.warn("Response is not valid JSON:", text);
-        return text; // trả về raw text nếu không phải JSON
+      } catch {
+        console.warn("Response is not valid JSON:", rawText);
+        return rawText;
       }
     } else {
-      console.log("Response is empty");
-      throw new Error(`Empty response from server at`);
+      throw new Error('Phản hồi từ máy chủ trống');
     }
   } catch (error: any) {
-    console.error("Fetch error:", error);
-    if (error.status === 403) {
-      navigate('SignIn' as never)
-    }
+    const message =
+      typeof error?.message === 'string'
+        ? error.message.replace('INTERNAL: ', '')
+        : 'Lỗi không xác định';
+
+    console.error('Lỗi khi gửi yêu cầu:', message);
     throw error;
   }
 }

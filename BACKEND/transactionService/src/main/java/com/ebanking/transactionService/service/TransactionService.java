@@ -9,6 +9,10 @@ import com.ebanking.transactionService.grpc.TransactionProto;
 import com.ebanking.transactionService.mappers.TransactionMapper;
 import com.ebanking.transactionService.repository.AccountRepository;
 import com.ebanking.transactionService.repository.TransactionRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -55,11 +59,18 @@ public class TransactionService {
      */
     @Transactional
     public TransactionProto.TransferResponse transfer(TransactionProto.TransferRequest data) throws TransactionException {
+
+        if (data.getSenderAccountNumber().equals(data.getReceiverAccountNumber())) {
+            throw new TransactionException("error_dont_send_yourself");
+        }
         Account sender = accountRepository.findByAccountNumber(data.getSenderAccountNumber());
         if (sender == null) throw new TransactionException("Tài khoản không hợp lệ");
         BigDecimal amount = new BigDecimal(data.getAmount());
         if (sender.getBalance().compareTo(amount) < 0) {
-            throw new TransactionException("Số dư không đủ");
+            throw new TransactionException("error_amount_not_enough");
+        }
+        if (amount.compareTo(BigDecimal.ZERO) < 0) {
+            throw new TransactionException("error_not_valid");
         }
         Transaction transaction =
         transactionRepository.save(Transaction.builder()
@@ -84,7 +95,14 @@ public class TransactionService {
      * @throws TransactionException
      */
     @Transactional
-    public TransactionProto.TransferResponse processTransfer(Transaction transaction) throws TransactionException {
+    public TransactionProto.TransferResponse processTransfer(Transaction transaction) throws TransactionException, JsonProcessingException {
+
+        if (transaction.getSenderAccountNumber().equals(transaction.getReceiverAccountNumber())) {
+            transaction.setStatus(TransactionStatus.FAILED.name());
+            transaction.setFailureReason("Tai khoản người nhận trùng với người gửi");
+            kafkaTemplate.send(KafkaTopic.TRANSACTION_NOTIFY.getTopicName(), transaction);
+            throw new TransactionException("error_dont_send_yourself");
+        }
         Account sender = accountRepository.findByAccountNumber(transaction.getSenderAccountNumber());
         Account receiver = accountRepository.findByAccountNumber(transaction.getReceiverAccountNumber());
         if (sender == null || receiver == null) {
@@ -92,7 +110,7 @@ public class TransactionService {
             transaction.setFailureReason("Thông tin không hợp lệ");
             // publish failed transaction event
             kafkaTemplate.send(KafkaTopic.TRANSACTION_NOTIFY.getTopicName(), transaction);
-            throw new TransactionException("Thông tin không hợp lệ");
+            throw new TransactionException("error_info_not_true");
         }
         BigDecimal amount = new BigDecimal(String.valueOf(transaction.getAmount()));
         if (sender.getBalance().compareTo(amount) < 0) {
@@ -100,7 +118,7 @@ public class TransactionService {
             transaction.setFailureReason("Số dư không đủ");
             // publish failed transaction event
             kafkaTemplate.send(KafkaTopic.TRANSACTION_NOTIFY.getTopicName(), transaction);
-            throw new TransactionException("Số dư không đủ");
+            throw new TransactionException("error_amount_not_enough");
         }
         sender.setBalance(sender.getBalance().subtract(amount));
         receiver.setBalance(receiver.getBalance().add(amount));
@@ -109,10 +127,14 @@ public class TransactionService {
         accountRepository.save(receiver);
         transaction.setStatus(TransactionStatus.SUCCESS.name());
 
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+        String socketMessage = mapper.writeValueAsString(transaction);
+        stringKafkaTemplate.send(KafkaTopic.TRANSFER_NOTIFY_REALTIME.getTopicName(), socketMessage);
 
 
-        stringKafkaTemplate.send(KafkaTopic.TRANSFER_NOTIFY_REALTIME.getTopicName(), "Giao Dich Thanh Cong");
-        
         // publish success transaction event for notifications
         kafkaTemplate.send(KafkaTopic.TRANSACTION_NOTIFY.getTopicName(), transaction);
         // send email notification

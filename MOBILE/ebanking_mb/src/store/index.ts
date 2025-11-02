@@ -1,10 +1,11 @@
-// src/store/index.ts
 import { configureStore } from '@reduxjs/toolkit';
 import appReducer from './slices/appSlice';
+import transactionReducer from './fetchAPI/TransactionHistory';
 
 export const store = configureStore({
   reducer: {
     app: appReducer,
+    transactionHistories: transactionReducer, // đây là key slice transaction
   },
 });
 

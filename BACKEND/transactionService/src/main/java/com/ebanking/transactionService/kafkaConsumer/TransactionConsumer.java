@@ -5,6 +5,7 @@ import com.ebanking.transactionService.enums.KafkaTopic;
 import com.ebanking.transactionService.exception.TransactionException;
 import com.ebanking.transactionService.grpc.TransactionProto;
 import com.ebanking.transactionService.service.TransactionService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
@@ -15,7 +16,7 @@ public class TransactionConsumer {
     TransactionService transactionService;
 
     @KafkaListener(topics = KafkaTopic.TRANSACTION_TOPIC, groupId = "transaction-group")
-    public void listenTransaction(Transaction transaction) throws TransactionException {
+    public void listenTransaction(Transaction transaction) throws TransactionException, JsonProcessingException {
         TransactionProto.TransferResponse response = transactionService.processTransfer(transaction);
         System.out.println(response.getTransactionId());
     }

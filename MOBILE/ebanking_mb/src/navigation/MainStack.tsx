@@ -12,6 +12,7 @@ import { RootStackParamList } from './types';
 import TransactionSuccessScreen from '../page/transfer/Success';
 import PendingTransactionScreen from '../page/transfer/Pending';
 import TransactionFailedScreen from '../page/transfer/Error';
+import TransactionHistoryScreen from '../page/transaction/TransactionHistoryScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -34,6 +35,8 @@ export default function MainStack() {
       <Stack.Screen name="TransactionSuccess" component={TransactionSuccessScreen} />
       <Stack.Screen name="PendingTransactionScreen" component={PendingTransactionScreen} />
       <Stack.Screen name="TransactionFailedScreen" component={TransactionFailedScreen} />
+      <Stack.Screen name="TransactionHistoryScreen" component={TransactionHistoryScreen} />
+
     </Stack.Navigator>
   );
 }

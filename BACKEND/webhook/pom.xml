@@ -62,6 +62,12 @@
 			<artifactId>spring-boot-starter-websocket</artifactId>
 		</dependency>
 
+		<!-- Nếu dùng STOMP qua SockJS -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
 		<dependency>
 			<groupId>redis.clients</groupId>
 			<artifactId>jedis</artifactId>

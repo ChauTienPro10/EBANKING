@@ -21,7 +21,7 @@ const HomeScreen: React.FC = () => {
   const loginResponse = useSelector((state: RootState) => state.app.loginResponse);
   const userInfo = useSelector((state: RootState) => state.app.userInfoData);
   const account = useSelector((state: RootState) => state.app.accountTransResponse);
-  type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>; 
+  type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
   const navigation = useNavigation<NavigationProp>();
   const { t } = useTranslation();
   const [notificationCount, setNotificationCount] = useState(3);
@@ -35,7 +35,7 @@ const HomeScreen: React.FC = () => {
   const quickActions = [
     { id: 'transfer', title: t('action_grid.transfer'), icon: 'transfer', color: Colors.main_bule, tag: null },
     { id: 'withdraw', title: t('action_grid.withdraw'), icon: 'cash', color: Colors.main_green, tag: null },
-    { id: 'pay_bill', title: t('action_grid.pay_bill'), icon: 'receipt', color: Colors.orange, tag: null },
+    { id: 'trans_history', title: t('action_grid.pay_history'), icon: 'receipt', color: Colors.orange, tag: null },
     { id: 'mobile_prepaid', title: t('action_grid.mobile_prepaid'), icon: 'mobile', color: Colors.purple, tag: null },
     { id: 'profile', title: t('action_grid.profile'), icon: 'person', color: Colors.main_bule, tag: null },
     { id: 'loan', title: t('action_grid.loan'), icon: 'cash', color: Colors.main_green, tag: t('home.wind_tag') },
@@ -55,12 +55,7 @@ const HomeScreen: React.FC = () => {
     { id: 'support', label: t('bottom_navigation.support'), icon: 'help-circle' },
   ];
 
-  useEffect(() => {
-    if (loginResponse?.id) {
-      dispatch(fetchAccountTransInfo(loginResponse.id));
-      dispatch(fetchUserInfo(loginResponse.id));
-    }
-  }, [loginResponse, dispatch]);
+
 
   useEffect(() => {
     if (userInfo?.fullName === '' || userInfo?.birthday === '' || userInfo?.address === '') {
@@ -90,13 +85,18 @@ const HomeScreen: React.FC = () => {
 
     switch (action.id) {
       case 'transfer':
-        navigation.navigate('Transfer' as never);
+        if (account) {
+          navigation.navigate('Transfer' as never);
+        } else {
+          navigation.navigate('OpenCard', { userInfo })
+        }
         break;
       case 'withdraw':
         console.log('Navigate to withdraw screen');
         break;
-      case 'pay_bill':
+      case 'trans_history':
         console.log('Navigate to pay bill screen');
+        navigation.navigate('TransactionHistoryScreen' as never);
         break;
       case 'mobile_prepaid':
         console.log('Navigate to mobile prepaid screen');

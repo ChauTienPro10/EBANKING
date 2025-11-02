@@ -28,6 +28,8 @@ export type RootStackParamList = {
         amount: string;
         transactionId: string;
         date: string;
+        receiver: string;
+        content: string; // ✅ thêm dòng này
     };
     PendingTransactionScreen?: {
         amount: string;
@@ -35,6 +37,7 @@ export type RootStackParamList = {
         date: string;
         receiverName: string;
     };
-    TransactionFailedScreen?: undefined;
+    TransactionFailedScreen?: {errorString: string};
+    TransactionHistoryScreen?: undefined;
     OTPPage: { username: string, targetPage: string };
 };

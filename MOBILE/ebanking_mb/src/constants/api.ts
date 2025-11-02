@@ -1,8 +1,8 @@
 import { API_URL } from '@env';
 
-const BASE_URL = 'http://192.168.1.3:8000/';
+export const BASE_URL = 'http://10.20.2.91:8000/';
 
-const AUTH_SERVICE = BASE_URL + 'authService';
+export const AUTH_SERVICE = BASE_URL + 'authService';
 
 export const API = {
   LOGIN: `${AUTH_SERVICE}/auth/login`,
@@ -13,5 +13,6 @@ export const API = {
   UPDATE_USER_INFO: `${AUTH_SERVICE}/auth/update`,
   OPEN_ACCOUNT_TRANSACTION: `${AUTH_SERVICE}/trans/account/new`,
   CHECK_ACCOUNT_NUMBER: `${AUTH_SERVICE}/trans/account/checkAccountNumber`,
-  TRANSFER: `${AUTH_SERVICE}/transaction/transfer`
+  TRANSFER: `${AUTH_SERVICE}/transaction/transfer`,
+  GET_TRANSFER_HISTORY: `${AUTH_SERVICE}/transaction/history`
 };

@@ -28,6 +28,8 @@ import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import TransactionFailedScreen from './Error';
+import { AppDispatch, store } from '../../store';
+import { fetchAccountTransInfo } from '../../store/fetchAPI/AccountFetch';
 
 type NavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -81,6 +83,9 @@ const TransferScreen: React.FC = () => {
   const [transferModalVisible, setTransferModalVisible] = useState(false);
   const [receiverName, setReceiverName] = useState('');
 
+    const dispatch: AppDispatch = store.dispatch;
+  
+
   const onCheckAccountNumberSuccess = (fullName: string) => {
     setReceiverName(fullName);
     setTransferModalVisible(true);
@@ -101,6 +106,10 @@ const TransferScreen: React.FC = () => {
       const transferResponse = await fetch.post(API.TRANSFER, payload);
 
       if (transferResponse?.transactionId) {
+        if (loginResponse?.id !== undefined) {
+          dispatch(fetchAccountTransInfo(loginResponse.id));
+        }
+
         navigation.navigate('PendingTransactionScreen', {
           amount: '₫' + formData.amount,
           content: formData?.content,
@@ -110,8 +119,9 @@ const TransferScreen: React.FC = () => {
       } else {
         navigation.navigate('TransactionFailedScreen');
       }
-    } catch (error) {
-      navigation.navigate('TransactionFailedScreen');
+    } catch (error: any) {
+      const extractedMessage = error.toString().split(':')[2] || error;
+      navigation.navigate('TransactionFailedScreen', {errorString: extractedMessage});
     } finally {
       setTransferModalVisible(false);
     }

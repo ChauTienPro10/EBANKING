@@ -84,10 +84,10 @@ public class UserService {
             return null;
         }
 
-        if (!isStrongPassword(pass)) throw new RuntimeException("Password not strong!");
-        if (emailNonValid(username)) throw new RuntimeException("Email is existed or not valid!");
+        if (!isStrongPassword(pass)) throw new RuntimeException("password_not_strong");
+        if (emailNonValid(username)) throw new RuntimeException("email_is_existed_or_not_valid");
 
-        if (userInfoRepository.existsByCitizenId(citizenId)) throw new RuntimeException("Citizen ID is existed!");
+        if (userInfoRepository.existsByCitizenId(citizenId)) throw new RuntimeException("citizen_id_is_existed");
 
         OtpRegister otpRegister = OtpRegister.builder()
                 .username(username)

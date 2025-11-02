@@ -16,30 +16,30 @@ import { DataProvider } from './src/context/DataContext';
 import { createDataService } from './src/services/APIService';
 import AuthNavigator from './src/navigation/AuthNavigator';
 import MainStack from './src/navigation/MainStack';
-import './i18n';
 import Toast from 'react-native-toast-message';
+import RootApp from "./src/RootApp";
 
-function AppContent() {
-  const isDarkMode = useColorScheme() === 'dark';
-  const isLoggedIn = useSelector((state: RootState) => state.app.isLoggedIn);
+// function AppContent() {
+//   const isDarkMode = useColorScheme() === 'dark';
+//   const isLoggedIn = useSelector((state: RootState) => state.app.isLoggedIn);
 
-  return (
-    <>
-      <View style={styles.container}>
-        <StatusBar
-          barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-          translucent
-          backgroundColor="transparent"
-        />
-        <NavigationContainer>
-          {isLoggedIn ? <MainStack /> : <AuthNavigator />}
-          {/* <MainStack /> */}
-        </NavigationContainer>
-      </View>
-      <Toast /> {/* ✅ Di chuyển Toast ra ngoài View */}
-    </>
-  );
-}
+//   return (
+//     <>
+//       <View style={styles.container}>
+//         <StatusBar
+//           barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+//           translucent
+//           backgroundColor="transparent"
+//         />
+//         <NavigationContainer>
+//           {isLoggedIn ? <MainStack /> : <AuthNavigator />}
+//           {/* <MainStack /> */}
+//         </NavigationContainer>
+//       </View>
+//       <Toast /> {/* ✅ Di chuyển Toast ra ngoài View */}
+//     </>
+//   );
+// }
 
 export default function App() {
   const dataService = createDataService();
@@ -48,7 +48,7 @@ export default function App() {
     <Provider store={store}>
       <DataProvider dataService={dataService}>
         <SafeAreaProvider>
-          <AppContent />
+          <RootApp />
         </SafeAreaProvider>
       </DataProvider>
     </Provider>

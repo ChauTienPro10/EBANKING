@@ -4,12 +4,16 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/types';
 import Colors from '../../constants/color';
 import { Header } from '../../components';
+import { useTranslation } from 'react-i18next';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'TransactionFailedScreen'>;
 
 
 const TransactionFailedScreen: React.FC<Props> = ({ navigation, route }) => {
-    //   const { errorMessage } = route.params || {};
+    const { errorString } = route.params || {};
+
+    const { t } = useTranslation();
+
 
     const handleRetry = () => {
         navigation.replace('Transfer');
@@ -32,7 +36,7 @@ const TransactionFailedScreen: React.FC<Props> = ({ navigation, route }) => {
 
                 <Text style={styles.title}>Giao dịch thất bại</Text>
                 <Text style={styles.message}>
-                    {'Không thể thực hiện giao dịch. Vui lòng thử lại sau.'}
+                    {t(`transfer.error.${errorString?.trim()}`) || 'Không thể thực hiện giao dịch. Vui lòng thử lại sau.'}
                 </Text>
 
                 <TouchableOpacity style={styles.retryButton} onPress={handleRetry}>
@@ -64,7 +68,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: '#fff',
         paddingHorizontal: 24,
-        
+
     },
     icon: {
         width: 80,

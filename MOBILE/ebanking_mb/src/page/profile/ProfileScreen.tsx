@@ -139,6 +139,9 @@ const ProfileScreen: React.FC = () => {
     }
     try {
       await onSubmitUpdate(password);
+      if (loginResponse?.id !== undefined) {
+        dispatch(fetchUserInfo(loginResponse.id));
+      }
       setIsEditing(false);
     } catch (error) {
       console.error('Error saving profile:', error);

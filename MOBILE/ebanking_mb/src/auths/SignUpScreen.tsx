@@ -58,25 +58,23 @@ const SignUpScreen: React.FC = () => {
     const handlePostRequest = async () => {
       try {
         const data = await fetch.post(API.REGISTER, payload, false);
-        console.log(data);
-      } catch (error) {
-        ToastService.error('Login failed:', (error as Error).message || String(error));
-        return;
+        return 'true';
+      } catch (error: any) {
+        return error.toString().split(':')[2] || error;
       }
 
     };
-    await handlePostRequest()
-    return "OK"
+    return handlePostRequest()
   };
 
   const doSignup = async () => {
     const preHandMess = await handleSignUp();
-    if (preHandMess == 'OK') {
+    if (preHandMess == 'true') {
       ToastService.success('Thông báo', 'OTP đã được gửi đến ' + email);
       navigation.navigate("OTPPage", { username: email, targetPage: "SignIn" })
     }
     else {
-      ToastService.info("Đăng ký thất bại", preHandMess);
+      ToastService.error("Đăng ký thất bại", t(`sign_in.${preHandMess.trim()}`));
     }
     setIsLoading(false);
   }

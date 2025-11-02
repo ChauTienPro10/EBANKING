@@ -54,7 +54,15 @@
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka</artifactId>
         </dependency>
-    </dependencies>
+
+		<!-- Nếu dùng STOMP qua SockJS -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+
+	</dependencies>
 
 	<build>
 		<plugins>

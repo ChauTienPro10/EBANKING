@@ -49,6 +49,7 @@
     "withdraw": "Rút tiền",
     "mobile_prepaid": "Nạp tiền điện thoại",
     "pay_bill": "Thanh toán hóa đơn",
+    "pay_history": "Lịch sử giao dịch",
     "profile": "Hồ sơ",
     "credit_card": "Thẻ tín dụng",
     "transaction_report": "Lịch sử giao dịch",
@@ -134,6 +135,8 @@
     "placeholder": "Tìm kiếm chức năng...",
     "no_results": "Không tìm thấy kết quả"
   },
+ 
+
   "transfer": {
     "title": "Chuyển tiền",
     "transfer_type": "Loại chuyển tiền",
@@ -168,7 +171,11 @@
     },
     "error": {
       "title": "Lỗi chuyển tiền",
-      "message": "Có lỗi xảy ra khi chuyển tiền. Vui lòng thử lại."
+      "message": "Có lỗi xảy ra khi chuyển tiền. Vui lòng thử lại.",
+      "error_dont_send_yourself": "Không thể giao dịch với chính bạn.",
+      "error_amount_not_enough": "Số dư không đủ",
+      "error_not_valid": "Số tiền không hợp lệ",
+      "error_info_not_true": "Tài khoản không hợp lệ"
     }
   },
   "categories": {
@@ -206,7 +213,10 @@
     "text_send_again": "Gửi lại",
     "text_auth": "Xác thực",
     "text_login_fail": "Đăng nhập thất bại",
-    "text_noti": "Thông báo"
+    "text_noti": "Thông báo",
+    "password_not_strong": "Mật khẩu phải chứa ký tự hoa, thường, số và ký tự đặc biệt!",
+    "email_is_existed_or_not_valid": "Tên đăng nhập đã tồn tại hoặc không hợp lệ",
+    "citizen_id_is_existed": "Định danh công dân đã tông tại"
   },
   "ui": {
     "bank_name": "eBanking",
