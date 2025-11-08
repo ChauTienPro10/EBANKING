@@ -10,9 +10,12 @@ import Colors from '../../constants/color';
 import { useDispatch } from 'react-redux';
 import { setLoginStatus, setLoginResponse } from '../../store/slices/appSlice';
 import LogoutConfirmPopup from '../../popups/LogoutPopup';
+import { useNavigation } from '@react-navigation/native';
+
 
 const SettingsScreen: React.FC = () => {
   const { t } = useTranslation();
+  const navigation = useNavigation();
   const { activeTab, handleTabChange, handleNotificationPress } = useAppNavigation('settings');
   const { notificationCount, clearNotifications } = useCommonUI();
   const dispatch = useDispatch();
@@ -49,6 +52,10 @@ const SettingsScreen: React.FC = () => {
     switch (item.id) {
       case 'logout':
         setShowLogoutPopup(true)
+        break;
+      case 'security':
+        navigation.navigate('SetPINCode' as never);
+        
         break;
 
       default:

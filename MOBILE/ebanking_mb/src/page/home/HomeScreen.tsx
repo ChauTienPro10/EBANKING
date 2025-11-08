@@ -218,8 +218,8 @@ const HomeScreen: React.FC = () => {
             </TouchableOpacity>
           </View>
           <View style={styles.balanceFooter}>
-            <Text style={styles.balanceFooterText}>{t('labels.earn_daily')}</Text>
-            <TrendingUpIcon size={16} color={Colors.white} />
+            <Text style={styles.balanceFooterText}>{t('home.card_management')}</Text>
+            <CardIcon size={16} color={Colors.white} />
           </View>
         </View>
       </View>

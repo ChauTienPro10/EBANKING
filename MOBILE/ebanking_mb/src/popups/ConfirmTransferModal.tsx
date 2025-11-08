@@ -32,7 +32,7 @@ const ConfirmTransferModal: React.FC<ConfirmTransferModalProps> = ({
                 <Text style={styles.titlePIN}>Nhập mã PIN 4 số</Text>
 
                 <View>
-                    <PinInput length={4} onComplete={handleComplete} hasBiometric={true} />
+                    <PinInput length={4} onComplete={handleComplete} create={false} hasBiometric={true} />
                 </View>
             </View> :
                 <View style={styles.overlay}>

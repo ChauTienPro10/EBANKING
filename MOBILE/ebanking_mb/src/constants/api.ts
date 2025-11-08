@@ -1,6 +1,6 @@
 import { API_URL } from '@env';
 
-export const BASE_URL = 'http://10.20.2.91:8000/';
+export const BASE_URL = 'http://10.20.3.103:8000/';
 
 export const AUTH_SERVICE = BASE_URL + 'authService';
 
@@ -14,5 +14,11 @@ export const API = {
   OPEN_ACCOUNT_TRANSACTION: `${AUTH_SERVICE}/trans/account/new`,
   CHECK_ACCOUNT_NUMBER: `${AUTH_SERVICE}/trans/account/checkAccountNumber`,
   TRANSFER: `${AUTH_SERVICE}/transaction/transfer`,
-  GET_TRANSFER_HISTORY: `${AUTH_SERVICE}/transaction/history`
+  GET_TRANSFER_HISTORY: `${AUTH_SERVICE}/transaction/history`,
+
+
+  // fcm
+  SAVE_TOKEN_FCM: `${AUTH_SERVICE}/fcm/save-token`,
+  UPDATE_TOKEN_FCM: `${AUTH_SERVICE}/fcm/updateFcmToken`,
+
 };

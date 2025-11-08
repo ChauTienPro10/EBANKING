@@ -13,6 +13,8 @@ import TransactionSuccessScreen from '../page/transfer/Success';
 import PendingTransactionScreen from '../page/transfer/Pending';
 import TransactionFailedScreen from '../page/transfer/Error';
 import TransactionHistoryScreen from '../page/transaction/TransactionHistoryScreen';
+import ShowNotificationScreen from '../notification/showNoti';
+import setPinCodeScreen from '../PIN/pinCodeScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -36,6 +38,8 @@ export default function MainStack() {
       <Stack.Screen name="PendingTransactionScreen" component={PendingTransactionScreen} />
       <Stack.Screen name="TransactionFailedScreen" component={TransactionFailedScreen} />
       <Stack.Screen name="TransactionHistoryScreen" component={TransactionHistoryScreen} />
+      <Stack.Screen name="ShowNotificationScreen" component={ShowNotificationScreen} />
+      <Stack.Screen name="SetPINCode" component={setPinCodeScreen} />
 
     </Stack.Navigator>
   );

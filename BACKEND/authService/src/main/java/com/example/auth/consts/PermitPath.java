@@ -7,5 +7,6 @@ public class PermitPath {
             IURL.AUTH_URL + IURL.LOGIN_URL,
             IURL.AUTH_URL + IURL.FORGOT_PASSWORD_REQUEST_OTP,
             IURL.AUTH_URL + IURL.FORGOT_PASSWORD_VERIFY_OTP,
+            IURL.HOST_PREFIX + "/fcm/save-token",
     };
 }

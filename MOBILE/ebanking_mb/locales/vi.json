@@ -16,6 +16,8 @@
     "view_details": "Xem chi tiết",
     "total_balance_vnd": "Tổng số dư VND",
     "earn_daily": "SINH LỜI MỖI NGÀY",
+    "card_management": "QUẢN LÝ THẺ",
+
     "upgrade_rank": "NÂNG HẠNG",
     "services_title": "Mua sắm - Giải trí - Đầu tư",
     "lottery_king": "Vua xổ số",
@@ -68,7 +70,7 @@
   "settings": {
     "title": "Cài đặt",
     "language": "Ngôn ngữ",
-    "security": "Bảo mật",
+    "security": "PIN",
     "notifications": "Thông báo",
     "account_management": "Quản lý tài khoản",
     "biometric": "Sinh trắc học",

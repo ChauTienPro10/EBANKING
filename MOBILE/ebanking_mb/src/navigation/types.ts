@@ -40,4 +40,6 @@ export type RootStackParamList = {
     TransactionFailedScreen?: {errorString: string};
     TransactionHistoryScreen?: undefined;
     OTPPage: { username: string, targetPage: string };
+    ShowNotificationScreen: {title: string, body: string};
+    SetPINCode: undefined;
 };

@@ -28,6 +28,10 @@ import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ReactNativeBiometrics from 'react-native-biometrics';
 import LoadingPopup from "../popups/LoadingPopup.tsx";
+import { SaveTokenDto } from "../utils/fcmService.ts";
+import DeviceInfo from 'react-native-device-info';
+import { getFcmToken } from "../utils/fcmService.ts";
+
 
 type AuthStackParamList = {
   SignIn: undefined;
@@ -95,6 +99,18 @@ const SignInScreen: React.FC = () => {
     }
   };
 
+  const updateFcmToken = async (payload: SaveTokenDto) => {
+    try {
+      payload.token = await getFcmToken();
+      const rs = await api.post(API.UPDATE_TOKEN_FCM, payload, true);
+      console.log('FCM token cập nhật thành công:', rs);
+      return rs;
+    } catch (err: any) {
+      console.error('Lỗi khi cập nhật FCM token:', err?.message || err);
+      return null;
+    }
+  };
+
   const handleSignIn = async (email: string, password: string) => {
     setLoading(true);
     const url = API.LOGIN;
@@ -108,13 +124,22 @@ const SignInScreen: React.FC = () => {
       dispatch(setLoginResponse(response));
       dispatch(setLoginStatus(true));
       await AsyncStorage.setItem('lastUsername', JSON.stringify({ username: response?.username, password: password }));
+      const fcmPayload: SaveTokenDto = {
+        username: response?.username || '',
+        token: '',
+        userId: response?.id, // nếu server cần userId
+        deviceId: (await DeviceInfo.getUniqueId()).toString()
+      };
+
+      // Cập nhật FCM token
+      await updateFcmToken(fcmPayload);
     } catch (error) {
       Toast.show({
         type: 'error',
         text1: t('sign_in.text_noti'),
         text2: t('sign_in.text_login_fail')
       });
-    } finally{
+    } finally {
       setLoading(false);
     }
 

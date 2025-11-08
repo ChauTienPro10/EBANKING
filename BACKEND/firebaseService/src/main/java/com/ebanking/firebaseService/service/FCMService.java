@@ -1,8 +1,11 @@
 package com.ebanking.firebaseService.service;
 
+import com.ebanking.firebaseService.dto.request.SaveTockenDTO;
 import com.ebanking.firebaseService.entity.FCMToken;
 import com.ebanking.firebaseService.repository.FCMTokenRepository;
+import com.google.api.client.util.DateTime;
 import com.google.firebase.messaging.*;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -355,5 +358,18 @@ public class FCMService {
         
         fcmTokenRepository.deleteByToken(token);
         log.info("Deleted FCM token: {}", token);
+    }
+
+    public void updateFcmToken(SaveTockenDTO fcmToken) {
+        if (fcmToken.getUsername().isEmpty()) {
+            return;
+        }
+        FCMToken fcm = fcmTokenRepository.findByDeviceId(fcmToken.getDeviceId());
+        if(fcm == null) return;
+        fcm.setToken(fcmToken.getToken());
+        fcm.setUsername(fcmToken.getUsername());
+        fcm.setUserId(fcmToken.getUserId());
+        fcm.setUpdatedAt(LocalDateTime.now());
+        fcmTokenRepository.save(fcm);
     }
 }

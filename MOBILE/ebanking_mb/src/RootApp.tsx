@@ -13,8 +13,11 @@ import MainStack from './navigation/MainStack';
 import { fetchAccountTransInfo } from './store/fetchAPI/AccountFetch';
 import { fetchUserInfo } from './store/fetchAPI/UserInfoFetch';
 import { TextEncoder, TextDecoder } from 'text-encoding';
-import { navigationRef } from './navigation/navigate'; // ✅ navigationRef file
-import { RootStackParamList } from './navigation/types';
+import { navigationRef } from './navigation/navigate';
+import { requestNotificationPermission, requestPermissionIOS } from './utils/fcmService';
+import { SaveTokenDto } from './utils/fcmService';
+import DeviceInfo from 'react-native-device-info';
+import FlashMessage from 'react-native-flash-message';
 
 declare const global: any;
 global.TextEncoder = TextEncoder;
@@ -23,6 +26,7 @@ global.TextDecoder = TextDecoder;
 // @ts-ignore
 import SockJS from 'sockjs-client/dist/sockjs';
 import { Stomp } from '@stomp/stompjs';
+import { useListenNotiFromFirebase } from './hooks/useListenNotiFromFirebase';
 
 const SOCKET_URL = 'http://10.20.2.91:8006/ws';
 
@@ -31,6 +35,24 @@ const RootApp: React.FC = () => {
   const isLoggedIn = useSelector((state: RootState) => state.app.isLoggedIn);
   const loginResponse = useSelector((state: RootState) => state.app.loginResponse);
   const dispatch = useDispatch<AppDispatch>();
+
+  useEffect(() => {
+    const requestPermissions = async () => {
+      if (Platform.OS === 'android') {
+        const payload: SaveTokenDto = {
+          userId: 0,
+          username: 'guest',
+          deviceId: (await DeviceInfo.getUniqueId()).toString(),
+          token: "",
+        };
+        await requestNotificationPermission(payload);
+      } else if (Platform.OS === 'ios') {
+        await requestPermissionIOS();
+      }
+    };
+    requestPermissions();
+  }, []);
+
 
   useEffect(() => {
     if (loginResponse) {
@@ -81,9 +103,12 @@ const RootApp: React.FC = () => {
     }
   }, [loginResponse, dispatch]);
 
+  useListenNotiFromFirebase();
+
   return (
     <>
       <View style={styles.container}>
+        <FlashMessage position="top" />
         <StatusBar
           barStyle={isDarkMode ? 'light-content' : 'dark-content'}
           translucent

@@ -32,7 +32,7 @@ const Header: React.FC<HeaderProps> = ({
                 <View style={styles.placeholder} />
             )}
 
-            <GText type="systemBold_24" color={Colors.white} style={styles.title}>
+            <GText type="systemBold_20" color={Colors.white} style={styles.title}>
                 {title}
             </GText>
 
