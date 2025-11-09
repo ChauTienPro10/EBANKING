@@ -1,6 +1,6 @@
 import { API_URL } from '@env';
 
-export const BASE_URL = 'http://10.20.3.103:8000/';
+export const BASE_URL = 'http://10.20.1.243:8000/';
 
 export const AUTH_SERVICE = BASE_URL + 'authService';
 
@@ -20,5 +20,10 @@ export const API = {
   // fcm
   SAVE_TOKEN_FCM: `${AUTH_SERVICE}/fcm/save-token`,
   UPDATE_TOKEN_FCM: `${AUTH_SERVICE}/fcm/updateFcmToken`,
+
+  //Pin
+  SET_PIN: `${AUTH_SERVICE}/pin-code/new`,
+  GET_PIN_STT: `${AUTH_SERVICE}/pin-code/{username}`,
+  DELETE_PIN: `${AUTH_SERVICE}/pin-code/delete`,
 
 };

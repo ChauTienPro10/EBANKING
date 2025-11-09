@@ -1,9 +1,16 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { View, TextInput, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Colors from '../constants/color';
 import Toast from 'react-native-toast-message';
 import GText from './GText';
+import fetch from '../utils/fetch';
+import { API } from '../constants/api';
+import { useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../store';
+import { navigationRef } from '../navigation/navigate';
+import { setPinStatus } from '../store/slices/appSlice';
 
 interface PinInputProps {
     length?: number;
@@ -13,11 +20,16 @@ interface PinInputProps {
 }
 
 const PinInput: React.FC<PinInputProps> = ({ length = 4, onComplete, create, hasBiometric }) => {
+    const { t } = useTranslation();
+    const loginResponse = useSelector((state: RootState) => state.app.loginResponse);
+    const dispatch = useDispatch();
+
     const [pin, setPin] = useState<string[]>(Array(length).fill(''));
     const inputsRef = useRef<Array<TextInput | null>>([]);
     const [confirmPin, setConfirmPin] = useState('');
-
-    const handleChange = (text: string, index: number) => {
+    const [pinStt, setPinStt] = useState(false);
+    const pinStatus = useSelector((state: RootState) => state.app.pinStatus);
+    const handleChange = async (text: string, index: number) => {
         if (!/^\d$/.test(text) && text !== '') return;
 
         const newPin = [...pin];
@@ -32,15 +44,46 @@ const PinInput: React.FC<PinInputProps> = ({ length = 4, onComplete, create, has
         // gọi onComplete khi nhập đầy đủ
         if (newPin.every((digit) => digit !== '')) {
             const pinString = newPin.join('');
-            if (create) {
+            if (create && !pinStatus) {
                 if (confirmPin === pinString) {
                     // call api tạo pin
+                    try {
+                        const payload = {
+                            username: loginResponse?.username,
+                            pinCode: confirmPin
+                        }
+                        const response = await fetch.post(API.SET_PIN, payload, true);
+                        if (!response.status) {
+                            Toast.show({
+                                type: 'error',
+                                text1: t("err.error_title"),
+                                text2: t('err.' + response.error)
+                            });
+                            setConfirmPin('');
+                            setPin(Array(length).fill(''));
+                            inputsRef.current[0]?.focus();
+                        }
+                        else {
+                            setConfirmPin('');
+                            setPin(Array(length).fill(''));
+                            inputsRef.current[0]?.focus();
+                            navigationRef.navigate("Settings");
+                        }
+                    } catch (err: any) {
+                        console.error('set pin error: ', err);
+                        Toast.show({
+                            type: 'error',
+                            text1: t("err.error_title"),
+                            text2: t('err.text_can_not_set_pin')
+                        });
+                        return;
+                    }
                 } else {
                     if (confirmPin.length === length) {
                         Toast.show({
                             type: 'error',
-                            text1: "Lỗi",
-                            text2: "Mã PIN không khớp!"
+                            text1: t("err.error_title"),
+                            text2: t('err.text_pin_dont_meet')
                         });
                         return;
                     }
@@ -49,6 +92,37 @@ const PinInput: React.FC<PinInputProps> = ({ length = 4, onComplete, create, has
                     setPin(Array(length).fill(''));
                     inputsRef.current[0]?.focus();
                 }
+            } else if (create && pinStatus) {
+                try {
+                        const payload = {
+                            username: loginResponse?.username,
+                            pinCode: newPin.join('')
+                        }
+                        const response = await fetch.post(API.DELETE_PIN, payload, true);
+                        if (!response.status) {
+                            Toast.show({
+                                type: 'error',
+                                text1: t("err.error_title"),
+                                text2: t('err.' + response.error)
+                            });
+                            
+                        }
+                        else {
+                            setConfirmPin('');
+                            setPin(Array(length).fill(''));
+                            inputsRef.current[0]?.focus();
+                            navigationRef.navigate("Settings");
+                        }
+                    } catch (err: any) {
+                        console.error('set pin error: ', err);
+                        Toast.show({
+                            type: 'error',
+                            text1: t("err.error_title"),
+                            text2: t('err.text_delete_pin_fail')
+                        });
+                        return;
+                    }
+
             } else {
                 onComplete(pinString);
             }

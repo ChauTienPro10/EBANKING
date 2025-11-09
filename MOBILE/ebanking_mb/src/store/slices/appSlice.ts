@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AccountTransResponse } from '../AccountTransResponse';
 import { fetchAccountTransInfo } from '../fetchAPI/AccountFetch';
 import { UserInfoModel } from '../UserInfoModel';
@@ -10,6 +10,7 @@ interface AppState {
   loginResponse: LoginResponse | null;
   accountTransResponse: AccountTransResponse | null;
   userInfoData: UserInfoModel | null;
+  pinStatus: boolean | null;
 }
 
 const initialState: AppState = {
@@ -18,6 +19,7 @@ const initialState: AppState = {
   loginResponse: null,
   accountTransResponse: null,
   userInfoData: null,
+  pinStatus: false
 };
 
 const appSlice = createSlice({
@@ -38,6 +40,9 @@ const appSlice = createSlice({
     },
     setUserInfoData: (state, action) => {
       state.userInfoData = action.payload;
+    },
+    setPinStatus: (state, action: PayloadAction<boolean>) => {
+      state.pinStatus = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -63,6 +68,7 @@ export const {
   setLoginResponse,
   setAccountTransResponse,
   setUserInfoData,
+  setPinStatus
 } = appSlice.actions;
 
 export default appSlice.reducer;

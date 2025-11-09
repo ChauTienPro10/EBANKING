@@ -25,7 +25,7 @@ public class PinCodeService {
         if (r.getPinCode() == null ||
         r.getPinCode().isEmpty() ||
         !isNumeric(r.getPinCode()) ||
-        r.getPinCode().length() != 6) {
+        r.getPinCode().length() != 4) {
             return NewPinCodeRes.builder()
                     .status(false)
                     .error("pin_invalid")
@@ -89,6 +89,12 @@ public class PinCodeService {
                 .status(true)
                 .error("")
                 .build();
+    }
+
+    public boolean getPinStatus(String username) {
+        long userId = authService.getUserIdByUsername(username);
+        PinCode pinCode = pinCodeRepository.findByUserId(userId);
+        return pinCode != null;
     }
 
     public boolean isNumeric(String str) {

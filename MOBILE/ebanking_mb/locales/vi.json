@@ -1,4 +1,11 @@
 {
+  "err": {
+    "error_title": "Lỗi",
+    "text_pin_dont_meet": "Mã PIN không khớp",
+    "text_can_not_set_pin": "Thiết lập mã PIN thất bại",
+    "text_delete_pin_fail": "Không thể hủy PIN",
+    "text_pin_invalid": "Mã PIN không hợp lệ"
+  },
   "menu": {
     "title": "Menu",
     "greeting": "Xin chào, {userName}",

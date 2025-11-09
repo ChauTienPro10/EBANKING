@@ -44,4 +44,9 @@ public class PinCodeController {
         }
         return ResponseEntity.status(HttpStatus.OK).body(pinCodeService.delPin(r));
     }
+
+    @GetMapping("/{username}")
+    public boolean getPinStatus(@PathVariable String username) {
+        return pinCodeService.getPinStatus(username);
+    }
 }

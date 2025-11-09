@@ -54,7 +54,6 @@ const SettingsScreen: React.FC = () => {
         setShowLogoutPopup(true)
         break;
       case 'security':
-        navigation.navigate('SetPINCode' as never);
         
         break;
 

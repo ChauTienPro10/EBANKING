@@ -1,9 +1,16 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Icon from 'react-native-vector-icons/Ionicons';
 import GText from './GText';
 import Colors from '../constants/color';
+import Toggle from './Toggle';
+import { RootState } from '../store';
+import { useDispatch, useSelector } from 'react-redux';
+import fetch from '../utils/fetch';
+import { API } from '../constants/api';
+import { setPinStatus } from '../store/slices/appSlice';
+import { useNavigation } from '@react-navigation/native';
 
 interface MenuItem {
   id: string;
@@ -19,23 +26,45 @@ interface MenuListProps {
   showCategories?: boolean;
 }
 
-const MenuList: React.FC<MenuListProps> = ({ 
-  items, 
-  onSelect, 
-  showCategories = true 
+const MenuList: React.FC<MenuListProps> = ({
+  items,
+  onSelect,
+  showCategories = true
 }) => {
   const { t } = useTranslation();
-  
+  const loginResponse = useSelector((state: RootState) => state.app.loginResponse);
+  const dispatch = useDispatch();
+  const [pinStt, setPinStt] = useState(false);
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    const fetchPinStatus = async () => {
+      try {
+        const _pinStt = await fetch.get(
+          API.GET_PIN_STT.replace('{username}', loginResponse?.username || ''),
+          {},
+          true
+        );
+        setPinStt(_pinStt);
+        dispatch(setPinStatus(_pinStt));
+      } catch (error) {
+        console.error('Error fetching pin status:', error);
+      }
+    };
+
+    fetchPinStatus();
+  }, [loginResponse]);
+
   // Group items by category
-  const groupedItems = showCategories 
+  const groupedItems = showCategories
     ? items.reduce((acc, item) => {
-        const category = item.category || 'other';
-        if (!acc[category]) {
-          acc[category] = [];
-        }
-        acc[category].push(item);
-        return acc;
-      }, {} as Record<string, MenuItem[]>)
+      const category = item.category || 'other';
+      if (!acc[category]) {
+        acc[category] = [];
+      }
+      acc[category].push(item);
+      return acc;
+    }, {} as Record<string, MenuItem[]>)
     : { all: items };
 
   const getCategoryLabel = (category: string) => {
@@ -44,7 +73,7 @@ const MenuList: React.FC<MenuListProps> = ({
 
   const getIconComponent = (iconName: string) => {
     const iconProps = { size: 20, color: Colors.main_bule };
-    
+
     switch (iconName) {
       case 'home': return <Icon name="home" {...iconProps} />;
       case 'card': return <Icon name="card" {...iconProps} />;
@@ -85,7 +114,12 @@ const MenuList: React.FC<MenuListProps> = ({
           {item.label}
         </GText>
       </View>
-      <Icon name="chevron-forward" size={18} color={Colors.grey1} />
+      {item.id === 'security' ? <Toggle
+        value={pinStt}
+        onChange={() => { navigation.navigate('SetPINCode' as never); }}
+        label=""
+      /> : <Icon name="chevron-forward" size={18} color={Colors.grey1} />
+      }
     </TouchableOpacity>
   );
 
@@ -104,7 +138,7 @@ const MenuList: React.FC<MenuListProps> = ({
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      {Object.entries(groupedItems).map(([category, items]) => 
+      {Object.entries(groupedItems).map(([category, items]) =>
         renderCategory(category, items)
       )}
     </ScrollView>
