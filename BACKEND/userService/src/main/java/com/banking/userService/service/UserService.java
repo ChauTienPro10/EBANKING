@@ -243,6 +243,12 @@ public class UserService {
 
     public UserProto.ForgotPasswordOTPResponse forgotPasswordOtpRequest(UserProto.ForgotPasswordOTPRequest rq) {
         try {
+            User us = userRepository.findByUsername(rq.getUsername());
+            if (us == null) {
+                return UserProto.ForgotPasswordOTPResponse.newBuilder()
+                        .setStatus(false)
+                        .build();
+            }
             if (rq.getTypeVerify().equals(VerifyType.EMAIL.getName())) {
                 String otp = otpUtils.genOtp(rq.getUsername(), 300);
                 kafkaTemplate.send(KafkaTopic.SEND_OTP_FORGOT_PASSWORD.getTopicName(), rq.getUsername() + "|" + otp);

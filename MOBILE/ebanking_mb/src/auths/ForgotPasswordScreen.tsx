@@ -13,20 +13,21 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useTranslation } from 'react-i18next';
-import LockIcon from '../components/icon/LockIcon';
-import UserIcon from '../components/icon/UserIcon';
 import CustomInput from '../components/CustomInput';
 import CustomButton from '../components/CustomButton';
 import BackgroundDecoration from '../components/BackgroundDecoration';
 import Header from '../components/Header';
 import Colors from '../constants/color';
-import PhoneInput from '../components/PhoneInput';
-import { CountryCode } from 'react-native-country-picker-modal';
 import MailIcon from '../components/icon/MailIcon';
 import PhoneIcon from '../components/icon/PhoneIcon';
 import GText from '../components/GText';
 import ReloadIcon from '../components/icon/ReloadIcon';
-
+import Toast from 'react-native-toast-message';
+import fetch from '../utils/fetch';
+import { API } from '../constants/api';
+import LoadingPopup from '../popups/LoadingPopup';
+import LockIcon from '../components/icon/LockIcon';
+import { EyeIcon, EyeOffIcon } from '../components/icon';
 
 type AuthStackParamList = {
   SignIn: undefined;
@@ -43,35 +44,82 @@ const ForgotPasswordScreen: React.FC = () => {
   const [phone, setPhone] = useState('');
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [isLoading, setIsLoading] = useState(false);
-  const [typeVerify, setTypeVerify] = useState('phone');
+  const [typeVerify, setTypeVerify] = useState('email');
   const [countDown, setCountDown] = useState(90);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const handlePhonePrefixChange = (countryCode: CountryCode, callingCode: string) => {
-    console.log('Mã quốc gia:', countryCode);
-    console.log('Mã vùng:', callingCode);
-  };
-
+  // const handlePhonePrefixChange = (countryCode: CountryCode, callingCode: string) => {
+  //   console.log('Mã quốc gia:', countryCode);
+  //   console.log('Mã vùng:', callingCode);
+  // };
+  const [loading, setLoading] = useState(false);
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false)
   const otpRefs = useRef<TextInput[]>([]);
 
-  const handleSendCode = async () => {
-    if (phone.length >= 10) {
-      setIsLoading(true);
-      setTimeout(() => {
-        setIsLoading(false);
-        setStep('code');
-      }, 2000);
+  const setTypeVerifyHandle: any = () => {
+    if (typeVerify === 'phone') {
+      setTypeVerify('email');
+    } else {
+      setTypeVerify('phone');
     }
+  }
+
+  const requestOtp: any = async () => {
+    setIsLoading(true);
+    try {
+      const rs = await fetch.post(API.FORGOT_PASS_REQUEST_OTP, { username: phone, typeVerify: typeVerify }, true);
+      if (rs.status) {
+        setStep('code');
+      }
+      else {
+        Toast.show({
+          type: 'error',
+          text1: t('err.error_title'),
+          text2: t('err.text_err_progress')
+        });
+      }
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: t('err.error_title'),
+        text2: t('err.text_err_progress')
+      });
+
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  const handleSendCode = async () => {
+    requestOtp();
     startTimer();
   };
 
-  const handleVerifyCode = () => {
+  const handleVerifyCode:any = async () => {
+    setIsLoading(true);
     const otpString = otp.join('');
-    if (otpString.length === 6) {
-      setIsLoading(true);
-      setTimeout(() => {
-        setIsLoading(false);
+    try {
+      const rs = await fetch.post(API.FORGOT_PASS_SEND_OTP, { username: phone, otp: otp.join(''), password: password }, false);
+      console.log('đ', rs);
+      if (rs.status) {
         navigation.navigate('SignIn');
-      }, 2000);
+      }
+      else {
+        Toast.show({
+        type: 'error',
+        text1: t('err.error_title'),
+        text2: t('err.' + rs.error)
+      });
+      setIsLoading(false);
+      }
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: t('err.error_title'),
+        text2: t('err.text_err_progress')
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -154,7 +202,6 @@ const ForgotPasswordScreen: React.FC = () => {
 
 
       <View style={styles.phoneInputContainer}>
-        {typeVerify === 'phone' && <PhoneInput onChange={handlePhonePrefixChange} />}
         <CustomInput
           placeholder={typeVerify === 'phone' ? t('sign_in.text_phone') : t('sign_in.text_email')}
           value={phone}
@@ -182,7 +229,6 @@ const ForgotPasswordScreen: React.FC = () => {
 
   const renderCodeStep = () => (
     <>
-
       <View style={styles.otpContainer}>
         {otp.map((digit, index) => (
           <TextInput
@@ -213,11 +259,31 @@ const ForgotPasswordScreen: React.FC = () => {
         </TouchableOpacity>
       </View>
 
+      <CustomInput
+        placeholder={t('sign_in.text_password_new')}
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry={!showPassword}
+        autoCapitalize="none"
+        leftIcon={<LockIcon size={20} color={Colors.grey3} />}
+        rightIcon={
+          <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+            {showPassword ? (
+              <EyeOffIcon size={20} color={Colors.grey3} />
+            ) : (
+              <EyeIcon size={20} color={Colors.grey3} />
+            )}
+          </TouchableOpacity>
+        }
+      />
+
+      <View style={{height: 20}}></View>
+
       <CustomButton
         title={t('sign_in.text_auth')}
         onPress={handleVerifyCode}
         loading={isLoading}
-        disabled={otp.join('').length !== 6}
+        disabled={otp.join('').length !== 6 || password.length <= 5}
         containerStyle={styles.verifyButton}
       />
       {countDown !== 0 && <GText type='systemLight_14' color={Colors.black} style={{
@@ -231,6 +297,7 @@ const ForgotPasswordScreen: React.FC = () => {
 
   return (
     <BackgroundDecoration>
+      <LoadingPopup visible={loading} message="Đang xử lý..." />
       <SafeAreaView style={styles.container}>
         <Header title='Khôi phục mật khẩu' showBackButton={true} />
 
@@ -256,6 +323,10 @@ const ForgotPasswordScreen: React.FC = () => {
             </View>
           </ScrollView>
         </KeyboardAvoidingView>
+        <TouchableOpacity onPress={() => { setTypeVerifyHandle() }} style={styles.change_type_container}>
+          <GText type='systemBold_16' color={Colors.main_bule}>{typeVerify === 'phone' ? t('forgot_password.use_email') :
+            t('forgot_password.use_phone')}</GText>
+        </TouchableOpacity>
       </SafeAreaView>
     </BackgroundDecoration>
   );
@@ -387,6 +458,14 @@ const styles = StyleSheet.create({
   verifyButton: {
     marginBottom: 24,
   },
+
+  change_type_container: {
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 40,
+    textAlign: 'center'
+  }
 });
 
 export default ForgotPasswordScreen;

@@ -42,4 +42,5 @@ export type RootStackParamList = {
     OTPPage: { username: string, targetPage: string };
     ShowNotificationScreen: {title: string, body: string};
     SetPINCode: undefined;
+    QRScreen: undefined;
 };

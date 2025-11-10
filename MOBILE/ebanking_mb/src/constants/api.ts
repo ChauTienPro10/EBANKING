@@ -1,6 +1,6 @@
 import { API_URL } from '@env';
 
-export const BASE_URL = 'http://10.20.1.243:8000/';
+export const BASE_URL = 'http://10.0.27.242:8000/';
 
 export const AUTH_SERVICE = BASE_URL + 'authService';
 
@@ -15,6 +15,8 @@ export const API = {
   CHECK_ACCOUNT_NUMBER: `${AUTH_SERVICE}/trans/account/checkAccountNumber`,
   TRANSFER: `${AUTH_SERVICE}/transaction/transfer`,
   GET_TRANSFER_HISTORY: `${AUTH_SERVICE}/transaction/history`,
+  FORGOT_PASS_REQUEST_OTP: `${AUTH_SERVICE}/auth/forgot-password-send-otp`,
+  FORGOT_PASS_SEND_OTP: `${AUTH_SERVICE}/auth/forgot-password-verify-otp`,
 
 
   // fcm

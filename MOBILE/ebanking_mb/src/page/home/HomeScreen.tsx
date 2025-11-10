@@ -7,15 +7,11 @@ import { TransferIcon, CashIcon, ReceiptIcon, MobileIcon, TrendingUpIcon, BellIc
 import BottomNavigation from '../../components/BottomNavigation';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
-import { fetchAccountTransInfo } from '../../store/fetchAPI/AccountFetch';
 import { AppDispatch, store } from '../../store';
 import ReminderPopup from '../../popups/ReminderPopupProps';
-import { fetchUserInfo } from '../../store/fetchAPI/UserInfoFetch';
 import { PersonIcon } from '../../components/icon';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/types';
-import { setUserInfoData } from '../../store/slices/appSlice';
-
 
 const HomeScreen: React.FC = () => {
   const loginResponse = useSelector((state: RootState) => state.app.loginResponse);
@@ -27,7 +23,6 @@ const HomeScreen: React.FC = () => {
   const [notificationCount, setNotificationCount] = useState(3);
   const [isBalanceVisible, setIsBalanceVisible] = useState(false);
   const [activeTab, setActiveTab] = useState('home');
-  const dispatch: AppDispatch = store.dispatch;
 
   const [requireUpdateInfo, setRequireUpdateInfo] = useState(false);
 
@@ -112,8 +107,10 @@ const HomeScreen: React.FC = () => {
     }
   };
 
+
   const handleQRPress = () => {
-    console.log('QR Code pressed - Open QR Scanner');
+    // setQrScreen(true);
+    navigation.navigate("QRScreen");
   };
 
   const handleNotificationPress = () => {
@@ -147,7 +144,6 @@ const HomeScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-
       <ReminderPopup
         visible={requireUpdateInfo}
         message="Vui lòng cập nhật đầy đủ thông tin"
