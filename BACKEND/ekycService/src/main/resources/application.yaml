@@ -34,6 +34,7 @@ cors:
 
 # File Upload & Storage Configuration
 app:
+  base-url: http://localhost:8081    # Base URL cho webhook callback (thay đổi khi deploy)
   upload:
     base-dir: ./uploads              # Thư mục lưu file (relative hoặc absolute path)
     max-file-size-mb: 10             # Giới hạn kích thước file (MB)

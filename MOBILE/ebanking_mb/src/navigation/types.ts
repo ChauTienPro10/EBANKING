@@ -37,10 +37,12 @@ export type RootStackParamList = {
         date: string;
         receiverName: string;
     };
-    TransactionFailedScreen?: {errorString: string};
+    TransactionFailedScreen?: { errorString: string };
     TransactionHistoryScreen?: undefined;
     OTPPage: { username: string, targetPage: string };
-    ShowNotificationScreen: {title: string, body: string};
+    ShowNotificationScreen: { title: string, body: string };
     SetPINCode: undefined;
     QRScreen: undefined;
+    EKYC: undefined;
+
 };

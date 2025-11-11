@@ -25,12 +25,18 @@ public class BiometricData {
 
     // Lưu đường dẫn file thay vì base64 (tối ưu database)
     // VD: videos/sessionId/liveness_sessionId_20241030_143022.mp4
-    private String selfieVideoPath;
+    private String videoPath;
 
-    private Double livenessScore;
-    private Double faceMatchScore;
+    // Ảnh khuôn mặt được trích xuất từ video liveness
+    private String faceImagePath;
+
+    // Liveness check results
     private Boolean isLive;
-    private Boolean isMatched;
+    private Double livenessConfidence;  // Độ tin cậy liveness (0.0 - 1.0)
+
+    // Face matching results
+    private Boolean faceMatch;  // Kết quả so khớp khuôn mặt (true/false)
+    private Double faceMatchScore;  // Điểm tương đồng (0.0 - 1.0)
 }
 
 

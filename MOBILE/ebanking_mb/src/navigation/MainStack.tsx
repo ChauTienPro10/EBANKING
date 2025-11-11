@@ -16,13 +16,14 @@ import TransactionHistoryScreen from '../page/transaction/TransactionHistoryScre
 import ShowNotificationScreen from '../notification/showNoti';
 import setPinCodeScreen from '../PIN/pinCodeScreen';
 import QRSCreen from '../page/home/QRScreen';
+import { EKYCScreen } from '../features/ekyc';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function MainStack() {
   return (
     <Stack.Navigator
-      initialRouteName="Home" //
+      initialRouteName="Home"
       screenOptions={{
         headerShown: false,
       }}
@@ -43,6 +44,7 @@ export default function MainStack() {
       <Stack.Screen name="SetPINCode" component={setPinCodeScreen} />
       <Stack.Screen name="QRScreen" component={QRSCreen} />
 
+      <Stack.Screen name="EKYC" component={EKYCScreen} />
     </Stack.Navigator>
   );
 }

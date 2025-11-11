@@ -105,6 +105,17 @@
     "faq": "Câu hỏi thường gặp",
     "faq_desc": "Tìm câu trả lời nhanh"
   },
+  "ekyc": {
+    "title": "Xác thực eKYC",
+    "error_title": "Lỗi xác thực",
+    "error_message": "Đã xảy ra lỗi trong quá trình xác thực eKYC",
+    "cancel_title": "Đã hủy",
+    "cancel_message": "Bạn đã hủy quá trình xác thực eKYC",
+    "load_error_title": "Lỗi tải trang",
+    "load_error_message": "Không thể tải SDK eKYC. Vui lòng kiểm tra kết nối internet",
+    "success_title": "Xác thực thành công",
+    "success_message": "Thông tin eKYC của bạn đã được xác thực thành công"
+  },
   "profile": {
     "title": "Hồ sơ",
     "edit_profile": "Chỉnh sửa hồ sơ",

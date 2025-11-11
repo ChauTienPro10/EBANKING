@@ -86,12 +86,7 @@ public class EkycService {
         String backImageBase64 = FileUtil.convertToBase64(backImage);
 
         // Validate session
-        EkycSession session = sessionRepository.findById(UUID.fromString(sessionId))
-                .orElseThrow(() -> new EkycException("Session not found"));
-
-        if (session.getExpiredAt().isBefore(LocalDateTime.now())) {
-            throw new EkycException("Session expired");
-        }
+        EkycSession session = validateSession(sessionId);
 
         try {
             // Call FPT.AI OCR for front image
@@ -229,8 +224,7 @@ public class EkycService {
         String videoBase64 = FileUtil.convertToBase64(video);
 
         // Validate session
-        EkycSession session = sessionRepository.findById(UUID.fromString(sessionId))
-                .orElseThrow(() -> new EkycException("Session not found"));
+        EkycSession session = validateSession(sessionId);
 
         try {
             // Call FPT.AI Liveness
@@ -258,8 +252,8 @@ public class EkycService {
             // Save biometric data with file path
             BiometricData biometricData = BiometricData.builder()
                     .session(session)
-                    .selfieVideoPath(videoPath)  // Lưu path thay vì base64
-                    .livenessScore(score)
+                    .videoPath(videoPath)
+                    .livenessConfidence(score)
                     .isLive(isLive)
                     .build();
 
@@ -306,9 +300,8 @@ public class EkycService {
     public FaceMatchResponse processFaceMatch(String sessionId) {
         log.info("Processing face match for session: {}", sessionId);
 
-        // Get session with relations
-        EkycSession session = sessionRepository.findById(UUID.fromString(sessionId))
-                .orElseThrow(() -> new EkycException("Session not found"));
+        // Validate and get session with relations
+        EkycSession session = validateSession(sessionId);
 
         DocumentInfo docInfo = session.getDocumentInfo();
         BiometricData bioData = session.getBiometricData();
@@ -349,16 +342,17 @@ public class EkycService {
             log.info("Face match result: similarity={}, isMatched={}", similarity, isMatched);
 
             // Update biometric data
+            bioData.setFaceMatch(isMatched);
             bioData.setFaceMatchScore(similarity);
-            bioData.setIsMatched(isMatched);
             biometricDataRepository.save(bioData);
 
             // Update session
             if (isMatched) {
                 session.setStatus(EkycStatus.COMPLETED);
-                session.setCurrentStep(EkycStep.COMPLETE);
+                session.setCurrentStep(EkycStep.COMPLETED);
             } else {
                 session.setStatus(EkycStatus.FAILED);
+                session.setCurrentStep(EkycStep.FACE_MATCH);
             }
             sessionRepository.save(session);
 
@@ -382,5 +376,19 @@ public class EkycService {
             log.warn("Failed to parse date: {}", dobStr);
             return null;
         }
+    }
+
+    /**
+     * Validate session và kiểm tra hết hạn
+     */
+    private EkycSession validateSession(String sessionId) {
+        EkycSession session = sessionRepository.findById(UUID.fromString(sessionId))
+                .orElseThrow(() -> new EkycException("Session not found"));
+
+        if (session.getExpiredAt() != null && session.getExpiredAt().isBefore(LocalDateTime.now())) {
+            throw new EkycException("Session expired");
+        }
+
+        return session;
     }
 }

@@ -28,19 +28,75 @@ const SettingsScreen: React.FC = () => {
   const bottomTabs = [
     { id: 'home', label: t('bottom_navigation.home'), icon: 'home' },
     { id: 'menu', label: t('bottom_navigation.menu'), icon: 'grid' },
-    { id: 'settings', label: t('bottom_navigation.settings'), icon: 'settings' },
-    { id: 'support', label: t('bottom_navigation.support'), icon: 'help-circle' },
+    {
+      id: 'settings',
+      label: t('bottom_navigation.settings'),
+      icon: 'settings',
+    },
+    {
+      id: 'support',
+      label: t('bottom_navigation.support'),
+      icon: 'help-circle',
+    },
   ];
 
   const settingsItems = [
-    { id: 'language', label: t('settings.language'), icon: 'globe', route: 'language_settings', category: 'general' },
-    { id: 'notifications', label: t('settings.notifications'), icon: 'notifications', route: 'notification_settings', category: 'general' },
-    { id: 'security', label: t('settings.security'), icon: 'shield', route: 'security_settings', category: 'security' },
-    { id: 'biometric', label: t('settings.biometric'), icon: 'fingerprint', route: 'biometric_settings', category: 'security' },
-    { id: 'privacy', label: t('settings.privacy'), icon: 'lock', route: 'privacy_settings', category: 'privacy' },
-    { id: 'about', label: t('settings.about'), icon: 'information-circle', route: 'about', category: 'info' },
-    { id: 'help', label: t('settings.help'), icon: 'help-circle', route: 'help', category: 'info' },
-    { id: 'logout', label: t('settings.logout'), icon: 'log-out', route: 'logout', category: 'account' },
+    {
+      id: 'language',
+      label: t('settings.language'),
+      icon: 'globe',
+      route: 'language_settings',
+      category: 'general',
+    },
+    {
+      id: 'notifications',
+      label: t('settings.notifications'),
+      icon: 'notifications',
+      route: 'notification_settings',
+      category: 'general',
+    },
+    {
+      id: 'security',
+      label: t('settings.security'),
+      icon: 'shield',
+      route: 'security_settings',
+      category: 'security',
+    },
+    {
+      id: 'biometric',
+      label: t('settings.biometric'),
+      icon: 'fingerprint',
+      route: 'EKYC',
+      category: 'security',
+    },
+    {
+      id: 'privacy',
+      label: t('settings.privacy'),
+      icon: 'lock',
+      route: 'privacy_settings',
+      category: 'privacy',
+    },
+    {
+      id: 'about',
+      label: t('settings.about'),
+      icon: 'information-circle',
+      route: 'about',
+      category: 'info',
+    },
+    {
+      id: 'help',
+      label: t('settings.help'),
+      icon: 'help-circle',
+      route: 'help',
+      category: 'info',
+    },
+    {
+      id: 'logout',
+      label: t('settings.logout'),
+      icon: 'log-out',
+      route: 'logout',
+      category: 'account',
+    },
   ];
 
   const handleLogout = () => {
@@ -54,14 +110,15 @@ const SettingsScreen: React.FC = () => {
         setShowLogoutPopup(true)
         break;
       case 'security':
-        
         break;
+      case 'biometric':
+        if (item.route === 'EKYC') {
+          navigation.navigate('EKYC' as never);
+        }
 
       default:
-
-        break;
-    }
-  };
+    };
+  }
 
   return (
     <View style={styles.container}>

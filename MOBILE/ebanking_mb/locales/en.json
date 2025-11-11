@@ -88,6 +88,17 @@
     "faq": "FAQ",
     "faq_desc": "Find quick answers"
   },
+  "ekyc": {
+    "title": "eKYC Verification",
+    "error_title": "Verification Error",
+    "error_message": "An error occurred during eKYC verification",
+    "cancel_title": "Cancelled",
+    "cancel_message": "You have cancelled the eKYC verification process",
+    "load_error_title": "Loading Error",
+    "load_error_message": "Unable to load eKYC SDK. Please check your internet connection",
+    "success_title": "Verification Successful",
+    "success_message": "Your eKYC information has been verified successfully"
+  },
   "profile": {
     "title": "Profile",
     "edit_profile": "Edit Profile",
