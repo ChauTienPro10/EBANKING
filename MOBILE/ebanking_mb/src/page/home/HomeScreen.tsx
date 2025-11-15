@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Touchable } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Touchable, Modal, Button } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import Colors from '../../constants/color';
@@ -12,6 +12,7 @@ import ReminderPopup from '../../popups/ReminderPopupProps';
 import { PersonIcon } from '../../components/icon';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/types';
+import QRScanner from '../QR/QRScanner';
 
 const HomeScreen: React.FC = () => {
   const loginResponse = useSelector((state: RootState) => state.app.loginResponse);
@@ -107,10 +108,12 @@ const HomeScreen: React.FC = () => {
     }
   };
 
+  const handleScanSuccess = (value: string) => {
+    console.log('QR Code scanned:', value);
+  };
 
   const handleQRPress = () => {
-    // setQrScreen(true);
-    navigation.navigate("QRScreen");
+    navigation.navigate('ScannerScreen', { onScanSuccess: handleScanSuccess });
   };
 
   const handleNotificationPress = () => {

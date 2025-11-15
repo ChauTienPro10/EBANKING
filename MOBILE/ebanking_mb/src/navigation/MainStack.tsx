@@ -15,7 +15,7 @@ import TransactionFailedScreen from '../page/transfer/Error';
 import TransactionHistoryScreen from '../page/transaction/TransactionHistoryScreen';
 import ShowNotificationScreen from '../notification/showNoti';
 import setPinCodeScreen from '../PIN/pinCodeScreen';
-import QRSCreen from '../page/home/QRScreen';
+import ScannerScreen from '../page/QR/ScannerScreen';
 import { EKYCScreen } from '../features/ekyc';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -42,7 +42,7 @@ export default function MainStack() {
       <Stack.Screen name="TransactionHistoryScreen" component={TransactionHistoryScreen} />
       <Stack.Screen name="ShowNotificationScreen" component={ShowNotificationScreen} />
       <Stack.Screen name="SetPINCode" component={setPinCodeScreen} />
-      <Stack.Screen name="QRScreen" component={QRSCreen} />
+      <Stack.Screen name="ScannerScreen" component={ScannerScreen} />
 
       <Stack.Screen name="EKYC" component={EKYCScreen} />
     </Stack.Navigator>

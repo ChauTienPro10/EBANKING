@@ -115,7 +115,7 @@ const RootApp: React.FC = () => {
           backgroundColor="transparent"
         />
         <NavigationContainer ref={navigationRef}> {/* ✅ Important */}
-          {isLoggedIn ? <MainStack /> : <AuthNavigator />}
+          {isLoggedIn ? <MainStack /> : <MainStack />}
         </NavigationContainer>
       </View>
       <Toast />
