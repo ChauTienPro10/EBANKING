@@ -1,0 +1,230 @@
+{
+  "logs": [
+    {
+      "id": "LOG001",
+      "userId": "IU001",
+      "userName": "Admin User",
+      "userRole": "Admin",
+      "action": "Login",
+      "ipAddress": "192.168.1.100",
+      "device": "Chrome on Windows",
+      "timestamp": "2024-05-15T08:00:00Z",
+      "details": "User logged in successfully"
+    },
+    {
+      "id": "LOG002",
+      "userId": "IU002",
+      "userName": "Manager One",
+      "userRole": "Manager",
+      "action": "Approved Transaction",
+      "ipAddress": "192.168.1.101",
+      "device": "Edge on Windows",
+      "timestamp": "2024-05-15T08:30:00Z",
+      "details": "Approved transaction TX1009"
+    },
+    {
+      "id": "LOG003",
+      "userId": "IU001",
+      "userName": "Admin User",
+      "userRole": "Admin",
+      "action": "Locked Account",
+      "ipAddress": "192.168.1.100",
+      "device": "Chrome on Windows",
+      "timestamp": "2024-05-15T09:00:00Z",
+      "details": "Locked account ACC006 due to suspicious activity"
+    },
+    {
+      "id": "LOG004",
+      "userId": "IU004",
+      "userName": "Staff One",
+      "userRole": "Staff",
+      "action": "Viewed Customer",
+      "ipAddress": "192.168.1.104",
+      "device": "Firefox on Windows",
+      "timestamp": "2024-05-15T09:15:00Z",
+      "details": "Viewed customer profile C001"
+    },
+    {
+      "id": "LOG005",
+      "userId": "IU003",
+      "userName": "Manager Two",
+      "userRole": "Manager",
+      "action": "Approved Loan",
+      "ipAddress": "192.168.1.103",
+      "device": "Chrome on Mac",
+      "timestamp": "2024-05-15T10:00:00Z",
+      "details": "Approved loan application LN009"
+    },
+    {
+      "id": "LOG006",
+      "userId": "IU001",
+      "userName": "Admin User",
+      "userRole": "Admin",
+      "action": "Created User",
+      "ipAddress": "192.168.1.100",
+      "device": "Chrome on Windows",
+      "timestamp": "2024-05-15T10:30:00Z",
+      "details": "Created new staff user IU009"
+    },
+    {
+      "id": "LOG007",
+      "userId": "IU005",
+      "userName": "Staff Two",
+      "userRole": "Staff",
+      "action": "Replied Ticket",
+      "ipAddress": "192.168.1.105",
+      "device": "Chrome on Windows",
+      "timestamp": "2024-05-15T11:00:00Z",
+      "details": "Replied to ticket TKT002"
+    },
+    {
+      "id": "LOG008",
+      "userId": "IU002",
+      "userName": "Manager One",
+      "userRole": "Manager",
+      "action": "Rejected Transaction",
+      "ipAddress": "192.168.1.101",
+      "device": "Edge on Windows",
+      "timestamp": "2024-05-15T11:30:00Z",
+      "details": "Rejected transaction TX1018"
+    },
+    {
+      "id": "LOG009",
+      "userId": "IU001",
+      "userName": "Admin User",
+      "userRole": "Admin",
+      "action": "Updated Settings",
+      "ipAddress": "192.168.1.100",
+      "device": "Chrome on Windows",
+      "timestamp": "2024-05-15T12:00:00Z",
+      "details": "Updated system settings"
+    },
+    {
+      "id": "LOG010",
+      "userId": "IU006",
+      "userName": "Staff Three",
+      "userRole": "Staff",
+      "action": "Viewed Transaction",
+      "ipAddress": "192.168.1.106",
+      "device": "Safari on Mac",
+      "timestamp": "2024-05-15T12:30:00Z",
+      "details": "Viewed transaction details TX1001"
+    },
+    {
+      "id": "LOG011",
+      "userId": "IU003",
+      "userName": "Manager Two",
+      "userRole": "Manager",
+      "action": "Unlocked Account",
+      "ipAddress": "192.168.1.103",
+      "device": "Chrome on Mac",
+      "timestamp": "2024-05-15T13:00:00Z",
+      "details": "Unlocked account ACC006"
+    },
+    {
+      "id": "LOG012",
+      "userId": "IU001",
+      "userName": "Admin User",
+      "userRole": "Admin",
+      "action": "Deleted User",
+      "ipAddress": "192.168.1.100",
+      "device": "Chrome on Windows",
+      "timestamp": "2024-05-15T13:30:00Z",
+      "details": "Deleted user IU010"
+    },
+    {
+      "id": "LOG013",
+      "userId": "IU007",
+      "userName": "Staff Four",
+      "userRole": "Staff",
+      "action": "Updated Customer",
+      "ipAddress": "192.168.1.107",
+      "device": "Chrome on Windows",
+      "timestamp": "2024-05-15T14:00:00Z",
+      "details": "Updated customer information C012"
+    },
+    {
+      "id": "LOG014",
+      "userId": "IU002",
+      "userName": "Manager One",
+      "userRole": "Manager",
+      "action": "Approved Loan",
+      "ipAddress": "192.168.1.101",
+      "device": "Edge on Windows",
+      "timestamp": "2024-05-15T14:30:00Z",
+      "details": "Approved loan application LN014"
+    },
+    {
+      "id": "LOG015",
+      "userId": "IU001",
+      "userName": "Admin User",
+      "userRole": "Admin",
+      "action": "Changed Permission",
+      "ipAddress": "192.168.1.100",
+      "device": "Chrome on Windows",
+      "timestamp": "2024-05-15T15:00:00Z",
+      "details": "Changed permissions for user IU008"
+    },
+    {
+      "id": "LOG016",
+      "userId": "IU008",
+      "userName": "Staff Five",
+      "userRole": "Staff",
+      "action": "Replied Ticket",
+      "ipAddress": "192.168.1.108",
+      "device": "Firefox on Windows",
+      "timestamp": "2024-05-15T15:30:00Z",
+      "details": "Replied to ticket TKT004"
+    },
+    {
+      "id": "LOG017",
+      "userId": "IU001",
+      "userName": "Admin User",
+      "userRole": "Admin",
+      "action": "Exported Report",
+      "ipAddress": "192.168.1.100",
+      "device": "Chrome on Windows",
+      "timestamp": "2024-05-15T16:00:00Z",
+      "details": "Exported transaction report for May 2024"
+    },
+    {
+      "id": "LOG018",
+      "userId": "IU003",
+      "userName": "Manager Two",
+      "userRole": "Manager",
+      "action": "Rejected Loan",
+      "ipAddress": "192.168.1.103",
+      "device": "Chrome on Mac",
+      "timestamp": "2024-05-15T16:30:00Z",
+      "details": "Rejected loan application LN018"
+    },
+    {
+      "id": "LOG019",
+      "userId": "IU004",
+      "userName": "Staff One",
+      "userRole": "Staff",
+      "action": "Locked Customer",
+      "ipAddress": "192.168.1.104",
+      "device": "Firefox on Windows",
+      "timestamp": "2024-05-15T17:00:00Z",
+      "details": "Locked customer account C005"
+    },
+    {
+      "id": "LOG020",
+      "userId": "IU001",
+      "userName": "Admin User",
+      "userRole": "Admin",
+      "action": "Login",
+      "ipAddress": "192.168.1.100",
+      "device": "Chrome on Windows",
+      "timestamp": "2024-05-14T08:00:00Z",
+      "details": "User logged in successfully"
+    }
+  ]
+}
+
+
+
+
+
+
