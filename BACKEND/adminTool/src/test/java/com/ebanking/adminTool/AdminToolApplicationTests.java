@@ -1,10 +1,10 @@
-package com.ebanking.webhook;
+package com.ebanking.adminTool;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class WebhookApplicationTests {
+class AdminToolApplicationTests {
 
 	@Test
 	void contextLoads() {

@@ -1,13 +1,13 @@
-package com.ebanking.webhook;
+package com.ebanking.chatbotService;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class WebhookApplication {
+public class ChatbotServiceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(WebhookApplication.class, args);
+		SpringApplication.run(ChatbotServiceApplication.class, args);
 	}
 
 }
