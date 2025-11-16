@@ -1,0 +1,272 @@
+{
+  "internalUsers": [
+    {
+      "id": "IU001",
+      "name": "Admin User",
+      "email": "admin@ebank.com",
+      "phone": "+84123456789",
+      "role": "Admin",
+      "department": "IT",
+      "status": "Active",
+      "createdAt": "2024-01-15T00:00:00Z"
+    },
+    {
+      "id": "IU002",
+      "name": "Manager One",
+      "email": "manager1@ebank.com",
+      "phone": "+84123456790",
+      "role": "Manager",
+      "department": "Operations",
+      "status": "Active",
+      "createdAt": "2024-02-01T00:00:00Z"
+    },
+    {
+      "id": "IU003",
+      "name": "Manager Two",
+      "email": "manager2@ebank.com",
+      "phone": "+84123456791",
+      "role": "Manager",
+      "department": "Customer Service",
+      "status": "Active",
+      "createdAt": "2024-02-05T00:00:00Z"
+    },
+    {
+      "id": "IU004",
+      "name": "Staff One",
+      "email": "staff1@ebank.com",
+      "phone": "+84123456792",
+      "role": "Staff",
+      "department": "Operations",
+      "status": "Active",
+      "createdAt": "2024-03-01T00:00:00Z"
+    },
+    {
+      "id": "IU005",
+      "name": "Staff Two",
+      "email": "staff2@ebank.com",
+      "phone": "+84123456793",
+      "role": "Staff",
+      "department": "Customer Service",
+      "status": "Active",
+      "createdAt": "2024-03-02T00:00:00Z"
+    },
+    {
+      "id": "IU006",
+      "name": "Staff Three",
+      "email": "staff3@ebank.com",
+      "phone": "+84123456794",
+      "role": "Staff",
+      "department": "Operations",
+      "status": "Active",
+      "createdAt": "2024-03-10T00:00:00Z"
+    },
+    {
+      "id": "IU007",
+      "name": "Staff Four",
+      "email": "staff4@ebank.com",
+      "phone": "+84123456795",
+      "role": "Staff",
+      "department": "Customer Service",
+      "status": "Locked",
+      "createdAt": "2024-03-15T00:00:00Z"
+    },
+    {
+      "id": "IU008",
+      "name": "Staff Five",
+      "email": "staff5@ebank.com",
+      "phone": "+84123456796",
+      "role": "Staff",
+      "department": "Operations",
+      "status": "Active",
+      "createdAt": "2024-04-01T00:00:00Z"
+    }
+  ],
+  "customers": [
+    {
+      "id": "C001",
+      "name": "Nguyen Van An",
+      "email": "an.nguyen@email.com",
+      "phone": "+84901234567",
+      "kycStatus": "Verified",
+      "status": "Active",
+      "createdAt": "2024-01-10T00:00:00Z"
+    },
+    {
+      "id": "C002",
+      "name": "Tran Thi Binh",
+      "email": "binh.tran@email.com",
+      "phone": "+84901234568",
+      "kycStatus": "Verified",
+      "status": "Active",
+      "createdAt": "2024-01-12T00:00:00Z"
+    },
+    {
+      "id": "C003",
+      "name": "Le Van Cuong",
+      "email": "cuong.le@email.com",
+      "phone": "+84901234569",
+      "kycStatus": "Pending",
+      "status": "Active",
+      "createdAt": "2024-01-15T00:00:00Z"
+    },
+    {
+      "id": "C004",
+      "name": "Pham Thi Dung",
+      "email": "dung.pham@email.com",
+      "phone": "+84901234570",
+      "kycStatus": "Verified",
+      "status": "Active",
+      "createdAt": "2024-01-20T00:00:00Z"
+    },
+    {
+      "id": "C005",
+      "name": "Hoang Van Em",
+      "email": "em.hoang@email.com",
+      "phone": "+84901234571",
+      "kycStatus": "Verified",
+      "status": "Locked",
+      "createdAt": "2024-02-01T00:00:00Z"
+    },
+    {
+      "id": "C006",
+      "name": "Vu Thi Phuong",
+      "email": "phuong.vu@email.com",
+      "phone": "+84901234572",
+      "kycStatus": "Verified",
+      "status": "Active",
+      "createdAt": "2024-02-05T00:00:00Z"
+    },
+    {
+      "id": "C007",
+      "name": "Do Van Giang",
+      "email": "giang.do@email.com",
+      "phone": "+84901234573",
+      "kycStatus": "Verified",
+      "status": "Active",
+      "createdAt": "2024-02-10T00:00:00Z"
+    },
+    {
+      "id": "C008",
+      "name": "Bui Thi Ha",
+      "email": "ha.bui@email.com",
+      "phone": "+84901234574",
+      "kycStatus": "Pending",
+      "status": "Active",
+      "createdAt": "2024-02-15T00:00:00Z"
+    },
+    {
+      "id": "C009",
+      "name": "Ngo Van Hung",
+      "email": "hung.ngo@email.com",
+      "phone": "+84901234575",
+      "kycStatus": "Verified",
+      "status": "Active",
+      "createdAt": "2024-02-20T00:00:00Z"
+    },
+    {
+      "id": "C010",
+      "name": "Dang Thi Lan",
+      "email": "lan.dang@email.com",
+      "phone": "+84901234576",
+      "kycStatus": "Verified",
+      "status": "Active",
+      "createdAt": "2024-03-01T00:00:00Z"
+    },
+    {
+      "id": "C011",
+      "name": "Ly Van Minh",
+      "email": "minh.ly@email.com",
+      "phone": "+84901234577",
+      "kycStatus": "Verified",
+      "status": "Active",
+      "createdAt": "2024-03-05T00:00:00Z"
+    },
+    {
+      "id": "C012",
+      "name": "Nguyen Thi Nga",
+      "email": "nga.nguyen@email.com",
+      "phone": "+84901234578",
+      "kycStatus": "Verified",
+      "status": "Active",
+      "createdAt": "2024-03-10T00:00:00Z"
+    },
+    {
+      "id": "C013",
+      "name": "Tran Van Oanh",
+      "email": "oanh.tran@email.com",
+      "phone": "+84901234579",
+      "kycStatus": "Rejected",
+      "status": "Active",
+      "createdAt": "2024-03-15T00:00:00Z"
+    },
+    {
+      "id": "C014",
+      "name": "Le Thi Phuong",
+      "email": "phuong.le@email.com",
+      "phone": "+84901234580",
+      "kycStatus": "Verified",
+      "status": "Active",
+      "createdAt": "2024-03-20T00:00:00Z"
+    },
+    {
+      "id": "C015",
+      "name": "Pham Van Quang",
+      "email": "quang.pham@email.com",
+      "phone": "+84901234581",
+      "kycStatus": "Verified",
+      "status": "Active",
+      "createdAt": "2024-04-01T00:00:00Z"
+    },
+    {
+      "id": "C016",
+      "name": "Hoang Thi Rung",
+      "email": "rung.hoang@email.com",
+      "phone": "+84901234582",
+      "kycStatus": "Verified",
+      "status": "Active",
+      "createdAt": "2024-04-05T00:00:00Z"
+    },
+    {
+      "id": "C017",
+      "name": "Vu Van Son",
+      "email": "son.vu@email.com",
+      "phone": "+84901234583",
+      "kycStatus": "Verified",
+      "status": "Active",
+      "createdAt": "2024-04-10T00:00:00Z"
+    },
+    {
+      "id": "C018",
+      "name": "Do Thi Thanh",
+      "email": "thanh.do@email.com",
+      "phone": "+84901234584",
+      "kycStatus": "Verified",
+      "status": "Active",
+      "createdAt": "2024-04-15T00:00:00Z"
+    },
+    {
+      "id": "C019",
+      "name": "Bui Van Tu",
+      "email": "tu.bui@email.com",
+      "phone": "+84901234585",
+      "kycStatus": "Pending",
+      "status": "Active",
+      "createdAt": "2024-04-20T00:00:00Z"
+    },
+    {
+      "id": "C020",
+      "name": "Ngo Thi Uyen",
+      "email": "uyen.ngo@email.com",
+      "phone": "+84901234586",
+      "kycStatus": "Verified",
+      "status": "Active",
+      "createdAt": "2024-05-01T00:00:00Z"
+    }
+  ]
+}
+
+
+
+
+
+

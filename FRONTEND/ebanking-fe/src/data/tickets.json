@@ -1,0 +1,259 @@
+{
+  "tickets": [
+    {
+      "id": "TKT001",
+      "customerId": "C001",
+      "customerName": "Nguyen Van An",
+      "subject": "Không thể chuyển tiền",
+      "category": "Technical Issue",
+      "priority": "High",
+      "status": "Open",
+      "createdAt": "2024-05-14T10:30:00Z",
+      "updatedAt": "2024-05-14T10:30:00Z",
+      "messages": [
+        {
+          "id": "MSG001",
+          "sender": "customer",
+          "senderName": "Nguyen Van An",
+          "content": "Tôi không thể chuyển tiền được, báo lỗi mỗi khi thử.",
+          "timestamp": "2024-05-14T10:30:00Z"
+        }
+      ]
+    },
+    {
+      "id": "TKT002",
+      "customerId": "C002",
+      "customerName": "Tran Thi Binh",
+      "subject": "Thắc mắc về phí giao dịch",
+      "category": "Billing",
+      "priority": "Medium",
+      "status": "In Progress",
+      "createdAt": "2024-05-13T14:20:00Z",
+      "updatedAt": "2024-05-14T09:15:00Z",
+      "messages": [
+        {
+          "id": "MSG002",
+          "sender": "customer",
+          "senderName": "Tran Thi Binh",
+          "content": "Tại sao phí giao dịch của tôi lại cao hơn bình thường?",
+          "timestamp": "2024-05-13T14:20:00Z"
+        },
+        {
+          "id": "MSG003",
+          "sender": "staff",
+          "senderName": "Staff One",
+          "content": "Chào bạn, chúng tôi đang kiểm tra lại thông tin giao dịch của bạn.",
+          "timestamp": "2024-05-14T09:15:00Z"
+        }
+      ]
+    },
+    {
+      "id": "TKT003",
+      "customerId": "C003",
+      "customerName": "Le Van Cuong",
+      "subject": "Yêu cầu mở khóa tài khoản",
+      "category": "Account Issue",
+      "priority": "High",
+      "status": "Resolved",
+      "createdAt": "2024-05-12T08:45:00Z",
+      "updatedAt": "2024-05-13T16:30:00Z",
+      "messages": [
+        {
+          "id": "MSG004",
+          "sender": "customer",
+          "senderName": "Le Van Cuong",
+          "content": "Tài khoản của tôi bị khóa, làm ơn giúp tôi mở lại.",
+          "timestamp": "2024-05-12T08:45:00Z"
+        },
+        {
+          "id": "MSG005",
+          "sender": "staff",
+          "senderName": "Manager One",
+          "content": "Chúng tôi đã xác minh và mở khóa tài khoản của bạn. Bạn có thể sử dụng lại bình thường.",
+          "timestamp": "2024-05-13T16:30:00Z"
+        }
+      ]
+    },
+    {
+      "id": "TKT004",
+      "customerId": "C004",
+      "customerName": "Pham Thi Dung",
+      "subject": "Giao dịch bị trừ tiền 2 lần",
+      "category": "Billing",
+      "priority": "High",
+      "status": "In Progress",
+      "createdAt": "2024-05-11T11:20:00Z",
+      "updatedAt": "2024-05-14T10:00:00Z",
+      "messages": [
+        {
+          "id": "MSG006",
+          "sender": "customer",
+          "senderName": "Pham Thi Dung",
+          "content": "Tôi thanh toán hóa đơn nhưng bị trừ tiền 2 lần, số tiền là 850,000 VND.",
+          "timestamp": "2024-05-11T11:20:00Z"
+        },
+        {
+          "id": "MSG007",
+          "sender": "staff",
+          "senderName": "Staff Two",
+          "content": "Chúng tôi đang kiểm tra và sẽ hoàn tiền cho bạn trong vòng 3-5 ngày làm việc.",
+          "timestamp": "2024-05-14T10:00:00Z"
+        }
+      ]
+    },
+    {
+      "id": "TKT005",
+      "customerId": "C005",
+      "customerName": "Hoang Van Em",
+      "subject": "Thay đổi số điện thoại",
+      "category": "Account Issue",
+      "priority": "Low",
+      "status": "Resolved",
+      "createdAt": "2024-05-10T15:30:00Z",
+      "updatedAt": "2024-05-10T16:00:00Z",
+      "messages": [
+        {
+          "id": "MSG008",
+          "sender": "customer",
+          "senderName": "Hoang Van Em",
+          "content": "Tôi muốn thay đổi số điện thoại đăng ký.",
+          "timestamp": "2024-05-10T15:30:00Z"
+        },
+        {
+          "id": "MSG009",
+          "sender": "staff",
+          "senderName": "Staff Three",
+          "content": "Đã cập nhật số điện thoại mới cho bạn.",
+          "timestamp": "2024-05-10T16:00:00Z"
+        }
+      ]
+    },
+    {
+      "id": "TKT006",
+      "customerId": "C006",
+      "customerName": "Vu Thi Phuong",
+      "subject": "Không nhận được OTP",
+      "category": "Technical Issue",
+      "priority": "Medium",
+      "status": "Open",
+      "createdAt": "2024-05-09T09:15:00Z",
+      "updatedAt": "2024-05-09T09:15:00Z",
+      "messages": [
+        {
+          "id": "MSG010",
+          "sender": "customer",
+          "senderName": "Vu Thi Phuong",
+          "content": "Tôi không nhận được mã OTP khi đăng nhập.",
+          "timestamp": "2024-05-09T09:15:00Z"
+        }
+      ]
+    },
+    {
+      "id": "TKT007",
+      "customerId": "C007",
+      "customerName": "Do Van Giang",
+      "subject": "Yêu cầu tăng hạn mức",
+      "category": "Account Issue",
+      "priority": "Medium",
+      "status": "In Progress",
+      "createdAt": "2024-05-08T13:45:00Z",
+      "updatedAt": "2024-05-13T11:20:00Z",
+      "messages": [
+        {
+          "id": "MSG011",
+          "sender": "customer",
+          "senderName": "Do Van Giang",
+          "content": "Tôi muốn tăng hạn mức chuyển tiền hàng ngày.",
+          "timestamp": "2024-05-08T13:45:00Z"
+        },
+        {
+          "id": "MSG012",
+          "sender": "staff",
+          "senderName": "Manager Two",
+          "content": "Chúng tôi đang xem xét hồ sơ của bạn và sẽ phản hồi sớm.",
+          "timestamp": "2024-05-13T11:20:00Z"
+        }
+      ]
+    },
+    {
+      "id": "TKT008",
+      "customerId": "C008",
+      "customerName": "Bui Thi Ha",
+      "subject": "Thắc mắc về lãi suất",
+      "category": "General Inquiry",
+      "priority": "Low",
+      "status": "Resolved",
+      "createdAt": "2024-05-07T10:00:00Z",
+      "updatedAt": "2024-05-07T14:30:00Z",
+      "messages": [
+        {
+          "id": "MSG013",
+          "sender": "customer",
+          "senderName": "Bui Thi Ha",
+          "content": "Lãi suất tiết kiệm hiện tại là bao nhiêu?",
+          "timestamp": "2024-05-07T10:00:00Z"
+        },
+        {
+          "id": "MSG014",
+          "sender": "staff",
+          "senderName": "Staff Four",
+          "content": "Lãi suất tiết kiệm hiện tại là 6.5%/năm cho kỳ hạn 12 tháng.",
+          "timestamp": "2024-05-07T14:30:00Z"
+        }
+      ]
+    },
+    {
+      "id": "TKT009",
+      "customerId": "C009",
+      "customerName": "Ngo Van Hung",
+      "subject": "Giao dịch bị từ chối",
+      "category": "Technical Issue",
+      "priority": "High",
+      "status": "Open",
+      "createdAt": "2024-05-06T16:20:00Z",
+      "updatedAt": "2024-05-06T16:20:00Z",
+      "messages": [
+        {
+          "id": "MSG015",
+          "sender": "customer",
+          "senderName": "Ngo Van Hung",
+          "content": "Giao dịch chuyển tiền của tôi bị từ chối không rõ lý do.",
+          "timestamp": "2024-05-06T16:20:00Z"
+        }
+      ]
+    },
+    {
+      "id": "TKT010",
+      "customerId": "C010",
+      "customerName": "Dang Thi Lan",
+      "subject": "Yêu cầu sao kê",
+      "category": "General Inquiry",
+      "priority": "Low",
+      "status": "Resolved",
+      "createdAt": "2024-05-05T08:30:00Z",
+      "updatedAt": "2024-05-05T09:00:00Z",
+      "messages": [
+        {
+          "id": "MSG016",
+          "sender": "customer",
+          "senderName": "Dang Thi Lan",
+          "content": "Tôi cần sao kê tài khoản 3 tháng gần nhất.",
+          "timestamp": "2024-05-05T08:30:00Z"
+        },
+        {
+          "id": "MSG017",
+          "sender": "staff",
+          "senderName": "Staff Five",
+          "content": "Đã gửi sao kê tài khoản đến email của bạn.",
+          "timestamp": "2024-05-05T09:00:00Z"
+        }
+      ]
+    }
+  ]
+}
+
+
+
+
+
+

@@ -1,0 +1,141 @@
+{
+  "app": {
+    "title": "eBanking Console",
+    "workspace": "Không gian làm việc {{role}}",
+    "logout": "Đăng xuất",
+    "role": "Vai trò",
+    "roles": { "Admin": "Admin", "Manager": "Quản lý", "Staff": "Nhân viên" },
+    "nav": {
+      "dashboard": "Tổng quan",
+      "transactions": "Giao dịch",
+      "customers": "Khách hàng",
+      "accounts": "Tài khoản",
+      "reports": "Báo cáo",
+      "audit": "Kiểm toán & Bảo mật",
+      "staff": "Nhân viên",
+      "loans": "Vay vốn",
+      "tickets": "Hỗ trợ",
+      "logs": "Nhật ký hệ thống",
+      "settings": "Cài đặt"
+    }
+  },
+  "auth": {
+    "title": "Bảng điều khiển eBanking",
+    "username": "Tên đăng nhập",
+    "password": "Mật khẩu",
+    "otp": "OTP",
+    "login": "Đăng nhập",
+    "verifyOtp": "Xác thực OTP",
+    "enterAll": "Vui lòng nhập đầy đủ thông tin",
+    "otpHint": "Nhập OTP 6 chữ số từ ứng dụng.",
+    "invalidOtp": "OTP không hợp lệ",
+    "locked": "Quá số lần cho phép, tài khoản bị khóa tạm thời"
+  },
+  "dashboard": {
+    "metrics": {
+      "customers": "Khách hàng",
+      "accounts": "Tài khoản",
+      "txToday": "Giao dịch hôm nay",
+      "pending": "Chờ xử lý",
+      "suspicious": "Giao dịch nghi vấn",
+      "loansApproved": "Vay đã duyệt",
+      "loansPending": "Vay chờ duyệt",
+      "loansRejected": "Vay bị từ chối"
+    },
+    "chart": "Biểu đồ giao dịch (demo)",
+    "chartDaily": "Giao dịch hàng ngày (7 ngày qua)",
+    "chartAccountTypes": "Phân bố loại tài khoản",
+    "realtime": "Realtime",
+    "recentTransactions": "Giao dịch gần đây",
+    "realtimeTimeline": "Dòng thời gian giao dịch realtime"
+  },
+  "transactions": {
+    "search": "Tra cứu lịch sử",
+    "filters": { "id": "Mã giao dịch", "type": "Loại", "from": "Từ ngày", "to": "Đến ngày" },
+    "realtime": "Bảng realtime",
+    "list": "Danh sách giao dịch",
+    "table": { "id": "Mã", "type": "Loại", "amount": "Số tiền", "status": "Trạng thái", "time": "Thời gian" }
+  },
+  "customers": {
+    "filters": { "name": "Tên", "phone": "Số điện thoại", "status": "Trạng thái", "kyc": "KYC" },
+    "list": "Danh sách khách hàng",
+    "table": { "name": "Tên", "phone": "SĐT", "status": "Trạng thái", "kyc": "KYC" }
+  },
+  "accounts": {
+    "list": "Danh sách tài khoản",
+    "table": { "no": "Số tài khoản", "type": "Loại", "owner": "Chủ sở hữu", "balance": "Số dư", "status": "Trạng thái" }
+  },
+  "reports": {
+    "filters": "Bộ lọc báo cáo",
+    "period": "Kỳ: ngày/tháng/năm",
+    "from": "Từ ngày",
+    "to": "Đến ngày",
+    "generate": "Tạo báo cáo",
+    "result": "Kết quả",
+    "exportCsv": "Xuất CSV",
+    "exportXls": "Xuất Excel",
+    "exportPdf": "Xuất PDF"
+  },
+  "audit": { "title": "Nhật ký hoạt động", "table": { "time": "Thời gian", "user": "Nhân viên", "ip": "IP", "device": "Thiết bị", "action": "Hành động" } },
+  "loans": {
+    "title": "Đơn vay vốn",
+    "search": "Tìm theo khách hàng hoặc mã",
+    "statusAll": "Tất cả",
+    "statusApproved": "Đã duyệt",
+    "statusPending": "Chờ duyệt",
+    "statusRejected": "Từ chối",
+    "list": "Danh sách đơn vay",
+    "table": { "id": "Mã", "customer": "Khách hàng", "amount": "Số tiền", "duration": "Thời hạn", "status": "Trạng thái", "action": "Thao tác" },
+    "view": "Xem",
+    "details": "Chi tiết đơn vay",
+    "customer": "Khách hàng",
+    "amount": "Số tiền",
+    "interestRate": "Lãi suất",
+    "purpose": "Mục đích",
+    "months": "tháng",
+    "approve": "Duyệt",
+    "reject": "Từ chối"
+  },
+  "tickets": {
+    "title": "Hỗ trợ khách hàng",
+    "search": "Tìm theo khách hàng, chủ đề hoặc mã",
+    "statusAll": "Tất cả",
+    "statusOpen": "Mở",
+    "statusInProgress": "Đang xử lý",
+    "statusResolved": "Đã giải quyết",
+    "list": "Danh sách ticket",
+    "table": { "id": "Mã", "customer": "Khách hàng", "subject": "Chủ đề", "category": "Danh mục", "priority": "Độ ưu tiên", "status": "Trạng thái", "action": "Thao tác" },
+    "view": "Xem",
+    "customer": "Khách hàng",
+    "category": "Danh mục",
+    "priority": "Độ ưu tiên",
+    "messages": "Tin nhắn",
+    "reply": "Trả lời",
+    "replyPlaceholder": "Nhập câu trả lời của bạn...",
+    "sendReply": "Gửi trả lời",
+    "replySent": "Đã gửi trả lời thành công"
+  },
+  "logs": {
+    "title": "Nhật ký hệ thống",
+    "search": "Tìm theo người dùng, hành động hoặc mã",
+    "actionAll": "Tất cả hành động",
+    "roleAll": "Tất cả vai trò",
+    "list": "Danh sách nhật ký",
+    "table": { "time": "Thời gian", "user": "Người dùng", "role": "Vai trò", "action": "Hành động", "ip": "Địa chỉ IP", "device": "Thiết bị", "details": "Chi tiết" }
+  },
+  "settings": {
+    "title": "Cài đặt hệ thống",
+    "systemSettings": "Cài đặt hệ thống",
+    "twoFactor": "Bật 2FA",
+    "sessionTimeout": "Thời gian chờ phiên",
+    "auditLogRetention": "Lưu trữ nhật ký",
+    "permissionMatrix": "Ma trận quyền",
+    "module": "Module"
+  },
+  "common": { "notFound": "Không tìm thấy" }
+}
+
+
+
+
+
