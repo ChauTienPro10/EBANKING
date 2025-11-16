@@ -1,31 +1,24 @@
 package com.ebanking.chatbotService.controller;
 
 import com.ebanking.chatbotService.dto.request.QuestionRequest;
-import com.ebanking.chatbotService.dto.response.QuestionResponse;
 import com.ebanking.chatbotService.service.GeminiService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+
 
 @RestController
-@RequestMapping("/gemini")
+@RequestMapping("/chat")
 public class ChatController {
 
-    @Autowired
-    GeminiService geminiService;
+    private final GeminiService geminiService; // Giả định Service của bạn
 
-    @PostMapping("/send-question")
-    public ResponseEntity<QuestionResponse> questionBot(@RequestBody QuestionRequest request) {
-        String rsFromGemini = geminiService.sendMessage(request.getText());
+    // Constructor Injection
+    public ChatController(GeminiService geminiService) {
+        this.geminiService = geminiService;
+    }
 
-        QuestionResponse response = QuestionResponse.builder()
-                .text(rsFromGemini)
-                .time(System.currentTimeMillis())
-                .build();
-
-        return ResponseEntity.ok(response);
+    @PostMapping("/ask")
+    public String askGemini(@RequestBody QuestionRequest request) {
+        return geminiService.generate(request.getText()); // Gọi service để tương tác với Gemini
     }
 }
