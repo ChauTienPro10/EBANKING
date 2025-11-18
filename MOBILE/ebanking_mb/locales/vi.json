@@ -105,6 +105,41 @@
     "faq": "Câu hỏi thường gặp",
     "faq_desc": "Tìm câu trả lời nhanh"
   },
+  "chatbot": {
+    "title": "Chatbot AI",
+    "subtitle": "Trợ lý ngân hàng số",
+    "status_online": "Đang hoạt động",
+    "welcome_title": "Tôi có thể hỗ trợ gì hôm nay?",
+    "welcome_subtitle": "Hãy hỏi về chuyển tiền, thẻ, ưu đãi hoặc bảo mật.",
+    "placeholder": "Nhập câu hỏi của bạn...",
+    "typing": "Trợ lý đang phản hồi...",
+    "empty_state_title": "Cần được hỗ trợ?",
+    "empty_state_description": "Chọn một gợi ý bên dưới hoặc nhập yêu cầu của bạn.",
+    "suggestions": {
+      "transfer": "Chuyển tiền",
+      "card": "Dịch vụ thẻ",
+      "promotion": "Ưu đãi",
+      "limit": "Hạn mức giao dịch",
+      "qr": "Thanh toán QR"
+    },
+    "prompts": {
+      "transfer": "Tôi muốn chuyển tiền liên ngân hàng.",
+      "card": "Tôi cần hỗ trợ về thẻ ghi nợ.",
+      "promotion": "Hiện có ưu đãi nào không?",
+      "limit": "Làm sao để tăng hạn mức chuyển tiền?",
+      "qr": "Hướng dẫn thanh toán bằng mã QR?"
+    },
+    "responses": {
+      "greeting": "Xin chào! Tôi là trợ lý ngân hàng số của bạn.",
+      "helper": "Hãy cho tôi biết nhu cầu, tôi sẽ hướng dẫn chi tiết.",
+      "transfer": "Để chuyển tiền hãy vào Chuyển tiền > chọn tài khoản nguồn > nhập thông tin người nhận và số tiền. Giao dịch liên ngân hàng được xử lý ngay và miễn phí 10 giao dịch đầu mỗi tháng.",
+      "card": "Bạn có thể quản lý thẻ tại Menu > Tài khoản & Thẻ. Để khóa thẻ tạm thời, mở chi tiết thẻ, chọn Cài đặt thẻ và bật \"Khóa thẻ\".",
+      "promotion": "Hiện có hoàn tiền 3% cho chi tiêu online vào thứ Sáu và trả góp 0% tại các đối tác. Vào Menu > Ưu đãi để xem chi tiết.",
+      "limit": "Hạn mức phụ thuộc mức độ xác thực. Tài khoản đã eKYC đầy đủ chuyển tối đa 500.000.000 VND/ngày. Để nâng hạn mức hãy vào Cài đặt > Bảo mật > Tăng hạn mức.",
+      "qr": "Nhấn nút QR ở thanh điều hướng hoặc Trang chủ > Quét QR, hướng camera vào mã đơn vị chấp nhận, kiểm tra thông tin và xác nhận thanh toán.",
+      "default": "Cảm ơn bạn. Tôi sẽ chuyển yêu cầu này đến chuyên viên và bạn sẽ nhận phản hồi sớm."
+    }
+  },
   "ekyc": {
     "title": "Xác thực eKYC",
     "error_title": "Lỗi xác thực",

@@ -88,6 +88,41 @@
     "faq": "FAQ",
     "faq_desc": "Find quick answers"
   },
+  "chatbot": {
+    "title": "AI Chatbot",
+    "subtitle": "Virtual banking assistant",
+    "status_online": "Online",
+    "welcome_title": "How can I help you today?",
+    "welcome_subtitle": "Ask about transfers, cards, promotions or security.",
+    "placeholder": "Type your question...",
+    "typing": "Assistant is typing...",
+    "empty_state_title": "Need support?",
+    "empty_state_description": "Choose a suggestion below or type your request.",
+    "suggestions": {
+      "transfer": "Transfer money",
+      "card": "Card services",
+      "promotion": "Promotions",
+      "limit": "Spending limit",
+      "qr": "QR payment"
+    },
+    "prompts": {
+      "transfer": "How do I transfer money to another bank?",
+      "card": "I need help with my debit card.",
+      "promotion": "What promotions are available now?",
+      "limit": "How can I increase my transfer limit?",
+      "qr": "How to pay by scanning QR?"
+    },
+    "responses": {
+      "greeting": "Hi! I'm your virtual banking assistant.",
+      "helper": "Let me know what you need and I'll guide you step by step.",
+      "transfer": "To transfer money, go to Transfer > choose the source account > enter beneficiary details and amount. Interbank transfers are processed instantly with zero fees for your first 10 transactions each month.",
+      "card": "You can manage cards via Menu > Account & Card. To lock a card temporarily, open the card details, tap Card Settings and switch on \"Lock card\".",
+      "promotion": "Current highlights: 3% cashback for online purchases every Friday and 0% installment plans at partner stores. Visit Menu > Promotions for more.",
+      "limit": "Transfer limits depend on your verification level. Fully verified accounts can send up to 500,000,000 VND per day. To request a higher limit, go to Settings > Security > Increase limit.",
+      "qr": "Tap the QR button in the navigation bar or Home > Scan QR, point the camera at the merchant code, review the details and confirm payment.",
+      "default": "Thanks for your question. I'm forwarding it to a specialist and you'll receive a response shortly."
+    }
+  },
   "ekyc": {
     "title": "eKYC Verification",
     "error_title": "Verification Error",

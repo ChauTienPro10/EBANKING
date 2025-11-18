@@ -52,6 +52,10 @@ const SupportScreen: React.FC = () => {
   ];
 
   const handleSupportOption = (option: any) => {
+    if (option.id === 'chat') {
+      navigation.navigate('Chatbot' as never);
+      return;
+    }
     console.log('Support option selected:', option);
   };
 
