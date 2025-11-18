@@ -13,6 +13,7 @@
       "reports": "Báo cáo",
       "audit": "Kiểm toán & Bảo mật",
       "staff": "Nhân viên",
+      "notifications": "Thông báo",
       "loans": "Vay vốn",
       "tickets": "Hỗ trợ",
       "logs": "Nhật ký hệ thống",
@@ -131,6 +132,111 @@
     "auditLogRetention": "Lưu trữ nhật ký",
     "permissionMatrix": "Ma trận quyền",
     "module": "Module"
+  },
+  "notifications": {
+    "tabs": { "send": "Gửi thông báo", "history": "Lịch sử thông báo" },
+    "receiver": {
+      "title": "Chọn người nhận",
+      "single": "Một người dùng",
+      "multi": "Nhiều người dùng",
+      "broadcast": "Broadcast toàn hệ thống",
+      "broadcastDisabled": "(Không áp dụng cho vai trò Staff)",
+      "searchPlaceholder": "Tìm theo tên, điện thoại hoặc email",
+      "noResults": "Không tìm thấy người dùng",
+      "select": "Chọn",
+      "selected": "Đã chọn",
+      "selectedUsers": "Đã chọn {{count}} người"
+    },
+    "form": {
+      "title": "Nội dung thông báo",
+      "fields": {
+        "title": "Tiêu đề",
+        "body": "Nội dung",
+        "image": "Ảnh (tùy chọn)",
+        "link": "Liên kết (tùy chọn)",
+        "priority": "Độ ưu tiên",
+        "schedule": "Thời gian gửi"
+      },
+      "placeholders": {
+        "title": "Nhập tiêu đề",
+        "body": "Nhập nội dung thông báo",
+        "link": "https://..."
+      },
+      "priority": { "low": "Thấp", "normal": "Bình thường", "high": "Cao" }
+    },
+    "preview": {
+      "panelTitle": "Xem trước",
+      "modalTitle": "Xem trước thông báo",
+      "deviceHeader": "Hiển thị trên điện thoại",
+      "titlePlaceholder": "Tiêu đề thông báo",
+      "bodyPlaceholder": "Nội dung hiển thị",
+      "cta": "Mở ứng dụng"
+    },
+    "actions": {
+      "preview": "Xem trước",
+      "send": "Gửi thông báo",
+      "sending": "Đang gửi...",
+      "close": "Đóng",
+      "cancel": "Huỷ",
+      "confirmSend": "Xác nhận gửi"
+    },
+    "confirmation": {
+      "title": "Xác nhận thông báo",
+      "notification": "Thông báo",
+      "priority": "Độ ưu tiên",
+      "receivers": "Người nhận",
+      "schedule": "Thời gian",
+      "sendNow": "Gửi ngay",
+      "broadcastAll": "Gửi toàn bộ khách hàng",
+      "receiverCount": "{{count}} người"
+    },
+    "history": {
+      "title": "Lịch sử thông báo",
+      "filters": {
+        "staffAll": "Tất cả nhân viên",
+        "statusAll": "Tất cả trạng thái",
+        "keyword": "Tìm theo tiêu đề"
+      },
+      "status": { "success": "Thành công", "failed": "Thất bại", "scheduled": "Đã lên lịch" },
+      "loading": "Đang tải lịch sử...",
+      "empty": "Chưa có thông báo nào",
+      "pagination": {
+        "info": "Trang {{page}} / {{totalPages}} • {{total}} bản ghi",
+        "prev": "Trước",
+        "next": "Sau"
+      },
+      "table": {
+        "time": "Thời gian",
+        "staff": "Nhân viên",
+        "title": "Tiêu đề",
+        "receivers": "Số người nhận",
+        "status": "Trạng thái",
+        "action": "Thao tác",
+        "view": "Xem chi tiết"
+      }
+    },
+    "detail": {
+      "sentBy": "{{staff}} • {{time}}",
+      "body": "Nội dung",
+      "image": "Hình ảnh",
+      "link": "Liên kết",
+      "priority": "Ưu tiên",
+      "schedule": "Thời gian",
+      "sendNow": "Gửi ngay",
+      "receivers": "Danh sách người nhận",
+      "table": { "receiver": "Người nhận", "status": "Trạng thái giao nhận" },
+      "delivery": { "delivered": "Đã gửi", "failed": "Thất bại", "pending": "Đang chờ" }
+    },
+    "errors": {
+      "titleRequired": "Vui lòng nhập tiêu đề",
+      "bodyRequired": "Vui lòng nhập nội dung",
+      "receiversRequired": "Hãy chọn ít nhất một người nhận",
+      "scheduleFuture": "Thời gian gửi phải ở tương lai"
+    },
+    "toast": {
+      "success": "Đã lên lịch gửi thông báo",
+      "error": "Không thể gửi thông báo"
+    }
   },
   "common": { "notFound": "Không tìm thấy" }
 }
