@@ -3,9 +3,32 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, CheckCircle, AlertCircle, Info, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+export interface SimpleToastProps {
+  message: string;
+  onDismiss: () => void;
+  duration?: number;
+}
+
+export function Toast({
+  message,
+  onDismiss,
+  duration = 3000,
+}: SimpleToastProps) {
+  useEffect(() => {
+    const timer = setTimeout(onDismiss, duration);
+    return () => clearTimeout(timer);
+  }, [duration, onDismiss]);
+
+  return (
+    <div className="fixed right-4 top-4 z-50 rounded-md bg-emerald-600 px-4 py-2 text-sm text-white shadow-lg">
+      {message}
+    </div>
+  );
+}
+
 export type ToastType = "success" | "error" | "info" | "warning";
 
-export interface Toast {
+export interface ToastMessage {
   id: string;
   type: ToastType;
   title: string;
@@ -14,7 +37,7 @@ export interface Toast {
 }
 
 interface ToastProps {
-  toast: Toast;
+  toast: ToastMessage;
   onClose: () => void;
 }
 
@@ -27,10 +50,13 @@ function ToastItem({ toast, onClose }: ToastProps) {
   };
 
   const colors = {
-    success: "bg-green-50 border-green-200 text-green-800 dark:bg-green-950 dark:border-green-800 dark:text-green-200",
-    error: "bg-red-50 border-red-200 text-red-800 dark:bg-red-950 dark:border-red-800 dark:text-red-200",
+    success:
+      "bg-green-50 border-green-200 text-green-800 dark:bg-green-950 dark:border-green-800 dark:text-green-200",
+    error:
+      "bg-red-50 border-red-200 text-red-800 dark:bg-red-950 dark:border-red-800 dark:text-red-200",
     info: "bg-blue-50 border-blue-200 text-blue-800 dark:bg-blue-950 dark:border-blue-800 dark:text-blue-200",
-    warning: "bg-amber-50 border-amber-200 text-amber-800 dark:bg-amber-950 dark:border-amber-800 dark:text-amber-200",
+    warning:
+      "bg-amber-50 border-amber-200 text-amber-800 dark:bg-amber-950 dark:border-amber-800 dark:text-amber-200",
   };
 
   const Icon = icons[toast.type];
@@ -52,14 +78,16 @@ function ToastItem({ toast, onClose }: ToastProps) {
         colors[toast.type]
       )}
     >
-      <Icon className="h-5 w-5 flex-shrink-0" />
+      <Icon className="h-5 w-5 shrink-0" />
       <div className="flex-1">
         <p className="font-medium">{toast.title}</p>
-        {toast.description && <p className="text-sm mt-1 opacity-90">{toast.description}</p>}
+        {toast.description && (
+          <p className="text-sm mt-1 opacity-90">{toast.description}</p>
+        )}
       </div>
       <button
         onClick={onClose}
-        className="flex-shrink-0 rounded-md p-1 hover:bg-black/10 dark:hover:bg-white/10"
+        className="shrink-0 rounded-md p-1 hover:bg-black/10 dark:hover:bg-white/10"
       >
         <X className="h-4 w-4" />
       </button>
@@ -68,19 +96,19 @@ function ToastItem({ toast, onClose }: ToastProps) {
 }
 
 let toastIdCounter = 0;
-const toastListeners: Array<(toast: Toast) => void> = [];
+const toastListeners: Array<(toast: ToastMessage) => void> = [];
 
-export function toast(toast: Omit<Toast, "id">) {
+export function toast(toast: Omit<ToastMessage, "id">) {
   const id = `toast-${++toastIdCounter}`;
   const newToast = { ...toast, id };
   toastListeners.forEach((listener) => listener(newToast));
 }
 
 export function ToastContainer() {
-  const [toasts, setToasts] = useState<Toast[]>([]);
+  const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
   useEffect(() => {
-    const listener = (toast: Toast) => {
+    const listener = (toast: ToastMessage) => {
       setToasts((prev) => [...prev, toast]);
     };
     toastListeners.push(listener);
@@ -98,15 +126,13 @@ export function ToastContainer() {
     <div className="fixed top-4 right-4 z-50 flex flex-col gap-2 max-w-md">
       <AnimatePresence>
         {toasts.map((toast) => (
-          <ToastItem key={toast.id} toast={toast} onClose={() => removeToast(toast.id)} />
+          <ToastItem
+            key={toast.id}
+            toast={toast}
+            onClose={() => removeToast(toast.id)}
+          />
         ))}
       </AnimatePresence>
     </div>
   );
 }
-
-
-
-
-
-

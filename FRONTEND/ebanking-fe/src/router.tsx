@@ -8,10 +8,10 @@ import { CustomersPage } from "./sections/pages/CustomersPage";
 import { AccountsPage } from "./sections/pages/AccountsPage";
 import { ReportsPage } from "./sections/pages/ReportsPage";
 import { AuditPage } from "./sections/pages/AuditPage";
-import { LoansPage } from "./sections/pages/LoansPage";
 import { TicketsPage } from "./sections/pages/TicketsPage";
 import { LogsPage } from "./sections/pages/LogsPage";
 import { SettingsPage } from "./sections/pages/SettingsPage";
+import { NotificationsPage } from "./sections/pages/NotificationsPage";
 import { LoginPage } from "./sections/pages/LoginPage";
 import { NotFoundPage } from "./sections/pages/NotFoundPage";
 
@@ -32,7 +32,7 @@ export const router = createBrowserRouter([
           { path: "accounts", element: <AccountsPage /> },
           { path: "reports", element: <ReportsPage /> },
           { path: "audit", element: <AuditPage /> },
-          { path: "loans", element: <LoansPage /> },
+          { path: "notifications", element: <NotificationsPage /> },
           { path: "tickets", element: <TicketsPage /> },
           { path: "logs", element: <LogsPage /> },
           { path: "settings", element: <SettingsPage /> },

@@ -13,6 +13,7 @@
       "reports": "Reports",
       "audit": "Audit & Security",
       "staff": "Staff",
+      "notifications": "Notifications",
       "loans": "Loans",
       "tickets": "Support Tickets",
       "logs": "System Logs",
@@ -131,6 +132,111 @@
     "auditLogRetention": "Audit Log Retention",
     "permissionMatrix": "Permission Matrix",
     "module": "Module"
+  },
+  "notifications": {
+    "tabs": { "send": "Send Notification", "history": "Notification History" },
+    "receiver": {
+      "title": "Receiver Selector",
+      "single": "Single user",
+      "multi": "Multiple users",
+      "broadcast": "Broadcast",
+      "broadcastDisabled": "(Not available for Staff)",
+      "searchPlaceholder": "Search by name, phone or email",
+      "noResults": "No users found",
+      "select": "Select",
+      "selected": "Selected",
+      "selectedUsers": "{{count}} selected"
+    },
+    "form": {
+      "title": "Message Form",
+      "fields": {
+        "title": "Title",
+        "body": "Body",
+        "image": "Image (optional)",
+        "link": "Deep link (optional)",
+        "priority": "Priority",
+        "schedule": "Schedule time"
+      },
+      "placeholders": {
+        "title": "Enter notification title",
+        "body": "Enter message content",
+        "link": "https://..."
+      },
+      "priority": { "low": "Low", "normal": "Normal", "high": "High" }
+    },
+    "preview": {
+      "panelTitle": "Preview",
+      "modalTitle": "Notification preview",
+      "deviceHeader": "Mobile preview",
+      "titlePlaceholder": "Notification title",
+      "bodyPlaceholder": "Notification body preview",
+      "cta": "Open app"
+    },
+    "actions": {
+      "preview": "Preview",
+      "send": "Send notification",
+      "sending": "Sending...",
+      "close": "Close",
+      "cancel": "Cancel",
+      "confirmSend": "Confirm send"
+    },
+    "confirmation": {
+      "title": "Confirm notification",
+      "notification": "Notification",
+      "priority": "Priority",
+      "receivers": "Receivers",
+      "schedule": "Schedule",
+      "sendNow": "Send now",
+      "broadcastAll": "Broadcast to all customers",
+      "receiverCount": "{{count}} recipient(s)"
+    },
+    "history": {
+      "title": "Notification history",
+      "filters": {
+        "staffAll": "All staff",
+        "statusAll": "All status",
+        "keyword": "Search title"
+      },
+      "status": { "success": "Success", "failed": "Failed", "scheduled": "Scheduled" },
+      "loading": "Loading history...",
+      "empty": "No notifications found",
+      "pagination": {
+        "info": "Page {{page}} / {{totalPages}} • {{total}} items",
+        "prev": "Previous",
+        "next": "Next"
+      },
+      "table": {
+        "time": "Time sent",
+        "staff": "Staff",
+        "title": "Title",
+        "receivers": "Receivers",
+        "status": "Status",
+        "action": "Action",
+        "view": "View details"
+      }
+    },
+    "detail": {
+      "sentBy": "{{staff}} • {{time}}",
+      "body": "Body",
+      "image": "Image",
+      "link": "Link",
+      "priority": "Priority",
+      "schedule": "Schedule",
+      "sendNow": "Send now",
+      "receivers": "Receivers",
+      "table": { "receiver": "Receiver", "status": "Delivery status" },
+      "delivery": { "delivered": "Delivered", "failed": "Failed", "pending": "Pending" }
+    },
+    "errors": {
+      "titleRequired": "Title is required",
+      "bodyRequired": "Body is required",
+      "receiversRequired": "Please select at least one receiver",
+      "scheduleFuture": "Schedule time must be in the future"
+    },
+    "toast": {
+      "success": "Notification queued successfully",
+      "error": "Unable to send notification"
+    }
   },
   "common": { "notFound": "Not Found" }
 }

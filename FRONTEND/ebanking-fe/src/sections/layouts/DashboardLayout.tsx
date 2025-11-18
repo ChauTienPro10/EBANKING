@@ -11,10 +11,10 @@ import {
   LogOut,
   Sun,
   Moon,
-  Banknote,
   MessageSquare,
   FileText,
   Settings,
+  Bell,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -22,6 +22,13 @@ import { useTranslation } from "react-i18next";
 type Role = "Admin" | "Manager" | "Staff";
 
 const NAV_ITEMS = [
+  {
+    to: "/app/notifications",
+    label: "Notifications",
+    translationKey: "notifications",
+    icon: Bell,
+    roles: ["Admin", "Manager", "Staff"] as Role[],
+  },
   {
     to: "/app",
     label: "Dashboard",
@@ -70,13 +77,6 @@ const NAV_ITEMS = [
     translationKey: "staff",
     icon: Users,
     roles: ["Admin", "Manager"] as Role[],
-  },
-  {
-    to: "/app/loans",
-    label: "Loans",
-    translationKey: "loans",
-    icon: Banknote,
-    roles: ["Admin", "Manager", "Staff"] as Role[],
   },
   {
     to: "/app/tickets",
@@ -135,9 +135,9 @@ export function DashboardLayout() {
             value={role}
             onChange={(e) => setRole(e.target.value as Role)}
           >
-            <option>{t("app.roles.Admin")}</option>
-            <option>{t("app.roles.Manager")}</option>
-            <option>{t("app.roles.Staff")}</option>
+            <option value="Admin">{t("app.roles.Admin")}</option>
+            <option value="Manager">{t("app.roles.Manager")}</option>
+            <option value="Staff">{t("app.roles.Staff")}</option>
           </select>
         </div>
         <nav className="space-y-1">

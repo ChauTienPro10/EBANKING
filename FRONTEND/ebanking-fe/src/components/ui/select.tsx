@@ -1,12 +1,19 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-export interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
-  children: React.ReactNode;
+type Option = { value: string; label: string } & Omit<
+  React.OptionHTMLAttributes<HTMLOptionElement>,
+  "value" | "label"
+>;
+
+export interface SelectProps
+  extends React.SelectHTMLAttributes<HTMLSelectElement> {
+  options?: Option[];
+  children?: React.ReactNode;
 }
 
 export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
-  ({ className, children, ...props }, ref) => {
+  ({ className, options, children, ...props }, ref) => {
     return (
       <select
         className={cn(
@@ -18,12 +25,19 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
         ref={ref}
         {...props}
       >
-        {children}
+        {options
+          ? options.map(({ value, label, ...optionProps }) => (
+              <option key={value} value={value} {...optionProps}>
+                {label}
+              </option>
+            ))
+          : children}
       </select>
     );
   }
 );
 Select.displayName = "Select";
+
 
 
 

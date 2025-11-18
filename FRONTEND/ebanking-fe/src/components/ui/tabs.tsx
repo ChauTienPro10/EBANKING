@@ -6,27 +6,56 @@ interface TabsContextValue {
   onValueChange: (value: string) => void;
 }
 
-const TabsContext = React.createContext<TabsContextValue | undefined>(undefined);
+const TabsContext = React.createContext<TabsContextValue | undefined>(
+  undefined
+);
+
+export interface TabsProps {
+  defaultValue?: string;
+  value?: string;
+  onValueChange?: (value: string) => void;
+  children: React.ReactNode;
+  className?: string;
+}
 
 export function Tabs({
+  defaultValue,
   value,
   onValueChange,
   children,
   className,
-}: {
-  value: string;
-  onValueChange: (value: string) => void;
-  children: React.ReactNode;
-  className?: string;
-}) {
+}: TabsProps) {
+  const [internalValue, setInternalValue] = React.useState(defaultValue ?? "");
+  const currentValue = value ?? internalValue;
+
+  const handleChange = (val: string) => {
+    if (onValueChange) {
+      onValueChange(val);
+    } else {
+      setInternalValue(val);
+    }
+  };
+
+  React.useEffect(() => {
+    if (value === undefined && defaultValue !== undefined) {
+      setInternalValue(defaultValue);
+    }
+  }, [defaultValue, value]);
+
   return (
-    <TabsContext.Provider value={{ value, onValueChange }}>
+    <TabsContext.Provider
+      value={{ value: currentValue, onValueChange: handleChange }}
+    >
       <div className={cn("w-full", className)}>{children}</div>
     </TabsContext.Provider>
   );
 }
 
-export function TabsList({ className, children, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+export function TabsList({
+  className,
+  children,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
       className={cn(
@@ -89,9 +118,3 @@ export function TabsContent({
     </div>
   );
 }
-
-
-
-
-
-
