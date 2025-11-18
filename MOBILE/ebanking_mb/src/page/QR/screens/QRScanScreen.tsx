@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   View,
@@ -84,6 +85,18 @@ const QRScanScreen: React.FC = () => {
   useEffect(() => {
     loadInitialPermission();
   }, [loadInitialPermission]);
+=======
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import Icon from 'react-native-vector-icons/Feather';
+import { launchImageLibrary } from 'react-native-image-picker';
+import { ScannerFrame } from '../components';
+import QRColors from '../styles/colors';
+import TextStyles from '../../../constants/textStyle';
+
+const QRScanScreen: React.FC = () => {
+  const [flashOn, setFlashOn] = useState(false);
+>>>>>>> 0dab3c0 (feat: completed QR Scanner, QR Payment, QR Receive screens.)
 
   const pickImage = async () => {
     try {
@@ -100,6 +113,7 @@ const QRScanScreen: React.FC = () => {
     }
   };
 
+<<<<<<< HEAD
   const codeScanner = useCodeScanner({
     codeTypes: ['qr'],
     onCodeScanned: (codes: Code[]) => {
@@ -184,6 +198,15 @@ const QRScanScreen: React.FC = () => {
         >
           <Icon name="arrow-left" size={22} color={QRColors.textWhite} />
         </TouchableOpacity>
+=======
+  return (
+    <View style={styles.container}>
+      {/* Camera Feed Simulation */}
+      <View style={styles.cameraBackground} />
+
+      {/* Header */}
+      <View style={styles.header}>
+>>>>>>> 0dab3c0 (feat: completed QR Scanner, QR Payment, QR Receive screens.)
         <View style={styles.headerContent}>
           <Text style={styles.title}>Quét mã QR</Text>
           <Text style={styles.subtitle}>Đặt mã vào giữa khung để quét</Text>
@@ -232,11 +255,24 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#000',
   },
+<<<<<<< HEAD
+=======
+  cameraBackground: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: '#1f2937',
+    opacity: 0.9,
+  },
+>>>>>>> 0dab3c0 (feat: completed QR Scanner, QR Payment, QR Receive screens.)
   header: {
     paddingTop: 16,
     paddingBottom: 20,
     paddingHorizontal: 20,
     zIndex: 10,
+<<<<<<< HEAD
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -255,6 +291,11 @@ const styles = StyleSheet.create({
   headerContent: {
     alignItems: 'center',
     paddingHorizontal: 48,
+=======
+  },
+  headerContent: {
+    alignItems: 'center',
+>>>>>>> 0dab3c0 (feat: completed QR Scanner, QR Payment, QR Receive screens.)
   },
   title: {
     ...TextStyles.systemBold_18,
@@ -299,6 +340,7 @@ const styles = StyleSheet.create({
     ...TextStyles.systemLight_12,
     color: QRColors.textWhite,
   },
+<<<<<<< HEAD
   permissionContainer: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: '#000',
@@ -329,6 +371,8 @@ const styles = StyleSheet.create({
     ...TextStyles.systemMedium_14,
     color: QRColors.textWhite,
   },
+=======
+>>>>>>> 0dab3c0 (feat: completed QR Scanner, QR Payment, QR Receive screens.)
 });
 
 export default QRScanScreen;

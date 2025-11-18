@@ -20,6 +20,7 @@ import GText from '../../../components/GText';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Colors from '../../../constants/color';
 import { useQRPayment } from '../hooks';
+<<<<<<< HEAD
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../../navigation/types';
@@ -28,6 +29,10 @@ type QRNavigation = StackNavigationProp<RootStackParamList>;
 
 const QRPaymentScreen: React.FC = () => {
   const navigation = useNavigation<QRNavigation>();
+=======
+
+const QRPaymentScreen: React.FC = () => {
+>>>>>>> 0dab3c0 (feat: completed QR Scanner, QR Payment, QR Receive screens.)
   const {
     isLoading,
     error: apiError,
@@ -164,8 +169,11 @@ const QRPaymentScreen: React.FC = () => {
         subtitle="Đưa mã cho thu ngân để thanh toán"
         rightIcon="refresh-cw"
         onRightPress={handleRefresh}
+<<<<<<< HEAD
         showBack
         onBack={() => navigation.goBack()}
+=======
+>>>>>>> 0dab3c0 (feat: completed QR Scanner, QR Payment, QR Receive screens.)
       />
 
       {/* Content */}
