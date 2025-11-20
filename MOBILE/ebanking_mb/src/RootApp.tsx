@@ -18,6 +18,7 @@ import { requestNotificationPermission, requestPermissionIOS } from './utils/fcm
 import { SaveTokenDto } from './utils/fcmService';
 import DeviceInfo from 'react-native-device-info';
 import FlashMessage from 'react-native-flash-message';
+import { HOST_SERVER } from './constants/api';
 
 declare const global: any;
 global.TextEncoder = TextEncoder;
@@ -28,7 +29,7 @@ import SockJS from 'sockjs-client/dist/sockjs';
 import { Stomp } from '@stomp/stompjs';
 import { useListenNotiFromFirebase } from './hooks/useListenNotiFromFirebase';
 
-const SOCKET_URL = 'http://10.20.2.91:8006/ws';
+const SOCKET_URL = `http://${HOST_SERVER}:8006/ws`;
 
 const RootApp: React.FC = () => {
   const isDarkMode = useColorScheme() === 'dark';
@@ -115,7 +116,7 @@ const RootApp: React.FC = () => {
           backgroundColor="transparent"
         />
         <NavigationContainer ref={navigationRef}> {/* ✅ Important */}
-          {isLoggedIn ? <MainStack /> : <MainStack />}
+          {isLoggedIn ? <MainStack /> : <AuthNavigator />}
         </NavigationContainer>
       </View>
       <Toast />

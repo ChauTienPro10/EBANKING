@@ -4,7 +4,20 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c9d3feb1-1ff3-4faa-881a-4e43b0a55be0" name="Changes" comment="" />
+    <list default="true" id="c9d3feb1-1ff3-4faa-881a-4e43b0a55be0" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../MOBILE/ebanking_mb/locales/en.json" beforeDir="false" afterPath="$PROJECT_DIR$/../MOBILE/ebanking_mb/locales/en.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../MOBILE/ebanking_mb/locales/vi.json" beforeDir="false" afterPath="$PROJECT_DIR$/../MOBILE/ebanking_mb/locales/vi.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../MOBILE/ebanking_mb/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/../MOBILE/ebanking_mb/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../MOBILE/ebanking_mb/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../MOBILE/ebanking_mb/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../MOBILE/ebanking_mb/src/RootApp.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../MOBILE/ebanking_mb/src/RootApp.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../MOBILE/ebanking_mb/src/constants/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../MOBILE/ebanking_mb/src/constants/api.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../MOBILE/ebanking_mb/src/page/QR/screens/QRPaymentScreen.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../MOBILE/ebanking_mb/src/page/QR/screens/QRPaymentScreen.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../MOBILE/ebanking_mb/src/page/QR/screens/QRReceiveScreen.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../MOBILE/ebanking_mb/src/page/QR/screens/QRReceiveScreen.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../MOBILE/ebanking_mb/src/page/QR/screens/QRScanScreen.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../MOBILE/ebanking_mb/src/page/QR/screens/QRScanScreen.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../MOBILE/ebanking_mb/src/page/profile/ProfileScreen.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../MOBILE/ebanking_mb/src/page/profile/ProfileScreen.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../MOBILE/ebanking_mb/src/page/profile/components/PersonalInfoSection.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../MOBILE/ebanking_mb/src/page/profile/components/PersonalInfoSection.tsx" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -57,62 +70,63 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.AiServiceApplication.executor": "Run",
-    "Application.AuthApplication.executor": "Debug",
-    "Application.EmailServiceApplication.executor": "Run",
-    "Application.FirebaseServiceApplication.executor": "Run",
-    "Application.GatewayApplication.executor": "Run",
-    "Application.TransactionServiceApplication.executor": "Debug",
-    "Application.UserServiceApplication.executor": "Debug",
-    "Application.UserServicesApplication.executor": "Run",
-    "Application.com.example.auth.AuthApplication.executor": "Run",
-    "Maven.auth [clean].executor": "Run",
-    "Maven.auth [compile].executor": "Run",
-    "Maven.auth [install].executor": "Run",
-    "Maven.emailService [clean].executor": "Run",
-    "Maven.emailService [compile].executor": "Run",
-    "Maven.emailService [install].executor": "Run",
-    "Maven.gateway [clean].executor": "Run",
-    "Maven.gateway [compile].executor": "Run",
-    "Maven.gateway [install].executor": "Run",
-    "Maven.transactionService [compile].executor": "Run",
-    "Maven.userService [clean].executor": "Run",
-    "Maven.userService [compile].executor": "Run",
-    "Maven.userService [install].executor": "Run",
-    "Maven.userServices [clean].executor": "Run",
-    "Maven.userServices [compile].executor": "Run",
-    "Maven.userServices [install].executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "Spring Boot.EkycServiceApplication.executor": "Run",
-    "git-widget-placeholder": "develop",
-    "ignore.virus.scanning.warn.message": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/NC/Desktop/DATN/EBANKING/BACKEND",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Libraries",
-    "project.structure.proportion": "0.15527344",
-    "project.structure.side.proportion": "0.2",
-    "run.code.analysis.last.selected.profile": "pProject Default",
-    "run.configurations.included.in.services": "true",
-    "settings.editor.selected.configurable": "AtomSelectConfig",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.AiServiceApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Application.AuthApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Application.EmailServiceApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Application.FirebaseServiceApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Application.GatewayApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Application.TransactionServiceApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Application.UserServiceApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Application.UserServicesApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Application.com.example.auth.AuthApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Maven.auth [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.auth [compile].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.auth [install].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.emailService [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.emailService [compile].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.emailService [install].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.firebaseService [compile].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.gateway [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.gateway [compile].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.gateway [install].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.transactionService [compile].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.userService [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.userService [compile].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.userService [install].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.userServices [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.userServices [compile].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.userServices [install].executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;Spring Boot.EkycServiceApplication.executor&quot;: &quot;Run&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;develop&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/NC/Desktop/DATN/EBANKING/BACKEND&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Libraries&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15527344&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
+    &quot;run.configurations.included.in.services&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;AtomSelectConfig&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\chaud\OneDrive\Desktop\DATN\BACKEND\gateway\src\main\java\com\example\gateway\dto" />
@@ -134,19 +148,8 @@
         <option value="SpringBootApplicationConfigurationType" />
       </set>
     </option>
-    <option name="configurationStatuses">
-      <map>
-        <entry key="SpringBootApplicationConfigurationType">
-          <value>
-            <map>
-              <entry key="EkycServiceApplication" value="STOPPED" />
-            </map>
-          </value>
-        </entry>
-      </map>
-    </option>
   </component>
-  <component name="RunManager" selected="Application.AiServiceApplication">
+  <component name="RunManager" selected="Application.UserServiceApplication">
     <configuration name="AiServiceApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.ebanking.AIService.AiServiceApplication" />
       <module name="AIService" />
@@ -212,6 +215,15 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration default="true" type="JetRunConfigurationType">
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <option name="filePath" />
+      <method v="2" />
+    </configuration>
     <configuration name="AiServiceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <module name="AIService" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="com.ebanking.AIService.AiServiceApplication" />
@@ -270,11 +282,11 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.AuthApplication" />
-        <item itemvalue="Application.TransactionServiceApplication" />
         <item itemvalue="Application.UserServiceApplication" />
-        <item itemvalue="Application.AiServiceApplication" />
+        <item itemvalue="Application.TransactionServiceApplication" />
+        <item itemvalue="Application.AuthApplication" />
         <item itemvalue="Application.FirebaseServiceApplication" />
+        <item itemvalue="Application.AiServiceApplication" />
       </list>
     </recent_temporary>
   </component>
