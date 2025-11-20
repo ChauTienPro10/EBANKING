@@ -1,6 +1,8 @@
 import { API_URL } from '@env';
 
-export const BASE_URL = 'http://10.0.27.242:8000/';
+export const HOST_SERVER = '192.168.1.8';
+
+export const BASE_URL = 'http://192.168.1.8:8000/';
 
 export const AUTH_SERVICE = BASE_URL + 'authService';
 
