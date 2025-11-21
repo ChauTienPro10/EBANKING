@@ -1,6 +1,12 @@
 // RootApp.tsx
 import React, { useEffect } from 'react';
-import { View, StatusBar, useColorScheme, StyleSheet, Platform } from 'react-native';
+import {
+  View,
+  StatusBar,
+  useColorScheme,
+  StyleSheet,
+  Platform,
+} from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
 import Toast from 'react-native-toast-message';
@@ -14,7 +20,10 @@ import { fetchAccountTransInfo } from './store/fetchAPI/AccountFetch';
 import { fetchUserInfo } from './store/fetchAPI/UserInfoFetch';
 import { TextEncoder, TextDecoder } from 'text-encoding';
 import { navigationRef } from './navigation/navigate';
-import { requestNotificationPermission, requestPermissionIOS } from './utils/fcmService';
+import {
+  requestNotificationPermission,
+  requestPermissionIOS,
+} from './utils/fcmService';
 import { SaveTokenDto } from './utils/fcmService';
 import DeviceInfo from 'react-native-device-info';
 import FlashMessage from 'react-native-flash-message';
@@ -34,7 +43,9 @@ const SOCKET_URL = `http://${HOST_SERVER}:8006/ws`;
 const RootApp: React.FC = () => {
   const isDarkMode = useColorScheme() === 'dark';
   const isLoggedIn = useSelector((state: RootState) => state.app.isLoggedIn);
-  const loginResponse = useSelector((state: RootState) => state.app.loginResponse);
+  const loginResponse = useSelector(
+    (state: RootState) => state.app.loginResponse,
+  );
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
@@ -44,7 +55,7 @@ const RootApp: React.FC = () => {
           userId: 0,
           username: 'guest',
           deviceId: (await DeviceInfo.getUniqueId()).toString(),
-          token: "",
+          token: '',
         };
         await requestNotificationPermission(payload);
       } else if (Platform.OS === 'ios') {
@@ -54,37 +65,43 @@ const RootApp: React.FC = () => {
     requestPermissions();
   }, []);
 
-
   useEffect(() => {
     if (loginResponse) {
       const stompClient = Stomp.over(() => new SockJS(SOCKET_URL));
-      stompClient.debug = (str) => console.log('[STOMP]', str);
+      stompClient.debug = str => console.log('[STOMP]', str);
 
       stompClient.connect(
         {},
         (frame: any) => {
           console.log('STOMP connected:', frame);
 
-          stompClient.subscribe('/topic/trans-subscribe/' + loginResponse.username, (message) => {
-            console.log('Received:', message.body);
-            const transaction = JSON.parse(message.body);
+          stompClient.subscribe(
+            '/topic/trans-subscribe/' + loginResponse.username,
+            message => {
+              console.log('Received:', message.body);
+              const transaction = JSON.parse(message.body);
 
-            if (navigationRef.isReady()) {
-              navigationRef.navigate('TransactionSuccess', {
-                amount: transaction.amount.toString(),
-                transactionId: transaction.transactionId.toString(),
-                date: transaction.transactionAt,
-                receiver: transaction.receiverAccountNumber,
-                content: transaction.description ?? 'Không có nội dung'
-              });
-            }
-          });
+              if (navigationRef.isReady()) {
+                navigationRef.navigate('TransactionSuccess', {
+                  amount: transaction.amount.toString(),
+                  transactionId: transaction.transactionId.toString(),
+                  date: transaction.transactionAt,
+                  receiver: transaction.receiverAccountNumber,
+                  content: transaction.description ?? 'Không có nội dung',
+                });
+              }
+            },
+          );
 
-          stompClient.send('/app/chat.sendMessage', {}, 'Hello from React Native!');
+          stompClient.send(
+            '/app/chat.sendMessage',
+            {},
+            'Hello from React Native!',
+          );
         },
         (error: any) => {
           console.error('STOMP connection error:', error);
-        }
+        },
       );
 
       return () => {
@@ -115,7 +132,11 @@ const RootApp: React.FC = () => {
           translucent
           backgroundColor="transparent"
         />
-        <NavigationContainer ref={navigationRef}> {/* ✅ Important */}
+        <NavigationContainer ref={navigationRef}>
+          {' '}
+          {/* ✅ Important */}
+          {/* TODO: Remove this bypass for production */}
+          {/* <MainStack /> */}
           {isLoggedIn ? <MainStack /> : <AuthNavigator />}
         </NavigationContainer>
       </View>

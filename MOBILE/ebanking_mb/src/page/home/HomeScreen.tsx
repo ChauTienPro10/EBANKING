@@ -12,7 +12,6 @@ import ReminderPopup from '../../popups/ReminderPopupProps';
 import { PersonIcon } from '../../components/icon';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/types';
-import QRScanner from '../QR/QRScanner';
 
 const HomeScreen: React.FC = () => {
   const loginResponse = useSelector((state: RootState) => state.app.loginResponse);
@@ -82,7 +81,7 @@ const HomeScreen: React.FC = () => {
     switch (action.id) {
       case 'transfer':
         if (account) {
-          navigation.navigate('Transfer' as never);
+          navigation.navigate('Transfer', { receiver: '', amount: '', content: '', bankCode: '' });
         } else {
           navigation.navigate('OpenCard', { userInfo })
         }

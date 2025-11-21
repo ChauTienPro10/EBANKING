@@ -15,16 +15,7 @@ const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({
   data,
 }) => {
   // Default QR data nếu không có data truyền vào
-  const qrValue =
-    data ||
-    JSON.stringify({
-      bank: 'VIETCOMBANK',
-      accountNumber: '0123456789',
-      accountName: 'NGUYEN VAN A',
-      amount: 0,
-      description: 'Thanh toan',
-      timestamp: Date.now(),
-    });
+  const qrValue = data || "";
 
   return (
     <View

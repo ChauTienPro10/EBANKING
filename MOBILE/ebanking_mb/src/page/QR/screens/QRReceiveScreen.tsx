@@ -17,6 +17,8 @@ import TextStyles from '../../../constants/textStyle';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../../navigation/types';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../store';
 
 type QRNavigation = StackNavigationProp<RootStackParamList>;
 
@@ -25,12 +27,15 @@ const QRReceiveScreen: React.FC = () => {
   const [showCustomize, setShowCustomize] = useState(false);
   const [amount, setAmount] = useState('');
   const [note, setNote] = useState('');
+  const account = useSelector((state: RootState) => state.app.accountTransResponse);
+  const loginResponse = useSelector((state: RootState) => state.app.loginResponse);
 
-  const accountInfo = {
-    name: 'NGUYEN VAN A',
-    number: '0123456789',
-    bank: 'VietcomBank',
-  };
+
+  // const accountInfo = {
+  //   name: 'NGUYEN VAN A',
+  //   number: '0123456789',
+  //   bank: 'VietcomBank',
+  // };
 
   const handleShare = () => {
     Alert.alert('Chia sẻ', 'Tính năng chia sẻ QR code');
@@ -70,15 +75,15 @@ const QRReceiveScreen: React.FC = () => {
         {/* QR Code */}
         <View style={styles.qrCodeWrapper}>
           <View style={styles.qrCodeBox}>
-            <QRCodeDisplay size={240} showLogo />
+            <QRCodeDisplay size={240} showLogo data= {account?.accountNumber + '|'  + amount + '|' + note}/>
           </View>
         </View>
 
         {/* Account Info */}
         <View style={styles.accountInfo}>
-          <InfoRow label="Chủ tài khoản" value={accountInfo.name} />
-          <InfoRow label="Số tài khoản" value={accountInfo.number} />
-          <InfoRow label="Ngân hàng" value={accountInfo.bank} />
+          <InfoRow label="Chủ tài khoản" value={loginResponse?.fullName || ''} />
+          <InfoRow label="Số tài khoản" value={account?.accountNumber || ''} />
+          <InfoRow label="Ngân hàng" value={'EBANKING'} />
         </View>
 
         {/* Customize Button */}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -58,6 +58,12 @@ const genFormData = (formData: TransferFormData, fullName: string) => {
     'Nội dung': formData.content,
   }
 }
+interface TransferParams {
+  receiver: string;
+  amount: string;
+  content: string;
+  bankCode: string;
+}
 
 interface TransferFormData {
   recipientAccount: string;
@@ -73,18 +79,31 @@ interface FormErrors {
   content?: string;
 }
 
-const TransferScreen: React.FC = () => {
+const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({ route }) => {
   const navigation = useNavigation<NavigationProp>();
   const loginResponse = useSelector((state: RootState) => state.app.loginResponse);
   const account = useSelector((state: RootState) => state.app.accountTransResponse);
-
+  const { receiver, amount, content, bankCode } = route.params;
   const { t } = useTranslation();
   const [accountOk, setAccountOk] = useState(false)
   const [transferModalVisible, setTransferModalVisible] = useState(false);
   const [receiverName, setReceiverName] = useState('');
 
-    const dispatch: AppDispatch = store.dispatch;
-  
+  const dispatch: AppDispatch = store.dispatch;
+
+  useEffect(() => {
+    if (receiver !== null && receiver !== undefined && receiver !== '') {
+      // goi api kiem tra thong tin so tai khoan
+      handleInputChange('recipientAccount', receiver);
+      handleAmountChange(amount);
+      handleInputChange('content', content);
+      if (bankCode !== null && bankCode !== undefined && bankCode !== '') {
+        handleBankSelect({ id: '1', name: 'Ngân hàng TMCP Ngoại thương Việt Nam (Vietcombank)', code: 'VCB', logo: CardIcon });
+        setFormData(prev => ({ ...prev, transferType: 'external' }))
+      }
+
+    } 
+  }, []);
 
   const onCheckAccountNumberSuccess = (fullName: string) => {
     setReceiverName(fullName);
@@ -121,7 +140,7 @@ const TransferScreen: React.FC = () => {
       }
     } catch (error: any) {
       const extractedMessage = error.toString().split(':')[2] || error;
-      navigation.navigate('TransactionFailedScreen', {errorString: extractedMessage});
+      navigation.navigate('TransactionFailedScreen', { errorString: extractedMessage });
     } finally {
       setTransferModalVisible(false);
     }
