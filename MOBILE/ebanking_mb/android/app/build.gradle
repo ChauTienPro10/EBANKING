@@ -45,10 +45,7 @@ dependencies {
     // MLKit
     implementation "com.google.mlkit:barcode-scanning:17.2.0"
 
-    // Vision Camera v4+
-    implementation "com.mrousavy.camera:react-native-vision-camera:4.7.3"
-
-    // React Native Android
+    // React Native Android (autolinking handles vision-camera)
     implementation 'com.facebook.react:react-android'
 
     if (hermesEnabled.toBoolean()) {

@@ -10,10 +10,13 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { launchImageLibrary } from 'react-native-image-picker';
-import { Camera, Code, useCameraDevice } from 'react-native-vision-camera';
+import {
+  Camera,
+  useCameraDevice,
+  useCodeScanner,
+} from 'react-native-vision-camera';
+import type { Code } from 'react-native-vision-camera';
 import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
-// @ts-expect-error: 'vision-camera-code-scanner' does not export type 'Code' or 'useCodeScanner'
-import { useCodeScanner } from 'vision-camera-code-scanner';
 import { ScannerFrame } from '../components';
 import QRColors from '../styles/colors';
 import TextStyles from '../../../constants/textStyle';
