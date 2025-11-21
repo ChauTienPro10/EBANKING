@@ -14,8 +14,14 @@ import { commonStyles } from '../styles/commonStyles';
 import GText from '../../../components/GText';
 import CustomButton from '../../../components/CustomButton';
 import TextStyles from '../../../constants/textStyle';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '../../../navigation/types';
+
+type QRNavigation = StackNavigationProp<RootStackParamList>;
 
 const QRReceiveScreen: React.FC = () => {
+  const navigation = useNavigation<QRNavigation>();
   const [showCustomize, setShowCustomize] = useState(false);
   const [amount, setAmount] = useState('');
   const [note, setNote] = useState('');
@@ -51,6 +57,8 @@ const QRReceiveScreen: React.FC = () => {
         subtitle="Chia sẻ mã để nhận tiền"
         rightIcon="share-2"
         onRightPress={handleShare}
+        showBack
+        onBack={() => navigation.goBack()}
       />
 
       {/* Content */}
