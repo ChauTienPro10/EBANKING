@@ -136,8 +136,8 @@ const RootApp: React.FC = () => {
           {' '}
           {/* ✅ Important */}
           {/* TODO: Remove this bypass for production */}
-          <MainStack />
-          {/* {isLoggedIn ? <MainStack /> : <AuthNavigator />} */}
+          {/* <MainStack /> */}
+          {isLoggedIn ? <MainStack /> : <AuthNavigator />}
         </NavigationContainer>
       </View>
       <Toast />

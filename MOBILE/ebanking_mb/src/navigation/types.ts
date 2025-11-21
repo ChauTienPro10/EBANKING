@@ -7,7 +7,7 @@ export type RootStackParamList = {
     Home: undefined;
     Menu: undefined;
     AccountAndCard: undefined;
-    Transfer: undefined;
+    Transfer: {receiver: string, amount: string, content: string, bankCode: string};
     Withdraw: undefined;
     MobilePrepaid: undefined;
     PayBill: undefined;
