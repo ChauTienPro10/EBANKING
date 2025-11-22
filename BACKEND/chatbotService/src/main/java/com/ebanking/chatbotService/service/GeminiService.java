@@ -1,57 +1,42 @@
 package com.ebanking.chatbotService.service;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
+import com.google.genai.Client;
+import com.google.genai.types.GenerateContentResponse;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
+import org.springframework.beans.factory.annotation.Value; // Cần thiết để đọc giá trị từ file properties
 
-import javax.annotation.PostConstruct;
-import java.util.Map;
-
-@Slf4j
 @Service
 public class GeminiService {
 
-    private WebClient webClient;
+    private final Client client; // Khai báo Client là final
+    private final String model = "gemini-2.5-flash"; // Đặt tên model cố định
 
-    @Value("${gemini.api.key}")
-    private String API_KEY;
+    // Sửa Constructor: Inject API Key và Khởi tạo Client
+    public GeminiService(@Value("${gemini.api.key}") String apiKey) {
+        // Kiểm tra Key để tránh lỗi nếu cấu hình sai
+        if (apiKey == null || apiKey.isEmpty()) {
+            throw new IllegalArgumentException("GEMINI API Key is missing or null. Please check application.properties.");
+        }
 
-    @Value("${gemini.url}")
-    private String GEMINI_URL;
-
-    @PostConstruct
-    public void init() {
-        this.webClient = WebClient.builder()
-                .baseUrl(GEMINI_URL)
-                .defaultHeader("Authorization", "Bearer " + API_KEY)
-                .build();
+        // Khởi tạo Client bằng builder (cách chính thức của thư viện)
+        // SDK hiện tại cần API Key để khởi tạo.
+        this.client = Client.builder().apiKey(apiKey).build();
     }
 
-    public String sendMessage(String userMessage) {
-        Map<String, Object> requestBody = Map.of(
-                "prompt", Map.of("text", userMessage)
-        );
+    public String generate(String prompt) {
 
-        try {
-            Mono<Map> responseMono = webClient.post()
-                    .bodyValue(requestBody)
-                    .retrieve()
-                    .bodyToMono(Map.class);
+        String systemInstruction = "Bạn là một chatbot trả lời ngắn gọn xúc tích, "
+                + "Chỉ trả lời các câu hỏi về lĩnh vực tài chính ngận hàng,"
+                + "Đối với các câu hỏi ngoài luồn làm ơn hãy từ chối 1 cách khéo léo"
+                + "Nếu người câu hỏi là ngôn ngữ nào thì hãy phản hồi bằng ngôn ngữ đó"
+                + "Dưới đây là phần câu hỏi: ";
+        // Sử dụng client đã khởi tạo
+        GenerateContentResponse response =
+                this.client.models.generateContent(
+                        model,
+                        systemInstruction + ": " + prompt,
+                        null);
 
-            Map resp = responseMono.block();
-            log.info("Gemini raw response: {}", resp);
-
-            // TODO: parse response đúng theo cấu trúc JSON trả về
-            // Ví dụ giả định:
-            // String reply = (String) ((Map)((Map)((List)resp.get("candidates")).get(0)).get("content")).get("text");
-            String reply = "TODO: parse JSON từ resp";
-
-            return reply;
-        } catch (Exception e) {
-            log.error("Error calling Gemini API", e);
-            return "Error calling Gemini API";
-        }
+        return response.text();
     }
 }

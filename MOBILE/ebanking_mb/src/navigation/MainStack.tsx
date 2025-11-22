@@ -17,6 +17,7 @@ import ShowNotificationScreen from '../notification/showNoti';
 import setPinCodeScreen from '../PIN/pinCodeScreen';
 import ScannerScreen from '../page/QR/ScannerScreen';
 import { EKYCScreen } from '../features/ekyc';
+import ChatScreen from '../page/chatbot/ChatScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -34,13 +35,29 @@ export default function MainStack() {
       <Stack.Screen name="Search" component={SearchScreen} />
       <Stack.Screen name="Settings" component={SettingsScreen} />
       <Stack.Screen name="Support" component={SupportScreen} />
+      <Stack.Screen name="Chatbot" component={ChatScreen} />
       <Stack.Screen name="Transfer" component={TransferScreen} />
       <Stack.Screen name="OpenCard" component={OpenAccountScreen} />
-      <Stack.Screen name="TransactionSuccess" component={TransactionSuccessScreen} />
-      <Stack.Screen name="PendingTransactionScreen" component={PendingTransactionScreen} />
-      <Stack.Screen name="TransactionFailedScreen" component={TransactionFailedScreen} />
-      <Stack.Screen name="TransactionHistoryScreen" component={TransactionHistoryScreen} />
-      <Stack.Screen name="ShowNotificationScreen" component={ShowNotificationScreen} />
+      <Stack.Screen
+        name="TransactionSuccess"
+        component={TransactionSuccessScreen}
+      />
+      <Stack.Screen
+        name="PendingTransactionScreen"
+        component={PendingTransactionScreen}
+      />
+      <Stack.Screen
+        name="TransactionFailedScreen"
+        component={TransactionFailedScreen}
+      />
+      <Stack.Screen
+        name="TransactionHistoryScreen"
+        component={TransactionHistoryScreen}
+      />
+      <Stack.Screen
+        name="ShowNotificationScreen"
+        component={ShowNotificationScreen}
+      />
       <Stack.Screen name="SetPINCode" component={setPinCodeScreen} />
       <Stack.Screen name="ScannerScreen" component={ScannerScreen} />
 

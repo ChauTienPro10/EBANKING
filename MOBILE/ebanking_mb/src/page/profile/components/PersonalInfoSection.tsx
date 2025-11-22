@@ -1,9 +1,13 @@
 import React from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { CustomInput, GText } from '../../../components';
 import Colors from '../../../constants/color';
 import LockIcon from '../../../components/icon/LockIcon';
+import QrCodeIcon from '../../../components/icon/QrCodeIcon';
+import { RootStackParamList } from '../../../navigation/types';
 
 
 interface PersonalInfoSectionProps {
@@ -19,6 +23,11 @@ interface PersonalInfoSectionProps {
   onInputChange: (field: string, value: string) => void;
 }
 
+type PersonalInfoSectionNavigation = StackNavigationProp<
+  RootStackParamList,
+  'Profile'
+>;
+
 const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
   profile,
   errors,
@@ -26,6 +35,11 @@ const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
   onInputChange,
 }) => {
   const { t } = useTranslation();
+  const navigation = useNavigation<PersonalInfoSectionNavigation>();
+
+  const handleScanCitizenId = () => {
+    navigation.navigate('EKYC');
+  };
 
   return (
     <View style={styles.section}>
@@ -130,6 +144,25 @@ const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
             editable={isEditing}
           />
         </View>
+
+        {/* Scan CCCD Option */}
+        <TouchableOpacity
+          style={styles.scanContainer}
+          onPress={handleScanCitizenId}
+          activeOpacity={0.85}
+        >
+          <View style={styles.scanIconWrapper}>
+            <QrCodeIcon size={24} color={Colors.main_bule} />
+          </View>
+          <View style={styles.scanTextWrapper}>
+            <GText type="systemBold_16" color={Colors.main_bule}>
+              {t('profile.scan_cccd_title')}
+            </GText>
+            <GText type="systemLight_14" color={Colors.grey3}>
+              {t('profile.scan_cccd_subtitle')}
+            </GText>
+          </View>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -219,6 +252,33 @@ const styles = StyleSheet.create({
     right: 10, // khoảng cách từ mép phải
     top: '70%',
     transform: [{ translateY: -15 }], // căn giữa theo chiều dọc (nếu icon 20px)
+  },
+  scanContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: Colors.main_bule,
+    borderRadius: 16,
+    backgroundColor: '#F0F6FF',
+  },
+  scanIconWrapper: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: Colors.white,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 16,
+    shadowColor: Colors.main_bule,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  scanTextWrapper: {
+    flex: 1,
   },
 });
 

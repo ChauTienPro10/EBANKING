@@ -88,8 +88,8 @@ const ProfileScreen: React.FC = () => {
       dispatch(fetchUserInfo(loginResponse.id));
       Toast.show({
         type: 'info',
-        text1: 'Thông báo',
-        text2: 'Cập nhật thông tin thành công'
+        text1: t('profile.update_success_title'),
+        text2: t('profile.update_success_message'),
       });
     }
   }
@@ -150,8 +150,8 @@ const ProfileScreen: React.FC = () => {
       console.error('Error saving profile:', error);
       Toast.show({
         type: 'error',
-        text1: 'Lỗi',
-        text2: 'Update thất bại, Hãy kiểm tra lại thông tin'
+        text1: t('profile.update_error_title'),
+        text2: t('profile.update_error_message'),
       });
     } finally {
       setIsLoading(false);
@@ -204,11 +204,11 @@ const ProfileScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.container}>
 
-      <LoadingPopup visible={isLoading} message="Đang xử lý..." />
+      <LoadingPopup visible={isLoading} message={t('profile.loading_message')} />
 
       <PasswordPopup
         visible={showPasswordPopup}
-        message="Vui lòng nhập mật khẩu để tiếp tục"
+        message={t('profile.password_prompt')}
         onClose={() => setShowPasswordPopup(false)}
         onSubmit={(password) => {
           handleSave(password)
@@ -256,7 +256,7 @@ const ProfileScreen: React.FC = () => {
         {isEditing && (
           <View style={styles.buttonContainer}>
             <CustomButton
-              title={isLoading ? 'Loading...' : 'Save Changes'}
+              title={isLoading ? t('common.loading') : t('profile.save_button')}
               onPress={() => setShowPasswordPopup(true)}
               variant="primary"
               size="large"
