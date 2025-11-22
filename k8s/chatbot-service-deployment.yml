@@ -1,0 +1,84 @@
+# 1. Định nghĩa Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chatbot-service
+  labels:
+    app: chatbot-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chatbot-service
+  template:
+    metadata:
+      labels:
+        app: chatbot-service
+    spec:
+      containers:
+        - name: chatbot-service
+          image: tien22012003/chatservice:1.1
+          imagePullPolicy: Always
+          ports:
+            # ContainerPort vẫn phải khớp với cổng ứng dụng (8007)
+            - containerPort: 8007 
+          env:
+            # Cấu hình Profile
+            - name: SPRING_PROFILES_ACTIVE
+              value: "k8s"
+
+            # ------------------------------------------------------------------
+            # Cấu hình ghi đè từ application.properties (Độ ưu tiên cao hơn)
+            # ------------------------------------------------------------------
+
+            # 1. Cấu hình Server (để khớp với containerPort và targetPort)
+            - name: SERVER_PORT
+              value: "8007"
+              
+            # 2. Cấu hình Database (quan trọng nhất)
+            - name: MACHINE_HOST # Host máy chủ DB (thường là tên Service trong K8s)
+              value: "mysql-service-name" # THAY THẾ bằng tên Service MySQL của bạn trong K8s
+              
+            - name: SPRING_DATASOURCE_URL
+              # Sử dụng biến MACHINE_HOST: 
+              value: "jdbc:mysql://${MACHINE_HOST}:3306/DB_CHATBOT?useSSL=false&serverTimezone=UTC"
+              
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "root"
+              
+            - name: SPRING_DATASOURCE_PASSWORD
+              # *THAY THẾ BẰNG THAM CHIẾU TỪ SECRET*
+              value: "root@123" 
+
+            # 3. Cấu hình Gemini (API Keys)
+            - name: GEMINI_API_KEY # Biến bạn tự định nghĩa
+              # *THAY THẾ BẰNG THAM CHIẾU TỪ SECRET*
+              value: "AIzaSyBnNM2AQB9xQ5BDBru7VJdtWyJxovfyZxo" 
+              
+            - name: SPRING_AI_GOOGLE_GEMINI_API_KEY # Biến Spring AI tự động map
+              # *THAY THẾ BẰNG THAM CHIẾU TỪ SECRET*
+              value: "AIzaSyBnNM2AQB9xQ5BDBru7VJdtWyJxovfyZxo"
+              
+            # 4. Cấu hình Gemini khác
+            - name: SPRING_AI_GOOGLE_GEMINI_CHAT_OPTIONS_MODEL
+              value: "gemini-2.5-flash"
+              
+            - name: GEMINI_PROMPT
+              value: "prompt"
+
+--- # Dấu phân cách bắt buộc
+
+# 2. Định nghĩa Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: chatbot-service
+spec:
+  selector:
+    app: chatbot-service
+  type: NodePort
+  ports:
+    - name: http
+      port: 8007
+      targetPort: 8007
+      nodePort: 30087

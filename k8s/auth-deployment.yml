@@ -19,16 +19,70 @@ spec:
           image: tien22012003/authservice:1.1
           imagePullPolicy: Always
           ports:
-            - containerPort: 8000   
-            - containerPort: 9000   
+            # Cổng HTTP
+            - containerPort: 8000
+            # Cổng gRPC
+            - containerPort: 9000
           env:
+            # ------------------------------------------------------------------
+            # Cấu hình Profile & Cổng
+            # ------------------------------------------------------------------
             - name: SPRING_PROFILES_ACTIVE
               value: "k8s"
+              
+            - name: SERVER_PORT # Ghi đè server.port
+              value: "8000"
+              
+            - name: GRPC_SERVER_PORT # Ghi đè grpc.server.port
+              value: "9000"
+            
+            # ------------------------------------------------------------------
+            # Cấu hình Database (quan trọng)
+            # ------------------------------------------------------------------
+            - name: MACHINE_HOST # Host máy chủ DB
+              # THAY THẾ 'localhost' bằng tên Service MySQL trong K8s (ví dụ: 'mysql-service')
+              value: "mysql-service-name" 
+              
+            - name: SPRING_DATASOURCE_URL
+              # Sử dụng biến MACHINE_HOST: 
+              value: "jdbc:mysql://34.124.233.161:3306/DB_AUTH?useSSL=false&serverTimezone=UTC"
+              
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "root"
+              
+            - name: SPRING_DATASOURCE_PASSWORD
+              # 🚨 THAY THẾ BẰNG THAM CHIẾU TỪ SECRET
+              value: "Root@123" 
+
+            # ------------------------------------------------------------------
+            # Cấu hình Token và Secret
+            # ------------------------------------------------------------------
+            # - name: JWT_SECRET_KEY # Ghi đè jwt.secret.key
+            #   # 🚨 THAY THẾ BẰNG THAM CHIẾU TỪ SECRET
+            #   value: "chauduongphattien2201gmailcomsupersecret..." 
+              
+            # ------------------------------------------------------------------
+            # Cấu hình URL Dịch vụ Khác
+            # ------------------------------------------------------------------
+            - name: FCM_SERVICE # Ghi đè fcm.service
+              # THAY THẾ 'localhost:8004' bằng tên Service và cổng nội bộ K8s
+              value: "http://fcm-service-name:8004/" 
+              
+            - name: CHAT_SERVICE # Ghi đè chat.service
+              # THAY THẾ 'localhost:8007' bằng tên Service và cổng nội bộ K8s
+              value: "http://chatbot-service:8007/" 
+
+            # ------------------------------------------------------------------
+            # Cấu hình gRPC (Đã có trong Manifest gốc)
+            # ------------------------------------------------------------------
             - name: USER_SERVICE
               value: user-service
+              
             - name: USER_SERVICE_PORT
               value: "9001"
+              
             - name: TRANSACTION_SERVICE
               value: transaction-service
+              
             - name: TRANSACTION_SERVICE_PORT
               value: "9003"

@@ -1,9 +1,12 @@
 package com.ebanking.chatbotService.service;
 
+import com.ebanking.chatbotService.enums.Topic;
 import com.google.genai.Client;
 import com.google.genai.types.GenerateContentResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Value; // Cần thiết để đọc giá trị từ file properties
+
+import java.util.Objects;
 
 @Service
 public class GeminiService {
@@ -24,10 +27,13 @@ public class GeminiService {
     }
 
     public String generate(String prompt) {
+        String topicNameList = Topic.getTopicNamesAsString();
 
         String systemInstruction = "Bạn là một chatbot trả lời ngắn gọn xúc tích, "
                 + "Chỉ trả lời các câu hỏi về lĩnh vực tài chính ngận hàng,"
-                + "Đối với các câu hỏi ngoài luồn làm ơn hãy từ chối 1 cách khéo léo"
+                + "Trước tiên hãy kiểm tra xem câu hỏi có liên quan đên các topic dưới đây hay không Topic: " + topicNameList
+                + "nếu có hãy trả lời bằng đúng tên topic đó và gán tiền tố INTERNAL lên đầu nếu không khớp thì xét điều kiện sau."
+                + "Đối với các câu hỏi ngoài luồn làm ơn hãy từ chối 1 cách khéo léo,"
                 + "Nếu người câu hỏi là ngôn ngữ nào thì hãy phản hồi bằng ngôn ngữ đó"
                 + "Dưới đây là phần câu hỏi: ";
         // Sử dụng client đã khởi tạo
@@ -37,6 +43,9 @@ public class GeminiService {
                         systemInstruction + ": " + prompt,
                         null);
 
+        if (Objects.requireNonNull(response.text()).contains("INTERNAL")) {
+            return Topic.getSafeResponseByTopicName(response.text().replace("INTERNAL_", ""));
+        }
         return response.text();
     }
 }
