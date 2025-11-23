@@ -1,5 +1,5 @@
 opencv/
-
+BACKEND/.idea/
 # Firebase key files 
 BACKEND/firebaseService/src/main/resources/ebanking-2ac29-firebase-adminsdk-fbsvc-58f9ad7dd9.json
 BACKEND/firebaseService/src/main/resources/ebanking-2ac29-55d51c99ac8f.json

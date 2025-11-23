@@ -2,6 +2,7 @@ package com.example.auth.consts;
 
 public interface IURL {
     String HOST_PREFIX = "/authService";
+    String CHAT_SERVICE = "/chatService";
     String AUTH_URL = HOST_PREFIX + "/auth";
     String REGISTER_URL = "/register";
     String REGISTER_VERIFY_OTP_URL = "/register-verify-otp";

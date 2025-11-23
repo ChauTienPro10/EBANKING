@@ -15,6 +15,9 @@ pipeline {
                      'BACKEND/emailService',
                      'BACKEND/transactionService',
                      'BACKEND/firebaseService',
+                     'BACKEND/chatbotService',
+                     'BACKENND/ekycService',
+                     'BACKEND/socket'
                     ]
                     for (module in modules) {
                         dir(module) {
@@ -30,7 +33,14 @@ pipeline {
             steps {
                 script {
                     sh 'mkdir -p output_jar_file'
-                    def modules = ['authService', 'userService', 'emailService', 'transactionService', 'firebaseService']
+                    def modules = ['authService',
+                    'userService',
+                    'emailService',
+                    'transactionService',
+                    'firebaseService',
+                    'chatbotService',
+                    'ekycService',
+                    'socket']
                     for (module in modules) {
                         def srcPath = "BACKEND/${module}/target/*.jar"
                         def destPath = "output_jar_file/${module}.jar"

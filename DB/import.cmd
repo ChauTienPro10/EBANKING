@@ -1,34 +1,39 @@
 @echo off
 echo ============================================
-echo   Importing MySQL data into container
+echo   Importing MySQL databases to server
 echo ============================================
 
-REM Kiểm tra file backup.sql có tồn tại không
-IF NOT EXIST "sql-dump\backup.sql" (
-    echo File sql-dump\backup.sql không tồn tại!
-    pause
-    exit /b 1
+REM Thông tin server MySQL
+SET HOST=34.124.233.161
+SET PORT=3306
+SET USER=root
+SET PASSWORD=Root@123
+
+REM Thư mục chứa các file backup
+SET BACKUP_FOLDER=sql-dump
+
+REM Duyệt tất cả file .sql trong thư mục backup
+FOR %%F IN (%BACKUP_FOLDER%\*.sql) DO (
+    REM Lấy tên database từ file (filename không có .sql)
+    SET "DBNAME=%%~nF"
+    echo --------------------------------------------
+    echo Importing database %%~nF into server %HOST%...
+
+    REM Tạo database nếu chưa tồn tại
+    mysql -h %HOST% -P %PORT% -u %USER% -p%PASSWORD% -e "CREATE DATABASE IF NOT EXISTS \`%%~nF\` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
+
+    REM Import file .sql
+    mysql -h %HOST% -P %PORT% -u %USER% -p%PASSWORD% %%~nF < "%%F"
+
+    IF %ERRORLEVEL% NEQ 0 (
+        echo Failed to import %%~nF
+        pause
+        exit /b 1
+    )
+
+    echo Database %%~nF imported successfully!
 )
 
-REM Copy file backup.sql vào container
-docker cp sql-dump\backup.sql mysql-ebanking-container:/tmp/backup.sql
-
-IF %ERRORLEVEL% NEQ 0 (
-    echo Lỗi khi copy file backup.sql vào container.
-    pause
-    exit /b 1
-)
-
-REM Import vào MySQL bên trong container
-docker exec -i mysql-ebanking-container sh -c "mysql -u root -proot@123 < /tmp/backup.sql"
-
-IF %ERRORLEVEL% NEQ 0 (
-    echo Lỗi khi import dữ liệu vào MySQL.
-    pause
-    exit /b 1
-)
-
-echo Import thành công!
 echo.
-
+echo All databases imported successfully!
 pause
