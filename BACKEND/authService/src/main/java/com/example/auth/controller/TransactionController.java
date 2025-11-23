@@ -7,6 +7,7 @@ import com.example.auth.protopkg.TransactionProto;
 import com.example.auth.services.TransactionService;
 import com.example.auth.utils.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +28,7 @@ public class TransactionController {
     private SecurityUtils securityUtils;
 
     @PostMapping(IURL.TRANSFER)
-    public ResponseEntity<TransferResponse> transfer(@RequestHeader Map<String, String> headers, @RequestBody TransferRequest rq) {
+    public ResponseEntity<TransferResponse> transfer(@RequestHeader Map<String, String> headers, @RequestBody TransferRequest rq) throws AuthenticationException {
         log.info("POST:::" + IURL.TRANSFER);
         if(!securityUtils.checkUser(headers, rq.getUsername())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

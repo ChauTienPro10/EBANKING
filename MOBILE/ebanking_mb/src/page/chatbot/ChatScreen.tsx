@@ -15,6 +15,8 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 import Colors from '../../constants/color';
 import GText from '../../components/GText';
+import { API } from '../../constants/api';
+import fetch from '../../utils/fetch';
 import {
   ChatbubbleIcon,
   ChevronBackIcon,
@@ -22,6 +24,8 @@ import {
   PhoneIcon,
 } from '../../components/icon';
 import { RootStackParamList } from '../../navigation/types';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store';
 
 type Message = {
   id: string;
@@ -41,6 +45,7 @@ const ChatScreen: React.FC = () => {
 
   const flatListRef = useRef<FlatList<Message>>(null);
   const botReplyTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const loginResponse = useSelector((state: RootState) => state.app.loginResponse);
 
   const quickReplies = useMemo(
     () => [
@@ -79,10 +84,10 @@ const ChatScreen: React.FC = () => {
   }, [messages, scrollToBottom]);
 
   const getBotResponse = useCallback(
-    (text: string) => {
+    async (text: string) => {
       const normalized = text.toLowerCase();
 
-      const matcher = (keywords: string[]) =>
+      const matcher =  (keywords: string[]) =>
         keywords.some((keyword) => normalized.includes(keyword));
 
       if (matcher(['transfer', 'chuyển', 'gửi tiền'])) {
@@ -105,7 +110,22 @@ const ChatScreen: React.FC = () => {
         return t('chatbot.responses.qr');
       }
 
-      return t('chatbot.responses.default');
+      // return t('chatbot.responses.default');
+      const url = API.ASK;
+      try {
+        const res = await fetch.post(url, {
+          username: loginResponse?.username,
+          text,
+        }, false);
+
+        if (res && res.answer) {
+          return res.answer;
+        }
+
+        return 'Xin lỗi hiện hệ thống đang gặp sự cố, vui lòng quay lại sau';
+      } catch (error) {
+        return 'Lỗi xử lý yêu cầu';
+      }
     },
     [t],
   );
@@ -126,11 +146,11 @@ const ChatScreen: React.FC = () => {
         clearTimeout(botReplyTimeout.current);
       }
 
-      botReplyTimeout.current = setTimeout(() => {
-        const response = getBotResponse(trimmed);
+      botReplyTimeout.current = setTimeout(async () => {
+        const response = await getBotResponse(trimmed);
         setMessages((prev) => [...prev, createMessage(response, 'bot')]);
         setIsBotTyping(false);
-      }, 1200);
+      }, 0);
     },
     [getBotResponse, inputValue],
   );

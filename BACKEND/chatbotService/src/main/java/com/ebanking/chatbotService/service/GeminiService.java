@@ -35,6 +35,7 @@ public class GeminiService {
                 + "nếu có hãy trả lời bằng đúng tên topic đó và gán tiền tố INTERNAL lên đầu nếu không khớp thì xét điều kiện sau."
                 + "Đối với các câu hỏi ngoài luồn làm ơn hãy từ chối 1 cách khéo léo,"
                 + "Nếu người câu hỏi là ngôn ngữ nào thì hãy phản hồi bằng ngôn ngữ đó"
+                + "Vẫn trả lời các câu hỏi năm ngoài danh sách topic miễn là nó liên quan đến tài chính hoặc ngân hàng"
                 + "Dưới đây là phần câu hỏi: ";
         // Sử dụng client đã khởi tạo
         GenerateContentResponse response =

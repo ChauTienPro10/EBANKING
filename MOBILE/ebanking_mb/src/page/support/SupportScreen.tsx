@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity, Linking } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import Header from '../../components/Header';
@@ -56,19 +56,26 @@ const SupportScreen: React.FC = () => {
       navigation.navigate('Chatbot' as never);
       return;
     }
+    else if (option.id === 'call') {
+      // let phone = `tel:${phoneNumber}`;
+      Linking.openURL(`tel:${'0812788212'}`);
+    }
+    else if (option.id === 'email' ) {
+      Linking.openURL(`mailto:${"itchauduongphattien@gmail.com"}`)
+    }
     console.log('Support option selected:', option);
   };
 
   return (
     <View style={styles.container}>
-      <Header 
-        title={t('support.title')} 
-        showBackButton={false} 
+      <Header
+        title={t('support.title')}
+        showBackButton={false}
         showNotification={true}
         notificationCount={1}
         onNotificationPress={() => console.log('Support notification pressed')}
       />
-      
+
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.welcomeContainer}>
           <View style={styles.welcomeIconContainer}>

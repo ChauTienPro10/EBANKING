@@ -6,6 +6,7 @@ import {
   useColorScheme,
   StyleSheet,
   Platform,
+  KeyboardAvoidingView,
 } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
@@ -122,9 +123,18 @@ const RootApp: React.FC = () => {
   }, [loginResponse, dispatch]);
 
   useListenNotiFromFirebase();
+  const keyboardVerticalOffset = Platform.select({
+      ios: 90,
+      android: 90,
+      default: 90,
+    });
 
   return (
-    <>
+    <KeyboardAvoidingView
+          style={styles.flex}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          keyboardVerticalOffset={keyboardVerticalOffset}
+        >
       <View style={styles.container}>
         <FlashMessage position="top" />
         <StatusBar
@@ -141,7 +151,9 @@ const RootApp: React.FC = () => {
         </NavigationContainer>
       </View>
       <Toast />
-    </>
+              </KeyboardAvoidingView>
+
+    
   );
 };
 
@@ -150,6 +162,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.main_bule,
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
+  },
+  flex: {
+    flex: 1,
   },
 });
 

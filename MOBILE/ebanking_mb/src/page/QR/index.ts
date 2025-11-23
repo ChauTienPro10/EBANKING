@@ -8,7 +8,7 @@ export { default } from './ScannerScreen';
 export { default as ScannerScreen } from './ScannerScreen';
 
 // Screens
-export { QRPaymentScreen, QRScanScreen, QRReceiveScreen } from './screens';
+export { QRScanScreen, QRReceiveScreen } from './screens';
 
 // Components
 export {

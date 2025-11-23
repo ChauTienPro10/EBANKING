@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, SafeAreaView, StatusBar } from 'react-native';
-import { QRPaymentScreen, QRScanScreen, QRReceiveScreen } from './screens';
+import { QRScanScreen, QRReceiveScreen } from './screens';
 import { TabButton } from './components';
 import QRColors from './styles/colors';
 import Colors from '../../constants/color';
@@ -18,19 +18,19 @@ export default function ScannerScreen() {
 
       {/* Main Content */}
       <View style={styles.content}>
-        {activeTab === 0 && <QRPaymentScreen />}
+        {activeTab === 0 && <QRScanScreen />}
         {activeTab === 1 && <QRScanScreen />}
         {activeTab === 2 && <QRReceiveScreen />}
       </View>
 
       {/* Bottom Navigation */}
       <View style={styles.bottomNav}>
-        <TabButton
+        {/* <TabButton
           iconName="camera"
           label="QR Thanh toán"
           active={activeTab === 0}
           onPress={() => setActiveTab(0)}
-        />
+        /> */}
         <TabButton
           iconName="camera"
           label="Quét mã"

@@ -11,6 +11,7 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import lombok.extern.slf4j.Slf4j;
 import lombok.extern.slf4j.XSlf4j;
+import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,7 @@ import java.util.List;
 @Slf4j
 public class TransactionService {
 
+    @Autowired private PinCodeService pinCodeService;
     private final TransactionMapper transactionMapper;
     private final TransactionServiceGrpc.TransactionServiceBlockingStub transactionServiceBlockingStub;
 
@@ -34,7 +36,10 @@ public class TransactionService {
         log.info("HOST TRANSACTION::: {}:{}", grpcPath.getTransactionServiceHost(), grpcPath.getTransactionServicePort());
     }
 
-    public TransferResponse transfer(TransferRequest request) {
+    public TransferResponse transfer(TransferRequest request) throws AuthenticationException {
+        if (!pinCodeService.checkPin(request.getUsername(), request.getPin())) {
+            throw new AuthenticationException("error:text_pin_not_true");
+        }
         TransactionProto.TransferRequest rq = transactionMapper.toTransferRequestProto(request);
         TransactionProto.TransferResponse rs = transactionServiceBlockingStub.transfer(rq);
         return transactionMapper.toTranserResponseDto(rs);

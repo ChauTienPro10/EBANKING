@@ -6,7 +6,7 @@ import PinInput from '../components/PinInput';
 interface ConfirmTransferModalProps {
     visible: boolean;
     data: Record<string, string>;
-    onConfirm: () => void;
+    onConfirm: (pin: string) => void;
     onCancel: () => void;
 }
 
@@ -19,7 +19,7 @@ const ConfirmTransferModal: React.FC<ConfirmTransferModalProps> = ({
 
     const [pinAuth, setPinAuth] = useState(false);
     const handleComplete = (pin: string) => {
-        onConfirm();
+        onConfirm(pin);
     };
     return (
         <Modal

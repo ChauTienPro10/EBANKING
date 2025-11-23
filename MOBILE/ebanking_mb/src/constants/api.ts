@@ -1,8 +1,8 @@
 import { API_URL } from '@env';
 
-export const HOST_SERVER = '192.168.1.8';
+export const HOST_SERVER = '10.20.1.48';
 
-export const BASE_URL = 'http://192.168.1.8:8000/';
+export const BASE_URL = `http://${HOST_SERVER}:8000/`;
 
 export const AUTH_SERVICE = BASE_URL + 'authService';
 
@@ -29,5 +29,8 @@ export const API = {
   SET_PIN: `${AUTH_SERVICE}/pin-code/new`,
   GET_PIN_STT: `${AUTH_SERVICE}/pin-code/{username}`,
   DELETE_PIN: `${AUTH_SERVICE}/pin-code/delete`,
+
+  // chat
+  ASK: `${BASE_URL}chatService/ask`,
 
 };

@@ -75,7 +75,7 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
         {tabs.map(renderTab)}
       </View>
       
-      {/* QR Code Button in Center */}
+      { activeTab === 'home' &&
       <TouchableOpacity 
         style={styles.qrButton}
         onPress={onQRPress}
@@ -84,7 +84,7 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
         <View style={styles.qrButtonContent}>
           <QrCodeIcon size={28} color={Colors.white} />
         </View>
-      </TouchableOpacity>
+      </TouchableOpacity>}
     </View>
   );
 };

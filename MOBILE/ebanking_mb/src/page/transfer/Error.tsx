@@ -16,7 +16,7 @@ const TransactionFailedScreen: React.FC<Props> = ({ navigation, route }) => {
 
 
     const handleRetry = () => {
-        navigation.replace('Transfer');
+        navigation.replace('Transfer', {receiver: '', amount: '', content: '', bankCode: ''});
     };
 
     const handleBackHome = () => {

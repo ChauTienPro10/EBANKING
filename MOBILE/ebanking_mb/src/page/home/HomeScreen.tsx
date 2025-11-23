@@ -90,7 +90,6 @@ const HomeScreen: React.FC = () => {
         console.log('Navigate to withdraw screen');
         break;
       case 'trans_history':
-        console.log('Navigate to pay bill screen');
         navigation.navigate('TransactionHistoryScreen' as never);
         break;
       case 'mobile_prepaid':

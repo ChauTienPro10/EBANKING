@@ -244,7 +244,8 @@
       "error_dont_send_yourself": "Không thể giao dịch với chính bạn.",
       "error_amount_not_enough": "Số dư không đủ",
       "error_not_valid": "Số tiền không hợp lệ",
-      "error_info_not_true": "Tài khoản không hợp lệ"
+      "error_info_not_true": "Tài khoản không hợp lệ",
+      "text_pin_not_true": "Sai PIN"
     }
   },
   "categories": {

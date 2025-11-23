@@ -110,9 +110,10 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({ route
     setTransferModalVisible(true);
   };
 
-  const handleConfirmTransfer = async () => {
+  const handleConfirmTransfer = async (pin: string) => {
     try {
       const payload = {
+        pin: pin,
         username: loginResponse?.username,
         senderAccountNumber: account?.accountNumber,
         receiverAccountNumber: formData.recipientAccount,

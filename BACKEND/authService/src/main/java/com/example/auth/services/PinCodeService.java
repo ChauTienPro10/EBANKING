@@ -97,6 +97,15 @@ public class PinCodeService {
         return pinCode != null;
     }
 
+    public boolean checkPin(String username, String rawPin) {
+        long userId = authService.getUserIdByUsername(username);
+        PinCode pin = pinCodeRepository.findByUserId(userId);
+        if (passwordEncoder.matches(rawPin, pin.getPinCode())) {
+            return true;
+        }
+        return false;
+    }
+
     public boolean isNumeric(String str) {
         return str != null && str.matches("\\d+");
     }
