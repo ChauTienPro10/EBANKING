@@ -61,7 +61,26 @@
     "menu": "Menu",
     "search": "Search",
     "settings": "Settings",
-    "support": "Support"
+    "support": "Support",
+    "card": "Card"
+  },
+  "card": {
+    "title": "My Card",
+    "credit_card": "Credit Card",
+    "debit_card": "Debit Card",
+    "card_limit": "Card Limit",
+    "spent": "Spent",
+    "remaining": "Remaining",
+    "total_limit": "Total Limit",
+    "of": "of",
+    "view_details": "View Details",
+    "transactions": "Transactions",
+    "all": "All",
+    "sent": "Sent",
+    "received": "Received",
+    "spent_of_limit": "{{spent}} spent of {{limit}} card limit",
+    "copied": "Copied",
+    "card_number_copied": "Card number has been copied to clipboard"
   },
   "settings": {
     "title": "Settings",
