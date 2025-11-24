@@ -171,6 +171,105 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.white,
   },
+  quickActionsContainer: {
+    padding: 20,
+    backgroundColor: Colors.white,
+  },
+  actionsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  actionItem: {
+    width: '30%',
+    alignItems: 'center',
+    marginBottom: 20,
+    position: 'relative',
+  },
+  actionTag: {
+    position: 'absolute',
+    top: -8,
+    right: -8,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 8,
+    zIndex: 1,
+  },
+  actionTagText: {
+    color: Colors.white,
+    fontSize: 8,
+    fontWeight: 'bold',
+  },
+  actionIconContainer: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: Colors.background,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
+    shadowColor: Colors.black,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  actionText: {
+    color: Colors.textPrimary,
+    fontSize: 12,
+    fontWeight: '500',
+    textAlign: 'center',
+  },
+  moreActionsIndicator: {
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  moreActionsText: {
+    color: Colors.main_bule,
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  servicesContainer: {
+    padding: 20,
+    backgroundColor: Colors.white,
+  },
+  servicesTitle: {
+    color: Colors.textPrimary,
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 16,
+  },
+  servicesGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  serviceItem: {
+    width: '22%',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  serviceIcon: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
+  },
+  serviceText: {
+    color: Colors.textPrimary,
+    fontSize: 10,
+    fontWeight: '500',
+    textAlign: 'center',
+  },
+
+  balanceTextOpenAccount: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: Colors.main_green,
+    // textDecorationLine: 'underline'
+  },
 });
 
 export default HomeScreen;

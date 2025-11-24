@@ -116,6 +116,7 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
       <View style={styles.tabsContainer}>{tabs.map(renderTab)}</View>
 
       {activeTab === 'home' &&
+
       <Animated.View
         style={[
           styles.qrButtonWrapper,
@@ -124,7 +125,6 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
           },
         ]}
       >
-        
         <TouchableOpacity
           style={styles.qrButton}
           onPress={onQRPress}
@@ -135,6 +135,7 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
           </View>
         </TouchableOpacity>
       </Animated.View>}
+
     </View>
   );
 };

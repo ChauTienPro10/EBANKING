@@ -85,6 +85,7 @@
     "credit_card": "Thẻ tín dụng",
     "debit_card": "Thẻ ghi nợ",
     "card_limit": "Hạn mức thẻ",
+
     "balance_title": "Số dư thẻ",
     "balance_subtitle": "Số tiền hiện có thể dùng cho giao dịch thẻ",
     "balance_currency": "Đơn vị",
@@ -92,15 +93,18 @@
     "spent": "Đã chi tiêu",
     "remaining": "Còn lại",
     "total_limit": "Tổng hạn mức",
+
     "of": "trên",
     "view_details": "Xem chi tiết",
-    "transactions": "Giao dịch",
+    "transactions": "Giao dịch", 
     "all": "Tất cả",
     "sent": "Chi tiêu",
     "received": "Nhận tiền",
+
     "spent_of_limit": "{{spent}} đã chi tiêu trên {{limit}} hạn mức thẻ",
     "copied": "Đã sao chép",
     "card_number_copied": "Số thẻ đã được sao chép vào clipboard"
+
   },
   "settings": {
     "title": "Cài đặt",
