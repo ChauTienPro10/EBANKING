@@ -3,10 +3,10 @@ import {
   View,
   StyleSheet,
   SafeAreaView,
-  ScrollView,
   Dimensions,
   Animated,
 } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../store';
@@ -32,7 +32,9 @@ const ProfileScreen: React.FC = () => {
   const { t, i18n } = useTranslation();
   const language = useSelector((state: RootState) => state.app.language);
   const userInfo = useSelector((state: RootState) => state.app.userInfoData);
-  const loginResponse = useSelector((State: RootState) => State.app.loginResponse);
+  const loginResponse = useSelector(
+    (State: RootState) => State.app.loginResponse,
+  );
   const dispatch: AppDispatch = store.dispatch;
 
   useEffect(() => {
@@ -51,9 +53,8 @@ const ProfileScreen: React.FC = () => {
       email: userInfo?.email ? userInfo.email : '---',
       phone: userInfo?.phone ? userInfo.phone : '---',
     });
-    console.log('mmmm', userInfo, profile.gender)
-
-  }, [userInfo])
+    console.log('mmmm', userInfo, profile.gender);
+  }, [userInfo]);
 
   const [profile, setProfile] = useState({
     fullName: '---',
@@ -78,11 +79,10 @@ const ProfileScreen: React.FC = () => {
       phone: profile.phone !== '---' ? profile.phone : '',
       address: profile.address !== '---' ? profile.address : '',
       birthday: profile.dateOfBirth !== '---' ? profile.dateOfBirth : '',
-      isMale: profile.gender === "Nam" ? true : false,
+      isMale: profile.gender === 'Nam' ? true : false,
       username: loginResponse?.username,
-      password: password
-
-    }
+      password: password,
+    };
     const data = await fetch.post(API.UPDATE_USER_INFO, payload, true);
     if (loginResponse?.id !== undefined) {
       dispatch(fetchUserInfo(loginResponse.id));
@@ -92,7 +92,7 @@ const ProfileScreen: React.FC = () => {
         text2: t('profile.update_success_message'),
       });
     }
-  }
+  };
 
   // Use animation hooks
   const {
@@ -189,7 +189,12 @@ const ProfileScreen: React.FC = () => {
       if (digits.length > 2 && digits.length <= 4) {
         digits = digits.slice(0, 2) + '-' + digits.slice(2);
       } else if (digits.length > 4) {
-        digits = digits.slice(0, 2) + '-' + digits.slice(2, 4) + '-' + digits.slice(4, 8);
+        digits =
+          digits.slice(0, 2) +
+          '-' +
+          digits.slice(2, 4) +
+          '-' +
+          digits.slice(4, 8);
       }
       newValue = digits;
     }
@@ -203,15 +208,17 @@ const ProfileScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-
-      <LoadingPopup visible={isLoading} message={t('profile.loading_message')} />
+      <LoadingPopup
+        visible={isLoading}
+        message={t('profile.loading_message')}
+      />
 
       <PasswordPopup
         visible={showPasswordPopup}
         message={t('profile.password_prompt')}
         onClose={() => setShowPasswordPopup(false)}
-        onSubmit={(password) => {
-          handleSave(password)
+        onSubmit={password => {
+          handleSave(password);
           setShowPasswordPopup(false);
         }}
       />
@@ -230,11 +237,15 @@ const ProfileScreen: React.FC = () => {
       {/* User Info Card with Animation */}
       <UserInfoCard cardOpacity={cardOpacity} fullName={profile.fullName} />
 
-      <ScrollView
+      <KeyboardAwareScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
         onScroll={handleScroll}
         scrollEventThrottle={16}
+        enableOnAndroid={true}
+        enableAutomaticScroll={true}
+        extraScrollHeight={120}
+        keyboardShouldPersistTaps="handled"
       >
         {/* Personal Information Section */}
         <PersonalInfoSection
@@ -266,7 +277,7 @@ const ProfileScreen: React.FC = () => {
             />
           </View>
         )}
-      </ScrollView>
+      </KeyboardAwareScrollView>
     </SafeAreaView>
   );
 };

@@ -105,12 +105,12 @@ const styles = StyleSheet.create({
   },
   topNavigation: {
     position: 'relative',
-    paddingTop: 10,
+    paddingTop: 0,
     zIndex: 1001,
   },
   modernEditButton: {
     position: 'absolute',
-    top: 15,
+    top: 30,
     right: 20,
     paddingHorizontal: 16,
     paddingVertical: 8,
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
   integratedAvatarSection: {
     alignItems: 'center',
     position: 'absolute',
-    top: 70,
+    top: 78,
     left: 0,
     right: 0,
     bottom: 0,
