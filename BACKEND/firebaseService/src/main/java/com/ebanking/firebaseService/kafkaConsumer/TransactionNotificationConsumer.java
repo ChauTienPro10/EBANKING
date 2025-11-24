@@ -77,30 +77,6 @@ public class TransactionNotificationConsumer {
         String amount = transactionEvent.getAmount().toString();
         String transactionId = transactionEvent.getTransactionId().toString();
         
-        try {
-            switch (transactionEvent.getStatus().toUpperCase()) {
-                case "PENDING":
-                    fcmService.sendTransactionPendingNotificationByUsername(username, transactionId, amount);
-                    log.info("Sent pending notification to user {} (role: {})", username, userRole);
-                    break;
-                    
-                case "SUCCESS":
-                    fcmService.sendTransactionSuccessNotificationByUsername(username, transactionId, amount);
-                    log.info("Sent success notification to user {} (role: {})", username, userRole);
-                    break;
-                    
-                case "FAILED":
-                    String reason = transactionEvent.getFailureReason() != null ? 
-                            transactionEvent.getFailureReason() : "Không xác định";
-                    fcmService.sendTransactionFailedNotificationByUsername(username, transactionId, amount, reason);
-                    log.info("Sent failed notification to user {} (role: {})", username, userRole);
-                    break;
-                    
-                default:
-                    log.warn("Unknown transaction status: {}", transactionEvent.getStatus());
-            }
-        } catch (Exception e) {
-            log.error("Error sending notification to user {} (role: {}): {}", username, userRole, e.getMessage());
-        }
+
     }
 }

@@ -6,7 +6,7 @@
 import { EKYC_BACKEND_URL } from '@env';
 import { EKYCSession, EKYCConfig, EKYCCallbackData } from '../types';
 
-const BACKEND_URL = EKYC_BACKEND_URL || 'http://10.0.2.2:8081';
+const BACKEND_URL = EKYC_BACKEND_URL || 'http://10.0.2.2:8008';
 
 /**
  * Create a new eKYC session

@@ -197,8 +197,17 @@
   },
   "notifications": {
     "title": "Thông báo",
-    "no_notifications": "Không có thông báo mới",
-    "mark_all_read": "Đánh dấu tất cả đã đọc"
+    "tab_personal": "Thông báo cá nhân",
+    "tab_system": "Thông báo hệ thống",
+    "personal": "Cá nhân",
+    "system": "Hệ thống",
+    "no_notifications": "Không có thông báo",
+    "mark_all_read": "Đánh dấu tất cả đã đọc",
+    "empty_personal": "Không có thông báo cá nhân",
+    "empty_system": "Không có thông báo hệ thống",
+    "time_ago_minutes": "{{minutes}} phút trước",
+    "time_ago_hours": "{{hours}} giờ trước",
+    "time_ago_days": "{{days}} ngày trước"
   },
   "search": {
     "placeholder": "Tìm kiếm chức năng...",
@@ -221,6 +230,7 @@
     "content": "Nội dung chuyển tiền",
     "content_placeholder": "Nhập nội dung chuyển tiền",
     "quick_amount": "Số tiền nhanh",
+    "save_recipient_account": "Lưu số tài khoản người nhận",
     "transfer_button": "Chuyển tiền",
     "transfer_button_check_success": "Tiếp tục",
     "validation": {

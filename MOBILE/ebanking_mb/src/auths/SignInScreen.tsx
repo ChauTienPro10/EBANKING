@@ -28,9 +28,8 @@ import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ReactNativeBiometrics from 'react-native-biometrics';
 import LoadingPopup from "../popups/LoadingPopup.tsx";
-import { SaveTokenDto } from "../utils/fcmService.ts";
+import { SaveTokenDto, updateServerFcmToken } from "../utils/fcmService.ts";
 import DeviceInfo from 'react-native-device-info';
-import { getFcmToken } from "../utils/fcmService.ts";
 
 
 type AuthStackParamList = {
@@ -99,18 +98,6 @@ const SignInScreen: React.FC = () => {
     }
   };
 
-  const updateFcmToken = async (payload: SaveTokenDto) => {
-    try {
-      payload.token = await getFcmToken();
-      const rs = await api.post(API.UPDATE_TOKEN_FCM, payload, true);
-      console.log('FCM token cập nhật thành công:', rs);
-      return rs;
-    } catch (err: any) {
-      console.error('Lỗi khi cập nhật FCM token:', err?.message || err);
-      return null;
-    }
-  };
-
   const handleSignIn = async (email: string, password: string) => {
     setLoading(true);
     const url = API.LOGIN;
@@ -132,7 +119,7 @@ const SignInScreen: React.FC = () => {
       };
 
       // Cập nhật FCM token
-      await updateFcmToken(fcmPayload);
+      await updateServerFcmToken(fcmPayload);
     } catch (error) {
       Toast.show({
         type: 'error',

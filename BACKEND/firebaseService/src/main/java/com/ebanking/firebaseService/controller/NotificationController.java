@@ -1,8 +1,10 @@
 package com.ebanking.firebaseService.controller;
 
+import com.ebanking.firebaseService.dto.request.PushNotiRequest;
 import com.ebanking.firebaseService.dto.request.SaveTockenDTO;
 import com.ebanking.firebaseService.service.FCMService;
 import com.ebanking.firebaseService.service.FirebaseMessagingService;
+import com.ebanking.firebaseService.service.NotificationService;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
@@ -24,6 +26,9 @@ public class NotificationController {
 
     @Autowired
     FirebaseMessagingService firebaseMessagingService;
+
+    @Autowired
+    NotificationService notificationService;
 
     @PostMapping("/push-noti")
     public void sendNotification(String token, String title, String body) throws FirebaseMessagingException {
@@ -75,5 +80,15 @@ public class NotificationController {
             log.error(e.getMessage());
             return false;
         }
+    }
+
+    @PostMapping("/push-all")
+    public void pushNotiAll(@RequestBody PushNotiRequest request) throws FirebaseMessagingException {
+        notificationService.pushNotiAll(request);
+    }
+
+    @PostMapping("/push-noti-persional")
+    public void sendNotiPersional(@RequestBody PushNotiRequest request) {
+        return;
     }
 }

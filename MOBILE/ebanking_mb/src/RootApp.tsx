@@ -1,5 +1,5 @@
 // RootApp.tsx
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   StatusBar,
@@ -24,8 +24,10 @@ import { navigationRef } from './navigation/navigate';
 import {
   requestNotificationPermission,
   requestPermissionIOS,
+  listenFcmTokenRefresh,
+  updateServerFcmToken,
+  SaveTokenDto,
 } from './utils/fcmService';
-import { SaveTokenDto } from './utils/fcmService';
 import DeviceInfo from 'react-native-device-info';
 import FlashMessage from 'react-native-flash-message';
 import { HOST_SERVER } from './constants/api';
@@ -48,23 +50,72 @@ const RootApp: React.FC = () => {
     (state: RootState) => state.app.loginResponse,
   );
   const dispatch = useDispatch<AppDispatch>();
+  const [deviceId, setDeviceId] = useState<string>('');
 
   useEffect(() => {
+    const fetchDeviceId = async () => {
+      const id = await DeviceInfo.getUniqueId();
+      setDeviceId(id?.toString() || '');
+    };
+    fetchDeviceId();
+  }, []);
+
+  useEffect(() => {
+    if (!deviceId) {
+      return;
+    }
+
     const requestPermissions = async () => {
+      const payload: SaveTokenDto = {
+        userId: 0,
+        username: 'guest',
+        deviceId,
+        token: '',
+      };
+
       if (Platform.OS === 'android') {
-        const payload: SaveTokenDto = {
-          userId: 0,
-          username: 'guest',
-          deviceId: (await DeviceInfo.getUniqueId()).toString(),
-          token: '',
-        };
         await requestNotificationPermission(payload);
       } else if (Platform.OS === 'ios') {
-        await requestPermissionIOS();
+        await requestPermissionIOS(payload);
       }
     };
     requestPermissions();
-  }, []);
+  }, [deviceId]);
+
+  useEffect(() => {
+    if (!deviceId || !loginResponse) {
+      return;
+    }
+
+    const syncTokenAfterLogin = async () => {
+      const payload: SaveTokenDto = {
+        userId: loginResponse.id,
+        username: loginResponse.username ?? 'guest',
+        deviceId,
+        token: '',
+      };
+      await updateServerFcmToken(payload);
+    };
+
+    syncTokenAfterLogin();
+  }, [deviceId, loginResponse]);
+
+  useEffect(() => {
+    if (!deviceId) {
+      return;
+    }
+
+    const unsubscribe = listenFcmTokenRefresh(() => ({
+      userId: loginResponse?.id ?? 0,
+      username: loginResponse?.username ?? 'guest',
+      deviceId,
+      token: '',
+    }));
+
+    return () => {
+      unsubscribe();
+    };
+  }, [deviceId, loginResponse]);
 
   useEffect(() => {
     if (loginResponse) {

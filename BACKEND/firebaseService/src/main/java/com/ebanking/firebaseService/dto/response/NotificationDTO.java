@@ -1,6 +1,6 @@
 package com.ebanking.firebaseService.dto.response;
 
-import com.ebanking.firebaseService.entity.Notification;
+import com.ebanking.firebaseService.entity.NotiTransaction;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -26,7 +26,7 @@ public class NotificationDTO {
     private String transactionStatus;
 
     // chuyển entity to DTO
-    public static NotificationDTO fromEntity(Notification notification) {
+    public static NotificationDTO fromEntity(NotiTransaction notification) {
         return NotificationDTO.builder()
                 .id(notification.getId())
                 .userId(notification.getUserId())

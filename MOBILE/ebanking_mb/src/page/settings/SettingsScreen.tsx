@@ -130,6 +130,7 @@ const SettingsScreen: React.FC = () => {
         onNotificationPress={() => {
           handleNotificationPress();
           clearNotifications();
+          navigation.navigate('Notifications' as never);
         }}
       />
 

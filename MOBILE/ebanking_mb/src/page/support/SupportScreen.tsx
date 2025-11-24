@@ -73,7 +73,7 @@ const SupportScreen: React.FC = () => {
         showBackButton={false}
         showNotification={true}
         notificationCount={1}
-        onNotificationPress={() => console.log('Support notification pressed')}
+        onNotificationPress={() => navigation.navigate('Notifications' as never)}
       />
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>

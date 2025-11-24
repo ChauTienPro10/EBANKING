@@ -180,8 +180,17 @@
   },
   "notifications": {
     "title": "Notifications",
-    "no_notifications": "No new notifications",
-    "mark_all_read": "Mark all as read"
+    "tab_personal": "Personal Notifications",
+    "tab_system": "System Notifications",
+    "personal": "Personal",
+    "system": "System",
+    "no_notifications": "No notifications",
+    "mark_all_read": "Mark all as read",
+    "empty_personal": "No personal notifications",
+    "empty_system": "No system notifications",
+    "time_ago_minutes": "{{minutes}} minutes ago",
+    "time_ago_hours": "{{hours}} hours ago",
+    "time_ago_days": "{{days}} days ago"
   },
   "search": {
     "placeholder": "Search functions...",
@@ -202,6 +211,7 @@
     "content": "Transfer Content",
     "content_placeholder": "Enter transfer content",
     "quick_amount": "Quick Amount",
+    "save_recipient_account": "Save recipient account number",
     "transfer_button": "Transfer",
     "transfer_button_check_success": "Tiếp tục",
     "validation": {

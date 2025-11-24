@@ -6,7 +6,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "notifications", indexes = {
+@Table(name = "noti-transaction", indexes = {
     @Index(name = "idx_user_id", columnList = "userId"),
     @Index(name = "idx_username", columnList = "username"),
     @Index(name = "idx_created_at", columnList = "createdAt")
@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Notification {
+public class NotiTransaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

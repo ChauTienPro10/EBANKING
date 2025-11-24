@@ -18,6 +18,7 @@ import setPinCodeScreen from '../PIN/pinCodeScreen';
 import ScannerScreen from '../page/QR/ScannerScreen';
 import { EKYCScreen } from '../features/ekyc';
 import ChatScreen from '../page/chatbot/ChatScreen';
+import NotiScreen from '../page/notify/notiScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -60,6 +61,7 @@ export default function MainStack() {
       />
       <Stack.Screen name="SetPINCode" component={setPinCodeScreen} />
       <Stack.Screen name="ScannerScreen" component={ScannerScreen} />
+      <Stack.Screen name="Notifications" component={NotiScreen} />
 
       <Stack.Screen name="EKYC" component={EKYCScreen} />
     </Stack.Navigator>

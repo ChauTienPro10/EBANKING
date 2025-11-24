@@ -30,6 +30,8 @@ import { RootState } from '../../store';
 import TransactionFailedScreen from './Error';
 import { AppDispatch, store } from '../../store';
 import { fetchAccountTransInfo } from '../../store/fetchAPI/AccountFetch';
+import CheckBox from '../../components/CheckBox';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type NavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -88,6 +90,7 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({ route
   const [accountOk, setAccountOk] = useState(false)
   const [transferModalVisible, setTransferModalVisible] = useState(false);
   const [receiverName, setReceiverName] = useState('');
+  const [saveRecipientAccount, setSaveRecipientAccount] = useState(false);
 
   const dispatch: AppDispatch = store.dispatch;
 
@@ -130,6 +133,11 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({ route
           dispatch(fetchAccountTransInfo(loginResponse.id));
         }
 
+        // Lưu số tài khoản người nhận nếu checkbox được chọn
+        if (saveRecipientAccount && formData.recipientAccount) {
+          await saveRecipientAccountToStorage(formData.recipientAccount, receiverName);
+        }
+
         navigation.navigate('PendingTransactionScreen', {
           amount: '₫' + formData.amount,
           content: formData?.content,
@@ -151,6 +159,14 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({ route
   const handleCancelTransfer = async () => {
 
     setTransferModalVisible(false);
+  };
+
+  const saveRecipientAccountToStorage = async (accountNumber: string, accountName: string) => {
+    try {
+     
+    } catch (error) {
+      console.error('Error saving recipient account:', error);
+    }
   };
 
   const [formData, setFormData] = useState<TransferFormData>({
@@ -416,6 +432,15 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({ route
             keyboardType="numeric"
             maxLength={16}
           />
+          <View style={styles.saveAccountContainer}>
+            <CheckBox
+              checked={saveRecipientAccount}
+              onChange={setSaveRecipientAccount}
+            />
+            <Text style={styles.saveAccountText} onPress={() => setSaveRecipientAccount(!saveRecipientAccount)}>
+              {t('transfer.save_recipient_account')}
+            </Text>
+          </View>
         </View>
 
         <View style={styles.section}>
@@ -769,6 +794,17 @@ const styles = StyleSheet.create({
   },
   selectedIndicator: {
     marginLeft: 12,
+  },
+  saveAccountContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 12,
+  },
+  saveAccountText: {
+    ...TextStyles.systemLight_14,
+    color: Colors.textPrimary,
+    marginLeft: 8,
+    fontWeight: '500',
   },
 });
 

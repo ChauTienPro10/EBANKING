@@ -117,6 +117,7 @@ const HomeScreen: React.FC = () => {
   const handleNotificationPress = () => {
     console.log(t('mock_data.messages.notification_pressed'));
     setNotificationCount(0);
+    navigation.navigate('Notifications' as never);
   };
 
   const handleTabChange = (tabId: string) => {
