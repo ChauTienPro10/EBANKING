@@ -12,10 +12,16 @@ const Colors = {
   orange: '#FF6B35',
   purple: '#8B5CF6',
   yellow: '#FCD34D',
+  gold: '#D4AF37',
+  deepGreen: '#024428',
+  darkGreenCircle: '#013320',
+  cardGradientStart: '#0a8c91',
+  cardGradientEnd: '#08b3b9',
+  cardDark: '#076b6f',
   background: '#F8F9FA',
   textPrimary: '#1F2937',
   textSecondary: '#6B7280',
-  border: '#E5E7EB'
+  border: '#E5E7EB',
 };
 
 export default Colors;
