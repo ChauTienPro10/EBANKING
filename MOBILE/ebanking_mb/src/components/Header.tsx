@@ -85,11 +85,12 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 10,
   },
   backButton: {
-    // padding: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   title: {
     flex: 1,
-    paddingTop: 16,
+    alignItems: 'center',
     textAlign: 'center',
   },
   placeholder: {

@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
   },
   modernEditButton: {
     position: 'absolute',
-    top: 30,
+    top: 25,
     right: 20,
     paddingHorizontal: 16,
     paddingVertical: 8,

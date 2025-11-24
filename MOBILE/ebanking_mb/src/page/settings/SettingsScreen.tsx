@@ -141,16 +141,16 @@ const SettingsScreen: React.FC = () => {
         />
       </ScrollView>
 
+      <LogoutConfirmPopup
+        visible={showLogoutPopup}
+        onCancel={() => setShowLogoutPopup(false)}
+        onConfirm={handleLogout}
+      />
       <BottomNavigation
         activeTab={activeTab}
         tabs={bottomTabs}
         onChange={handleTabChange}
         onQRPress={handleQRPress}
-      />
-      <LogoutConfirmPopup
-        visible={showLogoutPopup}
-        onCancel={() => setShowLogoutPopup(false)}
-        onConfirm={handleLogout}
       />
     </View>
   );
