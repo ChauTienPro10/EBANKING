@@ -1,9 +1,33 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Touchable, Modal, Button } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Touchable,
+  Modal,
+  Button,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import Colors from '../../constants/color';
-import { TransferIcon, CashIcon, ReceiptIcon, MobileIcon, TrendingUpIcon, BellIcon, EyeIcon, EyeOffIcon, SearchIcon, CardIcon, AirplaneIcon, GameControllerIcon, WifiIcon, UserIcon } from '../../components/icon';
+import {
+  TransferIcon,
+  CashIcon,
+  ReceiptIcon,
+  MobileIcon,
+  TrendingUpIcon,
+  BellIcon,
+  EyeIcon,
+  EyeOffIcon,
+  SearchIcon,
+  CardIcon,
+  AirplaneIcon,
+  GameControllerIcon,
+  WifiIcon,
+  UserIcon,
+} from '../../components/icon';
 import BottomNavigation from '../../components/BottomNavigation';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
@@ -14,9 +38,13 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/types';
 
 const HomeScreen: React.FC = () => {
-  const loginResponse = useSelector((state: RootState) => state.app.loginResponse);
+  const loginResponse = useSelector(
+    (state: RootState) => state.app.loginResponse,
+  );
   const userInfo = useSelector((state: RootState) => state.app.userInfoData);
-  const account = useSelector((state: RootState) => state.app.accountTransResponse);
+  const account = useSelector(
+    (state: RootState) => state.app.accountTransResponse,
+  );
   type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
   const navigation = useNavigation<NavigationProp>();
   const { t } = useTranslation();
@@ -26,64 +54,146 @@ const HomeScreen: React.FC = () => {
 
   const [requireUpdateInfo, setRequireUpdateInfo] = useState(false);
 
-
   const quickActions = [
-    { id: 'transfer', title: t('action_grid.transfer'), icon: 'transfer', color: Colors.main_bule, tag: null },
-    { id: 'withdraw', title: t('action_grid.withdraw'), icon: 'cash', color: Colors.main_green, tag: null },
-    { id: 'trans_history', title: t('action_grid.pay_history'), icon: 'receipt', color: Colors.orange, tag: null },
-    { id: 'mobile_prepaid', title: t('action_grid.mobile_prepaid'), icon: 'mobile', color: Colors.purple, tag: null },
-    { id: 'profile', title: t('action_grid.profile'), icon: 'person', color: Colors.main_bule, tag: null },
-    { id: 'loan', title: t('action_grid.loan'), icon: 'cash', color: Colors.main_green, tag: t('home.wind_tag') },
+    {
+      id: 'transfer',
+      title: t('action_grid.transfer'),
+      icon: 'transfer',
+      color: Colors.main_bule,
+      tag: null,
+    },
+    {
+      id: 'withdraw',
+      title: t('action_grid.withdraw'),
+      icon: 'cash',
+      color: Colors.main_green,
+      tag: null,
+    },
+    {
+      id: 'trans_history',
+      title: t('action_grid.pay_history'),
+      icon: 'receipt',
+      color: Colors.orange,
+      tag: null,
+    },
+    {
+      id: 'mobile_prepaid',
+      title: t('action_grid.mobile_prepaid'),
+      icon: 'mobile',
+      color: Colors.purple,
+      tag: null,
+    },
+    {
+      id: 'profile',
+      title: t('action_grid.profile'),
+      icon: 'person',
+      color: Colors.main_bule,
+      tag: null,
+    },
+    {
+      id: 'loan',
+      title: t('action_grid.loan'),
+      icon: 'cash',
+      color: Colors.main_green,
+      tag: t('home.wind_tag'),
+    },
   ];
 
   const services = [
-    { id: 'lottery', title: t('home.lottery_king'), icon: 'game-controller', color: Colors.orange },
-    { id: 'data', title: t('home.data_4g'), icon: 'wifi', color: Colors.main_bule },
-    { id: 'game', title: t('home.game_card'), icon: 'game-controller', color: Colors.purple },
-    { id: 'flight', title: t('home.flight_tickets'), icon: 'airplane', color: Colors.main_green },
+    {
+      id: 'lottery',
+      title: t('home.lottery_king'),
+      icon: 'game-controller',
+      color: Colors.orange,
+    },
+    {
+      id: 'data',
+      title: t('home.data_4g'),
+      icon: 'wifi',
+      color: Colors.main_bule,
+    },
+    {
+      id: 'game',
+      title: t('home.game_card'),
+      icon: 'game-controller',
+      color: Colors.purple,
+    },
+    {
+      id: 'flight',
+      title: t('home.flight_tickets'),
+      icon: 'airplane',
+      color: Colors.main_green,
+    },
   ];
 
   const bottomTabs = [
     { id: 'home', label: t('bottom_navigation.home'), icon: 'home' },
-    { id: 'menu', label: t('bottom_navigation.menu'), icon: 'grid' },
-    { id: 'settings', label: t('bottom_navigation.settings'), icon: 'settings' },
-    { id: 'support', label: t('bottom_navigation.support'), icon: 'help-circle' },
+    { id: 'card', label: t('bottom_navigation.card'), icon: 'card' },
+    {
+      id: 'settings',
+      label: t('bottom_navigation.settings'),
+      icon: 'settings',
+    },
+    {
+      id: 'support',
+      label: t('bottom_navigation.support'),
+      icon: 'help-circle',
+    },
   ];
 
-
-
   useEffect(() => {
-    if (userInfo?.fullName === '' || userInfo?.birthday === '' || userInfo?.address === '') {
+    if (
+      userInfo?.fullName === '' ||
+      userInfo?.birthday === '' ||
+      userInfo?.address === ''
+    ) {
       setRequireUpdateInfo(true);
     }
-  }, [userInfo])
+  }, [userInfo]);
 
   const getIconComponent = (iconName: string, color: string) => {
     const iconProps = { size: 24, color: color };
 
     switch (iconName) {
-      case 'transfer': return <TransferIcon {...iconProps} />;
-      case 'cash': return <CashIcon {...iconProps} />;
-      case 'receipt': return <ReceiptIcon {...iconProps} />;
-      case 'mobile': return <MobileIcon {...iconProps} />;
-      case 'card': return <CardIcon {...iconProps} />;
-      case 'game-controller': return <GameControllerIcon {...iconProps} />;
-      case 'wifi': return <WifiIcon {...iconProps} />;
-      case 'airplane': return <AirplaneIcon {...iconProps} />;
-      case 'person': return <PersonIcon {...iconProps} />;
-      default: return <TransferIcon {...iconProps} />;
+      case 'transfer':
+        return <TransferIcon {...iconProps} />;
+      case 'cash':
+        return <CashIcon {...iconProps} />;
+      case 'receipt':
+        return <ReceiptIcon {...iconProps} />;
+      case 'mobile':
+        return <MobileIcon {...iconProps} />;
+      case 'card':
+        return <CardIcon {...iconProps} />;
+      case 'game-controller':
+        return <GameControllerIcon {...iconProps} />;
+      case 'wifi':
+        return <WifiIcon {...iconProps} />;
+      case 'airplane':
+        return <AirplaneIcon {...iconProps} />;
+      case 'person':
+        return <PersonIcon {...iconProps} />;
+      default:
+        return <TransferIcon {...iconProps} />;
     }
   };
 
   const handleActionPress = (action: any) => {
-    console.log(t('mock_data.messages.action_pressed', { action: action.title }));
+    console.log(
+      t('mock_data.messages.action_pressed', { action: action.title }),
+    );
 
     switch (action.id) {
       case 'transfer':
         if (account) {
-          navigation.navigate('Transfer', { receiver: '', amount: '', content: '', bankCode: '' });
+          navigation.navigate('Transfer', {
+            receiver: '',
+            amount: '',
+            content: '',
+            bankCode: '',
+          });
         } else {
-          navigation.navigate('OpenCard', { userInfo })
+          navigation.navigate('OpenCard', { userInfo });
         }
         break;
       case 'withdraw':
@@ -96,7 +206,7 @@ const HomeScreen: React.FC = () => {
         console.log('Navigate to mobile prepaid screen');
         break;
       case 'profile':
-        navigation.navigate("Profile" as never);
+        navigation.navigate('Profile' as never);
         break;
       case 'loan':
         console.log('Navigate to loan screen');
@@ -121,7 +231,9 @@ const HomeScreen: React.FC = () => {
   };
 
   const handleTabChange = (tabId: string) => {
-    console.log(t('mock_data.messages.tab_changed', { from: activeTab, to: tabId }));
+    console.log(
+      t('mock_data.messages.tab_changed', { from: activeTab, to: tabId }),
+    );
 
     if (tabId !== activeTab) {
       setActiveTab(tabId);
@@ -129,8 +241,8 @@ const HomeScreen: React.FC = () => {
       switch (tabId) {
         case 'home':
           break;
-        case 'menu':
-          navigation.navigate('Menu' as never);
+        case 'card':
+          navigation.navigate('Card' as never);
           break;
         case 'settings':
           navigation.navigate('Settings' as never);
@@ -151,7 +263,7 @@ const HomeScreen: React.FC = () => {
         message="Vui lòng cập nhật đầy đủ thông tin"
         onClose={() => {
           setRequireUpdateInfo(false);
-          navigation.navigate("Profile" as never);
+          navigation.navigate('Profile' as never);
         }}
       />
 
@@ -159,14 +271,19 @@ const HomeScreen: React.FC = () => {
         <View style={styles.headerTop}>
           <View style={styles.headerLeft}>
             <View style={styles.logoContainer}>
-              <Text style={styles.logoText}>{t('ui.bank_name').toUpperCase()}</Text>
+              <Text style={styles.logoText}>
+                {t('ui.bank_name').toUpperCase()}
+              </Text>
             </View>
           </View>
           <View style={styles.headerActions}>
             <TouchableOpacity style={styles.headerActionButton}>
               <SearchIcon size={20} color={Colors.white} />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.headerActionButton} onPress={handleNotificationPress}>
+            <TouchableOpacity
+              style={styles.headerActionButton}
+              onPress={handleNotificationPress}
+            >
               <BellIcon size={20} color={Colors.white} />
               {notificationCount > 0 && (
                 <View style={styles.notificationBadge}>
@@ -184,7 +301,11 @@ const HomeScreen: React.FC = () => {
                 <UserIcon size={24} color={Colors.white} />
               </View>
               <View style={styles.profileInfo}>
-                <Text style={styles.profileGreeting}>{t('greetings.hello_user', { name: loginResponse?.fullName || loginResponse?.username })}</Text>
+                <Text style={styles.profileGreeting}>
+                  {t('greetings.hello_user', {
+                    name: loginResponse?.fullName || loginResponse?.username,
+                  })}
+                </Text>
               </View>
             </View>
           </View>
@@ -192,31 +313,51 @@ const HomeScreen: React.FC = () => {
 
         <View style={styles.balanceCard}>
           <View style={styles.balanceHeader}>
-            {account != null && <Text style={styles.balanceTitle}>{t('labels.total_balance')}</Text>}
-            {account === null && <TouchableOpacity>
-              <Text style={styles.balanceTitle}>{t('labels.you_not_has_card')}</Text>
-            </TouchableOpacity>}
-          </View>
-          <View style={styles.balanceAmount}>
-            {isBalanceVisible ? <Text style={styles.balanceText}>
-              {account?.balance.toLocaleString('en-US') + ' VND'}
-            </Text> :
-              <TouchableOpacity onPress={() => navigation.navigate('OpenCard', { userInfo })}>
-                <Text style={styles.balanceTextOpenAccount}>
-                  {account === null ? t('labels.open_account_now') : "*,***,***"}
+            {account != null && (
+              <Text style={styles.balanceTitle}>
+                {t('labels.total_balance')}
+              </Text>
+            )}
+            {account === null && (
+              <TouchableOpacity>
+                <Text style={styles.balanceTitle}>
+                  {t('labels.you_not_has_card')}
                 </Text>
               </TouchableOpacity>
-            }
+            )}
+          </View>
+          <View style={styles.balanceAmount}>
+            {isBalanceVisible ? (
+              <Text style={styles.balanceText}>
+                {account?.balance.toLocaleString('en-US') + ' VND'}
+              </Text>
+            ) : (
+              <TouchableOpacity
+                onPress={() => navigation.navigate('OpenCard', { userInfo })}
+              >
+                <Text style={styles.balanceTextOpenAccount}>
+                  {account === null
+                    ? t('labels.open_account_now')
+                    : '*,***,***'}
+                </Text>
+              </TouchableOpacity>
+            )}
 
             <TouchableOpacity
               style={styles.eyeButton}
               onPress={() => setIsBalanceVisible(!isBalanceVisible)}
             >
-              {isBalanceVisible ? <EyeOffIcon size={20} color={Colors.white} /> : <EyeIcon size={20} color={Colors.white} />}
+              {isBalanceVisible ? (
+                <EyeOffIcon size={20} color={Colors.white} />
+              ) : (
+                <EyeIcon size={20} color={Colors.white} />
+              )}
             </TouchableOpacity>
           </View>
           <View style={styles.balanceFooter}>
-            <Text style={styles.balanceFooterText}>{t('home.card_management')}</Text>
+            <Text style={styles.balanceFooterText}>
+              {t('home.card_management')}
+            </Text>
             <CardIcon size={16} color={Colors.white} />
           </View>
         </View>
@@ -225,7 +366,7 @@ const HomeScreen: React.FC = () => {
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.quickActionsContainer}>
           <View style={styles.actionsGrid}>
-            {quickActions.map((action) => (
+            {quickActions.map(action => (
               <TouchableOpacity
                 key={action.id}
                 style={styles.actionItem}
@@ -233,16 +374,19 @@ const HomeScreen: React.FC = () => {
                 activeOpacity={0.7}
               >
                 {action.tag && (
-                  <View style={[styles.actionTag, { backgroundColor: action.color }]}>
+                  <View
+                    style={[
+                      styles.actionTag,
+                      { backgroundColor: action.color },
+                    ]}
+                  >
                     <Text style={styles.actionTagText}>{action.tag}</Text>
                   </View>
                 )}
                 <View style={styles.actionIconContainer}>
                   {getIconComponent(action.icon, action.color)}
                 </View>
-                <Text style={styles.actionText}>
-                  {action.title}
-                </Text>
+                <Text style={styles.actionText}>{action.title}</Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -251,18 +395,22 @@ const HomeScreen: React.FC = () => {
           </View>
         </View>
 
-
         <View style={styles.servicesContainer}>
           <Text style={styles.servicesTitle}>{t('labels.services_title')}</Text>
           <View style={styles.servicesGrid}>
-            {services.map((service) => (
+            {services.map(service => (
               <TouchableOpacity
                 key={service.id}
                 style={styles.serviceItem}
                 onPress={() => console.log('Service pressed:', service)}
                 activeOpacity={0.7}
               >
-                <View style={[styles.serviceIcon, { backgroundColor: service.color }]}>
+                <View
+                  style={[
+                    styles.serviceIcon,
+                    { backgroundColor: service.color },
+                  ]}
+                >
                   {getIconComponent(service.icon, Colors.white)}
                 </View>
                 <Text style={styles.serviceText}>{service.title}</Text>
@@ -519,7 +667,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: Colors.main_green,
     // textDecorationLine: 'underline'
-  }
+  },
 });
 
 export default HomeScreen;

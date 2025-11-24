@@ -1,11 +1,22 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity, Linking } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Linking,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import Header from '../../components/Header';
 import BottomNavigation from '../../components/BottomNavigation';
 import GText from '../../components/GText';
-import { ChatbubbleIcon, PhoneIcon, MailIcon, FAQIcon } from '../../components/icon';
+import {
+  ChatbubbleIcon,
+  PhoneIcon,
+  MailIcon,
+  FAQIcon,
+} from '../../components/icon';
 import Colors from '../../constants/color';
 
 const SupportScreen: React.FC = () => {
@@ -19,20 +30,30 @@ const SupportScreen: React.FC = () => {
 
   const bottomTabs = [
     { id: 'home', label: t('bottom_navigation.home'), icon: 'home' },
-    { id: 'menu', label: t('bottom_navigation.menu'), icon: 'grid' },
-    { id: 'settings', label: t('bottom_navigation.settings'), icon: 'settings' },
-    { id: 'support', label: t('bottom_navigation.support'), icon: 'help-circle' },
+    { id: 'card', label: t('bottom_navigation.card'), icon: 'card' },
+    {
+      id: 'settings',
+      label: t('bottom_navigation.settings'),
+      icon: 'settings',
+    },
+    {
+      id: 'support',
+      label: t('bottom_navigation.support'),
+      icon: 'help-circle',
+    },
   ];
 
   const handleTabChange = (tabId: string) => {
-    console.log(t('mock_data.messages.tab_changed', { from: activeTab, to: tabId }));
+    console.log(
+      t('mock_data.messages.tab_changed', { from: activeTab, to: tabId }),
+    );
     setActiveTab(tabId);
     switch (tabId) {
       case 'home':
         navigation.navigate('Home' as never);
         break;
-      case 'menu':
-        navigation.navigate('Menu' as never);
+      case 'card':
+        navigation.navigate('Card' as never);
         break;
       case 'settings':
         navigation.navigate('Settings' as never);
@@ -45,23 +66,41 @@ const SupportScreen: React.FC = () => {
   };
 
   const supportOptions = [
-    { id: 'chat', title: t('support.chatbot'), description: t('support.chatbot_desc'), icon: ChatbubbleIcon },
-    { id: 'call', title: t('support.hotline'), description: t('support.hotline_desc'), icon: PhoneIcon },
-    { id: 'email', title: t('support.email'), description: t('support.email_desc'), icon: MailIcon },
-    { id: 'faq', title: t('support.faq'), description: t('support.faq_desc'), icon: FAQIcon },
+    {
+      id: 'chat',
+      title: t('support.chatbot'),
+      description: t('support.chatbot_desc'),
+      icon: ChatbubbleIcon,
+    },
+    {
+      id: 'call',
+      title: t('support.hotline'),
+      description: t('support.hotline_desc'),
+      icon: PhoneIcon,
+    },
+    {
+      id: 'email',
+      title: t('support.email'),
+      description: t('support.email_desc'),
+      icon: MailIcon,
+    },
+    {
+      id: 'faq',
+      title: t('support.faq'),
+      description: t('support.faq_desc'),
+      icon: FAQIcon,
+    },
   ];
 
   const handleSupportOption = (option: any) => {
     if (option.id === 'chat') {
       navigation.navigate('Chatbot' as never);
       return;
-    }
-    else if (option.id === 'call') {
+    } else if (option.id === 'call') {
       // let phone = `tel:${phoneNumber}`;
       Linking.openURL(`tel:${'0812788212'}`);
-    }
-    else if (option.id === 'email' ) {
-      Linking.openURL(`mailto:${"itchauduongphattien@gmail.com"}`)
+    } else if (option.id === 'email') {
+      Linking.openURL(`mailto:${'itchauduongphattien@gmail.com'}`);
     }
     console.log('Support option selected:', option);
   };
@@ -81,10 +120,18 @@ const SupportScreen: React.FC = () => {
           <View style={styles.welcomeIconContainer}>
             <ChatbubbleIcon size={32} color={Colors.main_bule} />
           </View>
-          <GText type="systemBold_18" color={Colors.textPrimary} style={styles.welcomeText}>
+          <GText
+            type="systemBold_18"
+            color={Colors.textPrimary}
+            style={styles.welcomeText}
+          >
             {t('support.welcome')}
           </GText>
-          <GText type="systemLight_14" color={Colors.textSecondary} style={styles.subtitleText}>
+          <GText
+            type="systemLight_14"
+            color={Colors.textSecondary}
+            style={styles.subtitleText}
+          >
             {t('support.subtitle')}
           </GText>
         </View>
@@ -104,10 +151,18 @@ const SupportScreen: React.FC = () => {
                   <IconComponent size={24} color={Colors.main_bule} />
                 </View>
                 <View style={styles.optionContent}>
-                  <GText type="systemLight_16" color={Colors.textPrimary} style={styles.optionTitle}>
+                  <GText
+                    type="systemLight_16"
+                    color={Colors.textPrimary}
+                    style={styles.optionTitle}
+                  >
                     {option.title}
                   </GText>
-                  <GText type="systemLight_12" color={Colors.textSecondary} style={styles.optionDescription}>
+                  <GText
+                    type="systemLight_12"
+                    color={Colors.textSecondary}
+                    style={styles.optionDescription}
+                  >
                     {option.description}
                   </GText>
                 </View>

@@ -7,7 +7,7 @@
     "text_pin_invalid": "Mã PIN không hợp lệ",
     "text_err_progress": "Lỗi xử lý, thử lại sau",
     "auth_otp_fail": "Xác thực OTP thất bại",
-    "otp_not_true" : "Mã xác thực không đúng",
+    "otp_not_true": "Mã xác thực không đúng",
     "user_not_found": "User không tồn tại",
     "password_invalid": "Mật khâu không hợp lệ",
     "internal_error": "Lỗi hệ thống"
@@ -55,8 +55,7 @@
   "logout_popup": {
     "are_you_sure_logout": "Bạn có chắc muốn đăng xuẩt?",
     "cancel": "Hủy",
-    "logout":"Đăng xuất"
-
+    "logout": "Đăng xuất"
   },
   "action_grid": {
     "account_and_card": "Tài khoản & Thẻ",
@@ -76,9 +75,24 @@
   "bottom_navigation": {
     "home": "Trang chủ",
     "menu": "Menu",
+    "card": "Thẻ",
     "search": "Tìm kiếm",
     "settings": "Cài đặt",
     "support": "Hỗ trợ"
+  },
+  "card": {
+    "title": "Thẻ của tôi",
+    "credit_card": "Thẻ tín dụng",
+    "debit_card": "Thẻ ghi nợ",
+    "card_limit": "Hạn mức thẻ",
+    "spent": "đã chi tiêu",
+    "of": "trên",
+    "view_details": "Xem chi tiết",
+    "transactions": "Giao dịch",
+    "all": "Tất cả",
+    "sent": "Chi tiêu",
+    "received": "Nhận tiền",
+    "spent_of_limit": "{{spent}} đã chi tiêu trên {{limit}} hạn mức thẻ"
   },
   "settings": {
     "title": "Cài đặt",
@@ -213,7 +227,6 @@
     "placeholder": "Tìm kiếm chức năng...",
     "no_results": "Không tìm thấy kết quả"
   },
- 
 
   "transfer": {
     "title": "Chuyển tiền",
@@ -317,7 +330,7 @@
     "pending_balance": "Chờ xử lý",
     "total_balance": "Tổng số dư VND",
     "you_not_has_card": "Bạn chưa mở tài khoản giao dịch",
-    "open_account_now":"Mở ngay",
+    "open_account_now": "Mở ngay",
     "earn_daily": "SINH LỜI MỖI NGÀY",
     "services_title": "Mua sắm - Giải trí - Đầu tư"
   },

@@ -44,6 +44,13 @@ const TextStyles: Record<string, RNTextStyle> = {
     lineHeight: 18,
     color: Colors.black,
   },
+  systemMedium_12: {
+    fontSize: 12,
+    fontFamily: 'System',
+    fontWeight: '600',
+    lineHeight: 16,
+    color: Colors.black,
+  },
   systemLight_18: {
     fontSize: 18,
     fontFamily: 'System',
