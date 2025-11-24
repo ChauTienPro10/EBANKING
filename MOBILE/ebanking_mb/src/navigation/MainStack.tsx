@@ -2,6 +2,7 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeScreen from '../page/home/HomeScreen';
 import MenuScreen from '../page/menu/MenuScreen';
+import CardScreen from '../page/card-info/CardScreen';
 import SearchScreen from '../page/search/SearchScreen';
 import SettingsScreen from '../page/settings/SettingsScreen';
 import SupportScreen from '../page/support/SupportScreen';
@@ -32,6 +33,7 @@ export default function MainStack() {
       <Stack.Screen name="Profile" component={ProfileScreen} />
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="Menu" component={MenuScreen} />
+      <Stack.Screen name="Card" component={CardScreen} />
       <Stack.Screen name="Search" component={SearchScreen} />
       <Stack.Screen name="Settings" component={SettingsScreen} />
       <Stack.Screen name="Support" component={SupportScreen} />

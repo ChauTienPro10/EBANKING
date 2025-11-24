@@ -1,9 +1,16 @@
-import React from 'react';
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import {
+  View,
+  TouchableOpacity,
+  StyleSheet,
+  Animated,
+  Platform,
+} from 'react-native';
 import GText from './GText';
 import Colors from '../constants/color';
 import HomeIcon from './icon/HomeIcon';
 import GridIcon from './icon/GridIcon';
+import CardIcon from './icon/CardIcon';
 import SearchIcon from './icon/SearchIcon';
 import SettingsIcon from './icon/SettingsIcon';
 import HelpCircleIcon from './icon/HelpCircleIcon';
@@ -22,42 +29,77 @@ interface BottomNavigationProps {
   onQRPress?: () => void;
 }
 
-const BottomNavigation: React.FC<BottomNavigationProps> = ({ 
-  activeTab, 
-  tabs, 
+const BottomNavigation: React.FC<BottomNavigationProps> = ({
+  activeTab,
+  tabs,
   onChange,
-  onQRPress 
+  onQRPress,
 }) => {
+  // Animation for QR button pulse
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    // Pulse animation for QR button
+    const pulse = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, {
+          toValue: 1.1,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+      ]),
+    );
+    pulse.start();
+
+    return () => pulse.stop();
+  }, [pulseAnim]);
+
   const getIconComponent = (iconName: string, isActive: boolean) => {
-    const iconProps = { 
-      size: 24, 
-      color: isActive ? Colors.main_bule : Colors.grey3 
+    const iconSize = isActive ? 26 : 24;
+    const iconProps = {
+      size: iconSize,
+      color: isActive ? Colors.main_bule : Colors.grey3,
     };
-    
+
     switch (iconName) {
-      case 'home': return <HomeIcon {...iconProps} />;
-      case 'grid': return <GridIcon {...iconProps} />;
-      case 'search': return <SearchIcon {...iconProps} />;
-      case 'settings': return <SettingsIcon {...iconProps} />;
-      case 'help-circle': return <HelpCircleIcon {...iconProps} />;
-      default: return <HomeIcon {...iconProps} />;
+      case 'home':
+        return <HomeIcon {...iconProps} />;
+      case 'grid':
+        return <GridIcon {...iconProps} />;
+      case 'card':
+        return <CardIcon {...iconProps} />;
+      case 'search':
+        return <SearchIcon {...iconProps} />;
+      case 'settings':
+        return <SettingsIcon {...iconProps} />;
+      case 'help-circle':
+        return <HelpCircleIcon {...iconProps} />;
+      default:
+        return <HomeIcon {...iconProps} />;
     }
   };
 
   const renderTab = (tab: Tab) => {
     const isActive = activeTab === tab.id;
-    
+
     return (
       <TouchableOpacity
         key={tab.id}
         style={styles.tab}
         onPress={() => onChange(tab.id)}
-        activeOpacity={0.7}
+        activeOpacity={0.6}
       >
-        <View style={styles.tabContent}>
-          {getIconComponent(tab.icon, isActive)}
-          <GText 
-            type="systemLight_12" 
+        <View style={[styles.tabContent, isActive && styles.tabContentActive]}>
+          <View style={styles.iconContainer}>
+            {getIconComponent(tab.icon, isActive)}
+          </View>
+          <GText
+            type={isActive ? 'systemMedium_12' : 'systemLight_12'}
             color={isActive ? Colors.main_bule : Colors.grey3}
             style={styles.tabLabel}
           >
@@ -71,20 +113,27 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
 
   return (
     <View style={styles.container}>
-      <View style={styles.tabsContainer}>
-        {tabs.map(renderTab)}
-      </View>
-      
-      { activeTab === 'home' &&
-      <TouchableOpacity 
-        style={styles.qrButton}
-        onPress={onQRPress}
-        activeOpacity={0.7}
+      <View style={styles.tabsContainer}>{tabs.map(renderTab)}</View>
+
+      {/* QR Button - Always visible */}
+      <Animated.View
+        style={[
+          styles.qrButtonWrapper,
+          {
+            transform: [{ scale: pulseAnim }],
+          },
+        ]}
       >
-        <View style={styles.qrButtonContent}>
-          <QrCodeIcon size={28} color={Colors.white} />
-        </View>
-      </TouchableOpacity>}
+        <TouchableOpacity
+          style={styles.qrButton}
+          onPress={onQRPress}
+          activeOpacity={0.8}
+        >
+          <View style={styles.qrButtonGradient}>
+            <QrCodeIcon size={28} color={Colors.white} />
+          </View>
+        </TouchableOpacity>
+      </Animated.View>
     </View>
   );
 };
@@ -94,61 +143,91 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     borderTopWidth: 1,
     borderTopColor: Colors.grey2,
-    paddingBottom: 8,
+    paddingBottom: Platform.OS === 'ios' ? 20 : 8,
     shadowColor: Colors.black,
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 5,
+    shadowOffset: { width: 0, height: -3 },
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+    elevation: 8,
   },
   tabsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    paddingTop: 8,
+    paddingTop: 10,
+    paddingHorizontal: 8,
   },
   tab: {
     flex: 1,
     alignItems: 'center',
-    paddingVertical: 8,
+    paddingVertical: 4,
     position: 'relative',
   },
   tabContent: {
     alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    minWidth: 64,
+    minHeight: 48,
+    backgroundColor: 'transparent',
+  },
+  tabContentActive: {
+    backgroundColor: 'rgba(9, 160, 165, 0.08)',
+  },
+  iconContainer: {
+    marginBottom: 2,
   },
   tabLabel: {
-    marginTop: 4,
+    marginTop: 2,
     textAlign: 'center',
+    fontSize: 11,
   },
   activeIndicator: {
     position: 'absolute',
     top: 0,
     left: '50%',
-    marginLeft: -15,
-    width: 30,
+    marginLeft: -16,
+    width: 32,
     height: 3,
     backgroundColor: Colors.main_bule,
     borderRadius: 2,
   },
-  qrButton: {
+  qrButtonWrapper: {
     position: 'absolute',
-    top: -20,
+    top: -28,
     left: '50%',
-    marginLeft: -25,
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: Colors.main_bule,
+    marginLeft: -28,
+    width: 56,
+    height: 56,
+  },
+  qrButton: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: Colors.white,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: Colors.black,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 8,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 12,
+    borderWidth: 4,
+    borderColor: Colors.white,
   },
-  qrButtonContent: {
+  qrButtonGradient: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: Colors.main_bule,
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: Colors.main_bule,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.4,
+    shadowRadius: 4,
+    elevation: 4,
   },
 });
 

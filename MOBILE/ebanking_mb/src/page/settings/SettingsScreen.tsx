@@ -12,11 +12,11 @@ import { setLoginStatus, setLoginResponse } from '../../store/slices/appSlice';
 import LogoutConfirmPopup from '../../popups/LogoutPopup';
 import { useNavigation } from '@react-navigation/native';
 
-
 const SettingsScreen: React.FC = () => {
   const { t } = useTranslation();
   const navigation = useNavigation();
-  const { activeTab, handleTabChange, handleNotificationPress } = useAppNavigation('settings');
+  const { activeTab, handleTabChange, handleNotificationPress } =
+    useAppNavigation('settings');
   const { notificationCount, clearNotifications } = useCommonUI();
   const dispatch = useDispatch();
   const [showLogoutPopup, setShowLogoutPopup] = useState(false);
@@ -27,7 +27,7 @@ const SettingsScreen: React.FC = () => {
 
   const bottomTabs = [
     { id: 'home', label: t('bottom_navigation.home'), icon: 'home' },
-    { id: 'menu', label: t('bottom_navigation.menu'), icon: 'grid' },
+    { id: 'card', label: t('bottom_navigation.card'), icon: 'card' },
     {
       id: 'settings',
       label: t('bottom_navigation.settings'),
@@ -102,12 +102,12 @@ const SettingsScreen: React.FC = () => {
   const handleLogout = () => {
     dispatch(setLoginResponse(null));
     dispatch(setLoginStatus(false));
-  }
+  };
 
   const handleSettingSelect = (item: any) => {
     switch (item.id) {
       case 'logout':
-        setShowLogoutPopup(true)
+        setShowLogoutPopup(true);
         break;
       case 'security':
         break;
@@ -117,8 +117,8 @@ const SettingsScreen: React.FC = () => {
         }
 
       default:
-    };
-  }
+    }
+  };
 
   return (
     <View style={styles.container}>

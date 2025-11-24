@@ -124,17 +124,17 @@ const RootApp: React.FC = () => {
 
   useListenNotiFromFirebase();
   const keyboardVerticalOffset = Platform.select({
-      ios: 90,
-      android: 90,
-      default: 90,
-    });
+    ios: 90,
+    android: 90,
+    default: 90,
+  });
 
   return (
     <KeyboardAvoidingView
-          style={styles.flex}
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          keyboardVerticalOffset={keyboardVerticalOffset}
-        >
+      style={styles.flex}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      keyboardVerticalOffset={keyboardVerticalOffset}
+    >
       <View style={styles.container}>
         <FlashMessage position="top" />
         <StatusBar
@@ -143,17 +143,14 @@ const RootApp: React.FC = () => {
           backgroundColor="transparent"
         />
         <NavigationContainer ref={navigationRef}>
-          {' '}
           {/* ✅ Important */}
           {/* TODO: Remove this bypass for production */}
-          {/* <MainStack /> */}
-          {isLoggedIn ? <MainStack /> : <AuthNavigator />}
+          <MainStack />
+          {/* {isLoggedIn ? <MainStack /> : <AuthNavigator />} */}
         </NavigationContainer>
       </View>
       <Toast />
-              </KeyboardAvoidingView>
-
-    
+    </KeyboardAvoidingView>
   );
 };
 
