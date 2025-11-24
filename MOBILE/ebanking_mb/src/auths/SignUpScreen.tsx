@@ -5,10 +5,8 @@ import {
   StyleSheet,
   SafeAreaView,
   TouchableOpacity,
-  ScrollView,
-  KeyboardAvoidingView,
-  Platform,
 } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import LockIcon from '../components/icon/LockIcon';
@@ -29,7 +27,10 @@ import { API } from '../constants/api';
 import { RootStackParamList } from '../navigation/types';
 import LoadingPopup from '../popups/LoadingPopup';
 
-type SignUpScreenNavigationProp = StackNavigationProp<RootStackParamList, 'SignUp'>;
+type SignUpScreenNavigationProp = StackNavigationProp<
+  RootStackParamList,
+  'SignUp'
+>;
 
 const SignUpScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -53,8 +54,8 @@ const SignUpScreen: React.FC = () => {
       username: email,
       password: password,
       citizenId: citizenId,
-      typeVerify: typeVerify
-    }
+      typeVerify: typeVerify,
+    };
     const handlePostRequest = async () => {
       try {
         const data = await fetch.post(API.REGISTER, payload, false);
@@ -62,33 +63,34 @@ const SignUpScreen: React.FC = () => {
       } catch (error: any) {
         return error.toString().split(':')[2] || error;
       }
-
     };
-    return handlePostRequest()
+    return handlePostRequest();
   };
 
   const doSignup = async () => {
     const preHandMess = await handleSignUp();
     if (preHandMess == 'true') {
       ToastService.success('Thông báo', 'OTP đã được gửi đến ' + email);
-      navigation.navigate("OTPPage", { username: email, targetPage: "SignIn" })
-    }
-    else {
-      ToastService.error("Đăng ký thất bại", t(`sign_in.${preHandMess.trim()}`));
+      navigation.navigate('OTPPage', { username: email, targetPage: 'SignIn' });
+    } else {
+      ToastService.error(
+        'Đăng ký thất bại',
+        t(`sign_in.${preHandMess.trim()}`),
+      );
     }
     setIsLoading(false);
-  }
+  };
 
   const detectInputType = (input: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const phoneRegex = /^0\d{9}$/;
 
     if (emailRegex.test(input)) {
-      return "email";
+      return 'email';
     } else if (phoneRegex.test(input)) {
-      return "phone";
+      return 'phone';
     } else {
-      return "unknown";
+      return 'unknown';
     }
   };
 
@@ -117,8 +119,12 @@ const SignUpScreen: React.FC = () => {
     return true;
   };
 
-
-  const isFormValid = citizenId.length > 0 && email.length > 0 && password.length > 0 && acceptTerms && password === rawPassword;
+  const isFormValid =
+    citizenId.length > 0 &&
+    email.length > 0 &&
+    password.length > 0 &&
+    acceptTerms &&
+    password === rawPassword;
 
   return (
     <BackgroundDecoration>
@@ -126,93 +132,99 @@ const SignUpScreen: React.FC = () => {
       <Header title={t('sign_in.text_sign_up')} showBackButton={true} />
 
       <SafeAreaView style={styles.container}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={styles.keyboardView}
+        <KeyboardAwareScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          enableOnAndroid={true}
+          enableAutomaticScroll={true}
+          extraScrollHeight={20}
+          keyboardShouldPersistTaps="handled"
         >
-          <ScrollView
-            contentContainerStyle={styles.scrollContent}
-            showsVerticalScrollIndicator={false}
-          >
-            <View style={styles.content}>
-
-              <View style={styles.centralIconContainer}>
-                <View style={styles.userIconContainer}>
-                  <UserIcon size={60} color={Colors.main_bule} />
-                </View>
-              </View>
-              <View style={styles.form}>
-                <CustomInput
-                  placeholder={t('sign_in.text_cccd')}
-                  value={citizenId}
-                  onChangeText={setCitizenId}
-                  autoCapitalize="words"
-                  leftIcon={<UserIcon size={20} color="#6B7280" />}
-                />
-                <View style={{ height: 10 }}> </View>
-
-                <CustomInput
-                  placeholder={t('sign_in.text_email_or_phone')}
-                  value={email}
-                  onChangeText={setEmail}
-                  autoCapitalize="none"
-                  keyboardType="email-address"
-                  leftIcon={<MailIcon size={20} color="#6B7280" />}
-                />
-                <View style={{ height: 10 }}> </View>
-
-                <CustomInput
-                  placeholder={t('sign_in.text_password')}
-                  value={password}
-                  onChangeText={setPassword}
-                  secureTextEntry
-                  autoCapitalize="none"
-                  leftIcon={<LockIcon size={20} color="#6B7280" />}
-                />
-                <View style={{ height: 10 }}> </View>
-
-                <CustomInput
-                  placeholder={t('sign_in.raw_password')}
-                  value={rawPassword}
-                  onChangeText={setRawPassword}
-                  secureTextEntry
-                  autoCapitalize="none"
-                  leftIcon={<LockIcon size={20} color="#6B7280" />}
-                />
-                <View style={{ height: 10 }}> </View>
-
-                {/* Terms and Conditions Checkbox */}
-                <View
-                  style={styles.termsCheckboxContainer}
-                >
-                  <Checkbox checked={acceptTerms} onChange={setAcceptTerms} style={{ marginHorizontal: 5 }} />
-                  <View style={styles.termsTextContainer}>
-                    <GText type='systemLight_14' color={Colors.grey1}>
-                      {t('sign_in.text_by_the_confirm_policy')}{' '}
-                      <GText type='systemLight_14' color={Colors.main_bule} >{t('sign_in.text_policy_and_term')}</GText>{' '}
-                      {t('sign_in.text_of_us')}
-                    </GText>
-                  </View>
-                </View>
-
-                <CustomButton
-                  title={t('sign_in.text_sign_up')}
-                  onPress={doSignup}
-                  loading={isLoading}
-                  disabled={!isFormValid}
-                  containerStyle={styles.signUpButton}
-                />
-              </View>
-
-              <View style={styles.signInContainer}>
-                <GText type='systemLight_14' color={Colors.grey1}>{t('sign_in.text_have_account')}{' '}</GText>
-                <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
-                  <GText type='systemLight_14' color={Colors.main_bule}>{t('sign_in.text_login')}</GText>
-                </TouchableOpacity>
+          <View style={styles.content}>
+            <View style={styles.centralIconContainer}>
+              <View style={styles.userIconContainer}>
+                <UserIcon size={60} color={Colors.main_bule} />
               </View>
             </View>
-          </ScrollView>
-        </KeyboardAvoidingView>
+            <View style={styles.form}>
+              <CustomInput
+                placeholder={t('sign_in.text_cccd')}
+                value={citizenId}
+                onChangeText={setCitizenId}
+                autoCapitalize="words"
+                leftIcon={<UserIcon size={20} color="#6B7280" />}
+              />
+              <View style={{ height: 10 }}> </View>
+
+              <CustomInput
+                placeholder={t('sign_in.text_email_or_phone')}
+                value={email}
+                onChangeText={setEmail}
+                autoCapitalize="none"
+                keyboardType="email-address"
+                leftIcon={<MailIcon size={20} color="#6B7280" />}
+              />
+              <View style={{ height: 10 }}> </View>
+
+              <CustomInput
+                placeholder={t('sign_in.text_password')}
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+                autoCapitalize="none"
+                leftIcon={<LockIcon size={20} color="#6B7280" />}
+              />
+              <View style={{ height: 10 }}> </View>
+
+              <CustomInput
+                placeholder={t('sign_in.raw_password')}
+                value={rawPassword}
+                onChangeText={setRawPassword}
+                secureTextEntry
+                autoCapitalize="none"
+                leftIcon={<LockIcon size={20} color="#6B7280" />}
+              />
+              <View style={{ height: 10 }}> </View>
+
+              {/* Terms and Conditions Checkbox */}
+              <View style={styles.termsCheckboxContainer}>
+                <Checkbox
+                  checked={acceptTerms}
+                  onChange={setAcceptTerms}
+                  style={{ marginHorizontal: 5 }}
+                />
+                <View style={styles.termsTextContainer}>
+                  <GText type="systemLight_14" color={Colors.grey1}>
+                    {t('sign_in.text_by_the_confirm_policy')}{' '}
+                    <GText type="systemLight_14" color={Colors.main_bule}>
+                      {t('sign_in.text_policy_and_term')}
+                    </GText>{' '}
+                    {t('sign_in.text_of_us')}
+                  </GText>
+                </View>
+              </View>
+
+              <CustomButton
+                title={t('sign_in.text_sign_up')}
+                onPress={doSignup}
+                loading={isLoading}
+                disabled={!isFormValid}
+                containerStyle={styles.signUpButton}
+              />
+            </View>
+
+            <View style={styles.signInContainer}>
+              <GText type="systemLight_14" color={Colors.grey1}>
+                {t('sign_in.text_have_account')}{' '}
+              </GText>
+              <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
+                <GText type="systemLight_14" color={Colors.main_bule}>
+                  {t('sign_in.text_login')}
+                </GText>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </KeyboardAwareScrollView>
       </SafeAreaView>
     </BackgroundDecoration>
   );
@@ -222,7 +234,7 @@ const styles = StyleSheet.create({
   container: {
     paddingTop: 50,
     flex: 1,
-    backgroundColor: Colors.white
+    backgroundColor: Colors.white,
   },
   keyboardView: {
     flex: 1,

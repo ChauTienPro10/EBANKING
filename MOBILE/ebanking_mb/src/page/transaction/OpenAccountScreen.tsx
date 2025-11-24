@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+} from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import Colors from '../../constants/color';
 import { Header } from '../../components';
 import { RouteProp, useRoute } from '@react-navigation/native';
@@ -16,157 +24,176 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import { fetchAccountTransInfo } from '../../store/fetchAPI/AccountFetch';
 
-type OpenCardNavigationProp = NativeStackNavigationProp<RootStackParamList, 'OpenCard'>;
+type OpenCardNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'OpenCard'
+>;
 type OpenCardRouteProp = RouteProp<RootStackParamList, 'OpenCard'>;
 
 const OpenAccountScreen: React.FC = () => {
-    const route = useRoute<OpenCardRouteProp>();
-    const navigation = useNavigation<OpenCardNavigationProp>();
-    const { userInfo } = route.params;
-    const [loading, setLoading] = useState(false);
-    const [popupVisible, setPopupVisible] = useState(false);
-    const dispatch: AppDispatch = store.dispatch;
-    const loginResponse = useSelector((State: RootState) => State.app.loginResponse);
+  const route = useRoute<OpenCardRouteProp>();
+  const navigation = useNavigation<OpenCardNavigationProp>();
+  const { userInfo } = route.params;
+  const [loading, setLoading] = useState(false);
+  const [popupVisible, setPopupVisible] = useState(false);
+  const dispatch: AppDispatch = store.dispatch;
+  const loginResponse = useSelector(
+    (State: RootState) => State.app.loginResponse,
+  );
 
-
-    const handleSubmit = async (code: string, type: string) => {
-        setLoading(true);
-        const url = API.OPEN_ACCOUNT_TRANSACTION;
-        const payload = {
-            accountNumber: code,
-            accountType: type,
-            userId: userInfo?.id
-        }
-        try {
-            const response = await fetch.post(url, payload, true)
-            Toast.show({
-                type: 'success',
-                text1: 'Liên kết tài khoản thành công!',
-                text2: 'Bạn có thể tiếp tục sử dụng dịch vụ.',
-                visibilityTime: 2000,
-            });
-
-            if (loginResponse?.id) {
-                dispatch(fetchAccountTransInfo(loginResponse.id));
-            }
-            navigation.navigate('Home' as never);
-
-        } catch (error) {
-            Toast.show({
-                type: 'error',
-                text1: 'Liên kết tài khoản thất bại.',
-                text2: 'Vui long liên hệ tư vấn khách hàng để được hộ trợ',
-                visibilityTime: 2000,
-            });
-        } finally {
-            setLoading(false);
-        }
+  const handleSubmit = async (code: string, type: string) => {
+    setLoading(true);
+    const url = API.OPEN_ACCOUNT_TRANSACTION;
+    const payload = {
+      accountNumber: code,
+      accountType: type,
+      userId: userInfo?.id,
     };
-    return (
-        <View>
-            <LoadingPopup visible={loading} message="Đang xử lý..." />
-            <AccountNumberPickerPopup
-                visible={popupVisible}
-                onClose={() => setPopupVisible(false)}
-                onSelect={(code, type) => handleSubmit(code, type)}
-            />
-            <Header title="Xác nhận thông tin" />
-            <ScrollView contentContainerStyle={styles.container}>
-                {/* <Text style={styles.title}>Mở tài khoản ngân hàng</Text> */}
+    try {
+      const response = await fetch.post(url, payload, true);
+      Toast.show({
+        type: 'success',
+        text1: 'Liên kết tài khoản thành công!',
+        text2: 'Bạn có thể tiếp tục sử dụng dịch vụ.',
+        visibilityTime: 2000,
+      });
 
-                <TextInput
-                    style={styles.input}
-                    placeholder="Họ và tên"
-                    value={userInfo?.fullName}
-                    editable={false}
-                />
+      if (loginResponse?.id) {
+        dispatch(fetchAccountTransInfo(loginResponse.id));
+      }
+      navigation.navigate('Home' as never);
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Liên kết tài khoản thất bại.',
+        text2: 'Vui long liên hệ tư vấn khách hàng để được hộ trợ',
+        visibilityTime: 2000,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+  return (
+    <View>
+      <LoadingPopup visible={loading} message="Đang xử lý..." />
+      <AccountNumberPickerPopup
+        visible={popupVisible}
+        onClose={() => setPopupVisible(false)}
+        onSelect={(code, type) => handleSubmit(code, type)}
+      />
+      <Header title="Xác nhận thông tin" />
+      <KeyboardAwareScrollView
+        contentContainerStyle={styles.container}
+        enableOnAndroid={true}
+        enableAutomaticScroll={true}
+        extraScrollHeight={20}
+        keyboardShouldPersistTaps="handled"
+      >
+        {/* <Text style={styles.title}>Mở tài khoản ngân hàng</Text> */}
 
-                <TextInput
-                    style={styles.input}
-                    placeholder="Số điện thoại"
-                    keyboardType="phone-pad"
-                    value={userInfo?.phone || 'Chưa cập nhật'}
-                    editable={false}
-                />
+        <TextInput
+          style={styles.input}
+          placeholder="Họ và tên"
+          value={userInfo?.fullName}
+          editable={false}
+        />
 
-                <TextInput
-                    style={styles.input}
-                    placeholder="Số CMND/CCCD"
-                    keyboardType="numeric"
-                    value={userInfo?.citizenId}
-                    editable={false}
-                />
+        <TextInput
+          style={styles.input}
+          placeholder="Số điện thoại"
+          keyboardType="phone-pad"
+          value={userInfo?.phone || 'Chưa cập nhật'}
+          editable={false}
+        />
 
-                <TextInput
-                    style={styles.input}
-                    placeholder="Email (tuỳ chọn)"
-                    keyboardType="email-address"
-                    value={userInfo?.email || 'Chưa cập nhật'}
-                    editable={false}
-                />
+        <TextInput
+          style={styles.input}
+          placeholder="Số CMND/CCCD"
+          keyboardType="numeric"
+          value={userInfo?.citizenId}
+          editable={false}
+        />
 
-                <TextInput
-                    style={[styles.input, { height: 80 }]}
-                    placeholder="Địa chỉ liên hệ"
-                    multiline
-                    value={userInfo?.address}
-                    editable={false}
-                />
+        <TextInput
+          style={styles.input}
+          placeholder="Email (tuỳ chọn)"
+          keyboardType="email-address"
+          value={userInfo?.email || 'Chưa cập nhật'}
+          editable={false}
+        />
 
-                <TouchableOpacity style={styles.button} onPress={() => { setPopupVisible(true) }}>
-                    <Text style={styles.buttonText}>Mở tài khoản</Text>
-                </TouchableOpacity>
+        <TextInput
+          style={[styles.input, { height: 80 }]}
+          placeholder="Địa chỉ liên hệ"
+          multiline
+          value={userInfo?.address}
+          editable={false}
+        />
 
-                <TouchableOpacity style={styles.button_update} onPress={() => { navigation.navigate('Profile' as never) }}>
-                    <Text style={styles.buttonText}>Sửa</Text>
-                </TouchableOpacity>
-            </ScrollView>
-        </View>
-    );
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => {
+            setPopupVisible(true);
+          }}
+        >
+          <Text style={styles.buttonText}>Mở tài khoản</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.button_update}
+          onPress={() => {
+            navigation.navigate('Profile' as never);
+          }}
+        >
+          <Text style={styles.buttonText}>Sửa</Text>
+        </TouchableOpacity>
+      </KeyboardAwareScrollView>
+    </View>
+  );
 };
 
 export default OpenAccountScreen;
 
 const styles = StyleSheet.create({
-    container: {
-        flexGrow: 1,
-        backgroundColor: '#f7f9fc',
-        padding: 20,
-        justifyContent: 'center',
-    },
-    title: {
-        fontSize: 22,
-        fontWeight: '700',
-        textAlign: 'center',
-        marginBottom: 20,
-        color: Colors.grey1,
-    },
-    input: {
-        backgroundColor: '#fff',
-        padding: 12,
-        borderRadius: 8,
-        borderWidth: 1,
-        borderColor: '#ccc',
-        marginBottom: 12,
-        color: Colors.black
-    },
-    button: {
-        backgroundColor: Colors.main_bule,
-        paddingVertical: 14,
-        borderRadius: 8,
-        marginTop: 10,
-    },
+  container: {
+    flexGrow: 1,
+    backgroundColor: '#f7f9fc',
+    padding: 20,
+    justifyContent: 'center',
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: '700',
+    textAlign: 'center',
+    marginBottom: 20,
+    color: Colors.grey1,
+  },
+  input: {
+    backgroundColor: '#fff',
+    padding: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    marginBottom: 12,
+    color: Colors.black,
+  },
+  button: {
+    backgroundColor: Colors.main_bule,
+    paddingVertical: 14,
+    borderRadius: 8,
+    marginTop: 10,
+  },
 
-    button_update: {
-        backgroundColor: Colors.orange,
-        paddingVertical: 14,
-        borderRadius: 8,
-        marginTop: 10,
-    },
-    buttonText: {
-        color: '#fff',
-        textAlign: 'center',
-        fontWeight: '600',
-        fontSize: 16,
-    },
+  button_update: {
+    backgroundColor: Colors.orange,
+    paddingVertical: 14,
+    borderRadius: 8,
+    marginTop: 10,
+  },
+  buttonText: {
+    color: '#fff',
+    textAlign: 'center',
+    fontWeight: '600',
+    fontSize: 16,
+  },
 });

@@ -74,12 +74,13 @@ const Header: React.FC<HeaderProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    height: 60,
+    height: 78,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: Colors.main_bule,
     paddingHorizontal: 16,
+    paddingTop: 8,
     borderBottomLeftRadius: 10,
     borderBottomRightRadius: 10,
   },
@@ -88,6 +89,7 @@ const styles = StyleSheet.create({
   },
   title: {
     flex: 1,
+    paddingTop: 16,
     textAlign: 'center',
   },
   placeholder: {

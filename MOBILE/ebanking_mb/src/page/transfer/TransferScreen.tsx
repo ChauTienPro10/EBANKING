@@ -3,14 +3,13 @@ import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
   TouchableOpacity,
   Alert,
-  KeyboardAvoidingView,
   Platform,
   Modal,
   FlatList,
 } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import Colors from '../../constants/color';
@@ -18,7 +17,26 @@ import TextStyles from '../../constants/textStyle';
 import CustomInput from '../../components/CustomInput';
 import CustomButton from '../../components/CustomButton';
 import { Header } from '../../components';
-import { ArrowLeftIcon, UserIcon, DollarSignIcon, MessageSquareIcon, CreditCardIcon, SearchIcon, CheckIcon, ChevronDownIcon, CardIcon, PeopleIcon, PersonIcon, CashIcon, BusinessIcon, TrendingUpIcon, ShieldIcon, CrownIcon, StarIcon, AirplaneIcon } from '../../components/icon';
+import {
+  ArrowLeftIcon,
+  UserIcon,
+  DollarSignIcon,
+  MessageSquareIcon,
+  CreditCardIcon,
+  SearchIcon,
+  CheckIcon,
+  ChevronDownIcon,
+  CardIcon,
+  PeopleIcon,
+  PersonIcon,
+  CashIcon,
+  BusinessIcon,
+  TrendingUpIcon,
+  ShieldIcon,
+  CrownIcon,
+  StarIcon,
+  AirplaneIcon,
+} from '../../components/icon';
 import ConfirmTransferModal from '../../popups/ConfirmTransferModal';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/types';
@@ -56,8 +74,8 @@ const genFormData = (formData: TransferFormData, fullName: string) => {
     'Tài khoản nhận': formData.recipientAccount,
     'Tên người nhận': fullName,
     'Nội dung': formData.content,
-  }
-}
+  };
+};
 interface TransferParams {
   receiver: string;
   amount: string;
@@ -79,13 +97,19 @@ interface FormErrors {
   content?: string;
 }
 
-const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({ route }) => {
+const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({
+  route,
+}) => {
   const navigation = useNavigation<NavigationProp>();
-  const loginResponse = useSelector((state: RootState) => state.app.loginResponse);
-  const account = useSelector((state: RootState) => state.app.accountTransResponse);
+  const loginResponse = useSelector(
+    (state: RootState) => state.app.loginResponse,
+  );
+  const account = useSelector(
+    (state: RootState) => state.app.accountTransResponse,
+  );
   const { receiver, amount, content, bankCode } = route.params;
   const { t } = useTranslation();
-  const [accountOk, setAccountOk] = useState(false)
+  const [accountOk, setAccountOk] = useState(false);
   const [transferModalVisible, setTransferModalVisible] = useState(false);
   const [receiverName, setReceiverName] = useState('');
 
@@ -98,11 +122,15 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({ route
       handleAmountChange(amount);
       handleInputChange('content', content);
       if (bankCode !== null && bankCode !== undefined && bankCode !== '') {
-        handleBankSelect({ id: '1', name: 'Ngân hàng TMCP Ngoại thương Việt Nam (Vietcombank)', code: 'VCB', logo: CardIcon });
-        setFormData(prev => ({ ...prev, transferType: 'external' }))
+        handleBankSelect({
+          id: '1',
+          name: 'Ngân hàng TMCP Ngoại thương Việt Nam (Vietcombank)',
+          code: 'VCB',
+          logo: CardIcon,
+        });
+        setFormData(prev => ({ ...prev, transferType: 'external' }));
       }
-
-    } 
+    }
   }, []);
 
   const onCheckAccountNumberSuccess = (fullName: string) => {
@@ -120,7 +148,7 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({ route
         amount: formData.amount.replace(/,/g, ''),
         currency: 'VND',
         transactionType: 'TRANSFER',
-        description: formData.content
+        description: formData.content,
       };
 
       const transferResponse = await fetch.post(API.TRANSFER, payload);
@@ -134,22 +162,22 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({ route
           amount: '₫' + formData.amount,
           content: formData?.content,
           date: new Date().toISOString(),
-          receiverName: receiverName
+          receiverName: receiverName,
         });
       } else {
         navigation.navigate('TransactionFailedScreen');
       }
     } catch (error: any) {
       const extractedMessage = error.toString().split(':')[2] || error;
-      navigation.navigate('TransactionFailedScreen', { errorString: extractedMessage });
+      navigation.navigate('TransactionFailedScreen', {
+        errorString: extractedMessage,
+      });
     } finally {
       setTransferModalVisible(false);
     }
   };
 
-
   const handleCancelTransfer = async () => {
-
     setTransferModalVisible(false);
   };
 
@@ -165,26 +193,126 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({ route
   const [isLoading, setIsLoading] = useState(false);
   const [showBankModal, setShowBankModal] = useState(false);
   const vietnamBanks: Bank[] = [
-    { id: '1', name: 'Ngân hàng TMCP Ngoại thương Việt Nam (Vietcombank)', code: 'VCB', logo: CardIcon },
-    { id: '2', name: 'Ngân hàng TMCP Công thương Việt Nam (VietinBank)', code: 'CTG', logo: BusinessIcon },
-    { id: '3', name: 'Ngân hàng TMCP Đầu tư và Phát triển Việt Nam (BIDV)', code: 'BID', logo: TrendingUpIcon },
-    { id: '4', name: 'Ngân hàng TMCP Quân đội (MB)', code: 'MBB', logo: ShieldIcon },
-    { id: '5', name: 'Ngân hàng TMCP Kỹ thương Việt Nam (Techcombank)', code: 'TCB', logo: CreditCardIcon },
-    { id: '6', name: 'Ngân hàng TMCP Việt Nam Thịnh Vượng (VPBank)', code: 'VPB', logo: CrownIcon },
-    { id: '7', name: 'Ngân hàng TMCP Sài Gòn Thương Tín (Sacombank)', code: 'STB', logo: StarIcon },
-    { id: '8', name: 'Ngân hàng TMCP Á Châu (ACB)', code: 'ACB', logo: CardIcon },
-    { id: '9', name: 'Ngân hàng TMCP Hàng Hải (MSB)', code: 'MSB', logo: AirplaneIcon },
-    { id: '10', name: 'Ngân hàng TMCP Tiên Phong (TPBank)', code: 'TPB', logo: TrendingUpIcon },
-    { id: '11', name: 'Ngân hàng TMCP Phương Đông (OCB)', code: 'OCB', logo: StarIcon },
-    { id: '12', name: 'Ngân hàng TMCP Sài Gòn (SCB)', code: 'SCB', logo: BusinessIcon },
-    { id: '13', name: 'Ngân hàng TMCP An Bình (ABBANK)', code: 'ABB', logo: ShieldIcon },
-    { id: '14', name: 'Ngân hàng TMCP Bảo Việt (BAOVIETBANK)', code: 'BVB', logo: ShieldIcon },
-    { id: '15', name: 'Ngân hàng TMCP Bắc Á (BAB)', code: 'BAB', logo: TrendingUpIcon },
-    { id: '16', name: 'Ngân hàng TMCP Việt Á (VAB)', code: 'VAB', logo: StarIcon },
-    { id: '17', name: 'Ngân hàng TMCP Nam Á (NAB)', code: 'NAB', logo: StarIcon },
-    { id: '18', name: 'Ngân hàng TMCP Quốc Dân (NCB)', code: 'NCB', logo: PeopleIcon },
-    { id: '19', name: 'Ngân hàng TMCP Đông Nam Á (SeABank)', code: 'SSB', logo: TrendingUpIcon },
-    { id: '20', name: 'Ngân hàng TMCP Bản Việt (VietCapitalBank)', code: 'VCC', logo: BusinessIcon },
+    {
+      id: '1',
+      name: 'Ngân hàng TMCP Ngoại thương Việt Nam (Vietcombank)',
+      code: 'VCB',
+      logo: CardIcon,
+    },
+    {
+      id: '2',
+      name: 'Ngân hàng TMCP Công thương Việt Nam (VietinBank)',
+      code: 'CTG',
+      logo: BusinessIcon,
+    },
+    {
+      id: '3',
+      name: 'Ngân hàng TMCP Đầu tư và Phát triển Việt Nam (BIDV)',
+      code: 'BID',
+      logo: TrendingUpIcon,
+    },
+    {
+      id: '4',
+      name: 'Ngân hàng TMCP Quân đội (MB)',
+      code: 'MBB',
+      logo: ShieldIcon,
+    },
+    {
+      id: '5',
+      name: 'Ngân hàng TMCP Kỹ thương Việt Nam (Techcombank)',
+      code: 'TCB',
+      logo: CreditCardIcon,
+    },
+    {
+      id: '6',
+      name: 'Ngân hàng TMCP Việt Nam Thịnh Vượng (VPBank)',
+      code: 'VPB',
+      logo: CrownIcon,
+    },
+    {
+      id: '7',
+      name: 'Ngân hàng TMCP Sài Gòn Thương Tín (Sacombank)',
+      code: 'STB',
+      logo: StarIcon,
+    },
+    {
+      id: '8',
+      name: 'Ngân hàng TMCP Á Châu (ACB)',
+      code: 'ACB',
+      logo: CardIcon,
+    },
+    {
+      id: '9',
+      name: 'Ngân hàng TMCP Hàng Hải (MSB)',
+      code: 'MSB',
+      logo: AirplaneIcon,
+    },
+    {
+      id: '10',
+      name: 'Ngân hàng TMCP Tiên Phong (TPBank)',
+      code: 'TPB',
+      logo: TrendingUpIcon,
+    },
+    {
+      id: '11',
+      name: 'Ngân hàng TMCP Phương Đông (OCB)',
+      code: 'OCB',
+      logo: StarIcon,
+    },
+    {
+      id: '12',
+      name: 'Ngân hàng TMCP Sài Gòn (SCB)',
+      code: 'SCB',
+      logo: BusinessIcon,
+    },
+    {
+      id: '13',
+      name: 'Ngân hàng TMCP An Bình (ABBANK)',
+      code: 'ABB',
+      logo: ShieldIcon,
+    },
+    {
+      id: '14',
+      name: 'Ngân hàng TMCP Bảo Việt (BAOVIETBANK)',
+      code: 'BVB',
+      logo: ShieldIcon,
+    },
+    {
+      id: '15',
+      name: 'Ngân hàng TMCP Bắc Á (BAB)',
+      code: 'BAB',
+      logo: TrendingUpIcon,
+    },
+    {
+      id: '16',
+      name: 'Ngân hàng TMCP Việt Á (VAB)',
+      code: 'VAB',
+      logo: StarIcon,
+    },
+    {
+      id: '17',
+      name: 'Ngân hàng TMCP Nam Á (NAB)',
+      code: 'NAB',
+      logo: StarIcon,
+    },
+    {
+      id: '18',
+      name: 'Ngân hàng TMCP Quốc Dân (NCB)',
+      code: 'NCB',
+      logo: PeopleIcon,
+    },
+    {
+      id: '19',
+      name: 'Ngân hàng TMCP Đông Nam Á (SeABank)',
+      code: 'SSB',
+      logo: TrendingUpIcon,
+    },
+    {
+      id: '20',
+      name: 'Ngân hàng TMCP Bản Việt (VietCapitalBank)',
+      code: 'VCC',
+      logo: BusinessIcon,
+    },
   ];
 
   const filteredBanks = vietnamBanks;
@@ -282,7 +410,7 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({ route
     if (formData.transferType === 'external' && !formData.selectedBank) {
       Alert.alert(
         t('transfer.error.title'),
-        t('transfer.validation.bank_required')
+        t('transfer.validation.bank_required'),
       );
       return;
     }
@@ -290,25 +418,21 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({ route
     setIsLoading(true);
 
     try {
-
-      const response = await fetch.post(API.CHECK_ACCOUNT_NUMBER, { accountNumber: formData.recipientAccount });
+      const response = await fetch.post(API.CHECK_ACCOUNT_NUMBER, {
+        accountNumber: formData.recipientAccount,
+      });
       if (response?.isExist) {
         onCheckAccountNumberSuccess(response?.fullName);
-      }
-      else {
+      } else {
         Toast.show({
           type: 'error',
-          text1: "Giao dịch thất bại",
-          text2: "Tài khoản không tồn tại!"
+          text1: 'Giao dịch thất bại',
+          text2: 'Tài khoản không tồn tại!',
         });
       }
       // onCheckAccountNumberSuccess();
-
     } catch (error) {
-      Alert.alert(
-        t('transfer.error.title'),
-        t('transfer.error.message')
-      );
+      Alert.alert(t('transfer.error.title'), t('transfer.error.message'));
     } finally {
       setIsLoading(false);
     }
@@ -317,22 +441,19 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({ route
   const quickAmounts = ['100,000', '500,000', '1,000,000', '5,000,000'];
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      <Header
-        title={t('transfer.title')}
-        showBackButton={true}
-      />
+    <View style={styles.container}>
+      <Header title={t('transfer.title')} showBackButton={true} />
 
-      <ScrollView
+      <KeyboardAwareScrollView
         style={styles.content}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
+        enableOnAndroid={true}
+        enableAutomaticScroll={true}
+        extraScrollHeight={20}
+        contentContainerStyle={styles.scrollContent}
       >
         <View style={styles.section}>
-
           <ConfirmTransferModal
             visible={transferModalVisible}
             data={genFormData(formData, receiverName)}
@@ -345,15 +466,28 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({ route
             <TouchableOpacity
               style={[
                 styles.transferTypeButton,
-                formData.transferType === 'internal' && styles.transferTypeButtonActive
+                formData.transferType === 'internal' &&
+                  styles.transferTypeButtonActive,
               ]}
-              onPress={() => setFormData(prev => ({ ...prev, transferType: 'internal' }))}
+              onPress={() =>
+                setFormData(prev => ({ ...prev, transferType: 'internal' }))
+              }
             >
-              <CardIcon size={20} color={formData.transferType === 'internal' ? Colors.white : Colors.main_bule} />
-              <Text style={[
-                styles.transferTypeText,
-                formData.transferType === 'internal' && styles.transferTypeTextActive
-              ]}>
+              <CardIcon
+                size={20}
+                color={
+                  formData.transferType === 'internal'
+                    ? Colors.white
+                    : Colors.main_bule
+                }
+              />
+              <Text
+                style={[
+                  styles.transferTypeText,
+                  formData.transferType === 'internal' &&
+                    styles.transferTypeTextActive,
+                ]}
+              >
                 {t('transfer.internal_transfer')}
               </Text>
             </TouchableOpacity>
@@ -361,15 +495,28 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({ route
             <TouchableOpacity
               style={[
                 styles.transferTypeButton,
-                formData.transferType === 'external' && styles.transferTypeButtonActive
+                formData.transferType === 'external' &&
+                  styles.transferTypeButtonActive,
               ]}
-              onPress={() => setFormData(prev => ({ ...prev, transferType: 'external' }))}
+              onPress={() =>
+                setFormData(prev => ({ ...prev, transferType: 'external' }))
+              }
             >
-              <PeopleIcon size={20} color={formData.transferType === 'external' ? Colors.white : Colors.main_bule} />
-              <Text style={[
-                styles.transferTypeText,
-                formData.transferType === 'external' && styles.transferTypeTextActive
-              ]}>
+              <PeopleIcon
+                size={20}
+                color={
+                  formData.transferType === 'external'
+                    ? Colors.white
+                    : Colors.main_bule
+                }
+              />
+              <Text
+                style={[
+                  styles.transferTypeText,
+                  formData.transferType === 'external' &&
+                    styles.transferTypeTextActive,
+                ]}
+              >
                 {t('transfer.external_transfer')}
               </Text>
             </TouchableOpacity>
@@ -387,7 +534,10 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({ route
                 <View style={styles.bankSelectorLeft}>
                   {formData.selectedBank?.logo && (
                     <View style={styles.bankSelectorLogoContainer}>
-                      {React.createElement(formData.selectedBank.logo, { size: 20, color: Colors.main_bule })}
+                      {React.createElement(formData.selectedBank.logo, {
+                        size: 20,
+                        color: Colors.main_bule,
+                      })}
                     </View>
                   )}
                   <View style={styles.bankInfo}>
@@ -395,7 +545,8 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({ route
                       {formData.selectedBank?.code || '---'}
                     </Text>
                     <Text style={styles.bankName} numberOfLines={1}>
-                      {formData.selectedBank?.name || t('transfer.select_bank_placeholder')}
+                      {formData.selectedBank?.name ||
+                        t('transfer.select_bank_placeholder')}
                     </Text>
                   </View>
                 </View>
@@ -410,7 +561,7 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({ route
             label={t('transfer.recipient_account')}
             placeholder={t('transfer.recipient_account_placeholder')}
             value={formData.recipientAccount}
-            onChangeText={(value) => handleInputChange('recipientAccount', value)}
+            onChangeText={value => handleInputChange('recipientAccount', value)}
             error={errors.recipientAccount}
             leftIcon={<PersonIcon size={20} color={Colors.grey3} />}
             keyboardType="numeric"
@@ -430,9 +581,11 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({ route
           />
 
           <View style={styles.quickAmountContainer}>
-            <Text style={styles.quickAmountLabel}>{t('transfer.quick_amount')}</Text>
+            <Text style={styles.quickAmountLabel}>
+              {t('transfer.quick_amount')}
+            </Text>
             <View style={styles.quickAmountButtons}>
-              {quickAmounts.map((amount) => (
+              {quickAmounts.map(amount => (
                 <TouchableOpacity
                   key={amount}
                   style={styles.quickAmountButton}
@@ -450,7 +603,7 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({ route
             label={t('transfer.content')}
             placeholder={t('transfer.content_placeholder')}
             value={formData.content}
-            onChangeText={(value) => handleInputChange('content', value)}
+            onChangeText={value => handleInputChange('content', value)}
             error={errors.content}
             leftIcon={<MessageSquareIcon size={20} color={Colors.grey3} />}
             multiline
@@ -472,7 +625,7 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({ route
             size="large"
           />
         </View>
-      </ScrollView>
+      </KeyboardAwareScrollView>
 
       <Modal
         visible={showBankModal}
@@ -492,26 +645,32 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({ route
             <View style={styles.modalHeaderRight} />
           </View>
 
-
           <FlatList
             data={filteredBanks}
-            keyExtractor={(item) => item.id}
+            keyExtractor={item => item.id}
             renderItem={({ item }) => (
               <TouchableOpacity
                 style={[
                   styles.bankItem,
-                  formData.selectedBank?.id === item.id && styles.bankItemSelected
+                  formData.selectedBank?.id === item.id &&
+                    styles.bankItemSelected,
                 ]}
                 onPress={() => handleBankSelect(item)}
               >
                 <View style={styles.bankItemContent}>
                   <View style={styles.bankItemLeft}>
                     <View style={styles.bankLogoContainer}>
-                      {item.logo && React.createElement(item.logo, { size: 24, color: Colors.main_bule })}
+                      {item.logo &&
+                        React.createElement(item.logo, {
+                          size: 24,
+                          color: Colors.main_bule,
+                        })}
                     </View>
                     <View style={styles.bankItemInfo}>
                       <Text style={styles.bankItemCode}>{item.code}</Text>
-                      <Text style={styles.bankItemName} numberOfLines={2}>{item.name}</Text>
+                      <Text style={styles.bankItemName} numberOfLines={2}>
+                        {item.name}
+                      </Text>
                     </View>
                   </View>
                   {formData.selectedBank?.id === item.id && (
@@ -527,7 +686,7 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({ route
           />
         </View>
       </Modal>
-    </KeyboardAvoidingView>
+    </View>
   );
 };
 
@@ -538,6 +697,9 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+  },
+  scrollContent: {
+    paddingBottom: 20,
     paddingHorizontal: 20,
   },
   section: {
