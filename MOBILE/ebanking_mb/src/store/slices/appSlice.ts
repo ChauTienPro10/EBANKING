@@ -11,6 +11,7 @@ interface AppState {
   accountTransResponse: AccountTransResponse | null;
   userInfoData: UserInfoModel | null;
   pinStatus: boolean | null;
+  cardStatus: 'active' | 'locked';
 }
 
 const initialState: AppState = {
@@ -19,7 +20,8 @@ const initialState: AppState = {
   loginResponse: null,
   accountTransResponse: null,
   userInfoData: null,
-  pinStatus: false
+  pinStatus: false,
+  cardStatus: 'active',
 };
 
 const appSlice = createSlice({
@@ -44,8 +46,11 @@ const appSlice = createSlice({
     setPinStatus: (state, action: PayloadAction<boolean>) => {
       state.pinStatus = action.payload;
     },
+    setCardStatus: (state, action: PayloadAction<'active' | 'locked'>) => {
+      state.cardStatus = action.payload;
+    },
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
       .addCase(fetchAccountTransInfo.fulfilled, (state, action) => {
         state.accountTransResponse = action.payload;
@@ -68,7 +73,8 @@ export const {
   setLoginResponse,
   setAccountTransResponse,
   setUserInfoData,
-  setPinStatus
+  setPinStatus,
+  setCardStatus,
 } = appSlice.actions;
 
 export default appSlice.reducer;
