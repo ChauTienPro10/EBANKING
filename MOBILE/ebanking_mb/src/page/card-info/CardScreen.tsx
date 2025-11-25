@@ -345,6 +345,48 @@ const CardScreen: React.FC = () => {
         />
       )}
 
+      {/* PIN Modal */}
+      <Modal
+        visible={showPinModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowPinModal(false)}
+      >
+        <View style={styles.pinModalOverlay}>
+          <View style={styles.pinModalContent}>
+            <Text style={styles.pinModalTitle}>
+              {pendingAction === 'lock'
+                ? 'Xác nhận khóa thẻ'
+                : 'Xác nhận mở khóa thẻ'}
+            </Text>
+            <Text style={styles.pinModalSubtitle}>
+              Nhập mã PIN của bạn để tiếp tục
+            </Text>
+            <PinInput
+              length={4}
+              onComplete={handlePinComplete}
+              create={false}
+              hasBiometric={false}
+            />
+            <TouchableOpacity
+              style={styles.pinModalCancel}
+              onPress={() => {
+                setShowPinModal(false);
+                setPendingAction(null);
+              }}
+            >
+              <Text style={styles.pinModalCancelText}>Hủy</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Card Detail Bottom Sheet */}
+      <CardDetailBottomSheet
+        visible={showDetailSheet}
+        onClose={() => setShowDetailSheet(false)}
+      />
+
       <BottomNavigation
         activeTab={activeTab}
         tabs={bottomTabs}
