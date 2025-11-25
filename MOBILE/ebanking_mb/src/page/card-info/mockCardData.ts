@@ -12,6 +12,9 @@ export interface CardData {
   cardLimit: number;
   spentAmount: number;
   currency: string;
+  cardStatus: 'active' | 'locked';
+  issueDate: string;
+  cvv: string;
 }
 
 export interface Transaction {
@@ -37,6 +40,9 @@ export const mockCardData: CardData = {
   cardLimit: 70000000, // 70 triệu VNĐ
   spentAmount: 35000000, // 35 triệu VNĐ
   currency: 'VNĐ',
+  cardStatus: 'active',
+  issueDate: '01/2020',
+  cvv: '123',
 };
 
 // Mock Transaction Data

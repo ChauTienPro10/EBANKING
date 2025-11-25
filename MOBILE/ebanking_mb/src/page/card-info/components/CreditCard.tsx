@@ -22,6 +22,7 @@ interface CreditCardProps {
   expiryYear: string;
   onNumberPress: () => void;
   onNumberLongPress: () => void;
+  isLocked?: boolean;
 }
 
 export const CreditCard: React.FC<CreditCardProps> = ({
@@ -34,24 +35,55 @@ export const CreditCard: React.FC<CreditCardProps> = ({
   expiryYear,
   onNumberPress,
   onNumberLongPress,
+  isLocked = false,
 }) => {
   return (
     <View style={styles.cardContainer}>
-      <View style={styles.card}>
+      <View style={[styles.card, isLocked && styles.cardLocked]}>
         {/* Gradient Background Layers */}
-        <View style={styles.cardGradientBase} />
-        <View style={styles.cardGradientOverlay} />
+        <View
+          style={[
+            styles.cardGradientBase,
+            isLocked && styles.cardGradientLocked,
+          ]}
+        />
+        <View
+          style={[
+            styles.cardGradientOverlay,
+            isLocked && styles.cardGradientLocked,
+          ]}
+        />
+
+        {/* Locked Overlay */}
+        {isLocked && (
+          <View style={styles.lockedOverlay}>
+            <View style={styles.lockedIconContainer}>
+              <Text style={styles.lockedIcon}>🔒</Text>
+            </View>
+          </View>
+        )}
 
         <View style={styles.cardContent}>
-          {/* Top Row: Logo and Contactless */}
+          {/* Top Row: Logo*/}
           <View style={styles.cardTopRow}>
             <Text style={styles.bankLogo}>{bankName}</Text>
-            <ContactlessIcon />
+          </View>
+          <View
+            style={[styles.statusBadge, isLocked && styles.statusBadgeLocked]}
+          >
+            <Text
+              style={[styles.statusText, isLocked && styles.statusTextLocked]}
+            >
+              {isLocked ? 'LOCKED' : 'ACTIVE'}
+            </Text>
           </View>
 
-          {/* EMV Chip */}
-          <View style={styles.chipContainer}>
-            <EMVChip />
+          {/* EMV Chip*/}
+          <View style={styles.chipRow}>
+            <View style={styles.chipContainer}>
+              <EMVChip />
+            </View>
+            <ContactlessIcon />
           </View>
 
           {/* Card Number - Interactive */}
@@ -147,8 +179,14 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 3,
   },
-  chipContainer: {
+  chipRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
     marginBottom: 8,
+  },
+  chipContainer: {
+    // EMV chip container
   },
   cardNumber: {
     fontSize: 23,
@@ -204,8 +242,55 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  cardLocked: {
+    opacity: 0.7,
+  },
+  cardGradientLocked: {
+    backgroundColor: Colors.grey3,
+  },
+  lockedOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 20,
+    zIndex: 10,
+  },
+  lockedIconContainer: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  lockedIcon: {
+    fontSize: 32,
+  },
+  statusBadge: {
+    position: 'absolute',
+    top: 24,
+    right: 24,
+    backgroundColor: 'rgba(76, 175, 80, 0.25)',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.6)',
+  },
+  statusBadgeLocked: {
+    backgroundColor: 'rgba(244, 67, 54, 0.25)',
+  },
+  statusText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: Colors.white,
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
+  },
+  statusTextLocked: {
+    color: Colors.white,
   },
   visaText: {
     fontSize: 20,
