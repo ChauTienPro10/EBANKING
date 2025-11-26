@@ -1,0 +1,146 @@
+import React from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Animated,
+} from 'react-native';
+import { SearchIcon, BellIcon, UserIcon } from '../../../components/icon';
+import Colors from '../../../constants/color';
+
+interface HomeHeaderProps {
+  bankName: string;
+  userName: string;
+  notificationCount: number;
+  onNotificationPress: () => void;
+  headerPaddingBottom: Animated.Value;
+}
+
+const HomeHeader: React.FC<HomeHeaderProps> = ({
+  bankName,
+  userName,
+  notificationCount,
+  onNotificationPress,
+  headerPaddingBottom,
+}) => {
+  return (
+    <Animated.View
+      style={[styles.headerContainer, { paddingBottom: headerPaddingBottom }]}
+    >
+      <View style={styles.headerTop}>
+        <View style={styles.headerLeft}>
+          <View style={styles.logoContainer}>
+            <Text style={styles.logoText}>{bankName}</Text>
+          </View>
+        </View>
+        <View style={styles.headerActions}>
+          <TouchableOpacity style={styles.headerActionButton}>
+            <SearchIcon size={20} color={Colors.white} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.headerActionButton}
+            onPress={onNotificationPress}
+          >
+            <BellIcon size={20} color={Colors.white} />
+            {notificationCount > 0 && (
+              <View style={styles.notificationBadge}>
+                <Text style={styles.badgeText}>{notificationCount}</Text>
+              </View>
+            )}
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <View style={styles.profileSection}>
+        <View style={styles.profileContainer}>
+          <View style={styles.avatarContainer}>
+            <UserIcon size={24} color={Colors.white} />
+          </View>
+          <View style={styles.profileInfo}>
+            <Text style={styles.profileGreeting}>{userName}</Text>
+          </View>
+        </View>
+      </View>
+    </Animated.View>
+  );
+};
+
+const styles = StyleSheet.create({
+  headerContainer: {
+    backgroundColor: Colors.main_bule,
+    paddingTop: 24,
+    paddingHorizontal: 16,
+  },
+  headerTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  headerLeft: {
+    flex: 1,
+  },
+  logoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  logoText: {
+    color: Colors.white,
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  headerActionButton: {
+    padding: 8,
+    marginLeft: 8,
+    position: 'relative',
+  },
+  notificationBadge: {
+    position: 'absolute',
+    top: 4,
+    right: 4,
+    backgroundColor: Colors.orange,
+    borderRadius: 8,
+    minWidth: 16,
+    height: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  badgeText: {
+    color: Colors.white,
+    fontSize: 10,
+    fontWeight: 'bold',
+  },
+  profileSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  profileContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  avatarContainer: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  profileInfo: {
+    flex: 1,
+  },
+  profileGreeting: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: Colors.white,
+  },
+});
+
+export default HomeHeader;
