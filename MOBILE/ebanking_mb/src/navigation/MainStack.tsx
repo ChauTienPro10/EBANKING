@@ -17,7 +17,13 @@ import TransactionHistoryScreen from '../page/transaction/TransactionHistoryScre
 import ShowNotificationScreen from '../notification/showNoti';
 import setPinCodeScreen from '../PIN/pinCodeScreen';
 import ScannerScreen from '../page/QR/ScannerScreen';
-import { EKYCScreen } from '../features/ekyc';
+import {
+  EKYCScreen,
+  LivenessCameraScreen,
+  ReviewScreen,
+  ResultScreen,
+} from '../features/ekyc';
+import OCRCameraScreen from '../features/ekyc/components/OCRCameraScreen';
 import ChatScreen from '../page/chatbot/ChatScreen';
 import NotiScreen from '../page/notify/notiScreen';
 
@@ -65,7 +71,12 @@ export default function MainStack() {
       <Stack.Screen name="ScannerScreen" component={ScannerScreen} />
       <Stack.Screen name="Notifications" component={NotiScreen} />
 
+      {/* eKYC Flow - Native Camera Implementation */}
       <Stack.Screen name="EKYC" component={EKYCScreen} />
+      <Stack.Screen name="OCRCamera" component={OCRCameraScreen} />
+      <Stack.Screen name="LivenessCamera" component={LivenessCameraScreen} />
+      <Stack.Screen name="ReviewScreen" component={ReviewScreen} />
+      <Stack.Screen name="ResultScreen" component={ResultScreen} />
     </Stack.Navigator>
   );
 }

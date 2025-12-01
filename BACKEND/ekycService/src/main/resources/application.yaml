@@ -17,8 +17,15 @@ spring:
         dialect: org.hibernate.dialect.MySQL8Dialect
         jdbc:
           time_zone: UTC
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 50MB
+      max-request-size: 100MB
 server:
   port: 8008
+  address: 0.0.0.0 # Cho phép truy cập từ mọi IP (bao gồm cả mobile device)
+
 
 # FPT.AI Configuration
 fpt:
@@ -30,16 +37,27 @@ fpt:
 
 # CORS
 cors:
-  allowed-origins: http://localhost:3000,http://localhost:19006
+  allowed-origins: http://localhost:3000,http://localhost:19006,http://192.168.0.185:19006
 
 # File Upload & Storage Configuration
 app:
-  base-url: http://localhost:8081    # Base URL cho webhook callback (thay đổi khi deploy)
+  base-url: http://localhost:8081 # Base URL cho webhook callback (thay đổi khi deploy)
   upload:
-    base-dir: ./uploads              # Thư mục lưu file (relative hoặc absolute path)
-    max-file-size-mb: 10             # Giới hạn kích thước file (MB)
+    base-dir: ./uploads # Thư mục lưu file (relative hoặc absolute path)
+    max-file-size-mb: 50 # Giới hạn kích thước file (MB) - increased for camera images
 
   # Session expiry for cleanup
   session:
-    expiry-minutes: 10               # Session hết hạn sau 10 phút
-    cleanup-enabled: true            # Tự động xóa file của session hết hạn
+    expiry-minutes: 10 # Session hết hạn sau 10 phút
+    cleanup-enabled: true # Tự động xóa file của session hết hạn
+
+  # Image Enhancement Configuration
+  image-enhancement:
+    enabled: true # Enable/disable image enhancement for Face Match
+    # Khi enabled=true, images sẽ được sharpen và adjust brightness trước khi gửi FPT AI
+    # Giúp tăng Face Match success rate khi ảnh từ WebView có quality thấp
+
+  # Development Mode Configuration
+  dev-mode:
+    enabled: true # ONLY FOR DEVELOPMENT - Set false in production
+    bypass-liveness-validation: true # Skip FPT liveness spoof detection (for testing only)

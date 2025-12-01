@@ -53,4 +53,20 @@ export type RootStackParamList = {
     onScanSuccess: (value: string) => void;
   };
   EKYC: undefined;
+  LivenessCamera: {
+    frontImage: string;
+    backImage: string;
+  };
+  ReviewScreen: {
+    frontImage: string;
+    backImage: string;
+    videoPath: string;
+  };
+  ResultScreen: {
+    sessionId: string;
+    success: boolean;
+    ocrResult?: any;
+    livenessResult?: any;
+    faceMatchResult?: any;
+  };
 };
