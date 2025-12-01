@@ -58,16 +58,39 @@ const ResultScreen: React.FC = () => {
     );
   }
 
-  // Extract OCR data with fallback to mock data
-  const ocrData = ocrResult?.data || {
-    id: '001234567890',
-    name: 'NGUYỄN VĂN A',
-    dob: '01/01/1990',
-    gender: 'Nam',
-    nationality: 'Việt Nam',
-    address: 'Số 1, Phố Tràng Tiền, Quận Hoàn Kiếm, Hà Nội',
-    issueDate: '01/01/2020',
-    expiryDate: '01/01/2030',
+  // Debug: Log toàn bộ ocrResult để xem cấu trúc
+  console.log('🔍 Full ocrResult:', JSON.stringify(ocrResult, null, 2));
+  console.log('🔍 ocrResult keys:', Object.keys(ocrResult || {}));
+
+  // Helper function to format LocalDate array [year, month, day] to DD/MM/YYYY
+  const formatDate = (dateValue: any): string => {
+    if (!dateValue) return 'N/A';
+
+    // If it's an array [year, month, day] from Java LocalDate
+    if (Array.isArray(dateValue) && dateValue.length === 3) {
+      const [year, month, day] = dateValue;
+      return `${String(day).padStart(2, '0')}/${String(month).padStart(
+        2,
+        '0',
+      )}/${year}`;
+    }
+
+    // If it's already a string, return as is
+    if (typeof dateValue === 'string') return dateValue;
+
+    return 'N/A';
+  };
+
+  // Extract OCR data from API response
+  const ocrData = {
+    id: ocrResult?.idNumber || 'N/A',
+    name: ocrResult?.fullName || 'N/A',
+    dob: formatDate(ocrResult?.dateOfBirth),
+    gender: ocrResult?.gender || 'N/A',
+    nationality: ocrResult?.nationality || 'Việt Nam',
+    address: ocrResult?.address || 'N/A',
+    issueDate: formatDate(ocrResult?.issueDate),
+    expiryDate: formatDate(ocrResult?.expiryDate),
   };
 
   return (
@@ -142,7 +165,9 @@ const ResultScreen: React.FC = () => {
               <Text style={styles.statusLabel}>Độ khớp khuôn mặt</Text>
               <View style={styles.statusBadge}>
                 <Text style={styles.statusValue}>
-                  {faceMatchResult?.similarity || '96%'}
+                  {faceMatchResult?.similarity
+                    ? `${(faceMatchResult.similarity * 100).toFixed(1)}%`
+                    : 'N/A'}
                 </Text>
               </View>
             </View>

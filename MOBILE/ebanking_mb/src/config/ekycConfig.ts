@@ -15,7 +15,7 @@ export const EKYC_CONFIG = {
   //    USE_MOCK_DATA: false
   //
   // =========================================================================
-  USE_MOCK_DATA: true, // ⚠️ THAY ĐỔI ĐÂY để bật/tắt mock mode
+  USE_MOCK_DATA: false, // ⚠️ THAY ĐỔI ĐÂY để bật/tắt mock mode
 
   // Mock response delay (milliseconds) - simulates network latency
   MOCK_DELAY: 1500,
