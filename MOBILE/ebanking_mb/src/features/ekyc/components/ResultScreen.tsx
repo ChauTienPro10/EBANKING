@@ -14,30 +14,7 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Colors from '../../../constants/color';
-
-// Progress Header Component - Step 3 active
-const ProgressHeader: React.FC = () => (
-  <View style={styles.progressHeader}>
-    <View style={styles.progressContainer}>
-      <View style={styles.progressStep}>
-        <Text style={styles.stepText}>1</Text>
-      </View>
-      <View style={styles.progressLine} />
-      <View style={styles.progressStep}>
-        <Text style={styles.stepText}>2</Text>
-      </View>
-      <View style={styles.progressLine} />
-      <View style={[styles.progressStep, styles.activeStep]}>
-        <Text style={styles.activeStepText}>3</Text>
-      </View>
-    </View>
-    <View style={styles.progressLabels}>
-      <Text style={styles.label}>Xác thực</Text>
-      <Text style={styles.label}>Quay video</Text>
-      <Text style={styles.activeLabel}>Kiểm tra</Text>
-    </View>
-  </View>
-);
+import ProgressHeader from './shared/ProgressHeader';
 
 const ResultScreen: React.FC = () => {
   const navigation = useNavigation();
@@ -56,7 +33,7 @@ const ResultScreen: React.FC = () => {
   if (!success) {
     return (
       <SafeAreaView style={styles.container}>
-        <ProgressHeader />
+        <ProgressHeader currentStep={3} />
         <View style={styles.contentContainer}>
           <View style={styles.failIcon}>
             <Text style={styles.failIconText}>×</Text>
@@ -95,7 +72,7 @@ const ResultScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ProgressHeader />
+      <ProgressHeader currentStep={3} />
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
@@ -178,13 +155,7 @@ const ResultScreen: React.FC = () => {
       </ScrollView>
 
       <View style={styles.footer}>
-        <TouchableOpacity
-          style={styles.editButton}
-          onPress={() => navigation.goBack()}
-        >
-          <Text style={styles.editButtonText}>Chỉnh sửa</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.doneButton} onPress={handleClose}>
+        <TouchableOpacity style={styles.confirmButton} onPress={handleClose}>
           <Text style={styles.buttonText}>Xác nhận</Text>
         </TouchableOpacity>
       </View>
@@ -196,65 +167,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.white,
-  },
-  // Progress Header
-  progressHeader: {
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 12,
-    backgroundColor: Colors.white,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
-  },
-  progressContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 6,
-  },
-  progressStep: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: '#E8E8E8',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  activeStep: {
-    backgroundColor: Colors.main_green,
-  },
-  progressLine: {
-    width: 80,
-    height: 2,
-    backgroundColor: '#E0E0E0',
-  },
-  stepText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#B0B0B0',
-  },
-  activeStepText: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#FFFFFF',
-  },
-  progressLabels: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  label: {
-    fontSize: 12,
-    color: '#333333',
-    fontWeight: '500',
-    flex: 1,
-    textAlign: 'center',
-  },
-  activeLabel: {
-    fontSize: 12,
-    color: Colors.main_bule,
-    fontWeight: '700',
-    flex: 1,
-    textAlign: 'center',
   },
   // Content
   scrollView: {
@@ -422,8 +334,6 @@ const styles = StyleSheet.create({
   },
   // Footer
   footer: {
-    flexDirection: 'row',
-    gap: 12,
     paddingHorizontal: 20,
     paddingBottom: 20,
     paddingTop: 16,
@@ -431,24 +341,9 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: Colors.border,
   },
-  editButton: {
-    flex: 1,
-    backgroundColor: Colors.white,
-    paddingVertical: 14,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: Colors.border,
-  },
-  editButtonText: {
-    color: Colors.textSecondary,
-    fontSize: 15,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-  doneButton: {
-    flex: 1,
+  confirmButton: {
     backgroundColor: Colors.main_bule,
-    paddingVertical: 14,
+    paddingVertical: 16,
     borderRadius: 12,
     shadowColor: Colors.main_bule,
     shadowOffset: { width: 0, height: 4 },

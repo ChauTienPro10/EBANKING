@@ -8,9 +8,7 @@ import {
   View,
   StyleSheet,
   Text,
-  Image,
   ScrollView,
-  TouchableOpacity,
   ActivityIndicator,
   SafeAreaView,
   Alert,
@@ -27,30 +25,10 @@ import {
   MOCK_EKYC_DATA,
   mockApiCall,
 } from '../../../config/ekycConfig';
-
-// Progress Header Component - Step 3 active
-const ProgressHeader: React.FC = () => (
-  <View style={styles.progressHeader}>
-    <View style={styles.progressContainer}>
-      <View style={styles.progressStep}>
-        <Text style={styles.stepText}>1</Text>
-      </View>
-      <View style={styles.progressLine} />
-      <View style={styles.progressStep}>
-        <Text style={styles.stepText}>2</Text>
-      </View>
-      <View style={styles.progressLine} />
-      <View style={[styles.progressStep, styles.activeStep]}>
-        <Text style={styles.activeStepText}>3</Text>
-      </View>
-    </View>
-    <View style={styles.progressLabels}>
-      <Text style={styles.label}>Xác thực</Text>
-      <Text style={styles.label}>Quay video</Text>
-      <Text style={styles.activeLabel}>Kiểm tra</Text>
-    </View>
-  </View>
-);
+import ProgressHeader from './shared/ProgressHeader';
+import ImageSection from './review/ImageSection';
+import VideoCard from './review/VideoCard';
+import Footer from './review/Footer';
 
 const ReviewScreen: React.FC = () => {
   const navigation = useNavigation();
@@ -233,7 +211,7 @@ const ReviewScreen: React.FC = () => {
   if (loading) {
     return (
       <SafeAreaView style={styles.container}>
-        <ProgressHeader />
+        <ProgressHeader currentStep={3} />
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={Colors.main_bule} />
           <Text style={styles.loadingText}>{step}</Text>
@@ -249,52 +227,17 @@ const ReviewScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ProgressHeader />
+      <ProgressHeader currentStep={3} />
 
       <ScrollView style={styles.scrollView}>
         <Text style={styles.title}>Xác nhận thông tin</Text>
 
-        <View style={styles.imageSection}>
-          <Text style={styles.sectionTitle}>CMND/CCCD</Text>
-          <View style={styles.imageGrid}>
-            <View style={styles.imageContainer}>
-              <Text style={styles.imageLabel}>Mặt trước</Text>
-              <Image source={{ uri: frontImage }} style={styles.image} />
-            </View>
-            <View style={styles.imageContainer}>
-              <Text style={styles.imageLabel}>Mặt sau</Text>
-              <Image source={{ uri: backImage }} style={styles.image} />
-            </View>
-          </View>
-        </View>
+        <ImageSection frontImage={frontImage} backImage={backImage} />
 
-        <View style={styles.videoCard}>
-          <View style={styles.videoIconContainer}>
-            <Text style={styles.videoIcon}>🎥</Text>
-          </View>
-          <View style={styles.videoContent}>
-            <Text style={styles.videoTitle}>Video xác thực</Text>
-            <Text style={styles.videoStatus}>
-              Video đã được ghi lại thành công
-            </Text>
-          </View>
-          <View style={styles.videoCheckmark}>
-            <Text style={styles.checkmarkText}>✓</Text>
-          </View>
-        </View>
+        <VideoCard />
       </ScrollView>
 
-      <View style={styles.footer}>
-        <TouchableOpacity
-          style={styles.secondaryButton}
-          onPress={() => navigation.goBack()}
-        >
-          <Text style={styles.secondaryButtonText}>Quay lại</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.primaryButton} onPress={handleSubmit}>
-          <Text style={styles.primaryButtonText}>Xác nhận</Text>
-        </TouchableOpacity>
-      </View>
+      <Footer onBack={() => navigation.goBack()} onConfirm={handleSubmit} />
     </SafeAreaView>
   );
 };
@@ -303,65 +246,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.white,
-  },
-  // Progress Header
-  progressHeader: {
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 12,
-    backgroundColor: Colors.white,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
-  },
-  progressContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 6,
-  },
-  progressStep: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: '#E8E8E8',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  activeStep: {
-    backgroundColor: Colors.main_green,
-  },
-  progressLine: {
-    width: 80,
-    height: 2,
-    backgroundColor: '#E0E0E0',
-  },
-  stepText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#B0B0B0',
-  },
-  activeStepText: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#FFFFFF',
-  },
-  progressLabels: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  label: {
-    fontSize: 12,
-    color: '#333333',
-    fontWeight: '500',
-    flex: 1,
-    textAlign: 'center',
-  },
-  activeLabel: {
-    fontSize: 12,
-    color: Colors.main_bule,
-    fontWeight: '700',
-    flex: 1,
-    textAlign: 'center',
   },
   // Loading
   loadingContainer: {
@@ -393,127 +277,6 @@ const styles = StyleSheet.create({
     color: '#1F2937',
     padding: 20,
     paddingBottom: 12,
-  },
-  imageSection: {
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1F2937',
-    marginBottom: 12,
-  },
-  imageGrid: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  imageContainer: {
-    flex: 1,
-  },
-  imageLabel: {
-    fontSize: 13,
-    color: '#6B7280',
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  image: {
-    width: '100%',
-    height: 120,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-  },
-  // Video Card
-  videoCard: {
-    marginHorizontal: 20,
-    marginBottom: 20,
-    backgroundColor: '#F8F9FA',
-    borderRadius: 12,
-    padding: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-  },
-  videoIconContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: Colors.white,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
-  },
-  videoIcon: {
-    fontSize: 24,
-  },
-  videoContent: {
-    flex: 1,
-  },
-  videoTitle: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#1F2937',
-    marginBottom: 4,
-  },
-  videoStatus: {
-    fontSize: 13,
-    color: '#6B7280',
-  },
-  videoCheckmark: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: Colors.main_green,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  checkmarkText: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: Colors.white,
-  },
-  // Footer
-  footer: {
-    flexDirection: 'row',
-    gap: 10,
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-    borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
-    paddingTop: 16,
-  },
-  primaryButton: {
-    flex: 1,
-    backgroundColor: Colors.main_bule,
-    paddingVertical: 14,
-    borderRadius: 12,
-    shadowColor: Colors.main_bule,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  primaryButtonText: {
-    color: Colors.white,
-    fontSize: 15,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-  secondaryButton: {
-    flex: 1,
-    backgroundColor: 'transparent',
-    paddingVertical: 14,
-    borderRadius: 12,
-    borderWidth: 1.5,
-    borderColor: '#E5E7EB',
-  },
-  secondaryButtonText: {
-    color: '#6B7280',
-    fontSize: 15,
-    fontWeight: '600',
-    textAlign: 'center',
   },
 });
 

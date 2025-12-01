@@ -4,14 +4,7 @@
  */
 
 import React, { useState, useRef } from 'react';
-import {
-  View,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  SafeAreaView,
-  Alert,
-} from 'react-native';
+import { View, StyleSheet, Text, SafeAreaView, Alert } from 'react-native';
 import {
   Camera,
   useCameraDevice,
@@ -19,30 +12,10 @@ import {
 } from 'react-native-vision-camera';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Colors from '../../../constants/color';
-
-// Progress Header Component - Consistent with OCR screen
-const ProgressHeader: React.FC = () => (
-  <View style={styles.progressHeader}>
-    <View style={styles.progressContainer}>
-      <View style={styles.progressStep}>
-        <Text style={styles.stepText}>1</Text>
-      </View>
-      <View style={styles.progressLine} />
-      <View style={[styles.progressStep, styles.activeStep]}>
-        <Text style={styles.activeStepText}>2</Text>
-      </View>
-      <View style={styles.progressLine} />
-      <View style={styles.progressStep}>
-        <Text style={styles.stepText}>3</Text>
-      </View>
-    </View>
-    <View style={styles.progressLabels}>
-      <Text style={styles.label}>Xác thực</Text>
-      <Text style={styles.activeLabel}>Quay video</Text>
-      <Text style={styles.label}>Kiểm tra</Text>
-    </View>
-  </View>
-);
+import ProgressHeader from './shared/ProgressHeader';
+import GuidelinesView from './liveness-camera/GuidelinesView';
+import CompleteView from './liveness-camera/CompleteView';
+import CameraView from './liveness-camera/CameraView';
 
 const LivenessCameraScreen: React.FC = () => {
   const navigation = useNavigation();
@@ -87,7 +60,7 @@ const LivenessCameraScreen: React.FC = () => {
       }, 1000);
 
       // Wait for countdown
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      await new Promise<void>(resolve => setTimeout(resolve, 3000));
 
       // Start recording with high quality settings
       setIsRecording(true);
@@ -153,7 +126,7 @@ const LivenessCameraScreen: React.FC = () => {
   if (!hasPermission) {
     return (
       <SafeAreaView style={styles.whiteContainer}>
-        <ProgressHeader />
+        <ProgressHeader currentStep={2} />
         <View style={styles.permissionContainer}>
           <Text style={styles.permissionText}>
             Cần quyền truy cập Camera để quay video xác thực
@@ -166,7 +139,7 @@ const LivenessCameraScreen: React.FC = () => {
   if (!device) {
     return (
       <SafeAreaView style={styles.whiteContainer}>
-        <ProgressHeader />
+        <ProgressHeader currentStep={2} />
         <View style={styles.permissionContainer}>
           <Text style={styles.permissionText}>Không tìm thấy camera trước</Text>
         </View>
@@ -176,152 +149,33 @@ const LivenessCameraScreen: React.FC = () => {
 
   // Video completed - show controls
   if (videoPath) {
-    return (
-      <SafeAreaView style={styles.whiteContainer}>
-        <ProgressHeader />
-        <View style={styles.completeContainer}>
-          <View style={styles.successIcon}>
-            <Text style={styles.successIconText}>✓</Text>
-          </View>
-          <Text style={styles.completeTitle}>Đã quay xong video</Text>
-          <Text style={styles.completeSubtitle}>
-            Video đã được ghi lại thành công
-          </Text>
-        </View>
-        <View style={styles.completeControls}>
-          <TouchableOpacity
-            style={styles.primaryButton}
-            onPress={navigateToReview}
-          >
-            <Text style={styles.primaryButtonText}>Tiếp tục</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.secondaryButton} onPress={retake}>
-            <Text style={styles.secondaryButtonText}>Quay lại</Text>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
-    );
+    return <CompleteView onContinue={navigateToReview} onRetake={retake} />;
   }
 
   // Show guidelines modal before starting
   if (showGuidelines) {
-    return (
-      <SafeAreaView style={styles.whiteContainer}>
-        <ProgressHeader />
-        <View style={styles.guidelinesContainer}>
-          <Text style={styles.guidelinesTitle}>Hướng dẫn quay video</Text>
-          <View style={styles.guidelinesList}>
-            <View style={styles.guidelineItem}>
-              <View style={styles.bulletPoint} />
-              <Text style={styles.guidelineText}>
-                Di chuyển đến nơi có ánh sáng tốt
-              </Text>
-            </View>
-            <View style={styles.guidelineItem}>
-              <View style={styles.bulletPoint} />
-              <Text style={styles.guidelineText}>
-                Đảm bảo không bị ngược sáng
-              </Text>
-            </View>
-            <View style={styles.guidelineItem}>
-              <View style={styles.bulletPoint} />
-              <Text style={styles.guidelineText}>
-                Giữ khuôn mặt trong khung hình
-              </Text>
-            </View>
-            <View style={styles.guidelineItem}>
-              <View style={styles.bulletPoint} />
-              <Text style={styles.guidelineText}>Nhìn thẳng vào camera</Text>
-            </View>
-            <View style={styles.guidelineItem}>
-              <View style={styles.bulletPoint} />
-              <Text style={styles.guidelineText}>
-                Không lay động trong 5 giây
-              </Text>
-            </View>
-          </View>
-          <TouchableOpacity
-            style={styles.startButton}
-            onPress={() => setShowGuidelines(false)}
-          >
-            <Text style={styles.startButtonText}>Bắt đầu quay</Text>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
-    );
+    return <GuidelinesView onStart={() => setShowGuidelines(false)} />;
   }
 
   return (
-    <SafeAreaView style={styles.whiteContainer}>
-      <ProgressHeader />
-
-      <View style={styles.cameraWrapper}>
-        <Camera
-          ref={camera}
-          style={styles.camera}
-          device={device}
-          isActive={true}
-          video={true}
-          format={format}
-          fps={30}
-          videoStabilizationMode="auto"
-          onInitialized={() => {
-            setIsCameraReady(true);
-          }}
-          onError={error => {
-            Alert.alert(
-              'Lỗi Camera',
-              'Không thể khởi tạo camera. Vui lòng thử lại.',
-            );
-          }}
-        />
-
-        {countdown !== null && (
-          <View style={styles.countdownOverlay}>
-            <Text style={styles.countdownText}>{countdown}</Text>
-          </View>
-        )}
-
-        {isRecording && (
-          <View style={styles.recordingIndicator}>
-            <View style={styles.recordingDot} />
-            <Text style={styles.recordingText}>
-              Đang quay... {Math.max(0, 5 - recordingTime).toFixed(1)}s
-            </Text>
-          </View>
-        )}
-
-        <View style={styles.overlay}>
-          <View style={styles.faceGuide} />
-        </View>
-      </View>
-
-      <View style={styles.instructionSection}>
-        <Text style={styles.instructionTitle}>Xác thực khuôn mặt</Text>
-        <Text style={styles.instructionSubtitle}>
-          Giữ khuôn mặt trong khung oval và nhìn thẳng vào camera
-        </Text>
-      </View>
-
-      <View style={styles.captureSection}>
-        {!isRecording && !countdown ? (
-          <TouchableOpacity
-            style={[
-              styles.recordButton,
-              !isCameraReady && styles.recordButtonDisabled,
-            ]}
-            onPress={startRecording}
-            disabled={!isCameraReady}
-          >
-            <View style={styles.recordButtonInner} />
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity style={styles.stopButton} onPress={stopRecording}>
-            <View style={styles.stopButtonInner} />
-          </TouchableOpacity>
-        )}
-      </View>
-    </SafeAreaView>
+    <CameraView
+      cameraRef={camera}
+      device={device}
+      format={format}
+      isCameraReady={isCameraReady}
+      isRecording={isRecording}
+      countdown={countdown}
+      recordingTime={recordingTime}
+      onCameraReady={() => setIsCameraReady(true)}
+      onCameraError={() => {
+        Alert.alert(
+          'Lỗi Camera',
+          'Không thể khởi tạo camera. Vui lòng thử lại.',
+        );
+      }}
+      onStartRecording={startRecording}
+      onStopRecording={stopRecording}
+    />
   );
 };
 
@@ -330,182 +184,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.white,
   },
-  // Progress Header
-  progressHeader: {
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 12,
-    backgroundColor: Colors.white,
-  },
-  progressContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 6,
-  },
-  progressStep: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: '#E8E8E8',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  activeStep: {
-    backgroundColor: Colors.main_green,
-  },
-  progressLine: {
-    width: 80,
-    height: 2,
-    backgroundColor: '#E0E0E0',
-  },
-  stepText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#B0B0B0',
-  },
-  activeStepText: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#FFFFFF',
-  },
-  progressLabels: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  label: {
-    fontSize: 12,
-    color: '#333333',
-    fontWeight: '500',
-    flex: 1,
-    textAlign: 'center',
-  },
-  activeLabel: {
-    fontSize: 12,
-    color: Colors.main_bule,
-    fontWeight: '700',
-    flex: 1,
-    textAlign: 'center',
-  },
-  // Camera View
-  cameraWrapper: {
-    flex: 1,
-    backgroundColor: Colors.black,
-    position: 'relative',
-  },
-  camera: {
-    flex: 1,
-  },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  faceGuide: {
-    width: 250,
-    height: 300,
-    borderWidth: 2,
-    borderColor: Colors.white,
-    borderRadius: 150,
-    backgroundColor: 'transparent',
-  },
-  countdownOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
-  },
-  countdownText: {
-    fontSize: 72,
-    fontWeight: '700',
-    color: Colors.white,
-  },
-  recordingIndicator: {
-    position: 'absolute',
-    top: 20,
-    left: 20,
-    right: 20,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    backgroundColor: '#EF4444',
-    borderRadius: 8,
-  },
-  recordingDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: Colors.white,
-    marginRight: 8,
-  },
-  recordingText: {
-    color: Colors.white,
-    fontSize: 15,
-    fontWeight: '600',
-  },
-  // Instruction Section
-  instructionSection: {
-    backgroundColor: Colors.white,
-    paddingVertical: 8,
-    paddingHorizontal: 20,
-    alignItems: 'center',
-  },
-  instructionTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#000000',
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  instructionSubtitle: {
-    fontSize: 14,
-    color: '#666666',
-    textAlign: 'center',
-  },
-  // Capture Section
-  captureSection: {
-    backgroundColor: Colors.white,
-    paddingVertical: 24,
-    alignItems: 'center',
-  },
-  recordButton: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: Colors.white,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 4,
-    borderColor: '#EF4444',
-  },
-  recordButtonDisabled: {
-    opacity: 0.5,
-    borderColor: '#D1D5DB',
-  },
-  recordButtonInner: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: '#EF4444',
-  },
-  stopButton: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: Colors.white,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 4,
-    borderColor: '#EF4444',
-  },
-  stopButtonInner: {
-    width: 25,
-    height: 25,
-    backgroundColor: '#EF4444',
-  },
-  // Permission Screen
   permissionContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -515,128 +193,6 @@ const styles = StyleSheet.create({
   permissionText: {
     fontSize: 16,
     color: '#1F2937',
-    textAlign: 'center',
-  },
-  // Complete Screen
-  completeContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-  },
-  successIcon: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: Colors.main_green,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  successIconText: {
-    fontSize: 48,
-    fontWeight: '700',
-    color: Colors.white,
-  },
-  completeTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#1F2937',
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  completeSubtitle: {
-    fontSize: 14,
-    color: '#6B7280',
-    textAlign: 'center',
-  },
-  completeControls: {
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-  },
-  primaryButton: {
-    backgroundColor: Colors.main_bule,
-    paddingVertical: 14,
-    borderRadius: 12,
-    marginBottom: 10,
-    shadowColor: Colors.main_bule,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  primaryButtonText: {
-    color: Colors.white,
-    fontSize: 15,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-  secondaryButton: {
-    backgroundColor: 'transparent',
-    paddingVertical: 14,
-    borderRadius: 12,
-    borderWidth: 1.5,
-    borderColor: '#E5E7EB',
-  },
-  secondaryButtonText: {
-    color: '#6B7280',
-    fontSize: 15,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-  // Guidelines Screen
-  guidelinesContainer: {
-    paddingHorizontal: 20,
-    paddingTop: 32,
-    paddingBottom: 20,
-  },
-  guidelinesTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#1F2937',
-    textAlign: 'center',
-    marginBottom: 60,
-  },
-  guidelinesList: {
-    backgroundColor: '#F8F9FA',
-    borderRadius: 16,
-    padding: 20,
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-    marginBottom: 60,
-  },
-  guidelineItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 14,
-  },
-  bulletPoint: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: Colors.main_bule,
-    marginRight: 12,
-  },
-  guidelineText: {
-    flex: 1,
-    fontSize: 14,
-    color: '#1F2937',
-    lineHeight: 21,
-  },
-  startButton: {
-    backgroundColor: Colors.main_bule,
-    paddingVertical: 16,
-    borderRadius: 12,
-    shadowColor: Colors.main_bule,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 5,
-  },
-  startButtonText: {
-    color: Colors.white,
-    fontSize: 15,
-    fontWeight: '600',
     textAlign: 'center',
   },
 });
