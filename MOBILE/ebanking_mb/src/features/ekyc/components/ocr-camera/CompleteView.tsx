@@ -32,6 +32,7 @@ const CompleteView: React.FC<CompleteViewProps> = ({
         contentContainerStyle={styles.completeContent}
         showsVerticalScrollIndicator={false}
       >
+        <Text style={styles.sectionTitle}>CMND/CCCD</Text>
         <View style={styles.imageGrid}>
           <View style={styles.imageCard}>
             <Text style={styles.imageLabel}>Mặt trước</Text>
@@ -68,6 +69,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: 16,
     paddingBottom: 16,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1F2937',
+    marginBottom: 12,
+    marginLeft: 4,
   },
   imageGrid: {
     flexDirection: 'column',
