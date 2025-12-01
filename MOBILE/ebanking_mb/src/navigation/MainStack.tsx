@@ -17,7 +17,13 @@ import TransactionHistoryScreen from '../page/transaction/TransactionHistoryScre
 import ShowNotificationScreen from '../notification/showNoti';
 import setPinCodeScreen from '../PIN/pinCodeScreen';
 import ScannerScreen from '../page/QR/ScannerScreen';
-import { EKYCScreen } from '../features/ekyc';
+import {
+  EKYCScreen,
+  LivenessCameraScreen,
+  ReviewScreen,
+  ResultScreen,
+} from '../features/ekyc';
+import OCRCameraScreen from '../features/ekyc/components/OCRCameraScreen';
 import ChatScreen from '../page/chatbot/ChatScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -63,7 +69,12 @@ export default function MainStack() {
       <Stack.Screen name="SetPINCode" component={setPinCodeScreen} />
       <Stack.Screen name="ScannerScreen" component={ScannerScreen} />
 
+      {/* eKYC Flow - Native Camera Implementation */}
       <Stack.Screen name="EKYC" component={EKYCScreen} />
+      <Stack.Screen name="OCRCamera" component={OCRCameraScreen} />
+      <Stack.Screen name="LivenessCamera" component={LivenessCameraScreen} />
+      <Stack.Screen name="ReviewScreen" component={ReviewScreen} />
+      <Stack.Screen name="ResultScreen" component={ResultScreen} />
     </Stack.Navigator>
   );
 }

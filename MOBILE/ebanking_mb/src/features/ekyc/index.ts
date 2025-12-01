@@ -1,23 +1,22 @@
 /**
  * eKYC Feature Exports
+ * Native Camera Implementation
  */
 
 // Screens
 export { default as EKYCScreen } from './screens/EKYCScreen';
 
 // Components
-export { default as EKYCWebView } from './components/EKYCWebView';
-export { default as EKYCLoadingOverlay } from './components/EKYCLoadingOverlay';
+export { default as OCRCameraScreen } from './components/OCRCameraScreen';
+export { default as LivenessCameraScreen } from './components/LivenessCameraScreen';
+export { default as ReviewScreen } from './components/ReviewScreen';
+export { default as ResultScreen } from './components/ResultScreen';
 
 // Hooks
 export { useEKYCSession } from './hooks/useEKYCSession';
-export { useEKYCWebView } from './hooks/useEKYCWebView';
 
 // Services
 export * from './services/ekycApi';
 
 // Types
 export * from './types';
-
-// Utils
-export * from './utils/ekycInjectedScript';
