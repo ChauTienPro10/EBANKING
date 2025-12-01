@@ -112,22 +112,18 @@ const LivenessCameraScreen: React.FC = () => {
         flash: 'off',
         onRecordingFinished: video => {
           clearInterval(recordingInterval);
-          console.log('✅ Video recorded:', video.path);
-          console.log('📊 Video duration:', video.duration, 'seconds');
           setVideoPath(`file://${video.path}`);
           setIsRecording(false);
           setRecordingTime(0);
         },
         onRecordingError: error => {
           clearInterval(recordingInterval);
-          console.error('❌ Recording error:', error);
           Alert.alert('Lỗi', 'Không thể quay video. Vui lòng thử lại.');
           setIsRecording(false);
           setRecordingTime(0);
         },
       });
     } catch (error) {
-      console.error('Error starting recording:', error);
       Alert.alert('Lỗi', 'Không thể bắt đầu quay. Vui lòng thử lại.');
       setIsRecording(false);
     }
@@ -270,11 +266,9 @@ const LivenessCameraScreen: React.FC = () => {
           fps={30}
           videoStabilizationMode="auto"
           onInitialized={() => {
-            console.log('✅ Camera initialized and ready');
             setIsCameraReady(true);
           }}
           onError={error => {
-            console.error('❌ Camera error:', error);
             Alert.alert(
               'Lỗi Camera',
               'Không thể khởi tạo camera. Vui lòng thử lại.',
@@ -292,7 +286,7 @@ const LivenessCameraScreen: React.FC = () => {
           <View style={styles.recordingIndicator}>
             <View style={styles.recordingDot} />
             <Text style={styles.recordingText}>
-              Đang quay... {(5 - recordingTime).toFixed(1)}s
+              Đang quay... {Math.max(0, 5 - recordingTime).toFixed(1)}s
             </Text>
           </View>
         )}
@@ -454,7 +448,7 @@ const styles = StyleSheet.create({
   // Instruction Section
   instructionSection: {
     backgroundColor: Colors.white,
-    paddingVertical: 16,
+    paddingVertical: 8,
     paddingHorizontal: 20,
     alignItems: 'center',
   },
@@ -473,13 +467,13 @@ const styles = StyleSheet.create({
   // Capture Section
   captureSection: {
     backgroundColor: Colors.white,
-    paddingVertical: 20,
+    paddingVertical: 24,
     alignItems: 'center',
   },
   recordButton: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     backgroundColor: Colors.white,
     justifyContent: 'center',
     alignItems: 'center',
@@ -491,15 +485,15 @@ const styles = StyleSheet.create({
     borderColor: '#D1D5DB',
   },
   recordButtonInner: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+    width: 50,
+    height: 50,
+    borderRadius: 25,
     backgroundColor: '#EF4444',
   },
   stopButton: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     backgroundColor: Colors.white,
     justifyContent: 'center',
     alignItems: 'center',
@@ -507,8 +501,8 @@ const styles = StyleSheet.create({
     borderColor: '#EF4444',
   },
   stopButtonInner: {
-    width: 28,
-    height: 28,
+    width: 25,
+    height: 25,
     backgroundColor: '#EF4444',
   },
   // Permission Screen
@@ -592,30 +586,29 @@ const styles = StyleSheet.create({
   },
   // Guidelines Screen
   guidelinesContainer: {
-    flex: 1,
     paddingHorizontal: 20,
-    paddingTop: 40,
+    paddingTop: 32,
     paddingBottom: 20,
-    justifyContent: 'space-between',
   },
   guidelinesTitle: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: '700',
     color: '#1F2937',
     textAlign: 'center',
-    marginBottom: 32,
+    marginBottom: 60,
   },
   guidelinesList: {
     backgroundColor: '#F8F9FA',
-    borderRadius: 12,
+    borderRadius: 16,
     padding: 20,
     borderWidth: 1,
     borderColor: '#E5E7EB',
+    marginBottom: 60,
   },
   guidelineItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 14,
   },
   bulletPoint: {
     width: 6,
@@ -626,23 +619,23 @@ const styles = StyleSheet.create({
   },
   guidelineText: {
     flex: 1,
-    fontSize: 15,
+    fontSize: 14,
     color: '#1F2937',
-    lineHeight: 22,
+    lineHeight: 21,
   },
   startButton: {
     backgroundColor: Colors.main_bule,
-    paddingVertical: 14,
+    paddingVertical: 16,
     borderRadius: 12,
     shadowColor: Colors.main_bule,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.3,
     shadowRadius: 8,
-    elevation: 4,
+    elevation: 5,
   },
   startButtonText: {
     color: Colors.white,
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '600',
     textAlign: 'center',
   },

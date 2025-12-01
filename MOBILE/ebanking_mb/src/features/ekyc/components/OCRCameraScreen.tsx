@@ -12,7 +12,6 @@ import {
   Image,
   SafeAreaView,
   Alert,
-  Animated,
   Dimensions,
   ScrollView,
 } from 'react-native';
@@ -22,7 +21,6 @@ import {
   useCameraPermission,
 } from 'react-native-vision-camera';
 import { useNavigation } from '@react-navigation/native';
-import ImageCropPicker from 'react-native-image-crop-picker';
 import Colors from '../../../constants/color';
 
 type CaptureState = 'front' | 'back' | 'complete';
@@ -92,7 +90,6 @@ const OCRCameraScreen: React.FC = () => {
       // Backend will handle rotation and cropping
       setPreviewImage(imagePath);
     } catch (error: any) {
-      console.error('Error taking photo:', error);
       Alert.alert('Lỗi', 'Không thể chụp ảnh. Vui lòng thử lại.');
     }
   };
@@ -246,7 +243,7 @@ const OCRCameraScreen: React.FC = () => {
           </Text>
         </Text>
         <Text style={styles.instructionSubtitle}>
-          Giữ khuôn mặt trong khung oval và nhìn thẳng vào camera
+          Xin hãy giữ giấy tờ ở vùng chụp
         </Text>
       </View>
 
@@ -271,6 +268,8 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     paddingBottom: 12,
     backgroundColor: '#FFFFFF',
+    zIndex: 10,
+    elevation: 5,
   },
   progressContainer: {
     flexDirection: 'row',

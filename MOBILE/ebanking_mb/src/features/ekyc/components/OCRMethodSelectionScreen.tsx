@@ -24,7 +24,6 @@ const OCRMethodSelectionScreen: React.FC = () => {
 
   const handleUploadOption = () => {
     // TODO: Implement image picker for upload
-    console.log('Upload option selected');
   };
 
   return (
