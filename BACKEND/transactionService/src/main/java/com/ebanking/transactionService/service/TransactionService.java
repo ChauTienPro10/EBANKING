@@ -170,4 +170,8 @@ public class TransactionService {
                 pageable
         );
     }
+
+    public Account getAccountInfoFromAccountNumber(String accountNumber) {
+        return accountRepository.findByAccountNumber(accountNumber);
+    }
 }

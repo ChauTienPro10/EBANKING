@@ -2,6 +2,8 @@ package com.ebanking.firebaseService.controller;
 
 import com.ebanking.firebaseService.dto.request.PushNotiRequest;
 import com.ebanking.firebaseService.dto.request.SaveTockenDTO;
+import com.ebanking.firebaseService.entity.NotiSystem;
+import com.ebanking.firebaseService.entity.NotiTransaction;
 import com.ebanking.firebaseService.service.FCMService;
 import com.ebanking.firebaseService.service.FirebaseMessagingService;
 import com.ebanking.firebaseService.service.NotificationService;
@@ -11,10 +13,10 @@ import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -90,5 +92,22 @@ public class NotificationController {
     @PostMapping("/push-noti-persional")
     public void sendNotiPersional(@RequestBody PushNotiRequest request) {
         return;
+    }
+
+    @GetMapping("/getSysNoti")
+    public ResponseEntity<List<NotiSystem>> getAllSysNoti(
+            @RequestParam(defaultValue = "0") int index,
+            @RequestParam(defaultValue = "10") int limit
+    ) {
+        List<NotiSystem> notiSystemList = notificationService.getSysNotifications(index, limit);
+        return ResponseEntity.ok(notiSystemList);
+    }
+
+    @GetMapping("/getTransferNoti")
+    public ResponseEntity<List<NotiTransaction>> getNotiTransactions(@RequestParam(defaultValue = "0") int index,
+                                                                     @RequestParam(defaultValue = "10") int limit)
+    {
+        List<NotiTransaction> notiTransactionList = notificationService.getNotiTransaction(index, limit);
+        return ResponseEntity.ok(notiTransactionList);
     }
 }

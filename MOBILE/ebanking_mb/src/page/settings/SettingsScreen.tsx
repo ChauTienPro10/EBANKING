@@ -8,7 +8,7 @@ import MenuList from '../../components/MenuList';
 import BottomNavigation from '../../components/BottomNavigation';
 import Colors from '../../constants/color';
 import { useDispatch } from 'react-redux';
-import { setLoginStatus, setLoginResponse } from '../../store/slices/appSlice';
+import { setLoginStatus, setLoginResponse, setAccountTransResponse } from '../../store/slices/appSlice';
 import LogoutConfirmPopup from '../../popups/LogoutPopup';
 import { useNavigation } from '@react-navigation/native';
 
@@ -102,6 +102,7 @@ const SettingsScreen: React.FC = () => {
   const handleLogout = () => {
     dispatch(setLoginResponse(null));
     dispatch(setLoginStatus(false));
+    dispatch(setAccountTransResponse(null));
   };
 
   const handleSettingSelect = (item: any) => {

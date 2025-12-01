@@ -16,9 +16,11 @@ import { API } from '../../constants/api';
 const NotiScreen = () => {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('personal'); // 'personal' or 'system'
-  const [notifications, setNotifications] = useState([]);
+  const [notificationsSystem, setNotificationsSystem] = useState([]);
+  const [notificationsPersonal, setNotificationsPersonal] = useState([]);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [index, setIndex] = useState(0);
 
   useEffect(() => {
     loadNotifications();
@@ -27,13 +29,11 @@ const NotiScreen = () => {
   const loadNotifications = async () => {
     try {
       setLoading(true);
-      // TODO: Replace with actual API call
-      // const response = await fetch.get(API.GET_NOTIFICATIONS, { type: activeTab }, true);
-      // setNotifications(response.data || []);
-      
-      // Mock data for now
-      const mockData = getMockNotifications(activeTab);
-      setNotifications(mockData);
+      if (activeTab === 'system') {
+        await getNotiSystem(index);
+      } else {
+        await getNotiPersonal(index);
+      }
     } catch (error) {
       console.error('Error loading notifications:', error);
     } finally {
@@ -41,77 +41,55 @@ const NotiScreen = () => {
     }
   };
 
-  const getMockNotifications = (type) => {
-    if (type === 'personal') {
-      return [
-        {
-          id: '1',
-          title: 'Chuyển tiền thành công',
-          message: 'Bạn đã chuyển 500,000 VND đến tài khoản ****1234',
-          timestamp: new Date(Date.now() - 1000 * 60 * 30), // 30 minutes ago
-          read: false,
-          type: 'personal',
-        },
-        {
-          id: '2',
-          title: 'Nhận tiền từ người gửi',
-          message: 'Bạn đã nhận 1,000,000 VND từ Nguyễn Văn A',
-          timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
-          read: false,
-          type: 'personal',
-        },
-        {
-          id: '3',
-          title: 'Thanh toán hóa đơn điện',
-          message: 'Thanh toán hóa đơn điện tháng 12/2024 thành công',
-          timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1 day ago
-          read: true,
-          type: 'personal',
-        },
-        {
-          id: '4',
-          title: 'Nạp tiền điện thoại',
-          message: 'Nạp 50,000 VND cho số điện thoại 0901234567 thành công',
-          timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2), // 2 days ago
-          read: true,
-          type: 'personal',
-        },
-      ];
-    } else {
-      return [
-        {
-          id: '5',
-          title: 'Bảo trì hệ thống',
-          message: 'Hệ thống sẽ được bảo trì từ 02:00 - 04:00 ngày 25/12/2024',
-          timestamp: new Date(Date.now() - 1000 * 60 * 60 * 3), // 3 hours ago
-          read: false,
-          type: 'system',
-        },
-        {
-          id: '6',
-          title: 'Cập nhật tính năng mới',
-          message: 'Ứng dụng đã được cập nhật với nhiều tính năng mới. Hãy cập nhật ngay!',
-          timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1 day ago
-          read: false,
-          type: 'system',
-        },
-        {
-          id: '7',
-          title: 'Thông báo khuyến mãi',
-          message: 'Chương trình khuyến mãi đặc biệt dành cho khách hàng. Xem ngay!',
-          timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3), // 3 days ago
-          read: true,
-          type: 'system',
-        },
-        {
-          id: '8',
-          title: 'Thay đổi điều khoản sử dụng',
-          message: 'Chúng tôi đã cập nhật điều khoản sử dụng. Vui lòng xem lại.',
-          timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5), // 5 days ago
-          read: true,
-          type: 'system',
-        },
-      ];
+  const getNotiSystem = async (index = 0) => {
+    try {
+      const response = await fetch.get(
+        API.GET_NOTIFICATIONSYSTEM,
+        { index, limit: 10 },
+        true // authRequire
+      );
+      
+      // Handle different response structures
+      let notifications = [];
+      if (Array.isArray(response)) {
+        notifications = response;
+      } else if (response?.data && Array.isArray(response.data)) {
+        notifications = response.data;
+      } else if (response?.data) {
+        notifications = [response.data];
+      }
+      
+      console.log('System notifications loaded:', notifications.length);
+      setNotificationsSystem(notifications);
+    } catch (error) {
+      console.error('Error loading system notifications:', error);
+      setNotificationsSystem([]);
+    }
+  };
+
+  const getNotiPersonal = async (index = 0) => {
+    try {
+      const response = await fetch.get(
+        API.GET_NOTIFICATIONPERSONAL,
+        { index, limit: 10 },
+        true // authRequire
+      );
+      
+      // Handle different response structures
+      let notifications = [];
+      if (Array.isArray(response)) {
+        notifications = response;
+      } else if (response?.data && Array.isArray(response.data)) {
+        notifications = response.data;
+      } else if (response?.data) {
+        notifications = [response.data];
+      }
+      
+      console.log('Personal notifications loaded:', notifications.length);
+      setNotificationsPersonal(notifications);
+    } catch (error) {
+      console.error('Error loading personal notifications:', error);
+      setNotificationsPersonal([]);
     }
   };
 
@@ -120,20 +98,27 @@ const NotiScreen = () => {
     await loadNotifications();
     setRefreshing(false);
   };
-
   const handleNotificationPress = async (notification) => {
     // Mark as read if not read
     if (!notification.read) {
       try {
         // TODO: Call API to mark as read
         // await fetch.post(API.MARK_NOTIFICATION_READ, { id: notification.id }, true);
-        
+
         // Update local state
-        setNotifications(prev =>
-          prev.map(item =>
-            item.id === notification.id ? { ...item, read: true } : item
-          )
-        );
+        if (activeTab === 'system') {
+          setNotificationsSystem(prev =>
+            prev.map(item =>
+              item.id === notification.id ? { ...item, read: true } : item
+            )
+          );
+        } else {
+          setNotificationsPersonal(prev =>
+            prev.map(item =>
+              item.id === notification.id ? { ...item, read: true } : item
+            )
+          );
+        }
       } catch (error) {
         console.error('Error marking notification as read:', error);
       }
@@ -142,13 +127,18 @@ const NotiScreen = () => {
   };
 
   const formatTime = (timestamp) => {
+    if (!timestamp) return '';
+    
     const now = new Date();
-    const diff = now - timestamp;
+    const notificationDate = new Date(timestamp);
+    const diff = now - notificationDate;
     const minutes = Math.floor(diff / 1000 / 60);
     const hours = Math.floor(diff / 1000 / 60 / 60);
     const days = Math.floor(diff / 1000 / 60 / 60 / 24);
 
-    if (minutes < 60) {
+    if (minutes < 1) {
+      return t('notifications.time_ago_minutes', { minutes: 1 });
+    } else if (minutes < 60) {
       return t('notifications.time_ago_minutes', { minutes });
     } else if (hours < 24) {
       return t('notifications.time_ago_hours', { hours });
@@ -257,12 +247,12 @@ const NotiScreen = () => {
 
       {/* Notifications List */}
       <FlatList
-        data={notifications}
+        data={activeTab === 'system' ? notificationsSystem : notificationsPersonal}
         renderItem={renderNotificationItem}
-        keyExtractor={item => item.id}
+        keyExtractor={(item, index) => item.id?.toString() || index.toString()}
         contentContainerStyle={[
           styles.listContainer,
-          notifications.length === 0 && styles.listContainerEmpty,
+          (activeTab === 'system' ? notificationsSystem : notificationsPersonal).length === 0 && styles.listContainerEmpty,
         ]}
         ListEmptyComponent={renderEmptyState}
         refreshControl={

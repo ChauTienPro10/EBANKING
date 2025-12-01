@@ -17,7 +17,7 @@ interface CreditCardProps {
   cardNumber: string;
   isNumberVisible: boolean;
   maskedNumber: string;
-  holderName: string;
+  holderName: any;
   expiryMonth: string;
   expiryYear: string;
   onNumberPress: () => void;

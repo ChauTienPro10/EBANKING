@@ -36,6 +36,7 @@ import {
   CrownIcon,
   StarIcon,
   AirplaneIcon,
+  ListIcon,
 } from '../../components/icon';
 import ConfirmTransferModal from '../../popups/ConfirmTransferModal';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -99,6 +100,14 @@ interface FormErrors {
   content?: string;
 }
 
+interface SavedAccount {
+  accountNumber: string;
+  accountName: string;
+  savedAt: number;
+}
+
+const STORAGE_KEY = 'saved_recipient_accounts';
+
 const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({
   route,
 }) => {
@@ -115,8 +124,26 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({
   const [transferModalVisible, setTransferModalVisible] = useState(false);
   const [receiverName, setReceiverName] = useState('');
   const [saveRecipientAccount, setSaveRecipientAccount] = useState(false);
+  const [savedAccounts, setSavedAccounts] = useState<SavedAccount[]>([]);
+  const [showSavedAccountsModal, setShowSavedAccountsModal] = useState(false);
 
   const dispatch: AppDispatch = store.dispatch;
+
+  const loadSavedAccounts = async () => {
+    try {
+      const accountsJson = await AsyncStorage.getItem(STORAGE_KEY);
+      if (accountsJson) {
+        const accounts: SavedAccount[] = JSON.parse(accountsJson);
+        setSavedAccounts(accounts);
+      }
+    } catch (error) {
+      console.error('Error loading saved accounts:', error);
+    }
+  };
+
+  useEffect(() => {
+    loadSavedAccounts();
+  }, []);
 
   useEffect(() => {
     if (receiver !== null && receiver !== undefined && receiver !== '') {
@@ -191,10 +218,57 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({
 
   const saveRecipientAccountToStorage = async (accountNumber: string, accountName: string) => {
     try {
-     
+      const existingAccountsJson = await AsyncStorage.getItem(STORAGE_KEY);
+      const existingAccounts: SavedAccount[] = existingAccountsJson
+        ? JSON.parse(existingAccountsJson)
+        : [];
+
+      // Kiểm tra xem tài khoản đã tồn tại chưa
+      const existingIndex = existingAccounts.findIndex(
+        acc => acc.accountNumber === accountNumber,
+      );
+
+      const newAccount: SavedAccount = {
+        accountNumber,
+        accountName,
+        savedAt: Date.now(),
+      };
+
+      if (existingIndex >= 0) {
+        // Cập nhật tài khoản đã tồn tại
+        existingAccounts[existingIndex] = newAccount;
+      } else {
+        // Thêm tài khoản mới
+        existingAccounts.unshift(newAccount);
+        // Giới hạn tối đa 20 tài khoản đã lưu
+        if (existingAccounts.length > 20) {
+          existingAccounts.pop();
+        }
+      }
+
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(existingAccounts));
+      setSavedAccounts(existingAccounts);
     } catch (error) {
       console.error('Error saving recipient account:', error);
     }
+  };
+
+  const deleteSavedAccount = async (accountNumber: string) => {
+    try {
+      const updatedAccounts = savedAccounts.filter(
+        acc => acc.accountNumber !== accountNumber,
+      );
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedAccounts));
+      setSavedAccounts(updatedAccounts);
+    } catch (error) {
+      console.error('Error deleting saved account:', error);
+    }
+  };
+
+  const handleSelectSavedAccount = (account: SavedAccount) => {
+    handleInputChange('recipientAccount', account.accountNumber);
+    setReceiverName(account.accountName);
+    setShowSavedAccountsModal(false);
   };
 
   const [formData, setFormData] = useState<TransferFormData>({
@@ -477,7 +551,7 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({
             onCancel={handleCancelTransfer}
           />
 
-          <Text style={styles.sectionTitle}>{t('transfer.transfer_type')}</Text>
+          {/* <Text style={styles.sectionTitle}>{t('transfer.transfer_type')}</Text> */}
           <View style={styles.transferTypeContainer}>
             <TouchableOpacity
               style={[
@@ -573,8 +647,21 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({
         )}
 
         <View style={styles.section}>
+          <View style={styles.recipientAccountHeader}>
+            {/* <Text style={styles.sectionTitle}>{t('transfer.recipient_account')}</Text> */}
+            {savedAccounts.length > 0 && (
+              <TouchableOpacity
+                style={styles.savedAccountsButton}
+                onPress={() => setShowSavedAccountsModal(true)}
+              >
+                {/* <ListIcon size={20} color={Colors.main_bule} /> */}
+                <Text style={styles.savedAccountsButtonText}>
+                  {t('transfer.saved_accounts')}
+                </Text>
+              </TouchableOpacity>
+            )}
+          </View>
           <CustomInput
-            label={t('transfer.recipient_account')}
             placeholder={t('transfer.recipient_account_placeholder')}
             value={formData.recipientAccount}
             onChangeText={value => handleInputChange('recipientAccount', value)}
@@ -711,6 +798,72 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({
           />
         </View>
       </Modal>
+
+      <Modal
+        visible={showSavedAccountsModal}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setShowSavedAccountsModal(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalHeader}>
+            <TouchableOpacity
+              style={styles.modalCloseButton}
+              onPress={() => setShowSavedAccountsModal(false)}
+            >
+              <ArrowLeftIcon size={24} color={Colors.textPrimary} />
+            </TouchableOpacity>
+            <Text style={styles.modalTitle}>{t('transfer.saved_accounts')}</Text>
+            {/* <View style={styles.modalHeaderRight} /> */}
+          </View>
+
+          {savedAccounts.length === 0 ? (
+            <View style={styles.emptySavedAccountsContainer}>
+              <ListIcon size={64} color={Colors.grey3} />
+              <Text style={styles.emptySavedAccountsText}>
+                {t('transfer.no_saved_accounts')}
+              </Text>
+            </View>
+          ) : (
+            <FlatList
+              data={savedAccounts}
+              keyExtractor={item => item.accountNumber}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={styles.savedAccountItem}
+                  onPress={() => handleSelectSavedAccount(item)}
+                >
+                  <View style={styles.savedAccountContent}>
+                    <View style={styles.savedAccountLeft}>
+                      <View style={styles.savedAccountIconContainer}>
+                        <PersonIcon size={24} color={Colors.main_bule} />
+                      </View>
+                      <View style={styles.savedAccountInfo}>
+                        <Text style={styles.savedAccountNumber}>
+                          {item.accountNumber}
+                        </Text>
+                        <Text style={styles.savedAccountName} numberOfLines={1}>
+                          {item.accountName}
+                        </Text>
+                      </View>
+                    </View>
+                    <TouchableOpacity
+                      style={styles.deleteButton}
+                      onPress={() => deleteSavedAccount(item.accountNumber)}
+                    >
+                      <Text style={styles.deleteButtonText}>
+                        {t('transfer.delete')}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </TouchableOpacity>
+              )}
+              showsVerticalScrollIndicator={false}
+              style={styles.savedAccountList}
+            />
+          )}
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -737,6 +890,8 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   transferTypeContainer: {
+    marginTop: 10,
+    marginBottom: -15,
     flexDirection: 'row',
     backgroundColor: Colors.white,
     borderRadius: 16,
@@ -889,7 +1044,7 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   modalTitle: {
-    ...TextStyles.systemBold_18,
+    ...TextStyles.systemBold_1,
     color: Colors.textPrimary,
   },
   modalHeaderRight: {
@@ -967,6 +1122,104 @@ const styles = StyleSheet.create({
     color: Colors.textPrimary,
     marginLeft: 8,
     fontWeight: '500',
+  },
+  recipientAccountHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    // marginBottom: 18,
+  },
+  savedAccountsButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    backgroundColor: Colors.background,
+  },
+  savedAccountsButtonText: {
+    ...TextStyles.systemLight_14,
+    color: Colors.main_bule,
+    marginLeft: 6,
+    fontWeight: '600',
+  },
+  emptySavedAccountsContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    // paddingVertical: 60,
+  },
+  emptySavedAccountsText: {
+    ...TextStyles.systemLight_12,
+    color: Colors.textSecondary,
+    // marginTop: 16,
+    textAlign: 'center',
+  },
+  savedAccountList: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingTop: 16,
+  },
+  savedAccountItem: {
+    backgroundColor: Colors.white,
+    borderRadius: 16,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  savedAccountContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 20,
+  },
+  savedAccountLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  savedAccountIconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: Colors.background,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 16,
+  },
+  savedAccountInfo: {
+    flex: 1,
+  },
+  savedAccountNumber: {
+    ...TextStyles.systemBold_16,
+    color: Colors.textPrimary,
+    marginBottom: 4,
+    fontWeight: '700',
+  },
+  savedAccountName: {
+    ...TextStyles.systemLight_14,
+    color: Colors.textSecondary,
+    lineHeight: 20,
+  },
+  deleteButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    backgroundColor: '#FFE5E5',
+    marginLeft: 12,
+  },
+  deleteButtonText: {
+    ...TextStyles.systemLight_14,
+    color: '#FF4444',
+    fontWeight: '600',
   },
 });
 

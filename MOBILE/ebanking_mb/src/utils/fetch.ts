@@ -75,6 +75,9 @@ async function post(url: string, body: any, authRequire: boolean = true) {
         : 'Lỗi không xác định';
 
     console.error('Lỗi khi gửi yêu cầu:', message);
+    if (message === '403' || message === 403) {
+      navigate('SignIn' as never);
+    }
     throw error;
   }
 }

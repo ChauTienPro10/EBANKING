@@ -115,7 +115,7 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
     <View style={styles.container}>
       <View style={styles.tabsContainer}>{tabs.map(renderTab)}</View>
 
-      {/* QR Button - Always visible */}
+      {activeTab === 'home' &&
       <Animated.View
         style={[
           styles.qrButtonWrapper,
@@ -124,6 +124,7 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
           },
         ]}
       >
+        
         <TouchableOpacity
           style={styles.qrButton}
           onPress={onQRPress}
@@ -133,7 +134,7 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
             <QrCodeIcon size={28} color={Colors.white} />
           </View>
         </TouchableOpacity>
-      </Animated.View>
+      </Animated.View>}
     </View>
   );
 };

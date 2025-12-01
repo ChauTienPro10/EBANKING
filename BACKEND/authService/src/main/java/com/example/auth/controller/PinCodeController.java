@@ -49,4 +49,10 @@ public class PinCodeController {
     public boolean getPinStatus(@PathVariable String username) {
         return pinCodeService.getPinStatus(username);
     }
+
+    @PostMapping("/verify-pincode")
+    public ResponseEntity<Boolean> checkPin(@RequestBody NewPinCodeReq req) {
+        Boolean rs = pinCodeService.checkPin(req.getUsername(), req.getPinCode());
+        return ResponseEntity.status(HttpStatus.OK).body(rs);
+    }
 }

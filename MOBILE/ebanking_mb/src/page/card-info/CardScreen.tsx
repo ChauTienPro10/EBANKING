@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   StyleSheet,
   ScrollView,
@@ -8,6 +8,7 @@ import {
   Modal,
   Text,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../store';
@@ -15,7 +16,12 @@ import { setCardStatus } from '../../store/slices/appSlice';
 import Colors from '../../constants/color';
 import BottomNavigation from '../../components/BottomNavigation';
 import Header from '../../components/Header';
-import { CreditCard, CardLimitSection, TransactionList } from './components';
+import {
+  CreditCard,
+  CardLimitSection,
+  TransactionList,
+  CardBalanceSection,
+} from './components';
 import CardDetailBottomSheet from './components/CardDetailBottomSheet';
 import { useCardActions } from './hooks/useCardActions';
 import { useCardNavigation } from './hooks/useCardNavigation';
@@ -30,8 +36,11 @@ import LockIcon from '../../components/icon/LockIcon';
 import InfoCircleIcon from '../../components/icon/InfoCircleIcon';
 import PinInput from '../../components/PinInput';
 import Toast from 'react-native-toast-message';
+import fetch from '../../utils/fetch';
+import { API } from '../../constants/api';
 
 type FilterType = 'all' | 'sent' | 'received';
+type PendingAction = 'lock' | 'unlock' | 'access' | null;
 
 const CardScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -39,14 +48,21 @@ const CardScreen: React.FC = () => {
 
   // Get card status from Redux store
   const cardStatus = useSelector((state: RootState) => state.app.cardStatus);
+  const account = useSelector(
+    (state: RootState) => state.app.accountTransResponse,
+  );
+
+  const userInfo = useSelector((state: RootState) => state.app.userInfoData);
 
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
   const [showMenu, setShowMenu] = useState(false);
   const [showPinModal, setShowPinModal] = useState(false);
   const [showDetailSheet, setShowDetailSheet] = useState(false);
-  const [pendingAction, setPendingAction] = useState<'lock' | 'unlock' | null>(
-    null,
-  );
+  const [pendingAction, setPendingAction] = useState<PendingAction>(null);
+  const [isAccessGranted, setIsAccessGranted] = useState(false);
+  const [pinInputKey, setPinInputKey] = useState(0);
+  const [isVerifyingPin, setIsVerifyingPin] = useState(false);
+  const loginResponse = useSelector((state: RootState) => state.app.loginResponse);
 
   // Custom hooks
   const { isCardNumberVisible, toggleCardNumberVisibility, copyCardNumber } =
@@ -55,48 +71,104 @@ const CardScreen: React.FC = () => {
     useCardNavigation();
 
   // Card data
-  const fullCardNumber = '1237689076545678';
-  const maskedCardNumber = '1237 •••• •••• 5678';
-  const displayCardNumber = '1237 6890 7654 5678';
+  // const fullCardNumber = '1237689076545678';
+  // const maskedCardNumber = '1237 •••• •••• 5678';
+  // const displayCardNumber = '1237 6890 7654 5678';
+
+  const formatCardNumber = (value: string) => {
+    return value
+      .replace(/\D/g, "")              // bỏ ký tự không phải số
+      .replace(/(.{4})/g, "$1 ")       // chèn khoảng trắng sau mỗi 4 số
+      .trim();                         // bỏ khoảng trắng cuối nếu có
+  };
+
+  const maskCardNumber = (value: string) => {
+    const digits = value.replace(/\D/g, ""); // bỏ hết ký tự không phải số
+  
+    if (digits.length < 12) return value; // không đủ số thì giữ nguyên
+  
+    const first4 = digits.slice(0, 4);
+    const last4 = digits.slice(-4);
+  
+    return `${first4} **** **** ${last4}`;
+  };
 
   const filteredTransactions = filterTransactions(
     mockTransactions,
     activeFilter,
   );
 
-  const handlePinComplete = (pin: string) => {
-    // Verify PIN (mock implementation)
-    if (pin === '1111') {
-      if (pendingAction === 'lock') {
-        dispatch(setCardStatus('locked'));
-        Toast.show({
-          type: 'success',
-          text1: 'Thẻ đã bị khóa',
-          text2: 'Thẻ của bạn đã được khóa thành công',
-        });
-      } else if (pendingAction === 'unlock') {
-        dispatch(setCardStatus('active'));
-        Toast.show({
-          type: 'success',
-          text1: 'Thẻ đã được mở khóa',
-          text2: 'Thẻ của bạn đã được kích hoạt trở lại',
-        });
+  const openPinModal = useCallback((action: PendingAction) => {
+    setPendingAction(action);
+    setIsVerifyingPin(false);
+    setPinInputKey((prev) => prev + 1);
+    setShowPinModal(true);
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      setIsAccessGranted(false);
+      setShowMenu(false);
+      openPinModal('access');
+    }, [openPinModal]),
+  );
+
+  const handlePinComplete = async (pin: string) => {
+    if (isVerifyingPin) {
+      return;
+    }
+
+    if (!loginResponse?.username) {
+      Toast.show({
+        type: 'error',
+        text1: 'Không tìm thấy người dùng',
+        text2: 'Vui lòng đăng nhập lại',
+      });
+      return;
+    }
+
+    setIsVerifyingPin(true);
+
+    try {
+      const payload = {
+        username: loginResponse.username,
+        pinCode: pin,
+      };
+
+      const response = await fetch.post(API.CHECK_PIN, payload, true);
+
+      if (!response) {
+        throw new Error(
+          typeof response?.error === 'string'
+            ? response.error
+            : 'Xác thực mã PIN thất bại',
+        );
       }
+      setIsAccessGranted(true);
+
       setShowPinModal(false);
       setShowMenu(false);
       setPendingAction(null);
-    } else {
+    } catch (error: any) {
+      const message =
+        typeof error?.message === 'string'
+          ? error.message.replace('INTERNAL: ', '')
+          : 'Xác thực mã PIN thất bại';
+
       Toast.show({
         type: 'error',
         text1: 'Sai mã PIN',
-        text2: 'Vui lòng thử lại',
+        text2: message,
       });
+
+      setPinInputKey((prev) => prev + 1);
+    } finally {
+      setIsVerifyingPin(false);
     }
   };
 
   const handleLockToggle = () => {
-    setPendingAction(cardStatus === 'active' ? 'lock' : 'unlock');
-    setShowPinModal(true);
+    openPinModal(cardStatus === 'active' ? 'lock' : 'unlock');
     setShowMenu(false);
   };
 
@@ -119,6 +191,32 @@ const CardScreen: React.FC = () => {
       icon: 'help-circle',
     },
   ];
+
+  const pinModalTitle = () => {
+    switch (pendingAction) {
+      case 'lock':
+        return 'Xác nhận khóa thẻ';
+      case 'unlock':
+        return 'Xác nhận mở khóa thẻ';
+      case 'access':
+        return 'Xác thực mã PIN';
+      default:
+        return '';
+    }
+  };
+
+  const pinModalSubtitle = () => {
+    if (isVerifyingPin) {
+      return 'Đang xác thực mã PIN...';
+    }
+
+    switch (pendingAction) {
+      case 'access':
+        return 'Nhập mã PIN của bạn để xem thông tin thẻ';
+      default:
+        return 'Nhập mã PIN của bạn để tiếp tục';
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -163,35 +261,50 @@ const CardScreen: React.FC = () => {
         )}
       </View>
 
-      <ScrollView
-        style={styles.content}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.contentContainer}
-      >
-        <CreditCard
-          bankName=".Pay"
-          cardNumber={displayCardNumber}
-          isNumberVisible={isCardNumberVisible}
-          maskedNumber={maskedCardNumber}
-          holderName="Lê Tất Thắng"
-          expiryMonth={mockCardData.expiryMonth}
-          expiryYear={mockCardData.expiryYear}
-          onNumberPress={toggleCardNumberVisibility}
-          onNumberLongPress={() => copyCardNumber(fullCardNumber)}
-          isLocked={cardStatus === 'locked'}
-        />
+      {isAccessGranted ? (
+        <ScrollView
+          style={styles.content}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.contentContainer}
+        >
+          <CreditCard
+            bankName=".Pay"
+            cardNumber={formatCardNumber(account?.accountNumber ?? '')}
+            isNumberVisible={isCardNumberVisible}
+            maskedNumber={maskCardNumber(account?.accountNumber ?? '')}
+            holderName={userInfo?.fullName}
+            expiryMonth={mockCardData.expiryMonth}
+            expiryYear={mockCardData.expiryYear}
+            onNumberPress={toggleCardNumberVisibility}
+            onNumberLongPress={() => copyCardNumber(formatCardNumber(account?.accountNumber ?? ''))}
+            isLocked={cardStatus === 'locked'}
+          />
 
-        <CardLimitSection
-          spentAmount={mockCardData.spentAmount}
-          cardLimit={mockCardData.cardLimit}
-        />
+          <CardBalanceSection
+            balance={account?.balance ?? mockCardData.balance}
+            currency={account?.currency ?? mockCardData.currency}
+            accountNumber={account?.accountNumber ?? null}
+          />
 
-        <TransactionList
-          transactions={filteredTransactions}
-          activeFilter={activeFilter}
-          onFilterChange={setActiveFilter}
-        />
-      </ScrollView>
+          <CardLimitSection
+            spentAmount={mockCardData.spentAmount}
+            cardLimit={mockCardData.cardLimit}
+          />
+
+          <TransactionList
+            transactions={filteredTransactions}
+            activeFilter={activeFilter}
+            onFilterChange={setActiveFilter}
+          />
+        </ScrollView>
+      ) : (
+        <View style={styles.lockedContent}>
+          <Text style={styles.lockedContentTitle}>Thông tin được bảo vệ</Text>
+          <Text style={styles.lockedContentSubtitle}>
+            Vui lòng xác thực mã PIN để xem chi tiết thẻ của bạn
+          </Text>
+        </View>
+      )}
 
       {/* PIN Modal */}
       <Modal
@@ -202,15 +315,10 @@ const CardScreen: React.FC = () => {
       >
         <View style={styles.pinModalOverlay}>
           <View style={styles.pinModalContent}>
-            <Text style={styles.pinModalTitle}>
-              {pendingAction === 'lock'
-                ? 'Xác nhận khóa thẻ'
-                : 'Xác nhận mở khóa thẻ'}
-            </Text>
-            <Text style={styles.pinModalSubtitle}>
-              Nhập mã PIN của bạn để tiếp tục
-            </Text>
+            <Text style={styles.pinModalTitle}>{pinModalTitle()}</Text>
+            <Text style={styles.pinModalSubtitle}>{pinModalSubtitle()}</Text>
             <PinInput
+              key={pinInputKey}
               length={4}
               onComplete={handlePinComplete}
               create={false}
@@ -230,21 +338,12 @@ const CardScreen: React.FC = () => {
       </Modal>
 
       {/* Card Detail Bottom Sheet */}
-      <CardDetailBottomSheet
-        visible={showDetailSheet}
-        onClose={() => setShowDetailSheet(false)}
-        cardData={{
-          cardNumber: '1237 6890 7654 5678',
-          cardHolderName: mockCardData.cardHolderName,
-          expiryMonth: mockCardData.expiryMonth,
-          expiryYear: mockCardData.expiryYear,
-          cvv: mockCardData.cvv,
-          cardType: mockCardData.cardType,
-          issueDate: mockCardData.issueDate,
-          cardLimit: mockCardData.cardLimit,
-          availableBalance: mockCardData.cardLimit - mockCardData.spentAmount,
-        }}
-      />
+      {isAccessGranted && (
+        <CardDetailBottomSheet
+          visible={showDetailSheet}
+          onClose={() => setShowDetailSheet(false)}
+        />
+      )}
 
       <BottomNavigation
         activeTab={activeTab}
@@ -307,6 +406,24 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     paddingBottom: 100,
+  },
+  lockedContent: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 32,
+  },
+  lockedContentTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: Colors.textPrimary,
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  lockedContentSubtitle: {
+    fontSize: 15,
+    color: Colors.grey3,
+    textAlign: 'center',
   },
   pinModalOverlay: {
     flex: 1,

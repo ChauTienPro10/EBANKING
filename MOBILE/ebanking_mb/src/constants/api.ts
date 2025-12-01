@@ -3,7 +3,7 @@ import { API_URL } from '@env';
 export const HOST_SERVER = '192.168.1.2';
 
 export const BASE_URL = `http://${HOST_SERVER}:8000/`;
-
+export const FCM_SERVICE = `http://${HOST_SERVER}:8004/`;
 export const AUTH_SERVICE = BASE_URL + 'authService';
 
 export const API = {
@@ -29,8 +29,13 @@ export const API = {
   SET_PIN: `${AUTH_SERVICE}/pin-code/new`,
   GET_PIN_STT: `${AUTH_SERVICE}/pin-code/{username}`,
   DELETE_PIN: `${AUTH_SERVICE}/pin-code/delete`,
+  CHECK_PIN: `${AUTH_SERVICE}/pin-code/verify-pincode`,
 
   // chat
   ASK: `${BASE_URL}chatService/ask`,
+
+  // notify
+  GET_NOTIFICATIONSYSTEM: `${FCM_SERVICE}notify/getSysNoti`,
+  GET_NOTIFICATIONPERSONAL: `${FCM_SERVICE}notify/getPerNoti`,
 
 };

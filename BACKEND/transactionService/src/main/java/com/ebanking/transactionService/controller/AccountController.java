@@ -1,5 +1,6 @@
 package com.ebanking.transactionService.controller;
 
+import com.ebanking.transactionService.dto.AccounDto;
 import com.ebanking.transactionService.entity.Account;
 import com.ebanking.transactionService.repository.AccountRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -61,6 +62,29 @@ public class AccountController {
             
             return ResponseEntity.ok(account);
             
+        } catch (Exception e) {
+            log.error("Error getting account {}: {}", accountNumber, e.getMessage());
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Internal server error");
+            error.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
+
+    @GetMapping("/dto/{accountNumber}")
+    public ResponseEntity<?> getAccountInfoDto(@PathVariable String accountNumber) {
+        try {
+            Account account = accountRepository.findByAccountNumber(accountNumber);
+
+            if (account == null) {
+                Map<String, String> error = new HashMap<>();
+                error.put("error", "Account not found");
+                error.put("accountNumber", accountNumber);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+            }
+            AccounDto accounDto = AccounDto.fromAccount(account);
+            return ResponseEntity.ok(accounDto);
+
         } catch (Exception e) {
             log.error("Error getting account {}: {}", accountNumber, e.getMessage());
             Map<String, String> error = new HashMap<>();

@@ -20,51 +20,14 @@ public class NotiTransaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(name = "userId")
-    private Long userId;
-
-    @Column(name = "username")
-    private String username;
-
-    @Column(nullable = false, length = 255)
-    private String title;
-
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String body;
-
-    @Column(nullable = false, length = 50)
-    private String type; 
-
-    @Column(columnDefinition = "TEXT")
-    private String data; // JSON data 
-
-    @Column(nullable = false)
-    private Boolean isRead = false;
-
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
-
-    @Column
-    private LocalDateTime readAt;
-
-    @Column
-    private String transactionId;
-
-    @Column
-    private String amount;
-
-    @Column(length = 50)
-    private String transactionStatus; // PENDING, SUCCESS, FAILED
-
-    @PrePersist
-    protected void onCreate() {
-        if (createdAt == null) {
-            createdAt = LocalDateTime.now();
-        }
-        if (isRead == null) {
-            isRead = false;
-        }
-    }
+    String userId;
+    String username;
+    String content;
+    String title;
+    String sender;
+    String amount;
+    String noiDungGiaoDich;
+    String status;
+    Long createdAt;
 }
 

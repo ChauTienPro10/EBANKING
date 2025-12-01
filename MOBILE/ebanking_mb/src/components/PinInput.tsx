@@ -199,19 +199,20 @@ const styles = StyleSheet.create({
     },
     container: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        width: '60%',
+        justifyContent: 'center',
+        width: '80%',
         marginVertical: 20,
     },
     input: {
-        width: 50,
+        width: 56,
         height: 50,
         borderWidth: 1,
         borderColor: Colors.grey1,
         borderRadius: 8,
         textAlign: 'center',
         fontSize: 20,
-        color: Colors.black
+        color: Colors.black,
+        marginHorizontal: 8,
     },
     biometricComponent: {
         marginTop: 20,

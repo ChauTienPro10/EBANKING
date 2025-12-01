@@ -29,24 +29,64 @@ public class GeminiService {
     public String generate(String prompt) {
         String topicNameList = Topic.getTopicNamesAsString();
 
-        String systemInstruction = "Bạn là một chatbot trả lời ngắn gọn xúc tích, "
-                + "Chỉ trả lời các câu hỏi về lĩnh vực tài chính ngận hàng,"
-                + "Trước tiên hãy kiểm tra xem câu hỏi có liên quan đên các topic dưới đây hay không Topic: " + topicNameList
-                + "nếu có hãy trả lời bằng đúng tên topic đó và gán tiền tố INTERNAL lên đầu nếu không khớp thì xét điều kiện sau."
-                + "Đối với các câu hỏi ngoài luồn làm ơn hãy từ chối 1 cách khéo léo,"
-                + "Nếu người câu hỏi là ngôn ngữ nào thì hãy phản hồi bằng ngôn ngữ đó"
-                + "Vẫn trả lời các câu hỏi năm ngoài danh sách topic miễn là nó liên quan đến tài chính hoặc ngân hàng"
-                + "Dưới đây là phần câu hỏi: ";
-        // Sử dụng client đã khởi tạo
-        GenerateContentResponse response =
-                this.client.models.generateContent(
-                        model,
-                        systemInstruction + ": " + prompt,
-                        null);
+        // Tối ưu system prompt
+        String systemInstruction =
+                """
+                Bạn là một chatbot trả lời ngắn gọn và xúc tích.
+                Chỉ trả lời các câu hỏi về lĩnh vực tài chính – ngân hàng.
+    
+                1. Trước tiên hãy kiểm tra xem câu hỏi có liên quan đến một trong các topic sau:
+                   %s
+    
+                2. Nếu khớp topic → chỉ trả lời duy nhất tên topic đó, và thêm tiền tố "INTERNAL_" phía trước.
+                   (Ví dụ: INTERNAL_ThanhToan, INTERNAL_TietKiem...)
+    
+                3. Nếu câu hỏi không nằm trong topic nhưng vẫn thuộc phạm vi tài chính/ngân hàng → vui lòng trả lời bình thường.
+    
+                4. Nếu câu hỏi nằm ngoài phạm vi tài chính/ngân hàng → từ chối lịch sự.
+    
+                5. Hãy phản hồi bằng đúng ngôn ngữ mà người dùng sử dụng.
+    
+                Đây là câu hỏi của người dùng:
+                """.formatted(topicNameList);
 
-        if (Objects.requireNonNull(response.text()).contains("INTERNAL")) {
-            return Topic.getSafeResponseByTopicName(response.text().replace("INTERNAL_", ""));
+        int maxRetry = 5;
+        int delay = 500;  // ms
+
+        for (int i = 0; i < maxRetry; i++) {
+            try {
+                GenerateContentResponse response = client.models.generateContent(
+                        model,
+                        systemInstruction + "\n" + prompt,
+                        null
+                );
+
+                String answer = Objects.requireNonNull(response.text()).trim();
+
+                // Kiểm tra INTERNAL
+                if (answer.contains("INTERNAL_")) {
+                    String topic = answer.replace("INTERNAL_", "").trim();
+                    return Topic.getSafeResponseByTopicName(topic);
+                }
+
+                return answer;
+
+            } catch (Exception ex) {
+                if (ex.getMessage() != null && ex.getMessage().contains("503")) {
+                    // Google Gemini overloaded — retry
+                    try {
+                        Thread.sleep(delay);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                    delay *= 2; // exponential backoff
+                    continue;
+                }
+                throw ex; // lỗi khác -> quăng ra
+            }
         }
-        return response.text();
+
+        return "Xin lỗi, hệ thống đang bận. Vui lòng thử lại sau.";
     }
+
 }

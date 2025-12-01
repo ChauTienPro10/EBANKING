@@ -9,22 +9,13 @@ import {
   ScrollView,
 } from 'react-native';
 import Colors from '../../../constants/color';
-import { formatCurrency } from '../mockCardData';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../store';
+import { formatCurrency, mockCardData } from '../mockCardData';
 
 interface CardDetailBottomSheetProps {
   visible: boolean;
   onClose: () => void;
-  cardData: {
-    cardNumber: string;
-    cardHolderName: string;
-    expiryMonth: string;
-    expiryYear: string;
-    cvv: string;
-    cardType: string;
-    issueDate: string;
-    cardLimit: number;
-    availableBalance: number;
-  };
 }
 
 const { height } = Dimensions.get('window');
@@ -32,8 +23,62 @@ const { height } = Dimensions.get('window');
 const CardDetailBottomSheet: React.FC<CardDetailBottomSheetProps> = ({
   visible,
   onClose,
-  cardData,
 }) => {
+  const account = useSelector(
+    (state: RootState) => state.app.accountTransResponse,
+  );
+  const userInfo = useSelector((state: RootState) => state.app.userInfoData);
+  const cardStatus = useSelector((state: RootState) => state.app.cardStatus);
+
+  const formatCardNumber = (value?: string) => {
+    if (!value) {
+      return '•••• •••• •••• ••••';
+    }
+
+    const digitsOnly = value.replace(/\D/g, '');
+    if (!digitsOnly) {
+      return value;
+    }
+
+    return digitsOnly.replace(/(.{4})/g, '$1 ').trim();
+  };
+
+  const formatTitleCase = (value?: string) => {
+    if (!value) {
+      return '';
+    }
+    return value
+      .toLowerCase()
+      .split(/[\s_]+/)
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
+
+  const formatDate = (value?: string) => {
+    if (!value) {
+      return mockCardData.issueDate;
+    }
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+      return value;
+    }
+
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+
+    return `${day}/${month}/${year}`;
+  };
+
+  const statusLabel =
+    cardStatus === 'locked' ? 'Đang khóa' : 'Đang hoạt động';
+
+  const currencyCode = account?.currency ?? mockCardData.currency;
+
+  const availableBalance =
+    account?.balance ?? mockCardData.cardLimit - mockCardData.spentAmount;
+
   return (
     <Modal
       visible={visible}
@@ -51,69 +96,75 @@ const CardDetailBottomSheet: React.FC<CardDetailBottomSheetProps> = ({
           {/* Handle Bar */}
           <View style={styles.handleBar} />
 
-          {/* Title */}
           <Text style={styles.title}>Chi tiết thẻ</Text>
 
           <ScrollView
             style={styles.content}
             showsVerticalScrollIndicator={false}
           >
-            {/* Card Number */}
             <View style={styles.detailRow}>
               <Text style={styles.label}>Số thẻ</Text>
-              <Text style={styles.value}>{cardData.cardNumber}</Text>
-            </View>
-
-            {/* Card Holder */}
-            <View style={styles.detailRow}>
-              <Text style={styles.label}>Chủ thẻ</Text>
-              <Text style={styles.value}>{cardData.cardHolderName}</Text>
-            </View>
-
-            {/* Card Type */}
-            <View style={styles.detailRow}>
-              <Text style={styles.label}>Loại thẻ</Text>
-              <Text style={styles.value}>{cardData.cardType}</Text>
-            </View>
-
-            {/* Expiry Date */}
-            <View style={styles.detailRow}>
-              <Text style={styles.label}>Ngày hết hạn</Text>
               <Text style={styles.value}>
-                {cardData.expiryMonth}/{cardData.expiryYear}
+                {formatCardNumber(account?.accountNumber)}
               </Text>
             </View>
 
-            {/* CVV */}
+            <View style={styles.detailRow}>
+              <Text style={styles.label}>Chủ thẻ</Text>
+              <Text style={styles.value}>
+                {userInfo?.fullName ?? mockCardData.cardHolderName}
+              </Text>
+            </View>
+
+            <View style={styles.detailRow}>
+              <Text style={styles.label}>Loại thẻ</Text>
+              <Text style={styles.value}>
+                {formatTitleCase(account?.accountType) || mockCardData.cardType}
+              </Text>
+            </View>
+
+            <View style={styles.detailRow}>
+              <Text style={styles.label}>Trạng thái</Text>
+              <Text style={styles.value}>{statusLabel}</Text>
+            </View>
+
+            <View style={styles.detailRow}>
+              <Text style={styles.label}>Ngày hết hạn</Text>
+              <Text style={styles.value}>
+                {mockCardData.expiryMonth}/{mockCardData.expiryYear}
+              </Text>
+            </View>
+
             <View style={styles.detailRow}>
               <Text style={styles.label}>CVV</Text>
               <Text style={styles.value}>•••</Text>
             </View>
 
-            {/* Issue Date */}
             <View style={styles.detailRow}>
               <Text style={styles.label}>Ngày phát hành</Text>
-              <Text style={styles.value}>{cardData.issueDate}</Text>
+              <Text style={styles.value}>{formatDate(account?.openedDate)}</Text>
             </View>
 
-            {/* Card Limit */}
             <View style={styles.detailRow}>
               <Text style={styles.label}>Hạn mức thẻ</Text>
               <Text style={styles.valueHighlight}>
-                {formatCurrency(cardData.cardLimit)}
+                {formatCurrency(mockCardData.cardLimit)}
               </Text>
             </View>
 
-            {/* Available Balance */}
             <View style={styles.detailRow}>
               <Text style={styles.label}>Số dư khả dụng</Text>
               <Text style={styles.valueHighlight}>
-                {formatCurrency(cardData.availableBalance)}
+                {formatCurrency(availableBalance, currencyCode)}
               </Text>
+            </View>
+
+            <View style={styles.detailRow}>
+              <Text style={styles.label}>Đơn vị tiền tệ</Text>
+              <Text style={styles.value}>{currencyCode}</Text>
             </View>
           </ScrollView>
 
-          {/* Close Button */}
           <TouchableOpacity style={styles.closeButton} onPress={onClose}>
             <Text style={styles.closeButtonText}>Đóng</Text>
           </TouchableOpacity>

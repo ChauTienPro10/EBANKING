@@ -14,6 +14,7 @@ public class NotificationDTO {
     private Long id;
     private Long userId;
     private String username;
+
     private String title;
     private String body;
     private String type;
@@ -25,23 +26,5 @@ public class NotificationDTO {
     private String amount;
     private String transactionStatus;
 
-    // chuyển entity to DTO
-    public static NotificationDTO fromEntity(NotiTransaction notification) {
-        return NotificationDTO.builder()
-                .id(notification.getId())
-                .userId(notification.getUserId())
-                .username(notification.getUsername())
-                .title(notification.getTitle())
-                .body(notification.getBody())
-                .type(notification.getType())
-                .data(notification.getData())
-                .isRead(notification.getIsRead())
-                .createdAt(notification.getCreatedAt())
-                .readAt(notification.getReadAt())
-                .transactionId(notification.getTransactionId())
-                .amount(notification.getAmount())
-                .transactionStatus(notification.getTransactionStatus())
-                .build();
-    }
 }
 
