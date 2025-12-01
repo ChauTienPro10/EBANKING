@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Dimensions,
   StyleSheet,
+  StatusBar,
 } from 'react-native';
 import { Camera, CameraDevice } from 'react-native-vision-camera';
 import Colors from '../../../../constants/color';
@@ -29,59 +30,77 @@ const CameraView: React.FC<CameraViewProps> = ({
   onCapture,
 }) => {
   return (
-    <SafeAreaView style={styles.container}>
-      <ProgressHeader currentStep={1} />
-
-      {/* Camera View */}
-      <View style={styles.cameraContainer}>
-        <Camera
-          ref={cameraRef}
-          style={styles.camera}
-          device={device}
-          isActive={true}
-          photo={true}
-          photoQualityBalance="balanced"
-        />
-
-        {/* Guide frame overlay */}
-        <View style={styles.overlay}>
-          <View style={styles.guideBorder} />
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor={Colors.white}
+        translucent={false}
+      />
+      <View style={styles.container}>
+        {/* Progress Header - Always visible */}
+        <View style={styles.headerContainer}>
+          <ProgressHeader currentStep={1} />
         </View>
-      </View>
 
-      {/* Instruction */}
-      <View style={styles.instructionSection}>
-        <Text style={styles.instructionTitle}>
-          Thẻ căn cước công dân{' '}
-          <Text style={styles.instructionHighlight}>
-            {captureState === 'front' ? 'Mặt trước' : 'Mặt sau'}
+        {/* Camera View */}
+        <View style={styles.cameraContainer}>
+          <Camera
+            ref={cameraRef}
+            style={styles.camera}
+            device={device}
+            isActive={true}
+            photo={true}
+            photoQualityBalance="balanced"
+          />
+
+          {/* Guide frame overlay */}
+          <View style={styles.overlay}>
+            <View style={styles.guideBorder} />
+          </View>
+        </View>
+
+        {/* Instruction */}
+        <View style={styles.instructionSection}>
+          <Text style={styles.instructionTitle}>
+            Thẻ căn cước công dân{' '}
+            <Text style={styles.instructionHighlight}>
+              {captureState === 'front' ? 'Mặt trước' : 'Mặt sau'}
+            </Text>
           </Text>
-        </Text>
-        <Text style={styles.instructionSubtitle}>
-          Xin hãy giữ giấy tờ ở vùng chụp
-        </Text>
-      </View>
+          <Text style={styles.instructionSubtitle}>
+            Xin hãy giữ giấy tờ ở vùng chụp
+          </Text>
+        </View>
 
-      {/* Capture Button */}
-      <View style={styles.captureSection}>
-        <TouchableOpacity style={styles.captureButton} onPress={onCapture}>
-          <View style={styles.captureButtonInner} />
-        </TouchableOpacity>
+        {/* Capture Button */}
+        <View style={styles.captureSection}>
+          <TouchableOpacity style={styles.captureButton} onPress={onCapture}>
+            <View style={styles.captureButtonInner} />
+          </TouchableOpacity>
+        </View>
       </View>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: Colors.white,
+  },
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.black,
+  },
+  headerContainer: {
+    backgroundColor: Colors.white,
+    zIndex: 10,
+    elevation: 5, // Android shadow
   },
   // Camera Container
   cameraContainer: {
     flex: 1,
     backgroundColor: Colors.black,
-    position: 'relative',
   },
   camera: {
     flex: 1,
@@ -90,7 +109,7 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     justifyContent: 'flex-start',
     alignItems: 'center',
-    paddingTop: 120,
+    paddingTop: 80,
   },
   guideBorder: {
     width: GUIDE_WIDTH,
