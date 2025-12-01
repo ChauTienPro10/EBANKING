@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Alert,
   StyleSheet,
+  StatusBar,
 } from 'react-native';
 import { Camera, CameraDevice, VideoFile } from 'react-native-vision-camera';
 import Colors from '../../../../constants/color';
@@ -39,76 +40,98 @@ const CameraView: React.FC<CameraViewProps> = ({
   onStopRecording,
 }) => {
   return (
-    <SafeAreaView style={styles.whiteContainer}>
-      <ProgressHeader currentStep={2} />
-
-      <View style={styles.cameraWrapper}>
-        <Camera
-          ref={cameraRef}
-          style={styles.camera}
-          device={device}
-          isActive={true}
-          video={true}
-          format={format}
-          fps={30}
-          videoStabilizationMode="auto"
-          onInitialized={onCameraReady}
-          onError={onCameraError}
-        />
-
-        {countdown !== null && (
-          <View style={styles.countdownOverlay}>
-            <Text style={styles.countdownText}>{countdown}</Text>
-          </View>
-        )}
-
-        {isRecording && (
-          <View style={styles.recordingIndicator}>
-            <View style={styles.recordingDot} />
-            <Text style={styles.recordingText}>
-              Đang quay... {Math.max(0, 5 - recordingTime).toFixed(1)}s
-            </Text>
-          </View>
-        )}
-
-        <View style={styles.overlay}>
-          <View style={styles.faceGuide} />
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor={Colors.white}
+        translucent={false}
+      />
+      <View style={styles.container}>
+        {/* Progress Header - Always visible */}
+        <View style={styles.headerContainer}>
+          <ProgressHeader currentStep={2} />
         </View>
-      </View>
 
-      <View style={styles.instructionSection}>
-        <Text style={styles.instructionTitle}>Xác thực khuôn mặt</Text>
-        <Text style={styles.instructionSubtitle}>
-          Giữ khuôn mặt trong khung oval và nhìn thẳng vào camera
-        </Text>
-      </View>
+        <View style={styles.cameraWrapper}>
+          <Camera
+            ref={cameraRef}
+            style={styles.camera}
+            device={device}
+            isActive={true}
+            video={true}
+            format={format}
+            fps={30}
+            videoStabilizationMode="auto"
+            onInitialized={onCameraReady}
+            onError={onCameraError}
+          />
 
-      <View style={styles.captureSection}>
-        {!isRecording && !countdown ? (
-          <TouchableOpacity
-            style={[
-              styles.recordButton,
-              !isCameraReady && styles.recordButtonDisabled,
-            ]}
-            onPress={onStartRecording}
-            disabled={!isCameraReady}
-          >
-            <View style={styles.recordButtonInner} />
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity style={styles.stopButton} onPress={onStopRecording}>
-            <View style={styles.stopButtonInner} />
-          </TouchableOpacity>
-        )}
+          {countdown !== null && (
+            <View style={styles.countdownOverlay}>
+              <Text style={styles.countdownText}>{countdown}</Text>
+            </View>
+          )}
+
+          {isRecording && (
+            <View style={styles.recordingIndicator}>
+              <View style={styles.recordingDot} />
+              <Text style={styles.recordingText}>
+                Đang quay... {Math.max(0, 5 - recordingTime).toFixed(1)}s
+              </Text>
+            </View>
+          )}
+
+          <View style={styles.overlay}>
+            <View style={styles.faceGuide} />
+          </View>
+        </View>
+
+        <View style={styles.instructionSection}>
+          <Text style={styles.instructionTitle}>Xác thực khuôn mặt</Text>
+          <Text style={styles.instructionSubtitle}>
+            Giữ khuôn mặt trong khung oval và nhìn thẳng vào camera
+          </Text>
+        </View>
+
+        <View style={styles.captureSection}>
+          {!isRecording && !countdown ? (
+            <TouchableOpacity
+              style={[
+                styles.recordButton,
+                !isCameraReady && styles.recordButtonDisabled,
+              ]}
+              onPress={onStartRecording}
+              disabled={!isCameraReady}
+            >
+              <View style={styles.recordButtonInner} />
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              style={styles.stopButton}
+              onPress={onStopRecording}
+            >
+              <View style={styles.stopButtonInner} />
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  whiteContainer: {
+  safeArea: {
     flex: 1,
     backgroundColor: Colors.white,
+  },
+  container: {
+    flex: 1,
+    backgroundColor: Colors.black,
+  },
+  headerContainer: {
+    backgroundColor: Colors.white,
+    zIndex: 10,
+    elevation: 5, // Android shadow
   },
   cameraWrapper: {
     flex: 1,
