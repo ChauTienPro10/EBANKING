@@ -58,9 +58,15 @@ const ResultScreen: React.FC = () => {
     );
   }
 
-  // Debug: Log toàn bộ ocrResult để xem cấu trúc
+  // Debug: Log toàn bộ data để xem cấu trúc
   console.log('🔍 Full ocrResult:', JSON.stringify(ocrResult, null, 2));
   console.log('🔍 ocrResult keys:', Object.keys(ocrResult || {}));
+  console.log(
+    '🔍 Full faceMatchResult:',
+    JSON.stringify(faceMatchResult, null, 2),
+  );
+  console.log('🔍 faceMatchResult keys:', Object.keys(faceMatchResult || {}));
+  console.log('🔍 faceMatchResult.similarity:', faceMatchResult?.similarity);
 
   // Helper function to format LocalDate array [year, month, day] to DD/MM/YYYY
   const formatDate = (dateValue: any): string => {
@@ -165,8 +171,10 @@ const ResultScreen: React.FC = () => {
               <Text style={styles.statusLabel}>Độ khớp khuôn mặt</Text>
               <View style={styles.statusBadge}>
                 <Text style={styles.statusValue}>
-                  {faceMatchResult?.similarity
-                    ? `${(faceMatchResult.similarity * 100).toFixed(1)}%`
+                  {faceMatchResult?.similarity != null
+                    ? typeof faceMatchResult.similarity === 'number'
+                      ? `${(faceMatchResult.similarity * 100).toFixed(1)}%`
+                      : faceMatchResult.similarity
                     : 'N/A'}
                 </Text>
               </View>

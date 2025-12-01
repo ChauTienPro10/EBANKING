@@ -48,8 +48,9 @@ export const MOCK_EKYC_DATA = {
   },
   faceMatch: {
     success: true,
-    similarity: '96%',
+    similarity: 0.96,
     confidence: 0.96,
+    isMatch: true,
   },
 };
 

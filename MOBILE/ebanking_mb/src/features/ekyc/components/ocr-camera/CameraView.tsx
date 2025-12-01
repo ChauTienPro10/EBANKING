@@ -86,7 +86,7 @@ const CameraView: React.FC<CameraViewProps> = ({
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.black,
   },
   container: {
     flex: 1,
@@ -101,9 +101,10 @@ const styles = StyleSheet.create({
   cameraContainer: {
     flex: 1,
     backgroundColor: Colors.black,
+    overflow: 'hidden',
   },
   camera: {
-    flex: 1,
+    ...StyleSheet.absoluteFillObject,
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
