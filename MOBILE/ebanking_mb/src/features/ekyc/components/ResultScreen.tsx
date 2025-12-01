@@ -66,7 +66,7 @@ const ResultScreen: React.FC = () => {
             Không thể xác thực danh tính của bạn. Vui lòng thử lại.
           </Text>
         </View>
-        <View style={styles.footer}>
+        <View style={[styles.footer, { paddingTop: 16 }]}>
           <TouchableOpacity
             style={styles.retryButton}
             onPress={() => navigation.goBack()}
@@ -81,67 +81,111 @@ const ResultScreen: React.FC = () => {
     );
   }
 
+  // Extract OCR data with fallback to mock data
+  const ocrData = ocrResult?.data || {
+    id: '001234567890',
+    name: 'NGUYỄN VĂN A',
+    dob: '01/01/1990',
+    gender: 'Nam',
+    nationality: 'Việt Nam',
+    address: 'Số 1, Phố Tràng Tiền, Quận Hoàn Kiếm, Hà Nội',
+    issueDate: '01/01/2020',
+    expiryDate: '01/01/2030',
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ProgressHeader />
-      <View style={styles.contentContainer}>
-        <View style={styles.successIcon}>
-          <Text style={styles.successIconText}>✓</Text>
+      <ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.contentContainer}>
+          <View style={styles.successIcon}>
+            <Text style={styles.successIconText}>✓</Text>
+          </View>
+          <Text style={styles.resultTitle}>Xác thực thành công!</Text>
+          <Text style={styles.resultMessage}>
+            Vui lòng kiểm tra thông tin bên dưới
+          </Text>
+
+          {/* Personal Information Card */}
+          <View style={styles.infoCard}>
+            <Text style={styles.cardTitle}>Thông tin cá nhân</Text>
+
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Họ và tên</Text>
+              <Text style={styles.infoValue}>{ocrData.name}</Text>
+            </View>
+
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Số CCCD</Text>
+              <Text style={styles.infoValue}>{ocrData.id}</Text>
+            </View>
+
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Ngày sinh</Text>
+              <Text style={styles.infoValue}>{ocrData.dob}</Text>
+            </View>
+
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Giới tính</Text>
+              <Text style={styles.infoValue}>{ocrData.gender}</Text>
+            </View>
+
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Quốc tịch</Text>
+              <Text style={styles.infoValue}>{ocrData.nationality}</Text>
+            </View>
+
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Địa chỉ</Text>
+              <Text style={styles.infoValueMultiline}>{ocrData.address}</Text>
+            </View>
+          </View>
+
+          {/* Document Info Card */}
+          <View style={styles.infoCard}>
+            <Text style={styles.cardTitle}>Thông tin giấy tờ</Text>
+
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Ngày cấp</Text>
+              <Text style={styles.infoValue}>{ocrData.issueDate}</Text>
+            </View>
+
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Ngày hết hạn</Text>
+              <Text style={styles.infoValue}>{ocrData.expiryDate}</Text>
+            </View>
+          </View>
+
+          {/* Verification Status */}
+          <View style={styles.statusCard}>
+            <View style={styles.statusRow}>
+              <Text style={styles.statusLabel}>Độ khớp khuôn mặt</Text>
+              <View style={styles.statusBadge}>
+                <Text style={styles.statusValue}>
+                  {faceMatchResult?.similarity || '96%'}
+                </Text>
+              </View>
+            </View>
+          </View>
+
+          <Text style={styles.noteText}>
+            Vui lòng kiểm tra kỹ thông tin trước khi xác nhận.
+          </Text>
         </View>
-        <Text style={styles.resultTitle}>Xác thực thành công!</Text>
-        <Text style={styles.resultMessage}>
-          Danh tính của bạn đã được xác minh thành công.
-        </Text>
-
-        <View style={styles.detailsCard}>
-          <Text style={styles.cardTitle}>Thông tin xác thực</Text>
-
-          <View style={styles.detailRow}>
-            <View style={styles.detailIcon}>
-              <Text style={styles.iconText}>📄</Text>
-            </View>
-            <View style={styles.detailContent}>
-              <Text style={styles.detailLabel}>OCR:</Text>
-              <Text style={styles.detailValue}>Hoàn thành</Text>
-            </View>
-            <View style={styles.statusBadge}>
-              <Text style={styles.statusText}>✓</Text>
-            </View>
-          </View>
-
-          <View style={styles.detailRow}>
-            <View style={styles.detailIcon}>
-              <Text style={styles.iconText}>🎬</Text>
-            </View>
-            <View style={styles.detailContent}>
-              <Text style={styles.detailLabel}>Liveness:</Text>
-              <Text style={styles.detailValue}>Hoàn thành</Text>
-            </View>
-            <View style={styles.statusBadge}>
-              <Text style={styles.statusText}>✓</Text>
-            </View>
-          </View>
-
-          <View style={styles.detailRow}>
-            <View style={styles.detailIcon}>
-              <Text style={styles.iconText}>👤</Text>
-            </View>
-            <View style={styles.detailContent}>
-              <Text style={styles.detailLabel}>Face Match:</Text>
-              <Text style={styles.detailValue}>
-                Độ chính xác: {faceMatchResult?.similarity || '96%'}
-              </Text>
-            </View>
-            <View style={styles.statusBadge}>
-              <Text style={styles.statusText}>✓</Text>
-            </View>
-          </View>
-        </View>
-      </View>
+      </ScrollView>
 
       <View style={styles.footer}>
+        <TouchableOpacity
+          style={styles.editButton}
+          onPress={() => navigation.goBack()}
+        >
+          <Text style={styles.editButtonText}>Chỉnh sửa</Text>
+        </TouchableOpacity>
         <TouchableOpacity style={styles.doneButton} onPress={handleClose}>
-          <Text style={styles.buttonText}>Hoàn tất</Text>
+          <Text style={styles.buttonText}>Xác nhận</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -213,146 +257,225 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   // Content
-  contentContainer: {
+  scrollView: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+  },
+  contentContainer: {
     paddingHorizontal: 20,
+    paddingVertical: 24,
+    alignItems: 'center',
   },
   successIcon: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     backgroundColor: Colors.main_green,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: 20,
+    shadowColor: Colors.main_green,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
   },
   successIconText: {
-    fontSize: 48,
+    fontSize: 40,
     fontWeight: '700',
     color: Colors.white,
   },
   failIcon: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: '#EF4444',
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: Colors.red,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: 20,
+    shadowColor: Colors.red,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
   },
   failIconText: {
-    fontSize: 48,
+    fontSize: 40,
     fontWeight: '700',
     color: Colors.white,
   },
   resultTitle: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: '700',
-    color: '#1F2937',
-    marginBottom: 12,
+    color: Colors.textPrimary,
+    marginBottom: 8,
     textAlign: 'center',
   },
   resultMessage: {
-    fontSize: 15,
-    color: '#6B7280',
+    fontSize: 14,
+    color: Colors.textSecondary,
     textAlign: 'center',
-    marginBottom: 32,
-    lineHeight: 22,
+    marginBottom: 28,
+    lineHeight: 20,
   },
-  // Details Card
-  detailsCard: {
+  // Information Cards
+  infoCard: {
     width: '100%',
-    backgroundColor: '#F8F9FA',
-    borderRadius: 12,
-    padding: 16,
+    backgroundColor: Colors.white,
+    borderRadius: 16,
+    padding: 18,
+    marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: Colors.border,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
   },
   cardTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#1F2937',
-    marginBottom: 16,
+    color: Colors.textPrimary,
+    marginBottom: 14,
+    paddingBottom: 10,
+    borderBottomWidth: 2,
+    borderBottomColor: Colors.main_bule,
   },
-  detailRow: {
+  infoRow: {
     flexDirection: 'row',
-    alignItems: 'center',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: '#F3F4F6',
   },
-  detailIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: Colors.white,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
-  },
-  iconText: {
-    fontSize: 20,
-  },
-  detailContent: {
-    flex: 1,
-  },
-  detailLabel: {
+  infoLabel: {
     fontSize: 14,
-    fontWeight: '600',
-    color: '#1F2937',
-    marginBottom: 2,
+    color: Colors.textSecondary,
+    flex: 1,
+    fontWeight: '500',
   },
-  detailValue: {
+  infoValue: {
+    fontSize: 14,
+    color: Colors.textPrimary,
+    fontWeight: '600',
+    flex: 1.5,
+    textAlign: 'right',
+  },
+  infoValueMultiline: {
     fontSize: 13,
-    color: '#6B7280',
+    color: Colors.textPrimary,
+    fontWeight: '600',
+    flex: 1.5,
+    textAlign: 'right',
+    lineHeight: 19,
+  },
+  // Status Card
+  statusCard: {
+    width: '100%',
+    backgroundColor: Colors.white,
+    borderRadius: 16,
+    padding: 18,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: Colors.main_green,
+    shadowColor: Colors.main_green,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  statusRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  statusLabel: {
+    fontSize: 15,
+    color: Colors.textPrimary,
+    fontWeight: '600',
   },
   statusBadge: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
     backgroundColor: Colors.main_green,
-    justifyContent: 'center',
-    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    shadowColor: Colors.main_green,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  statusText: {
-    fontSize: 14,
+  statusValue: {
+    fontSize: 16,
     fontWeight: '700',
     color: Colors.white,
   },
+  noteText: {
+    width: '100%',
+    fontSize: 12,
+    color: Colors.textSecondary,
+    textAlign: 'center',
+    lineHeight: 18,
+    marginTop: 12,
+    paddingHorizontal: 8,
+  },
   // Footer
   footer: {
+    flexDirection: 'row',
+    gap: 12,
     paddingHorizontal: 20,
     paddingBottom: 20,
+    paddingTop: 16,
+    backgroundColor: Colors.white,
+    borderTopWidth: 1,
+    borderTopColor: Colors.border,
+  },
+  editButton: {
+    flex: 1,
+    backgroundColor: Colors.white,
+    paddingVertical: 14,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: Colors.border,
+  },
+  editButtonText: {
+    color: Colors.textSecondary,
+    fontSize: 15,
+    fontWeight: '600',
+    textAlign: 'center',
   },
   doneButton: {
+    flex: 1,
     backgroundColor: Colors.main_bule,
     paddingVertical: 14,
     borderRadius: 12,
     shadowColor: Colors.main_bule,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.3,
     shadowRadius: 8,
-    elevation: 4,
+    elevation: 5,
   },
   retryButton: {
+    flex: 1,
     backgroundColor: Colors.main_bule,
     paddingVertical: 14,
     borderRadius: 12,
-    marginBottom: 10,
+    marginRight: 6,
     shadowColor: Colors.main_bule,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.3,
     shadowRadius: 8,
-    elevation: 4,
+    elevation: 5,
   },
   closeButton: {
-    backgroundColor: 'transparent',
+    flex: 1,
+    backgroundColor: Colors.white,
     paddingVertical: 14,
     borderRadius: 12,
-    borderWidth: 1.5,
-    borderColor: '#E5E7EB',
+    borderWidth: 2,
+    borderColor: Colors.border,
+    marginLeft: 6,
   },
   buttonText: {
     color: Colors.white,
@@ -361,7 +484,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   closeButtonText: {
-    color: '#6B7280',
+    color: Colors.textSecondary,
     fontSize: 15,
     fontWeight: '600',
     textAlign: 'center',

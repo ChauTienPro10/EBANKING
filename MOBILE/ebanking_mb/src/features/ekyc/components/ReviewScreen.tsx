@@ -3,7 +3,7 @@
  * Display OCR results and allow editing before submitting
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -22,6 +22,11 @@ import {
   processLiveness,
   processFaceMatch,
 } from '../services/ekycApi';
+import {
+  EKYC_CONFIG,
+  MOCK_EKYC_DATA,
+  mockApiCall,
+} from '../../../config/ekycConfig';
 
 // Progress Header Component - Step 3 active
 const ProgressHeader: React.FC = () => (
@@ -55,28 +60,32 @@ const ReviewScreen: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState('Đang xử lý ảnh CMND/CCCD...');
   const [sessionId, setSessionId] = useState<string | null>(null);
-  const [skipAPI, setSkipAPI] = useState(false);
-
-  useEffect(() => {
-    // Auto-submit when screen loads
-    handleSubmit();
-  }, []);
 
   const handleSubmit = async () => {
     try {
       setLoading(true);
 
-      if (skipAPI) {
-        // Skip API calls - use mock data for testing UI
-        setStep('Đang xử lý (chế độ test)...');
-        await new Promise(resolve => setTimeout(resolve, 1500));
+      // ===== MOCK MODE =====
+      // Check config to decide between mock data or real API
+      if (EKYC_CONFIG.USE_MOCK_DATA) {
+        setStep('Đang khởi tạo (chế độ mock)...');
+        await mockApiCall(null, 500);
+
+        setStep('Đang xử lý CMND/CCCD (chế độ mock)...');
+        await mockApiCall(null, 800);
+
+        setStep('Đang xác thực khuôn mặt (chế độ mock)...');
+        await mockApiCall(null, 800);
+
+        setStep('Đang so sánh khuôn mặt (chế độ mock)...');
+        await mockApiCall(null, 400);
 
         const mockData = {
-          sessionId: 'test-session-' + Date.now(),
+          sessionId: MOCK_EKYC_DATA.session.sessionId,
           success: true,
-          ocrResult: { status: 'success', data: 'mock' },
-          livenessResult: { status: 'success', score: 0.98 },
-          faceMatchResult: { status: 'success', similarity: '96%' },
+          ocrResult: MOCK_EKYC_DATA.ocr,
+          livenessResult: MOCK_EKYC_DATA.liveness,
+          faceMatchResult: MOCK_EKYC_DATA.faceMatch,
         };
 
         setLoading(false);
@@ -84,13 +93,12 @@ const ReviewScreen: React.FC = () => {
         return;
       }
 
-      // Normal API flow
+      // ===== REAL API MODE =====
       // Step 0: Create session
       setStep('Đang khởi tạo phiên...');
       const { createEKYCSession } = await import('../services/ekycApi');
       const session = await createEKYCSession(1); // userId = 1 for now
       setSessionId(session.sessionId);
-      console.log('✅ Session created:', session.sessionId);
 
       // Step 1: Process OCR
       setStep('Đang xử lý CMND/CCCD...');
@@ -99,7 +107,6 @@ const ReviewScreen: React.FC = () => {
         frontImage,
         backImage,
       );
-      console.log('OCR Result:', ocrResult);
 
       // Step 2: Process Liveness
       setStep('Đang xác thực khuôn mặt...');
@@ -107,12 +114,10 @@ const ReviewScreen: React.FC = () => {
         session.sessionId,
         videoPath,
       );
-      console.log('✅ Liveness Result:', livenessResult);
 
       // Step 3: Face Match
       setStep('Đang so sánh khuôn mặt...');
       const faceMatchResult = await processFaceMatch(session.sessionId);
-      console.log('Face Match Result:', faceMatchResult);
 
       setLoading(false);
 
@@ -125,7 +130,6 @@ const ReviewScreen: React.FC = () => {
         faceMatchResult,
       });
     } catch (error: any) {
-      console.error('❌ eKYC Error:', error);
       setLoading(false);
 
       // Parse error and provide user-friendly messages
@@ -234,8 +238,8 @@ const ReviewScreen: React.FC = () => {
           <ActivityIndicator size="large" color={Colors.main_bule} />
           <Text style={styles.loadingText}>{step}</Text>
           <Text style={styles.loadingSubtext}>
-            {skipAPI
-              ? 'Chế độ test - không gọi API thực'
+            {EKYC_CONFIG.USE_MOCK_DATA
+              ? 'Chế độ mock - không gọi API thực'
               : 'Vui lòng đợi trong giây lát...'}
           </Text>
         </View>
@@ -246,26 +250,6 @@ const ReviewScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.container}>
       <ProgressHeader />
-
-      {/* Skip API Toggle - For Testing Only */}
-      <View style={styles.testModeContainer}>
-        <TouchableOpacity
-          style={styles.testModeToggle}
-          onPress={() => setSkipAPI(!skipAPI)}
-        >
-          <View style={[styles.checkbox, skipAPI && styles.checkboxActive]}>
-            {skipAPI && <Text style={styles.checkmark}>✓</Text>}
-          </View>
-          <View style={styles.testModeTextContainer}>
-            <Text style={styles.testModeLabel}>
-              Chế độ test (không gọi API)
-            </Text>
-            <Text style={styles.testModeHint}>
-              Dùng để test UI không tốn request
-            </Text>
-          </View>
-        </TouchableOpacity>
-      </View>
 
       <ScrollView style={styles.scrollView}>
         <Text style={styles.title}>Xác nhận thông tin</Text>
@@ -378,51 +362,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     flex: 1,
     textAlign: 'center',
-  },
-  // Test Mode Toggle
-  testModeContainer: {
-    backgroundColor: '#FEF3C7',
-    borderBottomWidth: 1,
-    borderBottomColor: '#FDE68A',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-  },
-  testModeToggle: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  checkbox: {
-    width: 24,
-    height: 24,
-    borderRadius: 6,
-    borderWidth: 2,
-    borderColor: '#D97706',
-    backgroundColor: Colors.white,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
-  },
-  checkboxActive: {
-    backgroundColor: '#D97706',
-    borderColor: '#D97706',
-  },
-  checkmark: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: Colors.white,
-  },
-  testModeTextContainer: {
-    flex: 1,
-  },
-  testModeLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#92400E',
-    marginBottom: 2,
-  },
-  testModeHint: {
-    fontSize: 12,
-    color: '#B45309',
   },
   // Loading
   loadingContainer: {
