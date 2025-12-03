@@ -58,10 +58,6 @@ const ResultScreen: React.FC = () => {
     );
   }
 
-  // Debug: Log toàn bộ ocrResult để xem cấu trúc
-  console.log('🔍 Full ocrResult:', JSON.stringify(ocrResult, null, 2));
-  console.log('🔍 ocrResult keys:', Object.keys(ocrResult || {}));
-
   // Helper function to format LocalDate array [year, month, day] to DD/MM/YYYY
   const formatDate = (dateValue: any): string => {
     if (!dateValue) return 'N/A';
@@ -166,7 +162,7 @@ const ResultScreen: React.FC = () => {
               <View style={styles.statusBadge}>
                 <Text style={styles.statusValue}>
                   {faceMatchResult?.similarity
-                    ? `${(faceMatchResult.similarity * 100).toFixed(1)}%`
+                    ? `${faceMatchResult.similarity.toFixed(1)}%`
                     : 'N/A'}
                 </Text>
               </View>

@@ -36,6 +36,7 @@ public class EkycService {
     private final BiometricDataRepository biometricDataRepository;
     private final FptAiService fptAiService;
     private final MediaStorageService mediaStorageService;
+    private final VideoFrameExtractorHumble videoFrameExtractor;
 
     // ⚠️ DEMO MODE - Set false to use real FPT AI APIs
     private static final boolean DEMO_MODE = false;
@@ -336,15 +337,6 @@ public class EkycService {
         }
     }
 
-    private Boolean getBooleanValue(Map<String, Object> map, String key) {
-        Object value = map.get(key);
-        if (value == null)
-            return false;
-        if (value instanceof Boolean)
-            return (Boolean) value;
-        return Boolean.parseBoolean(value.toString());
-    }
-
     private Double getDoubleValue(Map<String, Object> map, String key) {
         Object value = map.get(key);
         if (value == null)
@@ -381,19 +373,23 @@ public class EkycService {
         }
 
         try {
-            // Load images from file system and convert to base64 for FPT AI
-            // Since FPT.AI OCR doesn't return portrait/avatar anymore, we use front CCCD
-            // image
-            // The front CCCD image contains the person's face photo
+            // Load ID card image from front CCCD
             String idCardImageBase64 = mediaStorageService.loadFileAsBase64(docInfo.getFrontImagePath());
 
-            // TODO: Extract a clear face frame from liveness video for better accuracy
-            // For now, using front CCCD image as both ID card photo and selfie
-            // In production, you should extract the best frame from liveness video
-            String selfieImageBase64 = idCardImageBase64; // Temporary: use same image
+            // Extract face frame from liveness video for selfie
+            String videoPath = bioData.getVideoPath();
+            if (videoPath == null || videoPath.isEmpty()) {
+                throw new EkycException("Liveness video not found for face matching");
+            }
 
-            log.warn("Face match using front CCCD image for both ID card and selfie. " +
-                    "Consider extracting frame from liveness video for better accuracy.");
+            // Convert relative path to absolute path (videoPath is stored as "videos/..."
+            // but file is in "uploads/videos/...")
+            String absoluteVideoPath = "uploads/" + videoPath;
+
+            log.info("Extracting selfie frame from liveness video: {}", absoluteVideoPath);
+            String selfieImageBase64 = videoFrameExtractor.extractFrameAsBase64(absoluteVideoPath);
+
+            log.info("Face match: comparing ID card face with selfie from liveness video");
 
             // Call FPT.AI Face Match
             Map<String, Object> result = fptAiService.callFaceMatchApi(idCardImageBase64, selfieImageBase64);
@@ -436,7 +432,7 @@ public class EkycService {
 
             return FaceMatchResponse.builder()
                     .isMatched(isMatched)
-                    .confidence(similarity)
+                    .similarity(similarity) // Use similarity to match FPT.AI API
                     .build();
         } catch (EkycException e) {
             throw e;
@@ -553,7 +549,7 @@ public class EkycService {
 
         return FaceMatchResponse.builder()
                 .isMatched(isMatched)
-                .confidence(mockSimilarity)
+                .similarity(mockSimilarity) // Use similarity to match FPT.AI API
                 .build();
     }
 }

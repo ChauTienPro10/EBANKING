@@ -1,6 +1,5 @@
 package com.ebanking.ekycservice.dto.response;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -8,8 +7,9 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@NoArgsConstructor @AllArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 public class FaceMatchResponse {
     private Boolean isMatched;
-    private Double confidence;
+    private Double similarity; // Match FPT.AI API response field name
 }

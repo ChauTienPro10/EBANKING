@@ -46,7 +46,7 @@ const CameraView: React.FC<CameraViewProps> = ({
         photo={true}
         photoQualityBalance="balanced"
         resizeMode="cover"
-        zoom={1.8}
+        // zoom={1.8}
       />
 
       {/* UI Overlay */}
