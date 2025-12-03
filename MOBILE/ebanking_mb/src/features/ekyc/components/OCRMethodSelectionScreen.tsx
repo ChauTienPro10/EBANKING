@@ -31,9 +31,10 @@ const OCRMethodSelectionScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar
-        barStyle="dark-content"
-        backgroundColor={Colors.white}
-        translucent={false}
+        barStyle="light-content"
+        backgroundColor="transparent"
+        translucent={true}
+        hidden={false}
       />
       <ProgressHeader currentStep={1} />
 

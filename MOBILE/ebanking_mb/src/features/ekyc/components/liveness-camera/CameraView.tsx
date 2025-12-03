@@ -1,14 +1,14 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   View,
   Text,
-  SafeAreaView,
   TouchableOpacity,
-  Alert,
   StyleSheet,
   StatusBar,
+  Animated,
 } from 'react-native';
 import { Camera, CameraDevice, VideoFile } from 'react-native-vision-camera';
+import Svg, { Circle } from 'react-native-svg';
 import Colors from '../../../../constants/color';
 import ProgressHeader from '../shared/ProgressHeader';
 
@@ -39,119 +39,237 @@ const CameraView: React.FC<CameraViewProps> = ({
   onStartRecording,
   onStopRecording,
 }) => {
+  // Animation for recording button pulse
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+  // Animation for countdown circle
+  const countdownAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (isRecording) {
+      // Pulse animation during recording
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(pulseAnim, {
+            toValue: 1.1,
+            duration: 500,
+            useNativeDriver: true,
+          }),
+          Animated.timing(pulseAnim, {
+            toValue: 1,
+            duration: 500,
+            useNativeDriver: true,
+          }),
+        ]),
+      ).start();
+    } else {
+      pulseAnim.setValue(1);
+    }
+  }, [isRecording]);
+
+  useEffect(() => {
+    if (countdown !== null) {
+      // Scale animation for countdown circle
+      countdownAnim.setValue(0);
+      Animated.spring(countdownAnim, {
+        toValue: 1,
+        friction: 4,
+        tension: 40,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [countdown]);
+
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={styles.container}>
       <StatusBar
-        barStyle="dark-content"
-        backgroundColor={Colors.white}
-        translucent={false}
+        barStyle="light-content"
+        backgroundColor="transparent"
+        translucent={true}
+        hidden={false}
       />
-      <View style={styles.container}>
-        {/* Progress Header - Always visible */}
+
+      {/* Camera - Full screen with cover mode */}
+      <Camera
+        ref={cameraRef}
+        style={StyleSheet.absoluteFillObject}
+        device={device}
+        isActive={true}
+        video={true}
+        format={format}
+        fps={30}
+        videoStabilizationMode="auto"
+        onInitialized={onCameraReady}
+        onError={onCameraError}
+        resizeMode="cover"
+      />
+
+      {/* Recording Indicator */}
+      {isRecording && (
+        <View style={styles.recordingIndicator}>
+          <View style={styles.recordingDot} />
+          <Text style={styles.recordingText}>
+            Đang quay... {Math.max(0, 5 - recordingTime).toFixed(1)}s
+          </Text>
+        </View>
+      )}
+
+      {/* UI Overlay */}
+      <View style={styles.overlayContainer}>
+        {/* Progress Header */}
         <View style={styles.headerContainer}>
           <ProgressHeader currentStep={2} />
         </View>
 
-        <View style={styles.cameraWrapper}>
-          <Camera
-            ref={cameraRef}
-            style={styles.camera}
-            device={device}
-            isActive={true}
-            video={true}
-            format={format}
-            fps={30}
-            videoStabilizationMode="auto"
-            onInitialized={onCameraReady}
-            onError={onCameraError}
-          />
+        {/* Face Guide */}
+        <View style={styles.faceGuideContainer}>
+          <View style={styles.faceGuide} />
 
+          {/* Countdown - Centered in face guide */}
           {countdown !== null && (
-            <View style={styles.countdownOverlay}>
-              <Text style={styles.countdownText}>{countdown}</Text>
+            <View style={styles.countdownContainer}>
+              <Animated.View
+                style={[
+                  styles.countdownCircle,
+                  { transform: [{ scale: countdownAnim }] },
+                ]}
+              >
+                <Text style={styles.countdownText}>{countdown}</Text>
+              </Animated.View>
             </View>
           )}
+        </View>
 
-          {isRecording && (
-            <View style={styles.recordingIndicator}>
-              <View style={styles.recordingDot} />
-              <Text style={styles.recordingText}>
-                Đang quay... {Math.max(0, 5 - recordingTime).toFixed(1)}s
-              </Text>
-            </View>
-          )}
+        {/* Bottom Controls */}
+        <View style={styles.bottomContainer}>
+          {/* Instruction */}
+          <View style={styles.instructionSection}>
+            <Text style={styles.instructionTitle}>Xác thực khuôn mặt</Text>
+            <Text style={styles.instructionSubtitle}>
+              Giữ khuôn mặt trong khung oval và nhìn thẳng vào camera
+            </Text>
+          </View>
 
-          <View style={styles.overlay}>
-            <View style={styles.faceGuide} />
+          {/* Record/Stop Button - Elegant Design */}
+          <View style={styles.captureSection}>
+            {!isRecording && !countdown ? (
+              // Start Recording Button
+              <TouchableOpacity
+                style={[
+                  styles.recordButton,
+                  !isCameraReady && styles.recordButtonDisabled,
+                ]}
+                onPress={onStartRecording}
+                disabled={!isCameraReady}
+                activeOpacity={0.8}
+              >
+                <View style={styles.recordButtonOuter}>
+                  <View style={styles.recordButtonInner} />
+                </View>
+              </TouchableOpacity>
+            ) : (
+              // Recording/Stop Button with Progress
+              <View style={styles.recordingContainer}>
+                {/* SVG Circular Progress */}
+                {isRecording && (
+                  <View style={styles.svgProgressContainer}>
+                    <Svg width={80} height={80}>
+                      {/* Progress Circle */}
+                      <Circle
+                        cx="40"
+                        cy="40"
+                        r="36"
+                        stroke="#EF4444"
+                        strokeWidth="3"
+                        fill="none"
+                        strokeDasharray={`${2 * Math.PI * 36}`}
+                        strokeDashoffset={`${
+                          2 * Math.PI * 36 * (1 - recordingTime / 5)
+                        }`}
+                        strokeLinecap="round"
+                        rotation="-90"
+                        origin="40, 40"
+                      />
+                    </Svg>
+                  </View>
+                )}
+
+                {/* Stop Button */}
+                <Animated.View
+                  style={[
+                    styles.stopButtonContainer,
+                    { transform: [{ scale: pulseAnim }] },
+                  ]}
+                >
+                  <TouchableOpacity
+                    style={styles.stopButton}
+                    onPress={onStopRecording}
+                    activeOpacity={0.8}
+                  >
+                    <View style={styles.stopButtonInner} />
+                  </TouchableOpacity>
+                </Animated.View>
+              </View>
+            )}
           </View>
         </View>
-
-        <View style={styles.instructionSection}>
-          <Text style={styles.instructionTitle}>Xác thực khuôn mặt</Text>
-          <Text style={styles.instructionSubtitle}>
-            Giữ khuôn mặt trong khung oval và nhìn thẳng vào camera
-          </Text>
-        </View>
-
-        <View style={styles.captureSection}>
-          {!isRecording && !countdown ? (
-            <TouchableOpacity
-              style={[
-                styles.recordButton,
-                !isCameraReady && styles.recordButtonDisabled,
-              ]}
-              onPress={onStartRecording}
-              disabled={!isCameraReady}
-            >
-              <View style={styles.recordButtonInner} />
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity
-              style={styles.stopButton}
-              onPress={onStopRecording}
-            >
-              <View style={styles.stopButtonInner} />
-            </TouchableOpacity>
-          )}
-        </View>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: Colors.white,
-  },
   container: {
     flex: 1,
     backgroundColor: Colors.black,
   },
+  overlayContainer: {
+    ...StyleSheet.absoluteFillObject,
+    flexDirection: 'column',
+  },
   headerContainer: {
     backgroundColor: Colors.white,
     zIndex: 10,
-    elevation: 5, // Android shadow
+    elevation: 5,
   },
-  cameraWrapper: {
+  faceGuideContainer: {
     flex: 1,
-    backgroundColor: Colors.black,
-    position: 'relative',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  camera: {
-    flex: 1,
+  faceGuide: {
+    width: 240,
+    height: 300,
+    borderWidth: 3,
+    borderColor: Colors.white,
+    borderRadius: 150,
+    opacity: 0.8,
   },
   countdownOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.7)',
+    backgroundColor: 'rgba(0,0,0,0.85)',
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 100,
   },
+  // Countdown - Simple & Minimal (in face guide)
+  countdownContainer: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 10,
+  },
+  countdownCircle: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: 'rgba(255,255,255,0.95)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   countdownText: {
-    fontSize: 80,
-    fontWeight: '700',
-    color: Colors.white,
+    fontSize: 56,
+    fontWeight: '600',
+    color: '#1F2937',
   },
   recordingIndicator: {
     position: 'absolute',
@@ -178,21 +296,10 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: Colors.white,
   },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  faceGuide: {
-    width: 240,
-    height: 300,
-    borderWidth: 3,
-    borderColor: Colors.white,
-    borderRadius: 150,
-    opacity: 0.8,
+  bottomContainer: {
+    backgroundColor: Colors.white,
   },
   instructionSection: {
-    backgroundColor: Colors.white,
     paddingVertical: 16,
     paddingHorizontal: 20,
     alignItems: 'center',
@@ -210,44 +317,75 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   captureSection: {
-    backgroundColor: Colors.white,
-    paddingVertical: 20,
+    paddingVertical: 24,
     alignItems: 'center',
   },
+  // Start Recording Button
   recordButton: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-    backgroundColor: Colors.white,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 4,
-    borderColor: '#EF4444',
+    backgroundColor: 'transparent',
   },
   recordButtonDisabled: {
     opacity: 0.5,
   },
-  recordButtonInner: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: '#EF4444',
-  },
-  stopButton: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
+  recordButtonOuter: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
     backgroundColor: Colors.white,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 4,
-    borderColor: '#6B7280',
+    shadowColor: '#EF4444',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  recordButtonInner: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: '#EF4444',
+  },
+  // Recording State
+  recordingContainer: {
+    position: 'relative',
+    width: 80,
+    height: 80,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  svgProgressContainer: {
+    position: 'absolute',
+    width: 80,
+    height: 80,
+  },
+  stopButtonContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  stopButton: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: Colors.white,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 4,
   },
   stopButtonInner: {
-    width: 32,
-    height: 32,
+    width: 24,
+    height: 24,
     backgroundColor: '#6B7280',
-    borderRadius: 4,
+    borderRadius: 3,
   },
 });
 
