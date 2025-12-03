@@ -1,9 +1,9 @@
 #spring.application.name=ekycService
 spring:
   datasource:
-    url: jdbc:mysql://34.124.233.161:3306/DB_EKYC?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
+    url: jdbc:mysql://localhost:3306/DB_EKYC?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
     username: root
-    password: Root@123
+    password: root@123
     hikari:
       connection-init-sql: SET time_zone = '+00:00'
   jpa:
@@ -25,7 +25,6 @@ spring:
 server:
   port: 8008
   address: 0.0.0.0 # Cho phép truy cập từ mọi IP (bao gồm cả mobile device)
-
 
 # FPT.AI Configuration
 fpt:
