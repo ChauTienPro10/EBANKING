@@ -22,6 +22,18 @@ const Colors = {
   textPrimary: '#1F2937',
   textSecondary: '#6B7280',
   border: '#E5E7EB',
+
+  // eKYC specific colors
+  success: '#4CAF50',
+  successLight: '#E8F5E9',
+  warning: '#FF9800',
+  warningLight: '#FFF3E0',
+  error: '#F44336',
+  errorLight: '#FFEBEE',
+  info: '#2196F3',
+  infoLight: '#E3F2FD',
+  backgroundLight: '#FAFAFA',
+  text: '#212121',
 };
 
 export default Colors;

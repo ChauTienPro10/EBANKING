@@ -53,6 +53,9 @@ export type RootStackParamList = {
     onScanSuccess: (value: string) => void;
   };
   EKYC: undefined;
+  OCRCamera: {
+    side: 'front' | 'back';
+  };
   LivenessCamera: {
     frontImage: string;
     backImage: string;
@@ -69,4 +72,5 @@ export type RootStackParamList = {
     livenessResult?: any;
     faceMatchResult?: any;
   };
+  EKYCDetail: undefined;
 };

@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import {
   View,
+  Text,
+  TouchableOpacity,
   StyleSheet,
   SafeAreaView,
   Dimensions,
   Animated,
 } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import { useNavigation } from '@react-navigation/native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -29,6 +33,7 @@ import Toast from 'react-native-toast-message';
 const { width: screenWidth } = Dimensions.get('window');
 
 const ProfileScreen: React.FC = () => {
+  const navigation = useNavigation();
   const { t, i18n } = useTranslation();
   const language = useSelector((state: RootState) => state.app.language);
   const userInfo = useSelector((state: RootState) => state.app.userInfoData);
@@ -247,6 +252,67 @@ const ProfileScreen: React.FC = () => {
         extraScrollHeight={120}
         keyboardShouldPersistTaps="handled"
       >
+        {/* eKYC Verification Section */}
+        {userInfo?.ekycStatus === 'VERIFIED' ? (
+          <View style={styles.ekycSection}>
+            <View style={styles.ekycHeader}>
+              <Ionicons
+                name="shield-checkmark"
+                size={24}
+                color={Colors.success}
+              />
+              <Text style={styles.ekycTitle}>Thông tin định danh</Text>
+            </View>
+
+            <View style={styles.ekycBadge}>
+              <Ionicons
+                name="checkmark-circle"
+                size={20}
+                color={Colors.success}
+              />
+              <Text style={styles.ekycVerifiedText}>Đã xác thực</Text>
+            </View>
+
+            <Text style={styles.ekycDate}>
+              Xác thực ngày:{' '}
+              {userInfo.ekycVerifiedAt
+                ? new Date(userInfo.ekycVerifiedAt).toLocaleDateString('vi-VN')
+                : '---'}
+            </Text>
+
+            <TouchableOpacity
+              style={styles.ekycDetailButton}
+              onPress={() => navigation.navigate('EKYCDetail' as never)}
+            >
+              <Text style={styles.ekycDetailButtonText}>Xem chi tiết</Text>
+              <Ionicons
+                name="chevron-forward"
+                size={20}
+                color={Colors.main_bule}
+              />
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View style={styles.ekycSection}>
+            <View style={styles.ekycHeader}>
+              <Ionicons name="shield-outline" size={24} color={Colors.grey3} />
+              <Text style={styles.ekycTitle}>Thông tin định danh</Text>
+            </View>
+
+            <View style={styles.ekycBadgeWarning}>
+              <Ionicons name="alert-circle" size={20} color={Colors.warning} />
+              <Text style={styles.ekycNotVerifiedText}>Chưa xác thực</Text>
+            </View>
+
+            <TouchableOpacity
+              style={styles.ekycVerifyButton}
+              onPress={() => navigation.navigate('EKYC' as never)}
+            >
+              <Text style={styles.ekycVerifyButtonText}>Xác thực ngay</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
         {/* Personal Information Section */}
         <PersonalInfoSection
           profile={profile}
@@ -325,6 +391,90 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 6,
+  },
+  // eKYC Section
+  ekycSection: {
+    backgroundColor: Colors.white,
+    borderRadius: 16,
+    padding: 20,
+    marginHorizontal: 16,
+    marginTop: 16,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  ekycHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  ekycTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginLeft: 8,
+    color: Colors.textPrimary,
+  },
+  ekycBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.successLight,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    alignSelf: 'flex-start',
+    marginBottom: 8,
+  },
+  ekycVerifiedText: {
+    color: Colors.success,
+    fontWeight: '600',
+    marginLeft: 6,
+    fontSize: 14,
+  },
+  ekycBadgeWarning: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.warningLight,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    alignSelf: 'flex-start',
+    marginBottom: 12,
+  },
+  ekycNotVerifiedText: {
+    color: Colors.warning,
+    fontWeight: '600',
+    marginLeft: 6,
+    fontSize: 14,
+  },
+  ekycDate: {
+    fontSize: 13,
+    color: Colors.grey3,
+    marginBottom: 12,
+  },
+  ekycDetailButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 8,
+  },
+  ekycDetailButtonText: {
+    fontSize: 15,
+    color: Colors.main_bule,
+    fontWeight: '500',
+  },
+  ekycVerifyButton: {
+    backgroundColor: Colors.main_bule,
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  ekycVerifyButtonText: {
+    color: Colors.white,
+    fontSize: 15,
+    fontWeight: '600',
   },
 });
 

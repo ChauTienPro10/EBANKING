@@ -3,7 +3,7 @@
  * Display eKYC verification results
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   View,
   StyleSheet,
@@ -13,14 +13,30 @@ import {
   ScrollView,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchUserInfo } from '../../../store/fetchAPI/UserInfoFetch';
+import type { RootState } from '../../../store';
 import Colors from '../../../constants/color';
 import ProgressHeader from './shared/ProgressHeader';
 
 const ResultScreen: React.FC = () => {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
   const route = useRoute();
+  const loginResponse = useSelector(
+    (state: RootState) => state.app.loginResponse,
+  );
   const { success, ocrResult, livenessResult, faceMatchResult } =
     (route.params as any) || {};
+
+  // Refresh user info after successful verification
+  useEffect(() => {
+    if (success) {
+      // Get userId from loginResponse or use hardcoded value for testing
+      const userId = loginResponse?.id || 1;
+      dispatch(fetchUserInfo(userId) as any);
+    }
+  }, [success, loginResponse?.id, dispatch]);
 
   const handleClose = () => {
     // Navigate back to home or settings

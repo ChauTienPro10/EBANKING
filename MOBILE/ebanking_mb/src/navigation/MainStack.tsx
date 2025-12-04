@@ -23,6 +23,7 @@ import {
   ReviewScreen,
   ResultScreen,
 } from '../features/ekyc';
+import EKYCDetailScreen from '../features/ekyc/screens/EKYCDetailScreen';
 import OCRCameraScreen from '../features/ekyc/components/OCRCameraScreen';
 import ChatScreen from '../page/chatbot/ChatScreen';
 import NotiScreen from '../page/notify/notiScreen';
@@ -77,6 +78,7 @@ export default function MainStack() {
       <Stack.Screen name="LivenessCamera" component={LivenessCameraScreen} />
       <Stack.Screen name="ReviewScreen" component={ReviewScreen} />
       <Stack.Screen name="ResultScreen" component={ResultScreen} />
+      <Stack.Screen name="EKYCDetail" component={EKYCDetailScreen} />
     </Stack.Navigator>
   );
 }
