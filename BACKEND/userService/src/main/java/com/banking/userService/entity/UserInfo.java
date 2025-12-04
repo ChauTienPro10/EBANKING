@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 @Entity
 @Table(name = "user_info")
 @NoArgsConstructor
@@ -42,4 +45,24 @@ public class UserInfo {
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
+
+    /**
+     * Reference to eKYC session in EkycService
+     * This creates loose coupling between services
+     */
+    @Column(name = "ekyc_session_id")
+    private UUID ekycSessionId;
+
+    /**
+     * eKYC verification status
+     * Values: NOT_VERIFIED, VERIFIED, EXPIRED, REJECTED
+     */
+    @Column(name = "ekyc_status")
+    private String ekycStatus; // Default: "NOT_VERIFIED"
+
+    /**
+     * Timestamp when eKYC was verified
+     */
+    @Column(name = "ekyc_verified_at")
+    private LocalDateTime ekycVerifiedAt;
 }
