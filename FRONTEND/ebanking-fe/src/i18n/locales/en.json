@@ -1,0 +1,247 @@
+{
+  "app": {
+    "title": "eBanking Console",
+    "workspace": "{{role}} workspace",
+    "logout": "Logout",
+    "role": "Role",
+    "roles": { "Admin": "Admin", "Manager": "Manager", "Staff": "Staff" },
+    "nav": {
+      "dashboard": "Dashboard",
+      "transactions": "Transactions",
+      "customers": "Customers",
+      "accounts": "Accounts",
+      "reports": "Reports",
+      "audit": "Audit & Security",
+      "staff": "Staff",
+      "notifications": "Notifications",
+      "loans": "Loans",
+      "tickets": "Support Tickets",
+      "logs": "System Logs",
+      "settings": "Settings"
+    }
+  },
+  "auth": {
+    "title": "eBanking Admin Console",
+    "username": "Username",
+    "password": "Password",
+    "otp": "OTP",
+    "login": "Login",
+    "verifyOtp": "Verify OTP",
+    "enterAll": "Please fill in all fields",
+    "otpHint": "Enter 6-digit OTP from app.",
+    "invalidOtp": "Invalid OTP",
+    "locked": "Too many attempts, account temporarily locked"
+  },
+  "dashboard": {
+    "metrics": {
+      "customers": "Customers",
+      "accounts": "Accounts",
+      "txToday": "Transactions today",
+      "pending": "Pending",
+      "suspicious": "Suspicious Transactions",
+      "loansApproved": "Approved Loans",
+      "loansPending": "Pending Loans",
+      "loansRejected": "Rejected Loans"
+    },
+    "chart": "Transactions chart (demo)",
+    "chartDaily": "Daily Transactions (Last 7 Days)",
+    "chartAccountTypes": "Account Types Distribution",
+    "realtime": "Realtime",
+    "recentTransactions": "Recent Transactions",
+    "realtimeTimeline": "Realtime Transaction Timeline"
+  },
+  "transactions": {
+    "search": "Search history",
+    "filters": { "id": "Transaction ID", "type": "Type", "from": "From date", "to": "To date" },
+    "realtime": "Realtime dashboard",
+    "list": "Transactions list",
+    "table": { "id": "ID", "type": "Type", "amount": "Amount", "status": "Status", "time": "Time" }
+  },
+  "customers": {
+    "filters": { "name": "Name", "phone": "Phone", "status": "Status", "kyc": "KYC" },
+    "list": "Customers list",
+    "table": { "name": "Name", "phone": "Phone", "status": "Status", "kyc": "KYC" }
+  },
+  "accounts": {
+    "list": "Accounts list",
+    "table": { "no": "Account No.", "type": "Type", "owner": "Owner", "balance": "Balance", "status": "Status" }
+  },
+  "reports": {
+    "filters": "Report filters",
+    "period": "Period: day/month/year",
+    "from": "From date",
+    "to": "To date",
+    "generate": "Generate report",
+    "result": "Result",
+    "exportCsv": "Export CSV",
+    "exportXls": "Export Excel",
+    "exportPdf": "Export PDF"
+  },
+  "audit": { "title": "Activity log", "table": { "time": "Time", "user": "User", "ip": "IP", "device": "Device", "action": "Action" } },
+  "loans": {
+    "title": "Loan Applications",
+    "search": "Search by customer or ID",
+    "statusAll": "All Status",
+    "statusApproved": "Approved",
+    "statusPending": "Pending",
+    "statusRejected": "Rejected",
+    "list": "Loans List",
+    "table": { "id": "ID", "customer": "Customer", "amount": "Amount", "duration": "Duration", "status": "Status", "action": "Action" },
+    "view": "View",
+    "details": "Loan Details",
+    "customer": "Customer",
+    "amount": "Amount",
+    "interestRate": "Interest Rate",
+    "purpose": "Purpose",
+    "months": "months",
+    "approve": "Approve",
+    "reject": "Reject"
+  },
+  "tickets": {
+    "title": "Support Tickets",
+    "search": "Search by customer, subject or ID",
+    "statusAll": "All Status",
+    "statusOpen": "Open",
+    "statusInProgress": "In Progress",
+    "statusResolved": "Resolved",
+    "list": "Tickets List",
+    "table": { "id": "ID", "customer": "Customer", "subject": "Subject", "category": "Category", "priority": "Priority", "status": "Status", "action": "Action" },
+    "view": "View",
+    "customer": "Customer",
+    "category": "Category",
+    "priority": "Priority",
+    "messages": "Messages",
+    "reply": "Reply",
+    "replyPlaceholder": "Type your reply here...",
+    "sendReply": "Send Reply",
+    "replySent": "Reply sent successfully"
+  },
+  "logs": {
+    "title": "System Logs",
+    "search": "Search by user, action or ID",
+    "actionAll": "All Actions",
+    "roleAll": "All Roles",
+    "list": "Logs List",
+    "table": { "time": "Time", "user": "User", "role": "Role", "action": "Action", "ip": "IP Address", "device": "Device", "details": "Details" }
+  },
+  "settings": {
+    "title": "System Settings",
+    "systemSettings": "System Settings",
+    "twoFactor": "Enable 2FA",
+    "sessionTimeout": "Session Timeout",
+    "auditLogRetention": "Audit Log Retention",
+    "permissionMatrix": "Permission Matrix",
+    "module": "Module"
+  },
+  "notifications": {
+    "tabs": { "send": "Send Notification", "history": "Notification History" },
+    "receiver": {
+      "title": "Receiver Selector",
+      "single": "Single user",
+      "multi": "Multiple users",
+      "broadcast": "Broadcast",
+      "broadcastDisabled": "(Not available for Staff)",
+      "searchPlaceholder": "Search by name, phone or email",
+      "noResults": "No users found",
+      "select": "Select",
+      "selected": "Selected",
+      "selectedUsers": "{{count}} selected"
+    },
+    "form": {
+      "title": "Message Form",
+      "fields": {
+        "title": "Title",
+        "body": "Body",
+        "image": "Image (optional)",
+        "link": "Deep link (optional)",
+        "priority": "Priority",
+        "schedule": "Schedule time"
+      },
+      "placeholders": {
+        "title": "Enter notification title",
+        "body": "Enter message content",
+        "link": "https://..."
+      },
+      "priority": { "low": "Low", "normal": "Normal", "high": "High" }
+    },
+    "preview": {
+      "panelTitle": "Preview",
+      "modalTitle": "Notification preview",
+      "deviceHeader": "Mobile preview",
+      "titlePlaceholder": "Notification title",
+      "bodyPlaceholder": "Notification body preview",
+      "cta": "Open app"
+    },
+    "actions": {
+      "preview": "Preview",
+      "send": "Send notification",
+      "sending": "Sending...",
+      "close": "Close",
+      "cancel": "Cancel",
+      "confirmSend": "Confirm send"
+    },
+    "confirmation": {
+      "title": "Confirm notification",
+      "notification": "Notification",
+      "priority": "Priority",
+      "receivers": "Receivers",
+      "schedule": "Schedule",
+      "sendNow": "Send now",
+      "broadcastAll": "Broadcast to all customers",
+      "receiverCount": "{{count}} recipient(s)"
+    },
+    "history": {
+      "title": "Notification history",
+      "filters": {
+        "staffAll": "All staff",
+        "statusAll": "All status",
+        "keyword": "Search title"
+      },
+      "status": { "success": "Success", "failed": "Failed", "scheduled": "Scheduled" },
+      "loading": "Loading history...",
+      "empty": "No notifications found",
+      "pagination": {
+        "info": "Page {{page}} / {{totalPages}} • {{total}} items",
+        "prev": "Previous",
+        "next": "Next"
+      },
+      "table": {
+        "time": "Time sent",
+        "staff": "Staff",
+        "title": "Title",
+        "receivers": "Receivers",
+        "status": "Status",
+        "action": "Action",
+        "view": "View details"
+      }
+    },
+    "detail": {
+      "sentBy": "{{staff}} • {{time}}",
+      "body": "Body",
+      "image": "Image",
+      "link": "Link",
+      "priority": "Priority",
+      "schedule": "Schedule",
+      "sendNow": "Send now",
+      "receivers": "Receivers",
+      "table": { "receiver": "Receiver", "status": "Delivery status" },
+      "delivery": { "delivered": "Delivered", "failed": "Failed", "pending": "Pending" }
+    },
+    "errors": {
+      "titleRequired": "Title is required",
+      "bodyRequired": "Body is required",
+      "receiversRequired": "Please select at least one receiver",
+      "scheduleFuture": "Schedule time must be in the future"
+    },
+    "toast": {
+      "success": "Notification queued successfully",
+      "error": "Unable to send notification"
+    }
+  },
+  "common": { "notFound": "Not Found" }
+}
+
+
+
+
+

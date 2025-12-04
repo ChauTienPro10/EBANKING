@@ -1,0 +1,200 @@
+{
+  "accounts": [
+    {
+      "id": "ACC001",
+      "customerId": "C001",
+      "type": "Saving",
+      "balance": 125000000,
+      "currency": "VND",
+      "status": "Active",
+      "createdAt": "2024-01-10T00:00:00Z"
+    },
+    {
+      "id": "ACC002",
+      "customerId": "C001",
+      "type": "Current",
+      "balance": 50000000,
+      "currency": "VND",
+      "status": "Active",
+      "createdAt": "2024-01-11T00:00:00Z"
+    },
+    {
+      "id": "ACC003",
+      "customerId": "C002",
+      "type": "Saving",
+      "balance": 250000000,
+      "currency": "VND",
+      "status": "Active",
+      "createdAt": "2024-01-12T00:00:00Z"
+    },
+    {
+      "id": "ACC004",
+      "customerId": "C003",
+      "type": "Current",
+      "balance": 75000000,
+      "currency": "VND",
+      "status": "Active",
+      "createdAt": "2024-01-15T00:00:00Z"
+    },
+    {
+      "id": "ACC005",
+      "customerId": "C004",
+      "type": "Saving",
+      "balance": 180000000,
+      "currency": "VND",
+      "status": "Active",
+      "createdAt": "2024-01-20T00:00:00Z"
+    },
+    {
+      "id": "ACC006",
+      "customerId": "C005",
+      "type": "Current",
+      "balance": 30000000,
+      "currency": "VND",
+      "status": "Locked",
+      "createdAt": "2024-02-01T00:00:00Z"
+    },
+    {
+      "id": "ACC007",
+      "customerId": "C006",
+      "type": "Saving",
+      "balance": 95000000,
+      "currency": "VND",
+      "status": "Active",
+      "createdAt": "2024-02-05T00:00:00Z"
+    },
+    {
+      "id": "ACC008",
+      "customerId": "C007",
+      "type": "Current",
+      "balance": 120000000,
+      "currency": "VND",
+      "status": "Active",
+      "createdAt": "2024-02-10T00:00:00Z"
+    },
+    {
+      "id": "ACC009",
+      "customerId": "C008",
+      "type": "Saving",
+      "balance": 65000000,
+      "currency": "VND",
+      "status": "Active",
+      "createdAt": "2024-02-15T00:00:00Z"
+    },
+    {
+      "id": "ACC010",
+      "customerId": "C009",
+      "type": "Current",
+      "balance": 200000000,
+      "currency": "VND",
+      "status": "Active",
+      "createdAt": "2024-02-20T00:00:00Z"
+    },
+    {
+      "id": "ACC011",
+      "customerId": "C010",
+      "type": "Saving",
+      "balance": 150000000,
+      "currency": "VND",
+      "status": "Active",
+      "createdAt": "2024-03-01T00:00:00Z"
+    },
+    {
+      "id": "ACC012",
+      "customerId": "C011",
+      "type": "Current",
+      "balance": 80000000,
+      "currency": "VND",
+      "status": "Active",
+      "createdAt": "2024-03-05T00:00:00Z"
+    },
+    {
+      "id": "ACC013",
+      "customerId": "C012",
+      "type": "Saving",
+      "balance": 300000000,
+      "currency": "VND",
+      "status": "Active",
+      "createdAt": "2024-03-10T00:00:00Z"
+    },
+    {
+      "id": "ACC014",
+      "customerId": "C013",
+      "type": "Current",
+      "balance": 45000000,
+      "currency": "VND",
+      "status": "Active",
+      "createdAt": "2024-03-15T00:00:00Z"
+    },
+    {
+      "id": "ACC015",
+      "customerId": "C014",
+      "type": "Saving",
+      "balance": 175000000,
+      "currency": "VND",
+      "status": "Active",
+      "createdAt": "2024-03-20T00:00:00Z"
+    },
+    {
+      "id": "ACC016",
+      "customerId": "C015",
+      "type": "Current",
+      "balance": 110000000,
+      "currency": "VND",
+      "status": "Active",
+      "createdAt": "2024-04-01T00:00:00Z"
+    },
+    {
+      "id": "ACC017",
+      "customerId": "C016",
+      "type": "Saving",
+      "balance": 220000000,
+      "currency": "VND",
+      "status": "Active",
+      "createdAt": "2024-04-05T00:00:00Z"
+    },
+    {
+      "id": "ACC018",
+      "customerId": "C017",
+      "type": "Current",
+      "balance": 90000000,
+      "currency": "VND",
+      "status": "Active",
+      "createdAt": "2024-04-10T00:00:00Z"
+    },
+    {
+      "id": "ACC019",
+      "customerId": "C018",
+      "type": "Saving",
+      "balance": 280000000,
+      "currency": "VND",
+      "status": "Active",
+      "createdAt": "2024-04-15T00:00:00Z"
+    },
+    {
+      "id": "ACC020",
+      "customerId": "C019",
+      "type": "Current",
+      "balance": 60000000,
+      "currency": "VND",
+      "status": "Active",
+      "createdAt": "2024-04-20T00:00:00Z"
+    },
+    {
+      "id": "ACC021",
+      "customerId": "C020",
+      "type": "Saving",
+      "balance": 320000000,
+      "currency": "VND",
+      "status": "Active",
+      "createdAt": "2024-05-01T00:00:00Z"
+    }
+  ]
+}
+
+
+
+
+
+
+

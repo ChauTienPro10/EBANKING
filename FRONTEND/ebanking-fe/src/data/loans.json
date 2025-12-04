@@ -1,0 +1,251 @@
+{
+  "loans": [
+    {
+      "id": "LN001",
+      "customerId": "C001",
+      "customerName": "Nguyen Van An",
+      "amount": 50000000,
+      "interestRate": 8.5,
+      "duration": 12,
+      "status": "Approved",
+      "createdAt": "2024-04-01T00:00:00Z",
+      "approvedAt": "2024-04-03T00:00:00Z",
+      "purpose": "Mua nhà"
+    },
+    {
+      "id": "LN002",
+      "customerId": "C002",
+      "customerName": "Tran Thi Binh",
+      "amount": 30000000,
+      "interestRate": 9.0,
+      "duration": 6,
+      "status": "Pending",
+      "createdAt": "2024-04-15T00:00:00Z",
+      "approvedAt": null,
+      "purpose": "Kinh doanh"
+    },
+    {
+      "id": "LN003",
+      "customerId": "C003",
+      "customerName": "Le Van Cuong",
+      "amount": 75000000,
+      "interestRate": 7.5,
+      "duration": 24,
+      "status": "Rejected",
+      "createdAt": "2024-04-20T00:00:00Z",
+      "approvedAt": null,
+      "purpose": "Mua xe"
+    },
+    {
+      "id": "LN004",
+      "customerId": "C004",
+      "customerName": "Pham Thi Dung",
+      "amount": 25000000,
+      "interestRate": 8.0,
+      "duration": 12,
+      "status": "Approved",
+      "createdAt": "2024-05-01T00:00:00Z",
+      "approvedAt": "2024-05-02T00:00:00Z",
+      "purpose": "Giáo dục"
+    },
+    {
+      "id": "LN005",
+      "customerId": "C005",
+      "customerName": "Hoang Van Em",
+      "amount": 100000000,
+      "interestRate": 7.0,
+      "duration": 36,
+      "status": "Pending",
+      "createdAt": "2024-05-05T00:00:00Z",
+      "approvedAt": null,
+      "purpose": "Mua nhà"
+    },
+    {
+      "id": "LN006",
+      "customerId": "C006",
+      "customerName": "Vu Thi Phuong",
+      "amount": 40000000,
+      "interestRate": 8.5,
+      "duration": 18,
+      "status": "Approved",
+      "createdAt": "2024-05-08T00:00:00Z",
+      "approvedAt": "2024-05-10T00:00:00Z",
+      "purpose": "Kinh doanh"
+    },
+    {
+      "id": "LN007",
+      "customerId": "C007",
+      "customerName": "Do Van Giang",
+      "amount": 20000000,
+      "interestRate": 9.5,
+      "duration": 6,
+      "status": "Pending",
+      "createdAt": "2024-05-10T00:00:00Z",
+      "approvedAt": null,
+      "purpose": "Tiêu dùng"
+    },
+    {
+      "id": "LN008",
+      "customerId": "C008",
+      "customerName": "Bui Thi Ha",
+      "amount": 60000000,
+      "interestRate": 8.0,
+      "duration": 24,
+      "status": "Rejected",
+      "createdAt": "2024-05-12T00:00:00Z",
+      "approvedAt": null,
+      "purpose": "Mua xe"
+    },
+    {
+      "id": "LN009",
+      "customerId": "C009",
+      "customerName": "Ngo Van Hung",
+      "amount": 35000000,
+      "interestRate": 7.5,
+      "duration": 12,
+      "status": "Approved",
+      "createdAt": "2024-05-14T00:00:00Z",
+      "approvedAt": "2024-05-15T00:00:00Z",
+      "purpose": "Giáo dục"
+    },
+    {
+      "id": "LN010",
+      "customerId": "C010",
+      "customerName": "Dang Thi Lan",
+      "amount": 15000000,
+      "interestRate": 10.0,
+      "duration": 6,
+      "status": "Pending",
+      "createdAt": "2024-05-15T00:00:00Z",
+      "approvedAt": null,
+      "purpose": "Tiêu dùng"
+    },
+    {
+      "id": "LN011",
+      "customerId": "C011",
+      "customerName": "Ly Van Minh",
+      "amount": 80000000,
+      "interestRate": 7.0,
+      "duration": 36,
+      "status": "Approved",
+      "createdAt": "2024-04-25T00:00:00Z",
+      "approvedAt": "2024-04-27T00:00:00Z",
+      "purpose": "Mua nhà"
+    },
+    {
+      "id": "LN012",
+      "customerId": "C012",
+      "customerName": "Nguyen Thi Nga",
+      "amount": 45000000,
+      "interestRate": 8.5,
+      "duration": 18,
+      "status": "Pending",
+      "createdAt": "2024-05-01T00:00:00Z",
+      "approvedAt": null,
+      "purpose": "Kinh doanh"
+    },
+    {
+      "id": "LN013",
+      "customerId": "C013",
+      "customerName": "Tran Van Oanh",
+      "amount": 28000000,
+      "interestRate": 9.0,
+      "duration": 12,
+      "status": "Rejected",
+      "createdAt": "2024-05-03T00:00:00Z",
+      "approvedAt": null,
+      "purpose": "Mua xe"
+    },
+    {
+      "id": "LN014",
+      "customerId": "C014",
+      "customerName": "Le Thi Phuong",
+      "amount": 55000000,
+      "interestRate": 7.5,
+      "duration": 24,
+      "status": "Approved",
+      "createdAt": "2024-05-05T00:00:00Z",
+      "approvedAt": "2024-05-07T00:00:00Z",
+      "purpose": "Mua nhà"
+    },
+    {
+      "id": "LN015",
+      "customerId": "C015",
+      "customerName": "Pham Van Quang",
+      "amount": 32000000,
+      "interestRate": 8.0,
+      "duration": 18,
+      "status": "Pending",
+      "createdAt": "2024-05-08T00:00:00Z",
+      "approvedAt": null,
+      "purpose": "Giáo dục"
+    },
+    {
+      "id": "LN016",
+      "customerId": "C016",
+      "customerName": "Hoang Thi Rung",
+      "amount": 18000000,
+      "interestRate": 9.5,
+      "duration": 6,
+      "status": "Approved",
+      "createdAt": "2024-05-10T00:00:00Z",
+      "approvedAt": "2024-05-11T00:00:00Z",
+      "purpose": "Tiêu dùng"
+    },
+    {
+      "id": "LN017",
+      "customerId": "C017",
+      "customerName": "Vu Van Son",
+      "amount": 70000000,
+      "interestRate": 7.0,
+      "duration": 36,
+      "status": "Pending",
+      "createdAt": "2024-05-12T00:00:00Z",
+      "approvedAt": null,
+      "purpose": "Mua nhà"
+    },
+    {
+      "id": "LN018",
+      "customerId": "C018",
+      "customerName": "Do Thi Thanh",
+      "amount": 42000000,
+      "interestRate": 8.5,
+      "duration": 24,
+      "status": "Rejected",
+      "createdAt": "2024-05-13T00:00:00Z",
+      "approvedAt": null,
+      "purpose": "Kinh doanh"
+    },
+    {
+      "id": "LN019",
+      "customerId": "C019",
+      "customerName": "Bui Van Tu",
+      "amount": 22000000,
+      "interestRate": 9.0,
+      "duration": 12,
+      "status": "Approved",
+      "createdAt": "2024-05-14T00:00:00Z",
+      "approvedAt": "2024-05-15T00:00:00Z",
+      "purpose": "Mua xe"
+    },
+    {
+      "id": "LN020",
+      "customerId": "C020",
+      "customerName": "Ngo Thi Uyen",
+      "amount": 38000000,
+      "interestRate": 8.0,
+      "duration": 18,
+      "status": "Pending",
+      "createdAt": "2024-05-15T00:00:00Z",
+      "approvedAt": null,
+      "purpose": "Giáo dục"
+    }
+  ]
+}
+
+
+
+
+
+
+
