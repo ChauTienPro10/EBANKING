@@ -61,3 +61,9 @@ app:
   dev-mode:
     enabled: true # ONLY FOR DEVELOPMENT - Set false in production
     bypass-liveness-validation: true # Skip FPT liveness spoof detection (for testing only)
+
+# UserService Configuration for inter-service communication
+services:
+  user-service:
+    url: http://localhost:8001 # Change to actual URL in production
+    api-key: EKYC_SERVICE_SECRET_KEY # Use environment variable in production

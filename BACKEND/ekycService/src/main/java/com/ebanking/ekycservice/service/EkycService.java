@@ -1,7 +1,9 @@
 package com.ebanking.ekycservice.service;
 
+import com.ebanking.ekycservice.client.UserServiceClient;
 import com.ebanking.ekycservice.constant.EkycStatus;
 import com.ebanking.ekycservice.constant.EkycStep;
+import com.ebanking.ekycservice.dto.response.EkycDetailResponse;
 import com.ebanking.ekycservice.dto.response.FaceMatchResponse;
 import com.ebanking.ekycservice.dto.response.LivenessResponse;
 import com.ebanking.ekycservice.dto.response.OrcResponse;
@@ -37,6 +39,7 @@ public class EkycService {
     private final FptAiService fptAiService;
     private final MediaStorageService mediaStorageService;
     private final VideoFrameExtractorHumble videoFrameExtractor;
+    private final UserServiceClient userServiceClient;
 
     // ⚠️ DEMO MODE - Set false to use real FPT AI APIs
     private static final boolean DEMO_MODE = false;
@@ -430,6 +433,18 @@ public class EkycService {
             }
             sessionRepository.save(session);
 
+            // ✅ Notify UserService if face match successful
+            if (isMatched) {
+                try {
+                    userServiceClient.notifyEkycVerified(session.getUserId(), session.getId());
+                    log.info("✅ UserService notified successfully for userId={}", session.getUserId());
+                } catch (Exception e) {
+                    log.error("❌ Failed to notify UserService, but eKYC is still valid: {}", e.getMessage());
+                    // eKYC data is already saved in EkycService DB
+                    // UserService can query later if needed
+                }
+            }
+
             return FaceMatchResponse.builder()
                     .isMatched(isMatched)
                     .similarity(similarity) // Use similarity to match FPT.AI API
@@ -550,6 +565,49 @@ public class EkycService {
         return FaceMatchResponse.builder()
                 .isMatched(isMatched)
                 .similarity(mockSimilarity) // Use similarity to match FPT.AI API
+                .build();
+    }
+
+    /**
+     * Get full eKYC session details
+     * Used by mobile app and UserService to display eKYC information
+     */
+    public EkycDetailResponse getSessionDetails(String sessionId) {
+        EkycSession session = sessionRepository.findById(UUID.fromString(sessionId))
+                .orElseThrow(() -> new EkycException("Session not found"));
+
+        DocumentInfo doc = session.getDocumentInfo();
+        BiometricData bio = session.getBiometricData();
+
+        if (doc == null) {
+            throw new EkycException("Document info not found for session");
+        }
+
+        // Build image URLs (will be served by MediaController)
+        String baseUrl = "/api/ekyc/images?path=";
+
+        return EkycDetailResponse.builder()
+                .sessionId(session.getId().toString())
+                .status(session.getStatus().toString())
+                .verifiedAt(session.getUpdatedAt())
+                // OCR data
+                .idNumber(doc.getIdNumber())
+                .fullName(doc.getFullName())
+                .dateOfBirth(doc.getDateOfBirth())
+                .gender(doc.getGender())
+                .address(doc.getAddress())
+                .issueDate(doc.getIssueDate())
+                .expiryDate(doc.getExpiryDate())
+                // Image URLs
+                .frontImageUrl(baseUrl + doc.getFrontImagePath())
+                .backImageUrl(baseUrl + doc.getBackImagePath())
+                .portraitImageUrl(doc.getPortraitImagePath() != null ? baseUrl + doc.getPortraitImagePath() : null)
+                // Scores
+                .ocrConfidence(null) // Can add if needed
+                .livenessConfidence(bio != null ? bio.getLivenessConfidence() : null)
+                .faceMatchScore(bio != null ? bio.getFaceMatchScore() : null)
+                .isLive(bio != null ? bio.getIsLive() : null)
+                .faceMatched(bio != null ? bio.getFaceMatch() : null)
                 .build();
     }
 }

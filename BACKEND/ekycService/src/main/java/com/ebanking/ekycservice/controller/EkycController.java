@@ -64,4 +64,17 @@ public class EkycController {
         FaceMatchResponse result = ekycService.processFaceMatch(sessionId);
         return ResponseEntity.ok(ApiResponse.success(result));
     }
+
+    /**
+     * Get full eKYC session details
+     * Used by mobile app to display eKYC information
+     */
+    @GetMapping("/sessions/{sessionId}/details")
+    public ResponseEntity<ApiResponse<EkycDetailResponse>> getSessionDetails(
+            @PathVariable String sessionId) {
+
+        log.info("Getting eKYC details for session: {}", sessionId);
+        EkycDetailResponse details = ekycService.getSessionDetails(sessionId);
+        return ResponseEntity.ok(ApiResponse.success(details));
+    }
 }
