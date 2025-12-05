@@ -3,7 +3,7 @@
  * Display eKYC verification results
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   SafeAreaView,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -18,6 +19,7 @@ import { fetchUserInfo } from '../../../store/fetchAPI/UserInfoFetch';
 import type { RootState } from '../../../store';
 import Colors from '../../../constants/color';
 import ProgressHeader from './shared/ProgressHeader';
+import Toast from 'react-native-toast-message';
 
 const ResultScreen: React.FC = () => {
   const navigation = useNavigation();
@@ -26,24 +28,74 @@ const ResultScreen: React.FC = () => {
   const loginResponse = useSelector(
     (state: RootState) => state.app.loginResponse,
   );
-  const { success, ocrResult, livenessResult, faceMatchResult } =
+  const { success, ocrResult, livenessResult, faceMatchResult, sessionId } =
     (route.params as any) || {};
+
+  const [isCompleting, setIsCompleting] = useState(false);
 
   // Refresh user info after successful verification
   useEffect(() => {
-    if (success) {
-      // Get userId from loginResponse or use hardcoded value for testing
-      const userId = loginResponse?.id || 1;
-      dispatch(fetchUserInfo(userId) as any);
+    if (success && sessionId) {
+      // Automatically complete the session after user views result
+      completeEkycSession();
     }
-  }, [success, loginResponse?.id, dispatch]);
+  }, [success, sessionId]);
 
-  const handleClose = () => {
-    // Navigate back to home or settings
-    navigation.goBack();
-    navigation.goBack();
-    navigation.goBack();
-    navigation.goBack();
+  const completeEkycSession = async () => {
+    const userId = loginResponse?.id;
+    if (!userId || !sessionId) {
+      console.warn('Missing userId or sessionId for eKYC completion');
+      return;
+    }
+
+    try {
+      // The EkycService already notified UserService via webhook after face match
+      // Just refresh user info to get the updated status
+      await dispatch(fetchUserInfo(userId) as any);
+      console.log('✅ User info refreshed with eKYC status');
+    } catch (error) {
+      console.error('Failed to refresh user info:', error);
+      // Don't show error to user - they can still see updated status later
+    }
+  };
+
+  const handleClose = async () => {
+    if (isCompleting) return;
+
+    setIsCompleting(true);
+
+    try {
+      // Ensure user info is up to date
+      const userId = loginResponse?.id;
+      if (userId) {
+        await dispatch(fetchUserInfo(userId) as any);
+      }
+
+      // Navigate to Profile screen
+      navigation.navigate('Profile' as never);
+
+      // Show success toast
+      Toast.show({
+        type: 'success',
+        text1: 'eKYC thành công',
+        text2: 'Thông tin của bạn đã được xác thực',
+        position: 'top',
+        visibilityTime: 3000,
+      });
+    } catch (error) {
+      console.error('Error during eKYC completion:', error);
+      Toast.show({
+        type: 'error',
+        text1: 'Lỗi',
+        text2: 'Không thể hoàn tất xác thực',
+      });
+      // Still navigate back
+      navigation.goBack();
+      navigation.goBack();
+      navigation.goBack();
+    } finally {
+      setIsCompleting(false);
+    }
   };
 
   if (!success) {
@@ -192,8 +244,16 @@ const ResultScreen: React.FC = () => {
       </ScrollView>
 
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.confirmButton} onPress={handleClose}>
-          <Text style={styles.buttonText}>Xác nhận</Text>
+        <TouchableOpacity
+          style={[styles.confirmButton, isCompleting && styles.buttonDisabled]}
+          onPress={handleClose}
+          disabled={isCompleting}
+        >
+          {isCompleting ? (
+            <ActivityIndicator color={Colors.white} />
+          ) : (
+            <Text style={styles.buttonText}>Xác nhận</Text>
+          )}
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -420,6 +480,9 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '600',
     textAlign: 'center',
+  },
+  buttonDisabled: {
+    opacity: 0.6,
   },
 });
 
