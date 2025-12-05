@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -9,7 +9,7 @@ import {
   Animated,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -42,6 +42,16 @@ const ProfileScreen: React.FC = () => {
   );
   const dispatch: AppDispatch = store.dispatch;
 
+  // Refresh user info when screen is focused (e.g., after completing eKYC)
+  useFocusEffect(
+    useCallback(() => {
+      if (loginResponse?.id) {
+        console.log('📱 ProfileScreen focused - refreshing user info');
+        dispatch(fetchUserInfo(loginResponse.id));
+      }
+    }, [loginResponse?.id, dispatch]),
+  );
+
   useEffect(() => {
     if (language) {
       i18n.changeLanguage(language);
@@ -49,16 +59,44 @@ const ProfileScreen: React.FC = () => {
   }, [language, i18n]);
 
   useEffect(() => {
+    const formatBirthday = (birthday: any): string => {
+      if (!birthday) return '---';
+      try {
+        const timestamp =
+          typeof birthday === 'string' ? parseInt(birthday) : birthday;
+        if (!isNaN(timestamp)) {
+          const date = new Date(timestamp);
+          const day = String(date.getDate()).padStart(2, '0');
+          const month = String(date.getMonth() + 1).padStart(2, '0');
+          const year = date.getFullYear();
+          return `${day}-${month}-${year}`;
+        }
+      } catch (e) {
+        console.error('Error formatting birthday:', e);
+      }
+      return String(birthday);
+    };
+
+    const parseGender = (isMale: any): string => {
+      if (isMale === undefined || isMale === null) return '---';
+      if (typeof isMale === 'boolean') return isMale ? 'Nam' : 'Nữ';
+      if (typeof isMale === 'string') {
+        return isMale === 'true' || isMale.toLowerCase() === 'nam'
+          ? 'Nam'
+          : 'Nữ';
+      }
+      return '---';
+    };
+
     setProfile({
       fullName: userInfo?.fullName ? userInfo.fullName.toUpperCase() : '---',
-      dateOfBirth: userInfo?.birthday ? userInfo.birthday : '---',
+      dateOfBirth: formatBirthday(userInfo?.birthday),
       cccd: userInfo?.citizenId ? userInfo.citizenId : '---',
-      gender: userInfo?.isMale === 'true' ? 'Nam' : 'Nữ',
+      gender: parseGender(userInfo?.isMale),
       address: userInfo?.address ? userInfo.address : '---',
       email: userInfo?.email ? userInfo.email : '---',
       phone: userInfo?.phone ? userInfo.phone : '---',
     });
-    console.log('mmmm', userInfo, profile.gender);
   }, [userInfo]);
 
   const [profile, setProfile] = useState({

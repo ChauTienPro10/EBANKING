@@ -19,7 +19,7 @@ public class EkycIntegrationService {
     private final IUserInfoRepository userInfoRepository;
 
     /**
-     * Mark user as eKYC verified
+     * Mark user as eKYC verified AND update profile with OCR data
      * Called by EkycService after successful face match
      */
     @Transactional
@@ -27,15 +27,42 @@ public class EkycIntegrationService {
         UserInfo userInfo = userInfoRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found: " + userId));
 
-        // Update eKYC fields
+        // Update profile with OCR data from CCCD
+        if (request.getFullName() != null && !request.getFullName().isEmpty()) {
+            userInfo.setFullName(request.getFullName());
+        }
+
+        if (request.getIdNumber() != null && !request.getIdNumber().isEmpty()) {
+            userInfo.setCitizenId(request.getIdNumber());
+        }
+
+        if (request.getDateOfBirth() != null) {
+            long timestamp = request.getDateOfBirth().atStartOfDay()
+                    .atZone(java.time.ZoneId.of("Asia/Ho_Chi_Minh"))
+                    .toInstant()
+                    .toEpochMilli();
+            userInfo.setBirthday(timestamp);
+        }
+
+        if (request.getGender() != null && !request.getGender().isEmpty()) {
+            boolean isMale = "Nam".equalsIgnoreCase(request.getGender()) ||
+                    "Male".equalsIgnoreCase(request.getGender());
+            userInfo.setIsMale(isMale);
+        }
+
+        if (request.getAddress() != null && !request.getAddress().isEmpty()) {
+            userInfo.setAddress(request.getAddress());
+        }
+
+        // Update eKYC status
         userInfo.setEkycSessionId(request.getSessionId());
         userInfo.setEkycStatus("VERIFIED");
         userInfo.setEkycVerifiedAt(LocalDateTime.now());
+        userInfo.setUpdatedAt(System.currentTimeMillis());
 
         userInfoRepository.save(userInfo);
 
-        log.info("UserInfo updated with eKYC verification: userId={}, sessionId={}",
-                userId, request.getSessionId());
+        log.info("eKYC verified and profile updated: userId={}, sessionId={}", userId, request.getSessionId());
     }
 
     /**

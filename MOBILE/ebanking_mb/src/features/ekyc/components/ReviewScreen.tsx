@@ -20,11 +20,6 @@ import {
   processLiveness,
   processFaceMatch,
 } from '../services/ekycApi';
-import {
-  EKYC_CONFIG,
-  MOCK_EKYC_DATA,
-  mockApiCall,
-} from '../../../config/ekycConfig';
 import ProgressHeader from './shared/ProgressHeader';
 import ImageSection from './review/ImageSection';
 import VideoCard from './review/VideoCard';
@@ -43,35 +38,6 @@ const ReviewScreen: React.FC = () => {
     try {
       setLoading(true);
 
-      // ===== MOCK MODE =====
-      // Check config to decide between mock data or real API
-      if (EKYC_CONFIG.USE_MOCK_DATA) {
-        setStep('Đang khởi tạo (chế độ mock)...');
-        await mockApiCall(null, 500);
-
-        setStep('Đang xử lý CMND/CCCD (chế độ mock)...');
-        await mockApiCall(null, 800);
-
-        setStep('Đang xác thực khuôn mặt (chế độ mock)...');
-        await mockApiCall(null, 800);
-
-        setStep('Đang so sánh khuôn mặt (chế độ mock)...');
-        await mockApiCall(null, 400);
-
-        const mockData = {
-          sessionId: MOCK_EKYC_DATA.session.sessionId,
-          success: true,
-          ocrResult: MOCK_EKYC_DATA.ocr,
-          livenessResult: MOCK_EKYC_DATA.liveness,
-          faceMatchResult: MOCK_EKYC_DATA.faceMatch,
-        };
-
-        setLoading(false);
-        (navigation as any).navigate('ResultScreen', mockData);
-        return;
-      }
-
-      // ===== REAL API MODE =====
       // Step 0: Create session
       setStep('Đang khởi tạo phiên...');
       const { createEKYCSession } = await import('../services/ekycApi');
@@ -216,9 +182,7 @@ const ReviewScreen: React.FC = () => {
           <ActivityIndicator size="large" color={Colors.main_bule} />
           <Text style={styles.loadingText}>{step}</Text>
           <Text style={styles.loadingSubtext}>
-            {EKYC_CONFIG.USE_MOCK_DATA
-              ? 'Chế độ mock - không gọi API thực'
-              : 'Vui lòng đợi trong giây lát...'}
+            Vui lòng đợi trong giây lát...
           </Text>
         </View>
       </SafeAreaView>

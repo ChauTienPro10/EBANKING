@@ -42,20 +42,15 @@ const ResultScreen: React.FC = () => {
   }, [success, sessionId]);
 
   const completeEkycSession = async () => {
-    const userId = loginResponse?.id;
-    if (!userId || !sessionId) {
-      console.warn('Missing userId or sessionId for eKYC completion');
-      return;
-    }
+    if (!sessionId) return;
+
+    const userId = loginResponse?.id || 1;
 
     try {
-      // The EkycService already notified UserService via webhook after face match
-      // Just refresh user info to get the updated status
+      // Refresh user info to get the updated eKYC status
       await dispatch(fetchUserInfo(userId) as any);
-      console.log('✅ User info refreshed with eKYC status');
     } catch (error) {
       console.error('Failed to refresh user info:', error);
-      // Don't show error to user - they can still see updated status later
     }
   };
 
@@ -65,34 +60,42 @@ const ResultScreen: React.FC = () => {
     setIsCompleting(true);
 
     try {
-      // Ensure user info is up to date
-      const userId = loginResponse?.id;
-      if (userId) {
+      const userId = loginResponse?.id || 1;
+
+      // Small delay to ensure backend has completed the update
+      await new Promise<void>(resolve => setTimeout(() => resolve(), 500));
+
+      // Refresh user info from backend
+      try {
         await dispatch(fetchUserInfo(userId) as any);
+      } catch (fetchError) {
+        // Continue anyway - ProfileScreen will refresh when focused
       }
 
-      // Navigate to Profile screen
+      // Small delay to ensure Redux store is updated
+      await new Promise<void>(resolve => setTimeout(() => resolve(), 300));
+
       navigation.navigate('Profile' as never);
 
-      // Show success toast
-      Toast.show({
-        type: 'success',
-        text1: 'eKYC thành công',
-        text2: 'Thông tin của bạn đã được xác thực',
-        position: 'top',
-        visibilityTime: 3000,
-      });
+      // Show success toast after navigation
+      setTimeout(() => {
+        Toast.show({
+          type: 'success',
+          text1: 'eKYC thành công',
+          text2: 'Thông tin từ CCCD đã được cập nhật vào hồ sơ của bạn',
+          position: 'top',
+          visibilityTime: 4000,
+        });
+      }, 500);
     } catch (error) {
-      console.error('Error during eKYC completion:', error);
+      console.error('❌ Error during eKYC completion:', error);
       Toast.show({
         type: 'error',
         text1: 'Lỗi',
         text2: 'Không thể hoàn tất xác thực',
       });
-      // Still navigate back
-      navigation.goBack();
-      navigation.goBack();
-      navigation.goBack();
+      // Navigate to Profile anyway
+      navigation.navigate('Profile' as never);
     } finally {
       setIsCompleting(false);
     }

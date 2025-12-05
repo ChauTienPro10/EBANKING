@@ -6,11 +6,7 @@
 import { EKYC_BACKEND_URL } from '@env';
 import { EKYCSession, EKYCConfig, EKYCCallbackData } from '../types';
 
-const BACKEND_URL = EKYC_BACKEND_URL || 'http://10.0.2.2:8008';
-
-// 🔍 DEBUG: Log backend URL để kiểm tra
-console.log('🔍 EKYC_BACKEND_URL from .env:', EKYC_BACKEND_URL);
-console.log('🔍 BACKEND_URL being used:', BACKEND_URL);
+const BACKEND_URL = 'http://localhost:8008';
 
 /**
  * Create a new eKYC session
@@ -18,12 +14,6 @@ console.log('🔍 BACKEND_URL being used:', BACKEND_URL);
 export const createEKYCSession = async (
   userId: number,
 ): Promise<EKYCSession> => {
-  console.log('🔵 Creating eKYC session for userId:', userId);
-  console.log(
-    '🔵 Full URL:',
-    `${BACKEND_URL}/api/ekyc/sessions?userId=${userId}`,
-  );
-
   const response = await fetch(
     `${BACKEND_URL}/api/ekyc/sessions?userId=${userId}`,
     {

@@ -288,13 +288,10 @@ public class EkycService {
                 }
             }
 
-            // ⚠️ PRODUCTION-READY: Log detailed liveness result for monitoring
-            log.info("📊 Liveness API Response: code={}, message={}", livenessCode, livenessMessage);
-            log.info("✅ Liveness check result: isLive={}, confidence={}", isLive, score);
+            log.info("Liveness: isLive={}, confidence={}", isLive, score);
 
-            // Validate liveness result - Accept only if FPT confirms real face
+            // Validate liveness result
             if ("301".equals(livenessCode)) {
-                // Face is spoof - reject with clear message
                 throw new EkycException("Phát hiện khuôn mặt giả mạo. Vui lòng sử dụng khuôn mặt thật và thử lại.");
             }
 
@@ -416,7 +413,7 @@ public class EkycService {
             // Get similarity from response
             Double similarity = getDoubleValue(data, "similarity");
             Boolean isMatched = similarity >= 0.85;
-            log.info("Face match result: similarity={}, isMatched={}", similarity, isMatched);
+            log.info("Face match: similarity={}, matched={}", similarity, isMatched);
 
             // Update biometric data
             bioData.setFaceMatch(isMatched);
@@ -426,22 +423,21 @@ public class EkycService {
             // Update session
             if (isMatched) {
                 session.setStatus(EkycStatus.COMPLETED);
-                // Keep currentStep at FACE_MATCH - DB constraint doesn't allow COMPLETED
             } else {
                 session.setStatus(EkycStatus.FAILED);
                 session.setCurrentStep(EkycStep.FACE_MATCH);
             }
             sessionRepository.save(session);
 
-            // ✅ Notify UserService if face match successful
+            // Notify UserService if successful
             if (isMatched) {
                 try {
-                    userServiceClient.notifyEkycVerified(session.getUserId(), session.getId());
-                    log.info("✅ UserService notified successfully for userId={}", session.getUserId());
+                    userServiceClient.notifyEkycVerified(
+                            session.getUserId(),
+                            session.getId(),
+                            session.getDocumentInfo());
                 } catch (Exception e) {
-                    log.error("❌ Failed to notify UserService, but eKYC is still valid: {}", e.getMessage());
-                    // eKYC data is already saved in EkycService DB
-                    // UserService can query later if needed
+                    log.error("Failed to notify UserService: {}", e.getMessage());
                 }
             }
 
