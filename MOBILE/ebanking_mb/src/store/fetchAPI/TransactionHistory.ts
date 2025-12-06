@@ -12,6 +12,7 @@ export interface TransferResponse {
   description: string;
   status: string;
   transactionAt: string;
+  balance?: number; // Số dư ví sau giao dịch
 }
 
 interface TransactionState {
@@ -38,25 +39,36 @@ export const fetchTransactionHistory = createAsyncThunk<
       const data = await fetch.get(URL, {}, true);
       return data;
     } catch (error: any) {
-      return thunkAPI.rejectWithValue(error.message || 'Lỗi lấy lịch sử giao dịch');
+      return thunkAPI.rejectWithValue(
+        error.message || 'Lỗi lấy lịch sử giao dịch',
+      );
     }
-  }
+  },
 );
 
 const transactionSlice = createSlice({
   name: 'transaction',
   initialState,
-  reducers: {},
-  extraReducers: (builder) => {
+  reducers: {
+    loadMockData: (state, action: PayloadAction<TransferResponse[]>) => {
+      state.data = action.payload;
+      state.loading = false;
+      state.error = null;
+    },
+  },
+  extraReducers: builder => {
     builder
-      .addCase(fetchTransactionHistory.pending, (state) => {
+      .addCase(fetchTransactionHistory.pending, state => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchTransactionHistory.fulfilled, (state, action: PayloadAction<TransferResponse[]>) => {
-        state.loading = false;
-        state.data = action.payload;
-      })
+      .addCase(
+        fetchTransactionHistory.fulfilled,
+        (state, action: PayloadAction<TransferResponse[]>) => {
+          state.loading = false;
+          state.data = action.payload;
+        },
+      )
       .addCase(fetchTransactionHistory.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || 'Lỗi';
@@ -64,4 +76,5 @@ const transactionSlice = createSlice({
   },
 });
 
+export const { loadMockData } = transactionSlice.actions;
 export default transactionSlice.reducer;

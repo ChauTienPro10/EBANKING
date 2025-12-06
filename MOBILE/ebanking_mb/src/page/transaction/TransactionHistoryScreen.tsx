@@ -1,128 +1,235 @@
-import React, { useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import {
+  View,
+  StyleSheet,
+  ActivityIndicator,
+  RefreshControl,
+  ScrollView,
+  Text,
+} from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../../store';
-import { fetchTransactionHistory, TransferResponse } from '../../store/fetchAPI/TransactionHistory';
+import {
+  fetchTransactionHistory,
+  TransferResponse,
+  loadMockData,
+} from '../../store/fetchAPI/TransactionHistory';
 import Colors from '../../constants/color';
-import { Header } from '../../components';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import { mockTransactions } from '../../data/mockTransactions';
+import { useNavigation } from '@react-navigation/native';
+
+// Import components
+import TransactionHeader from './components/TransactionHeader';
+import FilterTabs, { FilterTab } from './components/FilterTabs';
+import FilterModal from './components/FilterModal';
+import MonthSection from './components/MonthSection';
+
+// Import filter types
+import {
+  FilterState,
+  DEFAULT_FILTER_STATE,
+  matchesFilters,
+} from './types/filterTypes';
 
 const TransactionHistoryScreen: React.FC = () => {
-    const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch<AppDispatch>();
+  const navigation = useNavigation();
+  const [refreshing, setRefreshing] = useState(false);
+  const [useMockData, setUseMockData] = useState(true);
+  const [activeFilter, setActiveFilter] = useState<FilterTab>('ALL');
+  const [showFilterModal, setShowFilterModal] = useState(false);
+  const [showAllMonths, setShowAllMonths] = useState(false);
 
-    const username = useSelector((state: RootState) => state.app.loginResponse?.username);
-    const sender = useSelector((state: RootState) => state.app.accountTransResponse?.accountNumber);
-    const transactions = useSelector((state: RootState) => state.transactionHistories.data);
-    const loading = useSelector((state: RootState) => state.transactionHistories.loading);
-    const error = useSelector((state: RootState) => state.transactionHistories.error);
+  // Filter state
+  const [appliedFilters, setAppliedFilters] =
+    useState<FilterState>(DEFAULT_FILTER_STATE);
 
-    useEffect(() => {
-        if (username && sender) {
-            dispatch(fetchTransactionHistory({ username, sender, page: 1, limit: 20 }));
-        }
-    }, [username, sender, dispatch]);
+  const username = useSelector(
+    (state: RootState) => state.app.loginResponse?.username,
+  );
+  const sender = useSelector(
+    (state: RootState) => state.app.accountTransResponse?.accountNumber,
+  );
+  const transactions = useSelector(
+    (state: RootState) => state.transactionHistories.data,
+  );
+  const loading = useSelector(
+    (state: RootState) => state.transactionHistories.loading,
+  );
 
-    const renderItem = ({ item }: { item: TransferResponse }) => {
-        const date = new Date(item.transactionAt).toLocaleString();
+  const currentAccountNumber = sender || '1234567890';
 
-        return (
-            <View style={styles.itemContainer}>
-                <View style={styles.row}>
-                    <Text style={styles.label}>Mã GD:</Text>
-                    <Text style={styles.value}>{item.transactionId}</Text>
-                </View>
-                <View style={styles.row}>
-                    <Text style={styles.label}>Người gửi:</Text>
-                    <Text style={styles.value}>{item.senderAccountNumber}</Text>
-                </View>
-                <View style={styles.row}>
-                    <Text style={styles.label}>Người nhận:</Text>
-                    <Text style={styles.value}>{item.receiverAccountNumber}</Text>
-                </View>
-                <View style={styles.row}>
-                    <Text style={styles.label}>Số tiền:</Text>
-                    <Text style={styles.value}>{item.amount.toLocaleString()} {item.currency}</Text>
-                </View>
-                <View style={styles.row}>
-                    <Text style={styles.label}>Trạng thái:</Text>
-                    <Text style={styles.value}>{item.status}</Text>
-                </View>
-                <View style={styles.row}>
-                    <Text style={styles.label}>Thời gian:</Text>
-                    <Text style={styles.value}>{date}</Text>
-                </View>
-            </View>
-        );
-    };
+  useEffect(() => {
+    if (useMockData) {
+      dispatch(loadMockData(mockTransactions));
+    } else if (username && sender) {
+      dispatch(
+        fetchTransactionHistory({ username, sender, page: 1, limit: 20 }),
+      );
+    }
+  }, [username, sender, dispatch, useMockData]);
 
-    if (loading) {
-        return (
-            <View style={styles.center}>
-                <ActivityIndicator size="large" color={Colors.main_bule} />
-            </View>
-        );
+  const onRefresh = () => {
+    setRefreshing(true);
+    if (useMockData) {
+      dispatch(loadMockData(mockTransactions));
+      setTimeout(() => setRefreshing(false), 500);
+    } else if (username && sender) {
+      dispatch(
+        fetchTransactionHistory({ username, sender, page: 1, limit: 20 }),
+      ).finally(() => setRefreshing(false));
+    }
+  };
+
+  const handleApplyFilters = (filters: FilterState) => {
+    setAppliedFilters(filters);
+  };
+
+  // Apply tab filter first, then advanced filters
+  const getFilteredTransactions = () => {
+    let filtered = [...transactions];
+
+    // Apply tab filter (ALL, INCOMING, OUTGOING, PENDING)
+    if (activeFilter === 'INCOMING') {
+      filtered = filtered.filter(
+        t => t.receiverAccountNumber === currentAccountNumber,
+      );
+    } else if (activeFilter === 'OUTGOING') {
+      filtered = filtered.filter(
+        t => t.senderAccountNumber === currentAccountNumber,
+      );
+    } else if (activeFilter === 'PENDING') {
+      filtered = filtered.filter(t => t.status === 'PENDING');
     }
 
-    if (error) {
-        return (
-            <View style={styles.center}>
-                <Text style={styles.error}>{error}</Text>
-            </View>
-        );
-    }
-
-    return (
-        <View style={{ flex: 1 }}>
-            <Header title="Lịch sử giao dịch" />
-            <FlatList
-                data={transactions}
-                keyExtractor={(item) => item.transactionId.toString()}
-                renderItem={renderItem}
-                contentContainerStyle={styles.list}
-                ListEmptyComponent={
-                    <View style={styles.center}>
-                        <Text>Không có giao dịch nào</Text>
-                    </View>
-                }
-            />
-        </View>
+    // Apply advanced filters from modal
+    filtered = filtered.filter(transaction =>
+      matchesFilters(transaction, appliedFilters),
     );
+
+    return filtered;
+  };
+
+  const filteredTransactions = getFilteredTransactions();
+
+  // Group transactions by month
+  const groupedTransactions = filteredTransactions.reduce(
+    (groups, transaction) => {
+      const date = new Date(transaction.transactionAt);
+      const monthYear = `Tháng ${date.getMonth() + 1}/${date.getFullYear()}`;
+
+      if (!groups[monthYear]) {
+        groups[monthYear] = [];
+      }
+      groups[monthYear].push(transaction);
+      return groups;
+    },
+    {} as Record<string, TransferResponse[]>,
+  );
+
+  if (loading && !refreshing) {
+    return (
+      <View style={styles.container}>
+        <TransactionHeader
+          title="Lịch sử giao dịch"
+          onBack={() => navigation.goBack()}
+          onFilterPress={() => setShowFilterModal(true)}
+        />
+        <View style={styles.center}>
+          <ActivityIndicator size="large" color={Colors.main_bule} />
+        </View>
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.container}>
+      {/* Header */}
+      <TransactionHeader
+        title="Lịch sử giao dịch"
+        onBack={() => navigation.goBack()}
+        onFilterPress={() => setShowFilterModal(true)}
+      />
+
+      {/* Filter Modal */}
+      <FilterModal
+        visible={showFilterModal}
+        onClose={() => setShowFilterModal(false)}
+        showAllMonths={showAllMonths}
+        onToggleMonths={() => setShowAllMonths(!showAllMonths)}
+        onApplyFilters={handleApplyFilters}
+        initialFilters={appliedFilters}
+      />
+
+      {/* Filter Tabs */}
+      <FilterTabs
+        activeFilter={activeFilter}
+        onFilterChange={setActiveFilter}
+      />
+
+      {/* Transactions List */}
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[Colors.main_bule]}
+            tintColor={Colors.main_bule}
+          />
+        }
+      >
+        {Object.keys(groupedTransactions).length === 0 ? (
+          <View style={styles.emptyState}>
+            <Ionicons name="receipt-outline" size={60} color="#CCC" />
+            <Text style={styles.emptyText}>Chưa có giao dịch</Text>
+          </View>
+        ) : (
+          Object.entries(groupedTransactions).map(
+            ([monthYear, transactions]) => (
+              <MonthSection
+                key={monthYear}
+                monthYear={monthYear}
+                transactions={transactions}
+                currentAccountNumber={currentAccountNumber}
+              />
+            ),
+          )
+        )}
+      </ScrollView>
+    </View>
+  );
 };
 
 export default TransactionHistoryScreen;
 
 const styles = StyleSheet.create({
-    list: {
-        padding: 16,
-    },
-    itemContainer: {
-        padding: 12,
-        backgroundColor: '#fff',
-        borderRadius: 8,
-        marginBottom: 12,
-        shadowColor: '#000',
-        shadowOpacity: 0.05,
-        shadowRadius: 4,
-        elevation: 2,
-    },
-    row: {
-        flexDirection: 'row',
-        marginBottom: 4,
-    },
-    label: {
-        fontWeight: '600',
-        width: 110,
-        color: '#333',
-    },
-    value: {
-        flex: 1,
-        color: '#555',
-    },
-    center: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    error: {
-        color: 'red',
-    },
+  container: {
+    flex: 1,
+    backgroundColor: '#F5F5F5',
+  },
+  center: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+  },
+  emptyState: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 60,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: '#999',
+    marginTop: 16,
+  },
 });
