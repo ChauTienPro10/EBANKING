@@ -37,7 +37,9 @@ const QRScanScreen: React.FC = () => {
   const device = useCameraDevice('back');
 
   const normalizePermissionStatus = (status: string) => {
-    return status === 'granted' || status === 'authorized' ? 'granted' : 'denied';
+    return status === 'granted' || status === 'authorized'
+      ? 'granted'
+      : 'denied';
   };
 
   const loadInitialPermission = useCallback(async () => {
@@ -111,20 +113,46 @@ const QRScanScreen: React.FC = () => {
       }
 
       const value = codes[0]?.value;
+
       if (!value) {
         return;
       }
 
       setIsProcessing(true);
-      // Alert.alert('QR nhận được', value, [
-      //   {
-      //     text: 'Đóng',
-      //     onPress: () => setIsProcessing(false),
-      //   },
-      // ]);
-      const arr = value.split("|").map(item => item.trim());
-      navigation.navigate('Transfer', { receiver: arr[0], amount: arr[1], content: arr[2], bankCode: '' });
-      
+
+      try {
+        // Try to parse as JSON first
+        const qrData = JSON.parse(value);
+
+        // Navigate with JSON data
+        navigation.navigate('Transfer', {
+          receiver: qrData.accountNumber || '',
+          amount: qrData.amount?.toString() || '0',
+          content: qrData.description || '',
+          bankCode: qrData.bank || '',
+        });
+        setIsProcessing(false);
+      } catch (jsonError) {
+        // Fallback to pipe-delimited format: "receiver|amount|content"
+        if (value.includes('|')) {
+          const arr = value.split('|').map(item => item.trim());
+
+          navigation.navigate('Transfer', {
+            receiver: arr[0] || '',
+            amount: arr[1] || '0',
+            content: arr[2] || '',
+            bankCode: arr[3] || '',
+          });
+          setIsProcessing(false);
+        } else {
+          // Invalid format
+          Alert.alert(
+            'Lỗi QR Code',
+            'Định dạng QR code không hợp lệ. Vui lòng thử lại.',
+            [{ text: 'OK', onPress: () => setIsProcessing(false) }],
+          );
+        }
+      }
     },
   });
 
@@ -133,7 +161,9 @@ const QRScanScreen: React.FC = () => {
       return (
         <View style={styles.permissionContainer}>
           <ActivityIndicator size="large" color={QRColors.textWhite} />
-          <Text style={styles.permissionText}>Đang kiểm tra quyền camera...</Text>
+          <Text style={styles.permissionText}>
+            Đang kiểm tra quyền camera...
+          </Text>
         </View>
       );
     }

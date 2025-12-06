@@ -66,7 +66,7 @@ const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
 
         {/* Gender Selection */}
         <View style={styles.inputGroup}>
-          <GText style={styles.genderLabel}>{t('profile.gender')}</GText>
+          <GText style={styles.label}>{t('profile.gender')}</GText>
           <View
             style={[
               styles.genderInputContainer,
@@ -167,7 +167,8 @@ const styles = StyleSheet.create({
   inputGroup: {
     marginBottom: 20,
   },
-  genderLabel: {
+  // Shared label style matching CustomInput's label
+  label: {
     fontSize: 14,
     fontWeight: '500',
     color: '#374151',
