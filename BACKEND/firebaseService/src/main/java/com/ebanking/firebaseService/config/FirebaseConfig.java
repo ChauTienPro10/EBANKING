@@ -24,7 +24,7 @@ public class FirebaseConfig {
     public void initialize() {
         try {
 //            InputStream serviceAccount = new ClassPathResource("ebanking-2ac29-55d51c99ac8f.json").getInputStream();
-            InputStream serviceAccount = new ClassPathResource("ebanking-2ac29-firebase-adminsdk-fbsvc-c900328b77.json").getInputStream();
+            InputStream serviceAccount = new ClassPathResource("ebanking-2ac29-firebase-adminsdk-fbsvc-87efa45dc0.json").getInputStream();
             FirebaseOptions options = new FirebaseOptions.Builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                     .build();
