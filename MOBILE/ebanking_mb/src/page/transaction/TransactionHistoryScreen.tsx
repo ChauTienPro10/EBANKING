@@ -12,7 +12,9 @@ import { RootState, AppDispatch } from '../../store';
 import {
   fetchTransactionHistory,
   TransferResponse,
+  loadMockData,
 } from '../../store/fetchAPI/TransactionHistory';
+import { MOCK_TRANSACTIONS } from './mockData';
 import Colors from '../../constants/color';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
@@ -58,12 +60,16 @@ const TransactionHistoryScreen: React.FC = () => {
   const currentAccountNumber = sender || '1234567890';
 
   useEffect(() => {
-    if (username && sender) {
-      dispatch(
-        fetchTransactionHistory({ username, sender, page: 1, limit: 20 }),
-      );
-    }
-  }, [username, sender, dispatch]);
+    // Load mock data for development
+    dispatch(loadMockData(MOCK_TRANSACTIONS));
+
+    // TODO: Uncomment khi dùng API thật
+    // if (username && sender) {
+    //   dispatch(
+    //     fetchTransactionHistory({ username, sender, page: 1, limit: 20 }),
+    //   );
+    // }
+  }, [dispatch]);
 
   const onRefresh = () => {
     setRefreshing(true);
