@@ -14,6 +14,7 @@ import TransactionSuccessScreen from '../page/transfer/Success';
 import PendingTransactionScreen from '../page/transfer/Pending';
 import TransactionFailedScreen from '../page/transfer/Error';
 import TransactionHistoryScreen from '../page/transaction/TransactionHistoryScreen';
+import TransactionDetailScreen from '../page/transaction/TransactionDetailScreen';
 import ShowNotificationScreen from '../notification/showNoti';
 import setPinCodeScreen from '../PIN/pinCodeScreen';
 import ScannerScreen from '../page/QR/ScannerScreen';
@@ -63,6 +64,10 @@ export default function MainStack() {
       <Stack.Screen
         name="TransactionHistoryScreen"
         component={TransactionHistoryScreen}
+      />
+      <Stack.Screen
+        name="TransactionDetail"
+        component={TransactionDetailScreen}
       />
       <Stack.Screen
         name="ShowNotificationScreen"

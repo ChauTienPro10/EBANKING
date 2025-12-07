@@ -1,4 +1,5 @@
 import { UserInfoModel } from '../store/UserInfoModel';
+import { TransferResponse } from '../store/fetchAPI/TransactionHistory';
 
 export type RootStackParamList = {
   SignIn: undefined;
@@ -46,6 +47,10 @@ export type RootStackParamList = {
   };
   TransactionFailedScreen?: { errorString: string };
   TransactionHistoryScreen?: undefined;
+  TransactionDetail: {
+    transaction: TransferResponse;
+    currentAccountNumber: string;
+  };
   OTPPage: { username: string; targetPage: string };
   ShowNotificationScreen: { title: string; body: string };
   SetPINCode: undefined;

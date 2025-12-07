@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import GText from '../../../components/GText';
 import Colors from '../../../constants/color';
 
@@ -18,7 +18,7 @@ const TransactionHeader: React.FC<TransactionHeaderProps> = ({
   return (
     <View style={styles.customHeader}>
       <TouchableOpacity onPress={onBack} style={styles.backButton}>
-        <Ionicons name="chevron-back" size={24} color="#FFF" />
+        <MaterialCommunityIcons name="arrow-left" size={24} color="#FFF" />
       </TouchableOpacity>
 
       <GText
@@ -30,7 +30,7 @@ const TransactionHeader: React.FC<TransactionHeaderProps> = ({
       </GText>
 
       <TouchableOpacity onPress={onFilterPress} style={styles.filterIconButton}>
-        <Ionicons name="filter" size={24} color="#FFF" />
+        <MaterialCommunityIcons name="filter-outline" size={24} color="#FFF" />
       </TouchableOpacity>
     </View>
   );

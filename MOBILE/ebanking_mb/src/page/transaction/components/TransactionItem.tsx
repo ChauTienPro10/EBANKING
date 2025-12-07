@@ -1,9 +1,14 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { TransferResponse } from '../../../store/fetchAPI/TransactionHistory';
 import { isIncomingTransaction } from '../../../utils/transactionUtils';
 import Colors from '../../../constants/color';
+import { RootStackParamList } from '../../../navigation/types';
+
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 interface TransactionItemProps {
   transaction: TransferResponse;
@@ -14,6 +19,7 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
   transaction,
   currentAccountNumber,
 }) => {
+  const navigation = useNavigation<NavigationProp>();
   const isIncoming = isIncomingTransaction(transaction, currentAccountNumber);
   const date = new Date(transaction.transactionAt);
   const time = date.toLocaleTimeString('vi-VN', {
@@ -30,8 +36,19 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
   const iconBg = isIncoming ? '#E8F5E9' : '#FFEBEE';
   const iconColor = isIncoming ? '#4CAF50' : '#F44336';
 
+  const handlePress = () => {
+    navigation.navigate('TransactionDetail', {
+      transaction,
+      currentAccountNumber,
+    });
+  };
+
   return (
-    <View style={styles.transactionItem}>
+    <TouchableOpacity
+      style={styles.transactionItem}
+      onPress={handlePress}
+      activeOpacity={0.7}
+    >
       <View style={styles.transactionRow}>
         {/* Icon */}
         <View style={[styles.iconWrapper, { backgroundColor: iconBg }]}>
@@ -77,7 +94,7 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
 
       {/* Separator line */}
       <View style={styles.separator} />
-    </View>
+    </TouchableOpacity>
   );
 };
 

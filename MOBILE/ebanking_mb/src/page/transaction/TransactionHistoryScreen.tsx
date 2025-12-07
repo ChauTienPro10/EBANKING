@@ -12,11 +12,9 @@ import { RootState, AppDispatch } from '../../store';
 import {
   fetchTransactionHistory,
   TransferResponse,
-  loadMockData,
 } from '../../store/fetchAPI/TransactionHistory';
 import Colors from '../../constants/color';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import { mockTransactions } from '../../data/mockTransactions';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
 
 // Import components
@@ -36,7 +34,6 @@ const TransactionHistoryScreen: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigation = useNavigation();
   const [refreshing, setRefreshing] = useState(false);
-  const [useMockData, setUseMockData] = useState(true);
   const [activeFilter, setActiveFilter] = useState<FilterTab>('ALL');
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [showAllMonths, setShowAllMonths] = useState(false);
@@ -61,24 +58,21 @@ const TransactionHistoryScreen: React.FC = () => {
   const currentAccountNumber = sender || '1234567890';
 
   useEffect(() => {
-    if (useMockData) {
-      dispatch(loadMockData(mockTransactions));
-    } else if (username && sender) {
+    if (username && sender) {
       dispatch(
         fetchTransactionHistory({ username, sender, page: 1, limit: 20 }),
       );
     }
-  }, [username, sender, dispatch, useMockData]);
+  }, [username, sender, dispatch]);
 
   const onRefresh = () => {
     setRefreshing(true);
-    if (useMockData) {
-      dispatch(loadMockData(mockTransactions));
-      setTimeout(() => setRefreshing(false), 500);
-    } else if (username && sender) {
+    if (username && sender) {
       dispatch(
         fetchTransactionHistory({ username, sender, page: 1, limit: 20 }),
       ).finally(() => setRefreshing(false));
+    } else {
+      setRefreshing(false);
     }
   };
 
@@ -183,7 +177,11 @@ const TransactionHistoryScreen: React.FC = () => {
       >
         {Object.keys(groupedTransactions).length === 0 ? (
           <View style={styles.emptyState}>
-            <Ionicons name="receipt-outline" size={60} color="#CCC" />
+            <MaterialCommunityIcons
+              name="inbox-outline"
+              size={75}
+              color="#B0BEC5"
+            />
             <Text style={styles.emptyText}>Chưa có giao dịch</Text>
           </View>
         ) : (
@@ -223,13 +221,15 @@ const styles = StyleSheet.create({
   },
   emptyState: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
     paddingVertical: 60,
   },
   emptyText: {
     fontSize: 16,
-    color: '#999',
+    color: '#B0BEC5',
     marginTop: 16,
+    textAlign: 'center',
+    fontWeight: '500',
   },
 });
