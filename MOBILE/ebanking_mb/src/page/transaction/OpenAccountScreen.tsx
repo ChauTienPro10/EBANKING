@@ -74,7 +74,7 @@ const OpenAccountScreen: React.FC = () => {
     }
   };
   return (
-    <View>
+    <View style={{ flex: 1, backgroundColor: Colors.background }}>
       <LoadingPopup visible={loading} message="Đang xử lý..." />
       <AccountNumberPickerPopup
         visible={popupVisible}
@@ -83,70 +83,104 @@ const OpenAccountScreen: React.FC = () => {
       />
       <Header title="Xác nhận thông tin" />
       <KeyboardAwareScrollView
-        contentContainerStyle={styles.container}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
         enableOnAndroid={true}
         enableAutomaticScroll={true}
         extraScrollHeight={20}
         keyboardShouldPersistTaps="handled"
       >
-        {/* <Text style={styles.title}>Mở tài khoản ngân hàng</Text> */}
+        <View style={styles.formSection}>
+          <View style={styles.fieldGroup}>
+            <Text style={styles.fieldLabel}>Họ và tên</Text>
+            <View style={styles.inputWrapper}>
+              <TextInput
+                style={styles.fieldInput}
+                placeholder="Nhập họ và tên"
+                value={userInfo?.fullName}
+                editable={false}
+                placeholderTextColor={Colors.grey1}
+              />
+            </View>
+          </View>
 
-        <TextInput
-          style={styles.input}
-          placeholder="Họ và tên"
-          value={userInfo?.fullName}
-          editable={false}
-        />
+          <View style={styles.fieldGroup}>
+            <Text style={styles.fieldLabel}>Số điện thoại</Text>
+            <View style={styles.inputWrapper}>
+              <TextInput
+                style={styles.fieldInput}
+                placeholder="Nhập số điện thoại"
+                keyboardType="phone-pad"
+                value={userInfo?.phone || 'Chưa cập nhật'}
+                editable={false}
+                placeholderTextColor={Colors.grey1}
+              />
+            </View>
+          </View>
 
-        <TextInput
-          style={styles.input}
-          placeholder="Số điện thoại"
-          keyboardType="phone-pad"
-          value={userInfo?.phone || 'Chưa cập nhật'}
-          editable={false}
-        />
+          <View style={styles.fieldGroup}>
+            <Text style={styles.fieldLabel}>Số CMND/CCCD</Text>
+            <View style={styles.inputWrapper}>
+              <TextInput
+                style={styles.fieldInput}
+                placeholder="Nhập số CMND/CCCD"
+                keyboardType="numeric"
+                value={userInfo?.citizenId}
+                editable={false}
+                placeholderTextColor={Colors.grey1}
+              />
+            </View>
+          </View>
 
-        <TextInput
-          style={styles.input}
-          placeholder="Số CMND/CCCD"
-          keyboardType="numeric"
-          value={userInfo?.citizenId}
-          editable={false}
-        />
+          <View style={styles.fieldGroup}>
+            <Text style={styles.fieldLabel}>Email</Text>
+            <View style={styles.inputWrapper}>
+              <TextInput
+                style={styles.fieldInput}
+                placeholder="Nhập email"
+                keyboardType="email-address"
+                value={userInfo?.email || 'Chưa cập nhật'}
+                editable={false}
+                placeholderTextColor={Colors.grey1}
+              />
+            </View>
+          </View>
 
-        <TextInput
-          style={styles.input}
-          placeholder="Email (tuỳ chọn)"
-          keyboardType="email-address"
-          value={userInfo?.email || 'Chưa cập nhật'}
-          editable={false}
-        />
+          <View style={styles.fieldGroup}>
+            <Text style={styles.fieldLabel}>Địa chỉ liên hệ</Text>
+            <View style={styles.inputWrapper}>
+              <TextInput
+                style={[styles.fieldInput, styles.textArea]}
+                placeholder="Nhập địa chỉ liên hệ"
+                multiline
+                numberOfLines={3}
+                value={userInfo?.address}
+                editable={false}
+                placeholderTextColor={Colors.grey1}
+              />
+            </View>
+          </View>
+        </View>
 
-        <TextInput
-          style={[styles.input, { height: 80 }]}
-          placeholder="Địa chỉ liên hệ"
-          multiline
-          value={userInfo?.address}
-          editable={false}
-        />
+        <View style={styles.actionSection}>
+          <TouchableOpacity
+            style={styles.primaryButton}
+            onPress={() => {
+              setPopupVisible(true);
+            }}
+          >
+            <Text style={styles.primaryButtonText}>Mở tài khoản</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => {
-            setPopupVisible(true);
-          }}
-        >
-          <Text style={styles.buttonText}>Mở tài khoản</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.button_update}
-          onPress={() => {
-            navigation.navigate('Profile' as never);
-          }}
-        >
-          <Text style={styles.buttonText}>Sửa</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.secondaryButton}
+            onPress={() => {
+              navigation.navigate('Profile' as never);
+            }}
+          >
+            <Text style={styles.secondaryButtonText}>Chỉnh sửa thông tin</Text>
+          </TouchableOpacity>
+        </View>
       </KeyboardAwareScrollView>
     </View>
   );
@@ -155,45 +189,86 @@ const OpenAccountScreen: React.FC = () => {
 export default OpenAccountScreen;
 
 const styles = StyleSheet.create({
-  container: {
+  scrollContent: {
     flexGrow: 1,
-    backgroundColor: '#f7f9fc',
-    padding: 20,
-    justifyContent: 'center',
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 24,
   },
-  title: {
-    fontSize: 22,
-    fontWeight: '700',
-    textAlign: 'center',
+  formSection: {
+    backgroundColor: Colors.white,
+    borderRadius: 16,
+    padding: 16,
     marginBottom: 20,
-    color: Colors.grey1,
+    shadowColor: Colors.black,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 4,
+    elevation: 1,
   },
-  input: {
-    backgroundColor: '#fff',
-    padding: 12,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#ccc',
+  fieldGroup: {
     marginBottom: 12,
-    color: Colors.black,
   },
-  button: {
+  fieldLabel: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: Colors.grey3,
+    marginBottom: 6,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  inputWrapper: {
+    backgroundColor: Colors.backgroundLight,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  fieldInput: {
+    paddingVertical: 13,
+    paddingHorizontal: 14,
+    fontSize: 14,
+    color: Colors.textPrimary,
+    fontWeight: '400',
+  },
+  textArea: {
+    height: 90,
+    textAlignVertical: 'top',
+    paddingTop: 13,
+  },
+  actionSection: {
+    gap: 12,
+  },
+  primaryButton: {
     backgroundColor: Colors.main_bule,
-    paddingVertical: 14,
-    borderRadius: 8,
-    marginTop: 10,
+    paddingVertical: 15,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: Colors.main_bule,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.25,
+    shadowRadius: 6,
+    elevation: 3,
   },
-
-  button_update: {
-    backgroundColor: Colors.orange,
-    paddingVertical: 14,
-    borderRadius: 8,
-    marginTop: 10,
-  },
-  buttonText: {
-    color: '#fff',
-    textAlign: 'center',
-    fontWeight: '600',
+  primaryButtonText: {
+    color: Colors.white,
     fontSize: 16,
+    fontWeight: '600',
+    letterSpacing: 0.3,
+  },
+  secondaryButton: {
+    backgroundColor: Colors.white,
+    paddingVertical: 15,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: Colors.main_bule,
+  },
+  secondaryButtonText: {
+    color: Colors.main_bule,
+    fontSize: 16,
+    fontWeight: '600',
+    letterSpacing: 0.3,
   },
 });
