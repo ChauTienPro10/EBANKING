@@ -3,7 +3,8 @@ import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import GText from './GText';
 import Colors from '../constants/color';
-import { BellIcon, ChevronBackIcon } from './icon';
+import { ChevronBackIcon } from './icon';
+import NotificationButton from './NotificationButton';
 
 interface HeaderProps {
   title: string;
@@ -12,6 +13,9 @@ interface HeaderProps {
   notificationCount?: number;
   onNotificationPress?: () => void;
   onBackPress?: () => void;
+  iconSize?: number;
+  badgeSize?: number;
+  badgeColor?: string;
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -21,6 +25,9 @@ const Header: React.FC<HeaderProps> = ({
   notificationCount = 0,
   onNotificationPress,
   onBackPress,
+  iconSize = 24,
+  badgeSize = 20,
+  badgeColor = Colors.red,
 }) => {
   const navigation = useNavigation();
 
@@ -47,24 +54,13 @@ const Header: React.FC<HeaderProps> = ({
       </GText>
 
       {showNotification ? (
-        <TouchableOpacity
-          onPress={onNotificationPress}
-          style={styles.notificationButton}
-          activeOpacity={0.7}
-        >
-          <BellIcon size={24} color={Colors.white} />
-          {notificationCount > 0 && (
-            <View style={styles.badge}>
-              <GText
-                type="systemBold_10"
-                color={Colors.white}
-                style={styles.badgeText}
-              >
-                {notificationCount > 99 ? '99+' : notificationCount}
-              </GText>
-            </View>
-          )}
-        </TouchableOpacity>
+        <NotificationButton
+          count={notificationCount}
+          onPress={onNotificationPress || (() => {})}
+          iconSize={iconSize}
+          badgeSize={badgeSize}
+          badgeColor={badgeColor}
+        />
       ) : (
         <View style={styles.placeholder} />
       )}
@@ -95,27 +91,6 @@ const styles = StyleSheet.create({
   },
   placeholder: {
     width: 24,
-  },
-
-  notificationButton: {
-    padding: 4,
-    position: 'relative',
-  },
-  badge: {
-    position: 'absolute',
-    top: -2,
-    right: -2,
-    backgroundColor: Colors.red,
-    borderRadius: 10,
-    minWidth: 20,
-    height: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 4,
-  },
-  badgeText: {
-    fontSize: 10,
-    fontWeight: 'bold',
   },
 });
 

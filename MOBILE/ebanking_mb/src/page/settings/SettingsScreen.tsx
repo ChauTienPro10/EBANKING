@@ -2,23 +2,30 @@ import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useAppNavigation } from '../../hooks/useNavigation';
-import { useCommonUI } from '../../hooks/useCommonUI';
 import Header from '../../components/Header';
 import MenuList from '../../components/MenuList';
 import BottomNavigation from '../../components/BottomNavigation';
 import Colors from '../../constants/color';
-import { useDispatch } from 'react-redux';
-import { setLoginStatus, setLoginResponse, setAccountTransResponse } from '../../store/slices/appSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../store';
+import {
+  setLoginStatus,
+  setLoginResponse,
+  setAccountTransResponse,
+  clearNotifications,
+} from '../../store/slices/appSlice';
 import LogoutConfirmPopup from '../../popups/LogoutPopup';
 import { useNavigation } from '@react-navigation/native';
 
 const SettingsScreen: React.FC = () => {
   const { t } = useTranslation();
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const notificationCount = useSelector(
+    (state: RootState) => state.app.notificationCount,
+  );
   const { activeTab, handleTabChange, handleNotificationPress } =
     useAppNavigation('settings');
-  const { notificationCount, clearNotifications } = useCommonUI();
-  const dispatch = useDispatch();
   const [showLogoutPopup, setShowLogoutPopup] = useState(false);
 
   const handleQRPress = () => {
@@ -130,9 +137,11 @@ const SettingsScreen: React.FC = () => {
         notificationCount={notificationCount}
         onNotificationPress={() => {
           handleNotificationPress();
-          clearNotifications();
           navigation.navigate('Notifications' as never);
         }}
+        iconSize={20}
+        badgeSize={16}
+        badgeColor={Colors.orange}
       />
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>

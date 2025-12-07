@@ -8,6 +8,9 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from '../../store';
+import { clearNotifications } from '../../store/slices/appSlice';
 import Header from '../../components/Header';
 import BottomNavigation from '../../components/BottomNavigation';
 import GText from '../../components/GText';
@@ -22,6 +25,10 @@ import Colors from '../../constants/color';
 const SupportScreen: React.FC = () => {
   const navigation = useNavigation();
   const { t } = useTranslation();
+  const dispatch = useDispatch();
+  const notificationCount = useSelector(
+    (state: RootState) => state.app.notificationCount,
+  );
   const [activeTab, setActiveTab] = React.useState('support');
 
   const handleQRPress = () => {
@@ -111,8 +118,13 @@ const SupportScreen: React.FC = () => {
         title={t('support.title')}
         showBackButton={false}
         showNotification={true}
-        notificationCount={1}
-        onNotificationPress={() => navigation.navigate('Notifications' as never)}
+        notificationCount={notificationCount}
+        onNotificationPress={() => {
+          navigation.navigate('Notifications' as never);
+        }}
+        iconSize={20}
+        badgeSize={16}
+        badgeColor={Colors.orange}
       />
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>

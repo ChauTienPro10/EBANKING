@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { View, StyleSheet, ScrollView, Animated } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -25,13 +25,15 @@ const HomeScreen: React.FC = () => {
   const account = useSelector(
     (state: RootState) => state.app.accountTransResponse,
   );
+  const notificationCount = useSelector(
+    (state: RootState) => state.app.notificationCount,
+  );
 
   // Local state
   const { t } = useTranslation();
-  const [notificationCount, setNotificationCount] = useState(3);
-  const [isBalanceVisible, setIsBalanceVisible] = useState(false);
-  const [activeTab, setActiveTab] = useState('home');
-  const [requireUpdateInfo, setRequireUpdateInfo] = useState(false);
+  const [isBalanceVisible, setIsBalanceVisible] = React.useState(false);
+  const [activeTab, setActiveTab] = React.useState('home');
+  const [requireUpdateInfo, setRequireUpdateInfo] = React.useState(false);
 
   // Custom hooks
   const { quickActions, services, bottomTabs } = useHomeData();
@@ -64,7 +66,6 @@ const HomeScreen: React.FC = () => {
   // Event handlers
   const handleNotificationPress = () => {
     console.log(t('mock_data.messages.notification_pressed'));
-    setNotificationCount(0);
     navigation.navigate('Notifications' as never);
   };
 

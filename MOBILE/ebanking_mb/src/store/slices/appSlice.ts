@@ -12,6 +12,7 @@ interface AppState {
   userInfoData: UserInfoModel | null;
   pinStatus: boolean | null;
   cardStatus: 'active' | 'locked';
+  notificationCount: number;
 }
 
 const initialState: AppState = {
@@ -22,6 +23,7 @@ const initialState: AppState = {
   userInfoData: null,
   pinStatus: false,
   cardStatus: 'active',
+  notificationCount: 0,
 };
 
 const appSlice = createSlice({
@@ -49,6 +51,12 @@ const appSlice = createSlice({
     setCardStatus: (state, action: PayloadAction<'active' | 'locked'>) => {
       state.cardStatus = action.payload;
     },
+    setNotificationCount: (state, action: PayloadAction<number>) => {
+      state.notificationCount = action.payload;
+    },
+    clearNotifications: state => {
+      state.notificationCount = 0;
+    },
   },
   extraReducers: builder => {
     builder
@@ -75,6 +83,8 @@ export const {
   setUserInfoData,
   setPinStatus,
   setCardStatus,
+  setNotificationCount,
+  clearNotifications,
 } = appSlice.actions;
 
 export default appSlice.reducer;

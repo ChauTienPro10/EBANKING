@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { SearchIcon, BellIcon, UserIcon } from '../../../components/icon';
 import Colors from '../../../constants/color';
+import NotificationButton from '../../../components/NotificationButton';
 
 interface HomeHeaderProps {
   bankName: string;
@@ -38,17 +39,13 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
           <TouchableOpacity style={styles.headerActionButton}>
             <SearchIcon size={20} color={Colors.white} />
           </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.headerActionButton}
+          <NotificationButton
+            count={notificationCount}
             onPress={onNotificationPress}
-          >
-            <BellIcon size={20} color={Colors.white} />
-            {notificationCount > 0 && (
-              <View style={styles.notificationBadge}>
-                <Text style={styles.badgeText}>{notificationCount}</Text>
-              </View>
-            )}
-          </TouchableOpacity>
+            iconSize={20}
+            badgeSize={16}
+            badgeColor={Colors.orange}
+          />
         </View>
       </View>
 
@@ -98,22 +95,6 @@ const styles = StyleSheet.create({
     padding: 8,
     marginLeft: 8,
     position: 'relative',
-  },
-  notificationBadge: {
-    position: 'absolute',
-    top: 4,
-    right: 4,
-    backgroundColor: Colors.orange,
-    borderRadius: 8,
-    minWidth: 16,
-    height: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  badgeText: {
-    color: Colors.white,
-    fontSize: 10,
-    fontWeight: 'bold',
   },
   profileSection: {
     flexDirection: 'row',

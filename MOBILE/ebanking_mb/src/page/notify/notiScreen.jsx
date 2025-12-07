@@ -8,6 +8,8 @@ import {
   RefreshControl,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
+import { setNotificationCount } from '../../store/slices/appSlice';
 import { Header, GText } from '../../components';
 import Colors from '../../constants/color';
 import fetch from '../../utils/fetch';
@@ -15,6 +17,8 @@ import { API } from '../../constants/api';
 
 const NotiScreen = () => {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
+  const notificationCount = useSelector(state => state.app.notificationCount);
   const [activeTab, setActiveTab] = useState('personal'); // 'personal' or 'system'
   const [notificationsSystem, setNotificationsSystem] = useState([]);
   const [notificationsPersonal, setNotificationsPersonal] = useState([]);
@@ -46,9 +50,9 @@ const NotiScreen = () => {
       const response = await fetch.get(
         API.GET_NOTIFICATIONSYSTEM,
         { index, limit: 10 },
-        true // authRequire
+        true, // authRequire
       );
-      
+
       // Handle different response structures
       let notifications = [];
       if (Array.isArray(response)) {
@@ -58,9 +62,12 @@ const NotiScreen = () => {
       } else if (response?.data) {
         notifications = [response.data];
       }
-      
+
       console.log('System notifications loaded:', notifications.length);
       setNotificationsSystem(notifications);
+
+      // Update notification count based on unread notifications
+      updateNotificationCount(notificationsPersonal, notifications);
     } catch (error) {
       console.error('Error loading system notifications:', error);
       setNotificationsSystem([]);
@@ -72,9 +79,9 @@ const NotiScreen = () => {
       const response = await fetch.get(
         API.GET_NOTIFICATIONPERSONAL,
         { index, limit: 10 },
-        true // authRequire
+        true, // authRequire
       );
-      
+
       // Handle different response structures
       let notifications = [];
       if (Array.isArray(response)) {
@@ -84,13 +91,23 @@ const NotiScreen = () => {
       } else if (response?.data) {
         notifications = [response.data];
       }
-      
+
       console.log('Personal notifications loaded:', notifications.length);
       setNotificationsPersonal(notifications);
+
+      // Update notification count based on unread notifications
+      updateNotificationCount(notifications, notificationsSystem);
     } catch (error) {
       console.error('Error loading personal notifications:', error);
       setNotificationsPersonal([]);
     }
+  };
+
+  const updateNotificationCount = (personal, system) => {
+    const unreadPersonal = personal.filter(n => !n.read).length;
+    const unreadSystem = system.filter(n => !n.read).length;
+    const totalUnread = unreadPersonal + unreadSystem;
+    dispatch(setNotificationCount(totalUnread));
   };
 
   const onRefresh = async () => {
@@ -98,7 +115,8 @@ const NotiScreen = () => {
     await loadNotifications();
     setRefreshing(false);
   };
-  const handleNotificationPress = async (notification) => {
+
+  const handleNotificationPress = async notification => {
     // Mark as read if not read
     if (!notification.read) {
       try {
@@ -109,15 +127,20 @@ const NotiScreen = () => {
         if (activeTab === 'system') {
           setNotificationsSystem(prev =>
             prev.map(item =>
-              item.id === notification.id ? { ...item, read: true } : item
-            )
+              item.id === notification.id ? { ...item, read: true } : item,
+            ),
           );
         } else {
           setNotificationsPersonal(prev =>
             prev.map(item =>
-              item.id === notification.id ? { ...item, read: true } : item
-            )
+              item.id === notification.id ? { ...item, read: true } : item,
+            ),
           );
+        }
+
+        // Decrease notification count in Redux
+        if (notificationCount > 0) {
+          dispatch(setNotificationCount(notificationCount - 1));
         }
       } catch (error) {
         console.error('Error marking notification as read:', error);
@@ -126,9 +149,9 @@ const NotiScreen = () => {
     // TODO: Navigate to notification detail if needed
   };
 
-  const formatTime = (timestamp) => {
+  const formatTime = timestamp => {
     if (!timestamp) return '';
-    
+
     const now = new Date();
     const notificationDate = new Date(timestamp);
     const diff = now - notificationDate;
@@ -221,9 +244,7 @@ const NotiScreen = () => {
           >
             {t('notifications.tab_personal')}
           </GText>
-          {activeTab === 'personal' && (
-            <View style={styles.tabIndicator} />
-          )}
+          {activeTab === 'personal' && <View style={styles.tabIndicator} />}
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -239,20 +260,21 @@ const NotiScreen = () => {
           >
             {t('notifications.tab_system')}
           </GText>
-          {activeTab === 'system' && (
-            <View style={styles.tabIndicator} />
-          )}
+          {activeTab === 'system' && <View style={styles.tabIndicator} />}
         </TouchableOpacity>
       </View>
 
       {/* Notifications List */}
       <FlatList
-        data={activeTab === 'system' ? notificationsSystem : notificationsPersonal}
+        data={
+          activeTab === 'system' ? notificationsSystem : notificationsPersonal
+        }
         renderItem={renderNotificationItem}
         keyExtractor={(item, index) => item.id?.toString() || index.toString()}
         contentContainerStyle={[
           styles.listContainer,
-          (activeTab === 'system' ? notificationsSystem : notificationsPersonal).length === 0 && styles.listContainerEmpty,
+          (activeTab === 'system' ? notificationsSystem : notificationsPersonal)
+            .length === 0 && styles.listContainerEmpty,
         ]}
         ListEmptyComponent={renderEmptyState}
         refreshControl={
@@ -366,4 +388,3 @@ const styles = StyleSheet.create({
 });
 
 export default NotiScreen;
-
