@@ -85,4 +85,38 @@ public class AuthController {
         log.info("POST:::" + "user/{userId}");
         return ResponseEntity.status(HttpStatus.OK).body(authService.getUserInfo(userId));
     }
+
+    /**
+     * Proxy avatar upload to UserService
+     */
+    @PostMapping("user/{userId}/avatar")
+    public ResponseEntity<?> uploadAvatar(
+            @PathVariable Long userId,
+            @RequestBody Map<String, String> request,
+            @RequestHeader Map<String, String> headers
+    ) {
+        log.info("POST:::" + "user/{userId}/avatar");
+        return authService.uploadAvatar(userId, request.get("imageBase64"));
+    }
+
+    /**
+     * Proxy avatar delete to UserService
+     */
+    @DeleteMapping("user/{userId}/avatar")
+    public ResponseEntity<Void> deleteAvatar(
+            @PathVariable Long userId,
+            @RequestHeader Map<String, String> headers
+    ) {
+        log.info("DELETE:::" + "user/{userId}/avatar");
+        return authService.deleteAvatar(userId);
+    }
+
+    /**
+     * Proxy avatar get to UserService
+     */
+    @GetMapping("user/{userId}/avatar")
+    public ResponseEntity<?> getAvatar(@PathVariable Long userId) {
+        log.info("GET:::" + "user/{userId}/avatar");
+        return authService.getAvatar(userId);
+    }
 }

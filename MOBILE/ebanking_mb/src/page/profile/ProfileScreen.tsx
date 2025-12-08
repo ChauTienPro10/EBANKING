@@ -16,12 +16,14 @@ import { useSelector } from 'react-redux';
 import type { RootState } from '../../store';
 import { useCommonUI } from '../../hooks/useCommonUI';
 import { CustomButton } from '../../components';
+import AvatarUploadModal from '../../components/AvatarUploadModal';
 import Colors from '../../constants/color';
 import ProfileHeader from './components/ProfileHeader';
 import UserInfoCard from './components/UserInfoCard';
 import PersonalInfoSection from './components/PersonalInfoSection';
 import ContactInfoSection from './components/ContactInfoSection';
 import { useProfileAnimations } from './hooks/useProfileAnimations';
+import { useAvatarUpload } from '../../hooks/useAvatarUpload';
 import fetch from '../../utils/fetch';
 import { API } from '../../constants/api';
 import PasswordPopup from '../../popups/RequirePassword';
@@ -114,6 +116,11 @@ const ProfileScreen: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [showPasswordPopup, setShowPasswordPopup] = useState(false);
+  const [showAvatarModal, setShowAvatarModal] = useState(false);
+
+  // Avatar upload hook
+  const { isUploading, handleSelectFromGallery, handleTakePhoto } =
+    useAvatarUpload();
 
   const onSubmitUpdate = async (password: string) => {
     const payload = {
@@ -212,16 +219,8 @@ const ProfileScreen: React.FC = () => {
     }
   };
 
-  const handleSelectFromGallery = () => {
-    if (!isEditing) return; // Only allow upload in edit mode
-    console.log('Select from gallery clicked');
-    // TODO: Implement image picker from gallery
-  };
-
-  const handleTakePhoto = () => {
-    if (!isEditing) return; // Only allow camera in edit mode
-    console.log('Take photo clicked');
-    // TODO: Implement camera capture
+  const handleAvatarPress = () => {
+    setShowAvatarModal(true);
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -252,8 +251,10 @@ const ProfileScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.container}>
       <LoadingPopup
-        visible={isLoading}
-        message={t('profile.loading_message')}
+        visible={isLoading || isUploading}
+        message={
+          isUploading ? 'Đang tải ảnh lên...' : t('profile.loading_message')
+        }
       />
 
       <PasswordPopup
@@ -266,6 +267,13 @@ const ProfileScreen: React.FC = () => {
         }}
       />
 
+      <AvatarUploadModal
+        visible={showAvatarModal}
+        onClose={() => setShowAvatarModal(false)}
+        onSelectGallery={handleSelectFromGallery}
+        onTakePhoto={handleTakePhoto}
+      />
+
       {/* Profile Header with Animation */}
       <ProfileHeader
         headerHeight={headerHeight}
@@ -273,8 +281,7 @@ const ProfileScreen: React.FC = () => {
         avatarScale={avatarScale}
         isEditing={isEditing}
         onEditToggle={handleEditToggle}
-        onSelectFromGallery={handleSelectFromGallery}
-        onTakePhoto={handleTakePhoto}
+        onAvatarPress={handleAvatarPress}
       />
 
       {/* User Info Card with Animation */}

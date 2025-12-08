@@ -1,14 +1,15 @@
 import React from 'react';
 import { View, TouchableOpacity, StyleSheet, Animated } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
+import type { RootState } from '../../../store';
 import { Header, Avatar, GText } from '../../../components';
 import Colors from '../../../constants/color';
 
 interface ProfileHeaderProps {
   isEditing: boolean;
   onEditToggle: () => void;
-  onSelectFromGallery: () => void;
-  onTakePhoto: () => void;
+  onAvatarPress: () => void;
   headerHeight: Animated.Value;
   avatarOpacity: Animated.Value;
   avatarScale: Animated.Value;
@@ -17,13 +18,13 @@ interface ProfileHeaderProps {
 const ProfileHeader: React.FC<ProfileHeaderProps> = ({
   isEditing,
   onEditToggle,
-  onSelectFromGallery,
-  onTakePhoto,
+  onAvatarPress,
   headerHeight,
   avatarOpacity,
   avatarScale,
 }) => {
   const { t } = useTranslation();
+  const userInfo = useSelector((state: RootState) => state.app.userInfoData);
 
   return (
     <Animated.View style={[styles.unifiedHeader, { height: headerHeight }]}>
@@ -63,13 +64,13 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
         <View style={styles.avatarWrapper}>
           <View style={styles.avatarContainer}>
             <Avatar
-              src="https://i.pravatar.cc/150?img=12"
+              src={userInfo?.avatarUrl}
               size={100}
-              onPress={onSelectFromGallery}
+              onPress={onAvatarPress}
             />
             <TouchableOpacity
               style={styles.modernCameraButton}
-              onPress={onTakePhoto}
+              onPress={onAvatarPress}
             >
               <View style={styles.cameraIconWrapper}>
                 <View style={styles.plusIcon}>

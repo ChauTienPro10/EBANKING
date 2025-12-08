@@ -13,3 +13,4 @@ export { default as PhoneInput } from './PhoneInput';
 export { default as BackgroundDecoration } from './BackgroundDecoration';
 export { default as BalanceDisplay } from './BalanceDisplay';
 export { default as AccountCard } from './AccountCard';
+export { default as AvatarUploadModal } from './AvatarUploadModal';

@@ -135,4 +135,64 @@ public class AuthService {
         UserProto.User rs = userStub.updateUserInfo(rq);
         return userMapper.fromProtoToUpdateUserResponse(rs);
     }
+
+    /**
+     * Proxy avatar upload to UserService via HTTP
+     */
+    public org.springframework.http.ResponseEntity<?> uploadAvatar(Long userId, String imageBase64) {
+        try {
+            String url = "http://localhost:8001/user/" + userId + "/avatar";
+            org.springframework.web.client.RestTemplate restTemplate = new org.springframework.web.client.RestTemplate();
+            
+            java.util.Map<String, String> requestBody = new java.util.HashMap<>();
+            requestBody.put("imageBase64", imageBase64);
+            
+            org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
+            headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
+            
+            org.springframework.http.HttpEntity<java.util.Map<String, String>> entity = 
+                new org.springframework.http.HttpEntity<>(requestBody, headers);
+            
+            return restTemplate.postForEntity(url, entity, String.class);
+        } catch (Exception e) {
+            log.error("Failed to upload avatar: {}", e.getMessage());
+            return org.springframework.http.ResponseEntity.badRequest().body("Failed to upload avatar");
+        }
+    }
+
+    /**
+     * Proxy avatar delete to UserService via HTTP
+     */
+    public org.springframework.http.ResponseEntity<Void> deleteAvatar(Long userId) {
+        try {
+            String url = "http://localhost:8001/user/" + userId + "/avatar";
+            org.springframework.web.client.RestTemplate restTemplate = new org.springframework.web.client.RestTemplate();
+            restTemplate.delete(url);
+            return org.springframework.http.ResponseEntity.ok().build();
+        } catch (Exception e) {
+            log.error("Failed to delete avatar: {}", e.getMessage());
+            return org.springframework.http.ResponseEntity.notFound().build();
+        }
+    }
+
+    /**
+     * Proxy avatar get to UserService via HTTP
+     */
+    public org.springframework.http.ResponseEntity<?> getAvatar(Long userId) {
+        try {
+            String url = "http://localhost:8001/user/" + userId + "/avatar";
+            org.springframework.web.client.RestTemplate restTemplate = new org.springframework.web.client.RestTemplate();
+            byte[] imageBytes = restTemplate.getForObject(url, byte[].class);
+            
+            org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
+            headers.setContentType(org.springframework.http.MediaType.IMAGE_JPEG);
+            
+            return org.springframework.http.ResponseEntity.ok()
+                .headers(headers)
+                .body(imageBytes);
+        } catch (Exception e) {
+            log.error("Failed to get avatar: {}", e.getMessage());
+            return org.springframework.http.ResponseEntity.notFound().build();
+        }
+    }
 }

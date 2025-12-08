@@ -65,4 +65,11 @@ public class UserInfo {
      */
     @Column(name = "ekyc_verified_at")
     private LocalDateTime ekycVerifiedAt;
+
+    /**
+     * Avatar image path
+     * Stores relative path to avatar file (e.g., "avatars/123/avatar_123_20241208.jpg")
+     */
+    @Column(name = "avatar_path")
+    private String avatarPath;
 }

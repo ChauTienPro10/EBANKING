@@ -1,5 +1,6 @@
 package com.banking.userService.controller;
 
+import com.banking.userService.dto.request.AvatarUploadRequest;
 import com.banking.userService.dto.response.InternalUserResponse;
 import com.banking.userService.dto.response.UserResponse;
 import com.banking.userService.dto.response.UserInfoResponse;
@@ -8,13 +9,16 @@ import com.banking.userService.entity.UserInfo;
 import com.banking.userService.mapper.UserMapper;
 import com.banking.userService.repository.IUserInfoRepository;
 import com.banking.userService.repository.IUserRepository;
+import com.banking.userService.service.AvatarService;
 import com.banking.userService.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
@@ -29,6 +33,12 @@ public class UserController {
 
     @Autowired
     IUserInfoRepository userInfoRepository;
+
+    @Autowired
+    AvatarService avatarService;
+
+    @Value("${server.port:8001}")
+    private String serverPort;
 
     @GetMapping("/{userId}")
     public ResponseEntity<InternalUserResponse> getUserInfo(@PathVariable String userId) {
@@ -59,6 +69,12 @@ public class UserController {
         User user = userOpt.get();
         UserInfo userInfo = user.getUserInfo();
 
+        // Build avatar URL if avatar exists
+        String avatarUrl = null;
+        if (userInfo != null && userInfo.getAvatarPath() != null) {
+            avatarUrl = String.format("http://localhost:%s/user/%d/avatar", serverPort, userId);
+        }
+
         UserInfoResponse response = UserInfoResponse.builder()
                 .id(user.getId())
                 .username(user.getUsername())
@@ -75,9 +91,58 @@ public class UserController {
                 .ekycSessionId(userInfo != null ? userInfo.getEkycSessionId() : null)
                 .ekycStatus(userInfo != null ? userInfo.getEkycStatus() : null)
                 .ekycVerifiedAt(userInfo != null ? userInfo.getEkycVerifiedAt() : null)
+                // Avatar
+                .avatarUrl(avatarUrl)
                 .build();
 
         return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Upload user avatar
+     */
+    @PostMapping("/{userId}/avatar")
+    public ResponseEntity<String> uploadAvatar(
+            @PathVariable Long userId,
+            @RequestBody AvatarUploadRequest request) {
+        try {
+            String relativePath = avatarService.saveAvatar(userId, request.getImageBase64());
+            String avatarUrl = String.format("http://localhost:%s/user/%d/avatar", serverPort, userId);
+            return ResponseEntity.ok(avatarUrl);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Failed to upload avatar: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Delete user avatar
+     */
+    @DeleteMapping("/{userId}/avatar")
+    public ResponseEntity<Void> deleteAvatar(@PathVariable Long userId) {
+        try {
+            avatarService.deleteAvatar(userId);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    /**
+     * Get user avatar image
+     */
+    @GetMapping("/{userId}/avatar")
+    public ResponseEntity<Resource> getAvatar(@PathVariable Long userId) {
+        try {
+            byte[] avatarBytes = avatarService.getAvatarBytes(userId);
+            ByteArrayResource resource = new ByteArrayResource(avatarBytes);
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_JPEG)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"avatar.jpg\"")
+                    .body(resource);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
 }

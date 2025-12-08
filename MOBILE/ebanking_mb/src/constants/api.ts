@@ -40,4 +40,9 @@ export const API = {
   // notify
   GET_NOTIFICATIONSYSTEM: `${FCM_SERVICE}notify/getSysNoti`,
   GET_NOTIFICATIONPERSONAL: `${FCM_SERVICE}notify/getPerNoti`,
+
+  // avatar
+  UPLOAD_AVATAR: `${AUTH_SERVICE}/auth/user/{userId}/avatar`,
+  DELETE_AVATAR: `${AUTH_SERVICE}/auth/user/{userId}/avatar`,
+  GET_AVATAR: `${AUTH_SERVICE}/auth/user/{userId}/avatar`,
 };

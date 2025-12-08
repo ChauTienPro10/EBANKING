@@ -14,6 +14,9 @@ export interface UserInfoModel {
   ekycStatus?: 'NOT_VERIFIED' | 'VERIFIED' | 'EXPIRED' | 'REJECTED';
   ekycSessionId?: string;
   ekycVerifiedAt?: string;
+
+  // ============ Avatar ============
+  avatarUrl?: string;
 }
 
 export interface EkycStatusResponse {

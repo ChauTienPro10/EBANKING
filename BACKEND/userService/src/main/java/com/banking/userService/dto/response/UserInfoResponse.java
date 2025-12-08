@@ -27,4 +27,7 @@ public class UserInfoResponse {
     private UUID ekycSessionId;
     private String ekycStatus;
     private LocalDateTime ekycVerifiedAt;
+
+    // Avatar
+    private String avatarUrl;
 }
