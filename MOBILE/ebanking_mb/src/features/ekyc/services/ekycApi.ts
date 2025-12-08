@@ -3,10 +3,10 @@
  * Handles all backend communication for eKYC feature
  */
 
-import { EKYC_BACKEND_URL } from '@env';
+import { EKYC_SERVICE } from '../../../constants/api';
 import { EKYCSession, EKYCConfig, EKYCCallbackData } from '../types';
 
-const BACKEND_URL = 'http://localhost:8008';
+const BACKEND_URL = EKYC_SERVICE;
 
 /**
  * Create a new eKYC session

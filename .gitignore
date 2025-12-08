@@ -13,3 +13,7 @@ JarFileOutput/
 
 # Ignore all Spring Boot configuration files
 
+# Ignore uploads folder
+BACKEND/uploads/
+**/uploads/
+./BACKEND
