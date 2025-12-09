@@ -40,6 +40,9 @@ public class UserController {
     @Value("${server.port:8001}")
     private String serverPort;
 
+    @Value("${server.host:192.168.0.185}")
+    private String serverHost;
+
     @GetMapping("/{userId}")
     public ResponseEntity<InternalUserResponse> getUserInfo(@PathVariable String userId) {
         Optional<User> us = userRepository.findById(Long.valueOf(userId));
@@ -72,8 +75,10 @@ public class UserController {
         // Build avatar URL if avatar exists
         String avatarUrl = null;
         if (userInfo != null && userInfo.getAvatarPath() != null) {
-            avatarUrl = String.format("http://localhost:%s/user/%d/avatar", serverPort, userId);
+            // Use configurable server host for mobile clients
+            avatarUrl = String.format("http://%s:%s/user/%d/avatar", serverHost, serverPort, userId);
         }
+
 
         UserInfoResponse response = UserInfoResponse.builder()
                 .id(user.getId())
@@ -107,7 +112,7 @@ public class UserController {
             @RequestBody AvatarUploadRequest request) {
         try {
             String relativePath = avatarService.saveAvatar(userId, request.getImageBase64());
-            String avatarUrl = String.format("http://localhost:%s/user/%d/avatar", serverPort, userId);
+            String avatarUrl = String.format("http://%s:%s/user/%d/avatar", serverHost, serverPort, userId);
             return ResponseEntity.ok(avatarUrl);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Failed to upload avatar: " + e.getMessage());

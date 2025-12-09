@@ -10,11 +10,11 @@ interface AvatarProps {
   showBorder?: boolean;
 }
 
-const Avatar: React.FC<AvatarProps> = ({ 
-  src, 
-  size = 50, 
-  onPress, 
-  showBorder = true 
+const Avatar: React.FC<AvatarProps> = ({
+  src,
+  size = 50,
+  onPress,
+  showBorder = true,
 }) => {
   const avatarStyle = {
     width: size,
@@ -28,17 +28,27 @@ const Avatar: React.FC<AvatarProps> = ({
     borderRadius: (size + 4) / 2,
   };
 
-  const AvatarContent = () => (
-    <View style={[styles.container, containerStyle]}>
-      {src ? (
-        <Image source={{ uri: src }} style={[avatarStyle, styles.image]} />
-      ) : (
-        <View style={[avatarStyle, styles.placeholder]}>
-          <PersonIcon size={size * 0.6} color={Colors.white} />
-        </View>
-      )}
-    </View>
-  );
+  const AvatarContent = () => {
+    // Add cache busting to force reload when avatar changes
+    const imageUri = src ? `${src}?t=${Date.now()}` : undefined;
+
+    return (
+      <View style={[styles.container, containerStyle]}>
+        {imageUri ? (
+          <Image
+            source={{ uri: imageUri }}
+            style={[avatarStyle, styles.image]}
+            // Force reload on URI change
+            key={imageUri}
+          />
+        ) : (
+          <View style={[avatarStyle, styles.placeholder]}>
+            <PersonIcon size={size * 0.6} color={Colors.white} />
+          </View>
+        )}
+      </View>
+    );
+  };
 
   if (onPress) {
     return (

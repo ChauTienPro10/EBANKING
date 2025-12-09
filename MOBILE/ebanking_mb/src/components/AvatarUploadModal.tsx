@@ -85,9 +85,9 @@ const AvatarUploadModal: React.FC<AvatarUploadModalProps> = ({
               <View style={styles.optionsContainer}>
                 <TouchableOpacity
                   style={styles.optionButton}
-                  onPress={() => {
-                    onSelectGallery();
-                    onClose();
+                  onPress={async () => {
+                    onClose(); // Close modal first to show cropper
+                    await onSelectGallery();
                   }}
                 >
                   <View style={[styles.iconContainer, styles.galleryIcon]}>
@@ -102,9 +102,9 @@ const AvatarUploadModal: React.FC<AvatarUploadModalProps> = ({
 
                 <TouchableOpacity
                   style={styles.optionButton}
-                  onPress={() => {
-                    onTakePhoto();
-                    onClose();
+                  onPress={async () => {
+                    onClose(); // Close modal first to show camera
+                    await onTakePhoto();
                   }}
                 >
                   <View style={[styles.iconContainer, styles.cameraIcon]}>

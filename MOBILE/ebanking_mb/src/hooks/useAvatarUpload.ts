@@ -1,9 +1,4 @@
 import { useState, useCallback } from 'react';
-import {
-  launchCamera,
-  launchImageLibrary,
-  ImagePickerResponse,
-} from 'react-native-image-picker';
 import ImagePicker from 'react-native-image-crop-picker';
 import { PermissionsAndroid, Platform, Alert } from 'react-native';
 import Toast from 'react-native-toast-message';
@@ -89,36 +84,6 @@ export const useAvatarUpload = () => {
   };
 
   /**
-   * Crop image to circular shape
-   */
-  const cropImage = async (imagePath: string): Promise<string | null> => {
-    try {
-      const croppedImage = await ImagePicker.openCropper({
-        path: imagePath,
-        width: 400,
-        height: 400,
-        cropperCircleOverlay: true,
-        cropping: true,
-        includeBase64: true,
-        compressImageQuality: 0.8,
-        mediaType: 'photo',
-      });
-
-      return croppedImage.data || null;
-    } catch (error: any) {
-      if (error.message !== 'User cancelled image selection') {
-        console.error('Crop error:', error);
-        Toast.show({
-          type: 'error',
-          text1: 'Lỗi',
-          text2: 'Không thể cắt ảnh',
-        });
-      }
-      return null;
-    }
-  };
-
-  /**
    * Upload avatar to server
    */
   const uploadAvatar = async (base64Image: string): Promise<boolean> => {
@@ -182,46 +147,32 @@ export const useAvatarUpload = () => {
         return;
       }
 
-      const result: ImagePickerResponse = await launchImageLibrary({
+      // Use ImagePicker.openPicker which handles both selection AND cropping
+      const croppedImage = await ImagePicker.openPicker({
+        width: 400,
+        height: 400,
+        cropping: true,
+        cropperCircleOverlay: true,
+        includeBase64: true,
+        compressImageQuality: 0.8,
         mediaType: 'photo',
-        quality: 1,
-        selectionLimit: 1,
       });
 
-      if (result.didCancel) {
-        return;
-      }
-
-      if (result.errorCode) {
-        console.error('Image picker error:', result.errorMessage);
-        Toast.show({
-          type: 'error',
-          text1: 'Lỗi',
-          text2: result.errorMessage || 'Không thể chọn ảnh từ thư viện',
-        });
-        return;
-      }
-
-      const asset = result.assets?.[0];
-      if (!asset?.uri) {
-        return;
-      }
-
-      // Crop image
-      const base64Image = await cropImage(asset.uri);
-      if (!base64Image) {
+      if (!croppedImage.data) {
         return;
       }
 
       // Upload to server
-      await uploadAvatar(base64Image);
-    } catch (error) {
-      console.error('Gallery selection error:', error);
-      Toast.show({
-        type: 'error',
-        text1: 'Lỗi',
-        text2: 'Đã xảy ra lỗi khi chọn ảnh',
-      });
+      await uploadAvatar(croppedImage.data);
+    } catch (error: any) {
+      if (error.message !== 'User cancelled image selection') {
+        console.error('❌ Gallery selection error:', error);
+        Toast.show({
+          type: 'error',
+          text1: 'Lỗi',
+          text2: 'Đã xảy ra lỗi khi chọn ảnh',
+        });
+      }
     }
   }, [loginResponse]);
 
@@ -241,46 +192,33 @@ export const useAvatarUpload = () => {
         return;
       }
 
-      const result: ImagePickerResponse = await launchCamera({
+      // Use ImagePicker.openCamera which handles both capture AND cropping
+      const croppedImage = await ImagePicker.openCamera({
+        width: 400,
+        height: 400,
+        cropping: true,
+        cropperCircleOverlay: true,
+        includeBase64: true,
+        compressImageQuality: 0.8,
         mediaType: 'photo',
-        quality: 1,
-        cameraType: 'front',
-        saveToPhotos: false,
+        useFrontCamera: true,
       });
 
-      if (result.didCancel) {
-        return;
-      }
-
-      if (result.errorCode) {
-        Toast.show({
-          type: 'error',
-          text1: 'Lỗi',
-          text2: 'Không thể chụp ảnh',
-        });
-        return;
-      }
-
-      const asset = result.assets?.[0];
-      if (!asset?.uri) {
-        return;
-      }
-
-      // Crop image
-      const base64Image = await cropImage(asset.uri);
-      if (!base64Image) {
+      if (!croppedImage.data) {
         return;
       }
 
       // Upload to server
-      await uploadAvatar(base64Image);
-    } catch (error) {
-      console.error('Camera error:', error);
-      Toast.show({
-        type: 'error',
-        text1: 'Lỗi',
-        text2: 'Đã xảy ra lỗi khi chụp ảnh',
-      });
+      await uploadAvatar(croppedImage.data);
+    } catch (error: any) {
+      if (error.message !== 'User cancelled image selection') {
+        console.error('❌ Camera error:', error);
+        Toast.show({
+          type: 'error',
+          text1: 'Lỗi',
+          text2: 'Đã xảy ra lỗi khi chụp ảnh',
+        });
+      }
     }
   }, [loginResponse]);
 
