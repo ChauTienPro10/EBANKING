@@ -9,27 +9,11 @@ export interface EKYCSession {
   createdAt: string;
 }
 
-export interface EKYCConfig {
-  apiKey: string;
-  baseUrl: string;
-  sessionToken: string;
-  sessionId: string;
-  language: string;
-  callbackUrl: string;
-}
-
 export interface EKYCWebViewProps {
   userId: number;
   onClose: () => void;
   onSuccess?: (sessionId: string) => void;
   onError?: (error: any) => void;
-}
-
-export interface EKYCCallbackData {
-  sessionId: string | null;
-  event: string;
-  data: any;
-  timestamp: number;
 }
 
 export interface EKYCWebViewMessage {
@@ -41,7 +25,6 @@ export interface EKYCWebViewMessage {
 export type EKYCStep =
   | 'Đang khởi tạo...'
   | 'Đang tạo session...'
-  | 'Đang khởi tạo SDK...'
   | 'Đang tải giao diện...'
   | 'Đã sẵn sàng'
   | 'Đã quét CMND/CCCD'

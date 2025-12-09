@@ -1,5 +1,6 @@
 import fetch from '../utils/fetch';
 import { EkycStatusResponse, EkycDetailModel } from '../store/UserInfoModel';
+import { BASE_URL } from '../constants/api';
 
 export const ekycApi = {
   /**
@@ -7,7 +8,7 @@ export const ekycApi = {
    */
   getStatus: async (userId: number): Promise<EkycStatusResponse> => {
     const response = await fetch.get(
-      `/api/users/${userId}/ekyc/status`,
+      `${BASE_URL}api/users/${userId}/ekyc/status`,
       {},
       true,
     );
@@ -18,18 +19,28 @@ export const ekycApi = {
    * Get full eKYC session details
    */
   getDetails: async (sessionId: string): Promise<EkycDetailModel> => {
-    const response = await fetch.get(
-      `/api/ekyc/sessions/${sessionId}/details`,
-      {},
-      true,
-    );
-    return response.data;
+    const url = `${BASE_URL}authService/ekyc/sessions/${sessionId}/details`;
+
+    try {
+      const response = await fetch.get(url, {}, true);
+
+      // Backend returns ApiResponse<EkycDetailResponse> = { success: true, data: {...} }
+      // fetch.get() returns the full response, so we need to access response.data
+      if (response && response.data) {
+        return response.data;
+      }
+
+      throw new Error('Invalid response structure from eKYC details API');
+    } catch (error: any) {
+      console.error('Failed to get eKYC details:', error);
+      throw error;
+    }
   },
 
   /**
    * Retry eKYC (reset status)
    */
   retryEkyc: async (userId: number): Promise<void> => {
-    await fetch.post(`/api/users/${userId}/ekyc/retry`, {}, true);
+    await fetch.post(`${BASE_URL}api/users/${userId}/ekyc/retry`, {}, true);
   },
 };

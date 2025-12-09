@@ -45,11 +45,12 @@ const EKYCDetailScreen: React.FC = () => {
 
       const details = await ekycApi.getDetails(userInfo.ekycSessionId);
       setEkycDetails(details);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to load eKYC details:', error);
       Toast.show({
         type: 'error',
         text1: 'Không thể tải thông tin eKYC',
+        text2: error?.message || 'Lỗi không xác định',
       });
     } finally {
       setLoading(false);
@@ -120,6 +121,20 @@ const EKYCDetailScreen: React.FC = () => {
 
   const formatDate = (dateValue: any): string => {
     if (!dateValue) return 'N/A';
+
+    // Handle LocalDateTime array: [year, month, day, hour, minute, second, nano]
+    if (Array.isArray(dateValue) && dateValue.length >= 6) {
+      const [year, month, day, hour, minute] = dateValue;
+      return `${String(day).padStart(2, '0')}-${String(month).padStart(
+        2,
+        '0',
+      )}-${year} ${String(hour).padStart(2, '0')}:${String(minute).padStart(
+        2,
+        '0',
+      )}`;
+    }
+
+    // Handle LocalDate array: [year, month, day]
     if (Array.isArray(dateValue) && dateValue.length === 3) {
       const [year, month, day] = dateValue;
       return `${String(day).padStart(2, '0')}/${String(month).padStart(
@@ -127,7 +142,57 @@ const EKYCDetailScreen: React.FC = () => {
         '0',
       )}/${year}`;
     }
-    if (typeof dateValue === 'string') return dateValue;
+
+    // Handle string dates (ISO format)
+    if (typeof dateValue === 'string') {
+      try {
+        const date = new Date(dateValue);
+        if (!isNaN(date.getTime())) {
+          const day = String(date.getDate()).padStart(2, '0');
+          const month = String(date.getMonth() + 1).padStart(2, '0');
+          const year = date.getFullYear();
+          const hour = String(date.getHours()).padStart(2, '0');
+          const minute = String(date.getMinutes()).padStart(2, '0');
+          return `${day}-${month}-${year} ${hour}:${minute}`;
+        }
+      } catch (e) {
+        return dateValue;
+      }
+      return dateValue;
+    }
+
+    return 'N/A';
+  };
+
+  // Format date without time (for birth dates, issue dates, expiry dates)
+  const formatDateOnly = (dateValue: any): string => {
+    if (!dateValue) return 'N/A';
+
+    // Handle array format (LocalDate or LocalDateTime - just take date part)
+    if (Array.isArray(dateValue) && dateValue.length >= 3) {
+      const [year, month, day] = dateValue;
+      return `${String(day).padStart(2, '0')}-${String(month).padStart(
+        2,
+        '0',
+      )}-${year}`;
+    }
+
+    // Handle string dates
+    if (typeof dateValue === 'string') {
+      try {
+        const date = new Date(dateValue);
+        if (!isNaN(date.getTime())) {
+          const day = String(date.getDate()).padStart(2, '0');
+          const month = String(date.getMonth() + 1).padStart(2, '0');
+          const year = date.getFullYear();
+          return `${day}-${month}-${year}`;
+        }
+      } catch (e) {
+        return dateValue;
+      }
+      return dateValue;
+    }
+
     return 'N/A';
   };
 
@@ -184,7 +249,7 @@ const EKYCDetailScreen: React.FC = () => {
               <Text style={styles.scoreLabel}>Độ khớp khuôn mặt</Text>
               <Text style={styles.scoreValue}>
                 {ekycDetails.faceMatchScore
-                  ? `${(ekycDetails.faceMatchScore * 100).toFixed(1)}%`
+                  ? `${ekycDetails.faceMatchScore.toFixed(1)}%`
                   : 'N/A'}
               </Text>
             </View>
@@ -207,7 +272,7 @@ const EKYCDetailScreen: React.FC = () => {
           <InfoRow label="Số CCCD" value={ekycDetails.idNumber} />
           <InfoRow
             label="Ngày sinh"
-            value={formatDate(ekycDetails.dateOfBirth)}
+            value={formatDateOnly(ekycDetails.dateOfBirth)}
           />
           <InfoRow label="Giới tính" value={ekycDetails.gender} />
           <InfoRow label="Địa chỉ" value={ekycDetails.address} multiline />
@@ -216,10 +281,13 @@ const EKYCDetailScreen: React.FC = () => {
         {/* Document Information */}
         <View style={styles.infoCard}>
           <Text style={styles.cardTitle}>Thông tin giấy tờ</Text>
-          <InfoRow label="Ngày cấp" value={formatDate(ekycDetails.issueDate)} />
+          <InfoRow
+            label="Ngày cấp"
+            value={formatDateOnly(ekycDetails.issueDate)}
+          />
           <InfoRow
             label="Ngày hết hạn"
-            value={formatDate(ekycDetails.expiryDate)}
+            value={formatDateOnly(ekycDetails.expiryDate)}
           />
         </View>
 

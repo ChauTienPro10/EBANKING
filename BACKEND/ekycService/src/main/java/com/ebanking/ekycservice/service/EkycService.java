@@ -579,8 +579,26 @@ public class EkycService {
             throw new EkycException("Document info not found for session");
         }
 
-        // Build image URLs (will be served by MediaController)
-        String baseUrl = "/api/ekyc/images?path=";
+        // Load images as base64 strings instead of URLs
+        // This avoids API Gateway routing issues and simplifies frontend
+        String frontImageBase64 = null;
+        String backImageBase64 = null;
+        String portraitImageBase64 = null;
+
+        try {
+            if (doc.getFrontImagePath() != null) {
+                frontImageBase64 = "data:image/jpeg;base64," + mediaStorageService.loadFileAsBase64(doc.getFrontImagePath());
+            }
+            if (doc.getBackImagePath() != null) {
+                backImageBase64 = "data:image/jpeg;base64," + mediaStorageService.loadFileAsBase64(doc.getBackImagePath());
+            }
+            if (doc.getPortraitImagePath() != null) {
+                portraitImageBase64 = "data:image/jpeg;base64," + mediaStorageService.loadFileAsBase64(doc.getPortraitImagePath());
+            }
+        } catch (Exception e) {
+            log.error("Failed to load images for session {}: {}", sessionId, e.getMessage());
+            // Continue without images rather than failing completely
+        }
 
         return EkycDetailResponse.builder()
                 .sessionId(session.getId().toString())
@@ -594,10 +612,10 @@ public class EkycService {
                 .address(doc.getAddress())
                 .issueDate(doc.getIssueDate())
                 .expiryDate(doc.getExpiryDate())
-                // Image URLs
-                .frontImageUrl(baseUrl + doc.getFrontImagePath())
-                .backImageUrl(baseUrl + doc.getBackImagePath())
-                .portraitImageUrl(doc.getPortraitImagePath() != null ? baseUrl + doc.getPortraitImagePath() : null)
+                // Images as base64 (data URIs)
+                .frontImageUrl(frontImageBase64)
+                .backImageUrl(backImageBase64)
+                .portraitImageUrl(portraitImageBase64)
                 // Scores
                 .ocrConfidence(null) // Can add if needed
                 .livenessConfidence(bio != null ? bio.getLivenessConfidence() : null)

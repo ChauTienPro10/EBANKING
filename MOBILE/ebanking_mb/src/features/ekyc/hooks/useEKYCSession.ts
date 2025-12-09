@@ -1,16 +1,15 @@
 /**
  * Custom Hook: useEKYCSession
- * Manages eKYC session creation and SDK initialization
+ * Manages eKYC session creation
  */
 
 import { useState, useEffect } from 'react';
-import { EKYCConfig, EKYCStep } from '../types';
-import { createEKYCSession, initializeEKYCSDK } from '../services/ekycApi';
+import { EKYCStep } from '../types';
+import { createEKYCSession } from '../services/ekycApi';
 import ToastService from '../../../components/ToastService';
 
 interface UseEKYCSessionResult {
   sessionId: string | null;
-  sdkConfig: EKYCConfig | null;
   loading: boolean;
   error: string | null;
   currentStep: EKYCStep;
@@ -21,7 +20,6 @@ export const useEKYCSession = (
   onError?: (error: any) => void,
 ): UseEKYCSessionResult => {
   const [sessionId, setSessionId] = useState<string | null>(null);
-  const [sdkConfig, setSdkConfig] = useState<EKYCConfig | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState<EKYCStep>('Đang khởi tạo...');
@@ -34,15 +32,10 @@ export const useEKYCSession = (
     try {
       console.log('🚀 Starting eKYC initialization for userId:', userId);
 
-      // Step 1: Create session
+      // Create session
       setCurrentStep('Đang tạo session...');
-      const session = await createEKYCSession(userId);
+      const session = await createEKYCSession();
       setSessionId(session.sessionId);
-
-      // Step 2: Initialize SDK
-      setCurrentStep('Đang khởi tạo SDK...');
-      const config = await initializeEKYCSDK(session.sessionId);
-      setSdkConfig(config);
 
       setLoading(false);
       setCurrentStep('Đã sẵn sàng');
@@ -61,7 +54,6 @@ export const useEKYCSession = (
 
   return {
     sessionId,
-    sdkConfig,
     loading,
     error,
     currentStep,

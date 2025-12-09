@@ -30,16 +30,16 @@ export interface EkycDetailModel {
   // Session info
   sessionId: string;
   status: string;
-  verifiedAt: string;
+  verifiedAt: number[] | string; // LocalDateTime serialized as [year, month, day, hour, minute, second, nano] or string
 
   // OCR data
   idNumber: string;
   fullName: string;
-  dateOfBirth: string;
+  dateOfBirth: number[] | string; // LocalDate serialized as [year, month, day] or string
   gender: string;
   address: string;
-  issueDate: string;
-  expiryDate: string;
+  issueDate: number[] | string; // LocalDate serialized as [year, month, day] or string
+  expiryDate: number[] | string; // LocalDate serialized as [year, month, day] or string
 
   // Image URLs
   frontImageUrl: string;
