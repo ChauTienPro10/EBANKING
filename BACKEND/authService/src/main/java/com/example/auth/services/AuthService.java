@@ -20,6 +20,9 @@ public class AuthService {
     private final UserServiceGrpc.UserServiceBlockingStub userStub;
 
     private final UserMapper userMapper;
+    
+    @Autowired
+    private com.example.auth.utils.JWTUtils jwtUtils;  // Add JWTUtils for token generation
 
     @Autowired
     public AuthService(grpcPath grpcPath, UserMapper userMapper) {
@@ -72,7 +75,17 @@ public class AuthService {
                 .setPassword(request.getPassword())
                 .build();
         UserProto.LoginResponse loginResponse = userStub.login(loginRequest);
-        return userMapper.fromProto(loginResponse);
+        LoginResponse response = userMapper.fromProto(loginResponse);
+        
+        // Generate JWT token with userId claim for eKYC integration
+        String token = jwtUtils.generateTokenWithUserId(
+            response.getUsername(),
+            response.getId(),  // userId from LoginResponse
+            response.getRoles()
+        );
+        
+        response.setJwt(token);
+        return response;
     }
 
     public Boolean checkUserExist(String username) {
@@ -135,6 +148,4 @@ public class AuthService {
         UserProto.User rs = userStub.updateUserInfo(rq);
         return userMapper.fromProtoToUpdateUserResponse(rs);
     }
-
-    // Avatar methods moved to AvatarService
 }

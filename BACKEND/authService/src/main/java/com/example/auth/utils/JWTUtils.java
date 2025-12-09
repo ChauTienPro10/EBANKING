@@ -12,8 +12,10 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
@@ -38,6 +40,23 @@ public class JWTUtils {
                 .compact();
     }
 
+    /**
+     * Generate JWT token with userId claim
+     * Used for eKYC integration to include userId in token
+     */
+    public String generateTokenWithUserId(String username, Long userId, Set<String> roles) {
+        SecretKey key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+
+        return Jwts.builder()
+                .setSubject(username)
+                .claim("roles", new java.util.ArrayList<>(roles))
+                .claim("userId", userId)  // Add userId claim for eKYC
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 60 * 60 * 1000))
+                .signWith(key, SignatureAlgorithm.HS512)
+                .compact();
+    }
+
 
     public String extractUsername(String token) {
         return Jwts.parserBuilder()
@@ -56,6 +75,20 @@ public class JWTUtils {
                 .getBody();
 
         return claims.get("roles", List.class);
+    }
+
+    /**
+     * Extract userId from JWT token
+     * Used for eKYC integration to get authenticated user's ID
+     */
+    public Long extractUserId(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8)))
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.get("userId", Long.class);
     }
 
     public boolean validateToken(String token, UserDetails userDetails) {

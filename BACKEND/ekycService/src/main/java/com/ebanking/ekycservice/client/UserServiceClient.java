@@ -38,7 +38,12 @@ public class UserServiceClient {
         if (documentInfo != null) {
             request.put("idNumber", documentInfo.getIdNumber());
             request.put("fullName", documentInfo.getFullName());
-            request.put("dateOfBirth", documentInfo.getDateOfBirth());
+            
+            // dateOfBirth is already LocalDate, convert to ISO string (yyyy-MM-dd)
+            if (documentInfo.getDateOfBirth() != null) {
+                request.put("dateOfBirth", documentInfo.getDateOfBirth().toString());
+            }
+            
             request.put("gender", documentInfo.getGender());
             request.put("address", documentInfo.getAddress());
         }

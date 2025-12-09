@@ -23,4 +23,7 @@ public interface IURL {
     String PIN_CODE_URL = HOST_PREFIX + "/pin-code";
     String NEW_PIN = "/new";
     String DELETE_PIN = "/delete";
+    
+    // eKYC URLs
+    String EKYC_URL = HOST_PREFIX + "/ekyc";
 }

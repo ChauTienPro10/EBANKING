@@ -38,10 +38,10 @@ const ReviewScreen: React.FC = () => {
     try {
       setLoading(true);
 
-      // Step 0: Create session
+      // Step 0: Create session (userId extracted from JWT by backend)
       setStep('Đang khởi tạo phiên...');
       const { createEKYCSession } = await import('../services/ekycApi');
-      const session = await createEKYCSession(1); // userId = 1 for now
+      const session = await createEKYCSession(); // No userId - extracted from JWT
       setSessionId(session.sessionId);
 
       // Step 1: Process OCR

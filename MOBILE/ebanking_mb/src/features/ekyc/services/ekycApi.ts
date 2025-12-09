@@ -1,29 +1,41 @@
 /**
  * eKYC API Service
  * Handles all backend communication for eKYC feature
+ * Now routes through AuthService API Gateway
  */
 
-import { EKYC_SERVICE } from '../../../constants/api';
+import { AUTH_SERVICE } from '../../../constants/api';
 import { EKYCSession, EKYCConfig, EKYCCallbackData } from '../types';
+import { store } from '../../../store'; // Fix import path
 
-const BACKEND_URL = EKYC_SERVICE;
+const BACKEND_URL = AUTH_SERVICE + '/ekyc'; // AuthService eKYC endpoints
+
+/**
+ * Get authentication token from Redux store
+ */
+const getAuthToken = (): string => {
+  const token = store.getState().app.loginResponse?.jwt;
+  if (!token) {
+    throw new Error('No authentication token found. Please login again.');
+  }
+  return token;
+};
 
 /**
  * Create a new eKYC session
+ * userId is extracted from JWT token by backend
  */
-export const createEKYCSession = async (
-  userId: number,
-): Promise<EKYCSession> => {
-  const response = await fetch(
-    `${BACKEND_URL}/api/ekyc/sessions?userId=${userId}`,
-    {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
+export const createEKYCSession = async (): Promise<EKYCSession> => {
+  const token = getAuthToken(); // Synchronous now
+
+  const response = await fetch(`${BACKEND_URL}/sessions`, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`, // Add JWT token
     },
-  );
+  });
 
   if (!response.ok) {
     const errorText = await response.text();
@@ -109,15 +121,15 @@ export const sendEKYCCallback = async (
 export const getEKYCSessionStatus = async (
   sessionId: string,
 ): Promise<EKYCSession> => {
-  const response = await fetch(
-    `${BACKEND_URL}/api/ekyc/sessions/${sessionId}`,
-    {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-      },
+  const token = getAuthToken(); // Synchronous
+
+  const response = await fetch(`${BACKEND_URL}/sessions/${sessionId}`, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+      Authorization: `Bearer ${token}`,
     },
-  );
+  });
 
   if (!response.ok) {
     throw new Error(`Failed to get session status: ${response.status}`);
@@ -136,6 +148,7 @@ export const processOCR = async (
   backImagePath: string,
 ): Promise<any> => {
   console.log('🔵 Processing OCR for session:', sessionId);
+  const token = getAuthToken(); // Synchronous
 
   const formData = new FormData();
   formData.append('sessionId', sessionId);
@@ -154,11 +167,12 @@ export const processOCR = async (
     name: 'back.jpg',
   } as any);
 
-  const response = await fetch(`${BACKEND_URL}/api/ekyc/ocr`, {
+  const response = await fetch(`${BACKEND_URL}/ocr`, {
     method: 'POST',
     headers: {
       Accept: 'application/json',
       'Content-Type': 'multipart/form-data',
+      Authorization: `Bearer ${token}`,
     },
     body: formData,
   });
@@ -187,6 +201,7 @@ export const processLiveness = async (
   videoPath: string,
 ): Promise<any> => {
   console.log('🔵 Processing Liveness for session:', sessionId);
+  const token = getAuthToken(); // Synchronous
 
   const formData = new FormData();
   formData.append('sessionId', sessionId);
@@ -196,11 +211,12 @@ export const processLiveness = async (
     name: 'liveness.mp4',
   } as any);
 
-  const response = await fetch(`${BACKEND_URL}/api/ekyc/liveness`, {
+  const response = await fetch(`${BACKEND_URL}/liveness`, {
     method: 'POST',
     headers: {
       Accept: 'application/json',
       'Content-Type': 'multipart/form-data',
+      Authorization: `Bearer ${token}`,
     },
     body: formData,
   });
@@ -226,14 +242,16 @@ export const processLiveness = async (
  */
 export const processFaceMatch = async (sessionId: string): Promise<any> => {
   console.log('🔵 Processing Face Match for session:', sessionId);
+  const token = getAuthToken(); // Synchronous
 
   const response = await fetch(
-    `${BACKEND_URL}/api/ekyc/face-match?sessionId=${sessionId}`,
+    `${BACKEND_URL}/face-match?sessionId=${sessionId}`,
     {
       method: 'POST',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
       },
     },
   );

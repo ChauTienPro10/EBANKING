@@ -19,7 +19,7 @@ public class EkycController {
 
     @PostMapping("/sessions")
     public ResponseEntity<ApiResponse<SessionResponse>> createSession(
-            @RequestParam(defaultValue = "1") Long userId) {
+            @RequestParam Long userId) {  // Required parameter from AuthService
 
         log.info("Creating session for user: {}", userId);
         SessionResponse session = ekycService.createSession(userId);
@@ -38,10 +38,11 @@ public class EkycController {
     @PostMapping(value = "/ocr", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<OrcResponse>> processOcr(
             @RequestParam("sessionId") String sessionId,
+            @RequestParam("userId") Long userId,  // Add userId for validation
             @RequestParam("frontImage") MultipartFile frontImage,
             @RequestParam("backImage") MultipartFile backImage) {
 
-        log.info("Processing OCR for session: {} with image files", sessionId);
+        log.info("Processing OCR for session: {} user: {}", sessionId, userId);
         OrcResponse result = ekycService.processOcr(sessionId, frontImage, backImage);
         return ResponseEntity.ok(ApiResponse.success(result));
     }
@@ -49,18 +50,20 @@ public class EkycController {
     @PostMapping(value = "/liveness", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<LivenessResponse>> checkLiveness(
             @RequestParam("sessionId") String sessionId,
+            @RequestParam("userId") Long userId,  // Add userId for validation
             @RequestParam("video") MultipartFile video) {
 
-        log.info("Checking liveness for session: {} with video file", sessionId);
+        log.info("Checking liveness for session: {} user: {}", sessionId, userId);
         LivenessResponse result = ekycService.processLiveness(sessionId, video);
         return ResponseEntity.ok(ApiResponse.success(result));
     }
 
     @PostMapping("/face-match")
     public ResponseEntity<ApiResponse<FaceMatchResponse>> matchFaces(
-            @RequestParam String sessionId) {
+            @RequestParam String sessionId,
+            @RequestParam Long userId) {  // Add userId for validation
 
-        log.info("Matching faces for session: {}", sessionId);
+        log.info("Matching faces for session: {} user: {}", sessionId, userId);
         FaceMatchResponse result = ekycService.processFaceMatch(sessionId);
         return ResponseEntity.ok(ApiResponse.success(result));
     }
