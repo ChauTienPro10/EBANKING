@@ -37,6 +37,5 @@ public class DocumentInfo {
     // VD: images/sessionId/front_sessionId_20241030_143022.jpg
     private String frontImagePath;
     private String backImagePath;
-    private String portraitImagePath;
 }
 

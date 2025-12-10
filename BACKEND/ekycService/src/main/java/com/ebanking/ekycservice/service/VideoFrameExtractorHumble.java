@@ -76,7 +76,7 @@ public class VideoFrameExtractorHumble {
             // Open decoder
             videoDecoder.open(null, null);
 
-            log.info("📊 Video info: {}x{} @ {} fps",
+            log.info("::: Video info: {}x{} @ {} fps",
                     videoDecoder.getWidth(),
                     videoDecoder.getHeight(),
                     demuxer.getStream(videoStreamId).getFrameRate().getDouble());
@@ -134,7 +134,7 @@ public class VideoFrameExtractorHumble {
             String base64Image = Base64.getEncoder().encodeToString(imageBytes);
 
             log.info("✅ Successfully extracted frame from video");
-            log.info("📊 Frame size: {} KB ({}x{}px)",
+            log.info("::: Frame size: {} KB ({}x{}px)",
                     imageBytes.length / 1024,
                     image.getWidth(),
                     image.getHeight());

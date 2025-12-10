@@ -41,9 +41,6 @@ public class EkycService {
     private final VideoFrameExtractorHumble videoFrameExtractor;
     private final UserServiceClient userServiceClient;
 
-    // ⚠️ DEMO MODE - Set false to use real FPT AI APIs
-    private static final boolean DEMO_MODE = false;
-
     @Transactional
     public SessionResponse createSession(Long userId) {
         log.info("Creating session for user: {}", userId);
@@ -96,12 +93,6 @@ public class EkycService {
         EkycSession session = validateSession(sessionId);
 
         try {
-            // ⚠️ DEMO MODE: Skip FPT API and return mock data
-            if (DEMO_MODE) {
-                log.warn("🎭 DEMO MODE: Bypassing FPT OCR API - returning mock data");
-                return createMockOCRResponse(session, frontImageBase64, backImageBase64);
-            }
-
             // Call FPT.AI OCR for front image
             Map<String, Object> frontResult = fptAiService.callOrcApi(frontImageBase64);
             log.debug("Front OCR result: {}", frontResult);
@@ -178,7 +169,6 @@ public class EkycService {
                     .expiryDate(expiryDate)
                     .frontImagePath(frontImagePath) // Lưu path thay vì base64
                     .backImagePath(backImagePath) // Lưu path thay vì base64
-                    .portraitImagePath(null) // FPT.AI không trả về avatar nữa
                     .build();
 
             documentInfoRepository.save(documentInfo);
@@ -197,8 +187,7 @@ public class EkycService {
                     .address(address)
                     .issueDate(issueDate)
                     .expiryDate(expiryDate)
-                    .confidence(confidence) // OCR confidence từ overall_score
-                    .portraitImagePath(null) // FPT.AI không trả về avatar
+                    .confidence(confidence) 
                     .frontImagePath(frontImagePath)
                     .backImagePath(backImagePath)
                     .build();
@@ -242,12 +231,6 @@ public class EkycService {
         EkycSession session = validateSession(sessionId);
 
         try {
-            // ⚠️ DEMO MODE: Skip FPT API and return mock data
-            if (DEMO_MODE) {
-                log.warn("🎭 DEMO MODE: Bypassing FPT Liveness API - returning mock data");
-                return createMockLivenessResponse(session, videoBase64);
-            }
-
             // Call FPT.AI Liveness
             Map<String, Object> result = fptAiService.callLivenessApi(videoBase64);
             log.debug("Liveness result: {}", result);
@@ -310,10 +293,29 @@ public class EkycService {
             String sessionIdStr = session.getId().toString();
             String videoPath = mediaStorageService.saveVideo(videoBase64, sessionIdStr);
 
+            // Extract face image from liveness video and save
+            String faceImagePath = null;
+            try {
+                // Convert relative path to absolute path for video extraction
+                String absoluteVideoPath = "uploads/" + videoPath;
+                log.info("::: Extracting face frame from liveness video: {}", absoluteVideoPath);
+                
+                String faceImageBase64 = videoFrameExtractor.extractFrameAsBase64(absoluteVideoPath);
+                faceImagePath = mediaStorageService.saveImage(faceImageBase64, sessionIdStr, "face");
+                
+                log.info("::: Face image extracted and saved: {}", faceImagePath);
+            } catch (Exception e) {
+                log.error("⚠️ Failed to extract face image from video: {}", e.getMessage());
+                // Don't fail the entire liveness process - face match can still extract on-demand
+                // This is Phase 1 safety: extraction failure doesn't break existing flow
+                log.warn("Continuing without pre-extracted face image. Face match will extract on-demand.");
+            }
+
             // Save biometric data with file path
             BiometricData biometricData = BiometricData.builder()
                     .session(session)
                     .videoPath(videoPath)
+                    .faceImagePath(faceImagePath)
                     .livenessConfidence(score)
                     .isLive(isLive)
                     .build();
@@ -359,12 +361,6 @@ public class EkycService {
         // Validate and get session with relations
         EkycSession session = validateSession(sessionId);
 
-        // DEMO MODE: Skip real FPT API call
-        if (DEMO_MODE) {
-            log.warn("🎭 DEMO MODE: Bypassing FPT Face Match API");
-            return createMockFaceMatchResponse(session);
-        }
-
         DocumentInfo docInfo = session.getDocumentInfo();
         BiometricData bioData = session.getBiometricData();
 
@@ -376,20 +372,29 @@ public class EkycService {
             // Load ID card image from front CCCD
             String idCardImageBase64 = mediaStorageService.loadFileAsBase64(docInfo.getFrontImagePath());
 
-            // Extract face frame from liveness video for selfie
-            String videoPath = bioData.getVideoPath();
-            if (videoPath == null || videoPath.isEmpty()) {
-                throw new EkycException("Liveness video not found for face matching");
+            // Use pre-extracted face image (with fallback)
+            String selfieImageBase64;
+            String faceImagePath = bioData.getFaceImagePath();
+            
+            if (faceImagePath != null && !faceImagePath.isEmpty()) {
+                // Use pre-extracted face image (fast path)
+                log.info("⚡ Loading pre-extracted face image: {}", faceImagePath);
+                try {
+                    selfieImageBase64 = mediaStorageService.loadFileAsBase64(faceImagePath);
+                    log.info("✅ Using pre-extracted face image for face match");
+                } catch (Exception e) {
+                    // Fallback: extract from video if pre-extracted image is missing/corrupted
+                    log.warn("⚠️ Failed to load pre-extracted face image: {}", e.getMessage());
+                    log.info("🔄 Falling back to on-demand extraction from video");
+                    selfieImageBase64 = extractFaceFromVideo(bioData.getVideoPath());
+                }
+            } else {
+                // Fallback: extract from video for old sessions (backward compatibility)
+                log.info("🔄 No pre-extracted face image found. Extracting from video (old session)");
+                selfieImageBase64 = extractFaceFromVideo(bioData.getVideoPath());
             }
 
-            // Convert relative path to absolute path (videoPath is stored as "videos/..."
-            // but file is in "uploads/videos/...")
-            String absoluteVideoPath = "uploads/" + videoPath;
-
-            log.info("Extracting selfie frame from liveness video: {}", absoluteVideoPath);
-            String selfieImageBase64 = videoFrameExtractor.extractFrameAsBase64(absoluteVideoPath);
-
-            log.info("Face match: comparing ID card face with selfie from liveness video");
+            log.info("Face match: comparing ID card face with selfie");
 
             // Call FPT.AI Face Match
             Map<String, Object> result = fptAiService.callFaceMatchApi(idCardImageBase64, selfieImageBase64);
@@ -464,6 +469,25 @@ public class EkycService {
     }
 
     /**
+     * Helper method to extract face from liveness video
+     * Used as fallback when pre-extracted face image is not available
+     */
+    private String extractFaceFromVideo(String videoPath) {
+        if (videoPath == null || videoPath.isEmpty()) {
+            throw new EkycException("Liveness video not found for face matching");
+        }
+
+        // Convert relative path to absolute path
+        String absoluteVideoPath = "uploads/" + videoPath;
+        
+        log.info("📹 Extracting face frame from video: {}", absoluteVideoPath);
+        String faceImageBase64 = videoFrameExtractor.extractFrameAsBase64(absoluteVideoPath);
+        log.info("✅ Face extracted from video");
+        
+        return faceImageBase64;
+    }
+
+    /**
      * Validate session và kiểm tra hết hạn
      */
     private EkycSession validateSession(String sessionId) {
@@ -475,93 +499,6 @@ public class EkycService {
         }
 
         return session;
-    }
-
-    // ========== DEMO MODE MOCK METHODS ==========
-
-    private OrcResponse createMockOCRResponse(EkycSession session, String frontImageBase64, String backImageBase64) {
-        // Save mock images
-        String sessionIdStr = session.getId().toString();
-        String frontPath = mediaStorageService.saveImage(frontImageBase64, sessionIdStr, "front");
-        String backPath = mediaStorageService.saveImage(backImageBase64, sessionIdStr, "back");
-
-        // Create mock document info (without confidence field)
-        DocumentInfo documentInfo = DocumentInfo.builder()
-                .session(session)
-                .idNumber("001234567890")
-                .fullName("NGUYỄN VĂN A")
-                .dateOfBirth(LocalDate.of(1990, 1, 1))
-                .gender("Nam")
-                .address("123 Đường ABC, Quận 1, TP.HCM")
-                .issueDate(LocalDate.of(2020, 1, 1))
-                .expiryDate(LocalDate.of(2030, 1, 1))
-                .frontImagePath(frontPath)
-                .backImagePath(backPath)
-                .build();
-
-        documentInfoRepository.save(documentInfo);
-        session.setStatus(EkycStatus.OCR_COMPLETED);
-        session.setCurrentStep(EkycStep.VERIFICATION);
-        sessionRepository.save(session);
-
-        return OrcResponse.builder()
-                .idNumber("001234567890")
-                .fullName("NGUYỄN VĂN A")
-                .dateOfBirth(LocalDate.of(1990, 1, 1))
-                .gender("Nam")
-                .address("123 Đường ABC, Quận 1, TP.HCM")
-                .issueDate(LocalDate.of(2020, 1, 1))
-                .expiryDate(LocalDate.of(2030, 1, 1))
-                .confidence(0.95)
-                .build();
-    }
-
-    private LivenessResponse createMockLivenessResponse(EkycSession session, String videoBase64) {
-        // Save mock video
-        String sessionIdStr = session.getId().toString();
-        String videoPath = mediaStorageService.saveVideo(videoBase64, sessionIdStr);
-
-        // Create mock biometric data
-        BiometricData biometricData = BiometricData.builder()
-                .session(session)
-                .videoPath(videoPath)
-                .livenessConfidence(0.92)
-                .isLive(true)
-                .build();
-
-        biometricDataRepository.save(biometricData);
-        session.setStatus(EkycStatus.LIVENESS_COMPLETED);
-        session.setCurrentStep(EkycStep.FACE_MATCH);
-        sessionRepository.save(session);
-
-        return LivenessResponse.builder()
-                .isLive(true)
-                .confidence(0.92)
-                .build();
-    }
-
-    private FaceMatchResponse createMockFaceMatchResponse(EkycSession session) {
-        // Mock face match with high similarity
-        Double mockSimilarity = 0.92;
-        Boolean isMatched = true;
-
-        BiometricData bioData = session.getBiometricData();
-        if (bioData != null) {
-            bioData.setFaceMatch(isMatched);
-            bioData.setFaceMatchScore(mockSimilarity);
-            biometricDataRepository.save(bioData);
-        }
-
-        // Update session to completed (keep currentStep at FACE_MATCH to avoid DB
-        // constraint)
-        session.setStatus(EkycStatus.COMPLETED);
-        // Don't set currentStep to COMPLETED - DB constraint doesn't allow it
-        sessionRepository.save(session);
-
-        return FaceMatchResponse.builder()
-                .isMatched(isMatched)
-                .similarity(mockSimilarity) // Use similarity to match FPT.AI API
-                .build();
     }
 
     /**
@@ -583,7 +520,6 @@ public class EkycService {
         // This avoids API Gateway routing issues and simplifies frontend
         String frontImageBase64 = null;
         String backImageBase64 = null;
-        String portraitImageBase64 = null;
 
         try {
             if (doc.getFrontImagePath() != null) {
@@ -591,9 +527,6 @@ public class EkycService {
             }
             if (doc.getBackImagePath() != null) {
                 backImageBase64 = "data:image/jpeg;base64," + mediaStorageService.loadFileAsBase64(doc.getBackImagePath());
-            }
-            if (doc.getPortraitImagePath() != null) {
-                portraitImageBase64 = "data:image/jpeg;base64," + mediaStorageService.loadFileAsBase64(doc.getPortraitImagePath());
             }
         } catch (Exception e) {
             log.error("Failed to load images for session {}: {}", sessionId, e.getMessage());
@@ -615,7 +548,6 @@ public class EkycService {
                 // Images as base64 (data URIs)
                 .frontImageUrl(frontImageBase64)
                 .backImageUrl(backImageBase64)
-                .portraitImageUrl(portraitImageBase64)
                 // Scores
                 .ocrConfidence(null) // Can add if needed
                 .livenessConfidence(bio != null ? bio.getLivenessConfidence() : null)

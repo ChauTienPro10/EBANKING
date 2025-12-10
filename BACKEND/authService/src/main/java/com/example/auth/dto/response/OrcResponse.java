@@ -19,7 +19,6 @@ public class OrcResponse {
     private Double confidence;
 
     // File paths for images
-    private String portraitImagePath;
     private String frontImagePath;
     private String backImagePath;
 }

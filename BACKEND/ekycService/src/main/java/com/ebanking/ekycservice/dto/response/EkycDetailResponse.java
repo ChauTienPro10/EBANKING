@@ -27,7 +27,6 @@ public class EkycDetailResponse {
     // Image URLs (require authentication to access)
     private String frontImageUrl;
     private String backImageUrl;
-    private String portraitImageUrl;
 
     // Verification scores
     private Double ocrConfidence;

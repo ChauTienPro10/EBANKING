@@ -21,7 +21,6 @@ public class EkycSession extends BaseEntity {
     private UUID id;
 
     private Long userId;
-    private String sessionToken;
 
     @Enumerated(EnumType.STRING)
     private EkycStatus status;
