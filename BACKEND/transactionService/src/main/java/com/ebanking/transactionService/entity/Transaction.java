@@ -45,4 +45,18 @@ public class Transaction {
     private String failureReason;
 
     private LocalDateTime transactionAt;
+
+    // Face authentication fields
+    @Column(name = "requires_face_auth")
+    private Boolean requiresFaceAuth = false;
+
+    @Column(name = "face_auth_session_id", length = 36)
+    private  String faceAuthSessionId;
+
+    @Column(name = "face_auth_verified")
+    private Boolean faceAuthVerified = false;
+
+    @Column(name = "face_auth_at")
+    private LocalDateTime faceAuthAt;
+
 }

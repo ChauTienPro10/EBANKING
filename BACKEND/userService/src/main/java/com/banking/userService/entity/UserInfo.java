@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -72,4 +73,12 @@ public class UserInfo {
      */
     @Column(name = "avatar_path")
     private String avatarPath;
+
+    @Column(name = "face_auth_enabled")
+    private Boolean faceAuthEnabled = false;
+
+    @Column(name = "daily_transaction_limit", precision = 19, scale = 2)
+    private BigDecimal dailyTransactionLimit = new BigDecimal("50000000.00");
+
+
 }
