@@ -3,11 +3,7 @@ package com.ebanking.ekycservice.service;
 import com.ebanking.ekycservice.client.UserServiceClient;
 import com.ebanking.ekycservice.constant.EkycStatus;
 import com.ebanking.ekycservice.constant.EkycStep;
-import com.ebanking.ekycservice.dto.response.EkycDetailResponse;
-import com.ebanking.ekycservice.dto.response.FaceMatchResponse;
-import com.ebanking.ekycservice.dto.response.LivenessResponse;
-import com.ebanking.ekycservice.dto.response.OrcResponse;
-import com.ebanking.ekycservice.dto.response.SessionResponse;
+import com.ebanking.ekycservice.dto.response.*;
 import com.ebanking.ekycservice.entity.BiometricData;
 import com.ebanking.ekycservice.entity.DocumentInfo;
 import com.ebanking.ekycservice.entity.EkycSession;
@@ -19,6 +15,8 @@ import com.ebanking.ekycservice.util.FileUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,6 +25,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -40,6 +39,9 @@ public class EkycService {
     private final MediaStorageService mediaStorageService;
     private final VideoFrameExtractorHumble videoFrameExtractor;
     private final UserServiceClient userServiceClient;
+
+    @Autowired
+    private RedisTemplate<String, String> redisTemplateForString;
 
     @Transactional
     public SessionResponse createSession(Long userId) {
@@ -555,5 +557,114 @@ public class EkycService {
                 .isLive(bio != null ? bio.getIsLive() : null)
                 .faceMatched(bio != null ? bio.getFaceMatch() : null)
                 .build();
+    }
+
+    /**
+     * Verify face authentication for transaction
+     * Reuses liveness video from completed eKYC session for matching
+     *
+     * @param userId User ID who completed eKYC
+     * @param video New liveness video for verification
+     * @return FaceAuthVerifyResponse with verification result
+     */
+    @Transactional
+    @SuppressWarnings("unchecked")
+    public FaceAuthVerifyResponse verifyTransactionFaceAuth(Long userId, MultipartFile video) {
+        log.info("Verifying transaction face auth for user: {}", userId);
+
+        // Find user's completed eKYC session
+        EkycSession ekycSession = sessionRepository.findByUserIdAndStatus(
+                userId, EkycStatus.COMPLETED
+        ).orElseThrow(() -> new EkycException("User has not completed eKYC"));
+
+        BiometricData ekycBio = ekycSession.getBiometricData();
+        if (ekycBio == null || ekycBio.getFaceImagePath() == null) {
+            throw new EkycException("No face data found from eKYC");
+        }
+
+        // Validate and convert video
+        FileUtil.validateVideoFile(video);
+        String videoBase64 = FileUtil.convertToBase64(video);
+
+        try {
+            // Liveness check
+            Map<String, Object> livenessResult = fptAiService.callLivenessApi(videoBase64);
+            log.info("Liveness result: {}", livenessResult);
+
+            Map<String, Object> livenessData = (Map<String, Object>) livenessResult.get("data");
+            if (livenessData == null) {
+                throw new EkycException("Invalid liveness response");
+            }
+
+            Boolean isLive = (Boolean) livenessData.get("is_live");
+            Double score = getDoubleValue(livenessData, "score");
+
+            if (!isLive || score < 0.80) {
+                return FaceAuthVerifyResponse.builder()
+                        .verified(false)
+                        .message("Liveness check failed")
+                        .build();
+            }
+
+            // Save video and extract face
+            String sessionIdStr = UUID.randomUUID().toString();
+            String videoPath = mediaStorageService.saveVideo(videoBase64, sessionIdStr);
+            String absoluteVideoPath = "uploads/" + videoPath;
+            String newFaceBase64 = videoFrameExtractor.extractFrameAsBase64(absoluteVideoPath);
+
+            // Load eKYC face image
+            String ekycFaceBase64 = mediaStorageService.loadFileAsBase64(ekycBio.getFaceImagePath());
+
+            // Face matching
+            Map<String, Object> matchResult = fptAiService.callFaceMatchApi(
+                    ekycFaceBase64, newFaceBase64
+            );
+            log.info("Face match result: {}", matchResult);
+
+            Map<String, Object> matchData = (Map<String, Object>) matchResult.get("data");
+            if (matchData == null) {
+                throw new EkycException("Invalid face match response");
+            }
+
+            Double similarity = getDoubleValue(matchData, "similarity");
+            Boolean isMatched = similarity >= 0.80;
+
+            // Save verification record (not linked to eKYC session)
+            BiometricData verifyBio = BiometricData.builder()
+                    .session(null) // Independent verification
+                    .videoPath(videoPath)
+                    .isLive(isLive)
+                    .livenessConfidence(score)
+                    .faceMatch(isMatched)
+                    .faceMatchScore(similarity)
+                    .build();
+            biometricDataRepository.save(verifyBio);
+
+            log.info("Face auth verification completed: matched={}, similarity={}", isMatched, similarity);
+
+            // Save session to Redis if verified (5 minutes TTL, one-time use)
+            if (isMatched) {
+                String redisKey = "face_auth_session:" + sessionIdStr;
+                redisTemplateForString.opsForValue().set(
+                        redisKey,
+                        "verified",
+                        5,
+                        TimeUnit.MINUTES
+                );
+                log.info("Face auth session saved to Redis: {} (expires in 5 minutes)", sessionIdStr);
+            }
+            return FaceAuthVerifyResponse.builder()
+                    .verified(isMatched)
+                    .sessionId(sessionIdStr)
+                    .confidence(similarity)
+                    .message(isMatched ? "Verification successful" : "Face does not match")
+                    .build();
+
+        } catch (EkycException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("Face auth verification failed: {}", e.getMessage(), e);
+            throw new EkycException("Face auth verification failed: " + e.getMessage());
+        }
     }
 }

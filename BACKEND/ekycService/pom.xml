@@ -70,6 +70,15 @@
             <artifactId>humble-video-all</artifactId>
             <version>0.3.0</version>
         </dependency>
+        <!-- Redis for Face Auth Session Management -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

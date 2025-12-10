@@ -1,4 +1,5 @@
 package com.ebanking.transactionService.service;
+import com.ebanking.transactionService.dto.FaceAuthCheckResponse;
 import com.ebanking.transactionService.entity.Account;
 import com.ebanking.transactionService.entity.Transaction;
 import com.ebanking.transactionService.enums.KafkaTopic;
@@ -8,27 +9,33 @@ import com.ebanking.transactionService.grpc.TransactionProto;
 
 import com.ebanking.transactionService.mappers.TransactionMapper;
 import com.ebanking.transactionService.repository.AccountRepository;
+import com.ebanking.transactionService.repository.TransactionLimitRepository;
 import com.ebanking.transactionService.repository.TransactionRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import com.ebanking.transactionService.exception.TransactionException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
+@Slf4j
 public class TransactionService {
 
     private final KafkaTemplate<String, Transaction> kafkaTemplate;
@@ -52,6 +59,65 @@ public class TransactionService {
     @Autowired
     TransactionMapper transactionMapper;
 
+    @Autowired
+    TransactionLimitRepository limitRepository;
+
+    @Autowired
+    private RedisTemplate<String, String> redisTemplateForString;
+
+    private static final BigDecimal SINGLE_LIMIT = new BigDecimal("10000000");
+    private static final BigDecimal DAILY_LIMIT = new BigDecimal("50000000");
+
+    /**
+     * Check if face authentication is required for this transaction
+     *
+     * @param userId User ID
+     * @param username Username
+     * @param amount Transaction amount
+     * @return FaceAuthCheckResponse with required flag and reason
+     */
+    public FaceAuthCheckResponse checkFaceAuthRequired(Long userId, String username, BigDecimal amount) {
+        log.info("Checking face auth requirement for user: {}, amount: {}", username, amount);
+
+        // Generate session ID for tracking
+        String sessionId = UUID.randomUUID().toString();
+
+        // Check 1: Single transaction > 10M
+        if (amount.compareTo(SINGLE_LIMIT) > 0) {
+            log.info("Face auth required: HIGH_AMOUNT (amount: {} > limit: {})", amount, SINGLE_LIMIT);
+            return FaceAuthCheckResponse.builder()
+                    .required(true)
+                    .reason("HIGH_AMOUNT")
+                    .message("Giao dịch trên 10 triệu VND cần xác thực khuôn mặt")
+                    .sessionId(sessionId)
+                    .build();
+        }
+
+        // Check 2: Daily limit
+        LocalDate today = LocalDate.now();
+        BigDecimal todayTotal = limitRepository.getTodayTotalAmount(username, today);
+
+        log.info("Today's total for user {}: {}", username, todayTotal);
+
+        if (todayTotal.add(amount).compareTo(DAILY_LIMIT) > 0) {
+            log.info("Face auth required: DAILY_LIMIT (today: {} + amount: {} > limit: {})",
+                    todayTotal, amount, DAILY_LIMIT);
+            return FaceAuthCheckResponse.builder()
+                    .required(true)
+                    .reason("DAILY_LIMIT")
+                    .message("Vượt hạn mức giao dịch trong ngày (50 triệu VND)")
+                    .sessionId(sessionId)
+                    .build();
+        }
+
+        log.info("Face auth not required for user: {}", username);
+        return FaceAuthCheckResponse.builder()
+                .required(false)
+                .reason(null)
+                .message(null)
+                .sessionId(null)
+                .build();
+    }
     /**
      *
      * @param data
@@ -72,6 +138,38 @@ public class TransactionService {
         if (amount.compareTo(BigDecimal.ZERO) < 0) {
             throw new TransactionException("error_not_valid");
         }
+
+        // Face authentication check
+        boolean requiresFaceAuth = data.getRequiresFaceAuth();
+        String faceAuthSessionId = data.getFaceAuthSessionId();
+
+        if (requiresFaceAuth && (faceAuthSessionId == null || faceAuthSessionId.isEmpty())) {
+            log.error("Face auth required but session ID missing");
+            throw new TransactionException("FACE_AUTH_REQUIRED");
+        }
+
+        // Verify face auth if required
+        Boolean faceAuthVerified = false;
+        LocalDateTime faceAuthAt = null;
+
+        if (requiresFaceAuth && faceAuthSessionId != null) {
+            // Verify face auth session from Redis
+            String redisKey = "face_auth_session:" + faceAuthSessionId;
+            String sessionValue = redisTemplateForString.opsForValue().get(redisKey);
+
+            if (!"verified".equals(sessionValue)) {
+                log.error("Face auth session not found or expired: {}", faceAuthSessionId);
+                throw new TransactionException("FACE_AUTH_SESSION_INVALID");
+            }
+
+            // Delete session after verification (one-time use)
+            redisTemplateForString.delete(redisKey);
+            log.info("::: Face auth session verified and deleted: {}", faceAuthSessionId);
+
+            faceAuthVerified = true;
+            faceAuthAt = LocalDateTime.now();
+        }
+
         Transaction transaction =
         transactionRepository.save(Transaction.builder()
                 .senderAccountNumber(data.getSenderAccountNumber())
@@ -83,6 +181,10 @@ public class TransactionService {
                 .description(data.getDescription())
                 .transactionAt(LocalDateTime.now())
                 .username(data.getUsername())
+                .requiresFaceAuth(requiresFaceAuth)
+                .faceAuthSessionId(faceAuthSessionId)
+                .faceAuthVerified(faceAuthVerified)
+                .faceAuthAt(faceAuthAt)
                 .build());
         kafkaTemplate.send(KafkaTopic.TRANSACTION_PROCESSER.getTopicName(), transaction);
         return transactionMapper.toTransferRequestProto(transaction);

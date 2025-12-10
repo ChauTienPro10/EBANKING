@@ -80,4 +80,18 @@ public class EkycController {
         EkycDetailResponse details = ekycService.getSessionDetails(sessionId);
         return ResponseEntity.ok(ApiResponse.success(details));
     }
+
+    /**
+     * Verify face authentication for transaction
+     * Uses existing eKYC face data to verify new liveness video
+     */
+    @PostMapping(value = "/verify-transaction", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<FaceAuthVerifyResponse>> verifyTransactionFaceAuth(
+            @RequestParam Long userId,
+            @RequestParam("video") MultipartFile video) {
+
+        log.info("Verifying face auth for transaction, userId: {}", userId);
+        FaceAuthVerifyResponse result = ekycService.verifyTransactionFaceAuth(userId, video);
+        return ResponseEntity.ok(ApiResponse.success(result));
+    }
 }

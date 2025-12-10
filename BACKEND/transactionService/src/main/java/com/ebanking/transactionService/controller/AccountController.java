@@ -1,16 +1,20 @@
 package com.ebanking.transactionService.controller;
 
 import com.ebanking.transactionService.dto.AccounDto;
+import com.ebanking.transactionService.dto.FaceAuthCheckResponse;
 import com.ebanking.transactionService.entity.Account;
 import com.ebanking.transactionService.repository.AccountRepository;
+import com.ebanking.transactionService.service.TransactionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/accounts")
@@ -19,6 +23,9 @@ public class AccountController {
 
     @Autowired
     private AccountRepository accountRepository;
+
+    @Autowired
+    private TransactionService transactionService;
 
    //get userId by account number
     @GetMapping("/{accountNumber}/user-id")
@@ -111,6 +118,37 @@ public class AccountController {
             Map<String, String> error = new HashMap<>();
             error.put("error", "Internal server error");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
+
+    /**
+     *
+     * @param userId
+     * @param username
+     * @param amount
+     * @return FaceAuthCheckResponse
+     */
+    @PostMapping("/check-face-auth")
+    public ResponseEntity<FaceAuthCheckResponse> checkFaceAuthRequired(
+            @RequestParam Long userId,
+            @RequestParam String username,
+            @RequestParam String amount) {
+
+        try {
+            log.info("Checking face auth required for user {}: {}", username, amount);
+            BigDecimal amountDecimal = new BigDecimal(amount);
+            FaceAuthCheckResponse response = transactionService.checkFaceAuthRequired(userId, username, amountDecimal);
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e){
+            log.error("Error checking account: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(FaceAuthCheckResponse.builder()
+                            .required(false)
+                            .message("Error: " + e.getMessage())
+                            .build()
+                    );
         }
     }
 }
