@@ -88,10 +88,11 @@ public class EkycController {
     @PostMapping(value = "/verify-transaction", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<FaceAuthVerifyResponse>> verifyTransactionFaceAuth(
             @RequestParam Long userId,
+            @RequestParam String sessionId,
             @RequestParam("video") MultipartFile video) {
 
-        log.info("Verifying face auth for transaction, userId: {}", userId);
-        FaceAuthVerifyResponse result = ekycService.verifyTransactionFaceAuth(userId, video);
+        log.info("Verifying face auth for transaction, userId: {}, sessionId: {}", userId, sessionId);
+        FaceAuthVerifyResponse result = ekycService.verifyTransactionFaceAuth(userId, sessionId, video);
         return ResponseEntity.ok(ApiResponse.success(result));
     }
 }

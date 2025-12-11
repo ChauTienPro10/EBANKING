@@ -32,13 +32,14 @@ type RouteParams = {
   FaceAuthScreen: {
     reason: 'HIGH_AMOUNT' | 'DAILY_LIMIT';
     amount: string;
+    sessionId: string; // Session ID from check-face-auth
     onSuccess: (sessionId: string) => void;
   };
 };
 const FaceAuthScreen: React.FC = () => {
   const navigation = useNavigation();
   const route = useRoute<RouteProp<RouteParams, 'FaceAuthScreen'>>();
-  const { reason, amount, onSuccess } = route.params;
+  const { reason, amount, sessionId, onSuccess } = route.params;
   const loginResponse = useSelector(
     (state: RootState) => state.app.loginResponse,
   );
@@ -72,6 +73,7 @@ const FaceAuthScreen: React.FC = () => {
     try {
       const result = await verifyTransactionFaceAuth(
         loginResponse.id,
+        sessionId, // Use sessionId from route params
         videoPath,
       );
       if (result.verified) {

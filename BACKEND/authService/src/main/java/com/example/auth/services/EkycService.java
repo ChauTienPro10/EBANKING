@@ -25,6 +25,83 @@ public class EkycService {
     @Value("${services.ekyc.url:http://localhost:8008}")
     private String ekycServiceUrl;
 
+    @Value("${services.transaction.url:http://localhost:8003}")
+    private String transactionServiceUrl;
+
+    /**
+     * Check if face authentication is required for transaction
+     * Forwards request to transactionService
+     */
+    public ResponseEntity<?> checkFaceAuthRequired(Long userId, String username, String amount) {
+        try {
+            String url = String.format("%s/api/accounts/check-face-auth?userId=%d&username=%s&amount=%s",
+                    transactionServiceUrl, userId, username, amount);
+            
+            log.info("Forwarding face auth check to transactionService: {}", url);
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
+            
+            ResponseEntity<FaceAuthCheckResponse> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.POST,
+                    entity,
+                    FaceAuthCheckResponse.class
+            );
+            
+            log.info("Face auth check completed for user {}: required={}", username, response.getBody().getRequired());
+            return ResponseEntity.ok(response.getBody());
+            
+        } catch (Exception e) {
+            log.error("Error checking face auth for user {}: {}", username, e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(FaceAuthCheckResponse.builder()
+                            .required(false)
+                            .message("Error checking face auth: " + e.getMessage())
+                            .build());
+        }
+    }
+
+    /**
+     * Verify face authentication for transaction
+     * Forwards request to ekycService
+     */
+    public ResponseEntity<?> verifyTransactionFaceAuth(Long userId, String sessionId, MultipartFile video) {
+        try {
+            String url = ekycServiceUrl + "/api/ekyc/verify-transaction";
+            
+            log.info("Forwarding face auth verification to ekycService for user {}, sessionId: {}", userId, sessionId);
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+            
+            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+            body.add("userId", userId);
+            body.add("sessionId", sessionId);
+            body.add("video", video.getResource());
+            
+            HttpEntity<MultiValueMap<String, Object>> requestEntity = 
+                new HttpEntity<>(body, headers);
+            
+            ResponseEntity<ApiResponse<?>> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.POST,
+                    requestEntity,
+                    new ParameterizedTypeReference<ApiResponse<?>>() {}
+            );
+            
+            log.info("Face auth verification completed for user {}", userId);
+            return response;
+            
+        } catch (Exception e) {
+            log.error("Error verifying face auth for user {}: {}", userId, e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("Face auth verification failed: " + e.getMessage()));
+        }
+    }
+
     /**
      * Create eKYC session
      */

@@ -24,6 +24,9 @@ public class TransactionMapper {
                         request.getDescription() != null ? request.getDescription() : ""
                 )
                 .setUsername(request.getUsername())
+                // Face authentication fields
+                .setRequiresFaceAuth(request.getRequiresFaceAuth() != null ? request.getRequiresFaceAuth() : false)
+                .setFaceAuthSessionId(request.getFaceAuthSessionId() != null ? request.getFaceAuthSessionId() : "")
                 .build();
     }
 

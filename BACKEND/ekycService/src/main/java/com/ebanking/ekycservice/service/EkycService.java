@@ -569,8 +569,8 @@ public class EkycService {
      */
     @Transactional
     @SuppressWarnings("unchecked")
-    public FaceAuthVerifyResponse verifyTransactionFaceAuth(Long userId, MultipartFile video) {
-        log.info("Verifying transaction face auth for user: {}", userId);
+    public FaceAuthVerifyResponse verifyTransactionFaceAuth(Long userId, String sessionId, MultipartFile video) {
+        log.info("Verifying transaction face auth for user: {}, sessionId: {}", userId, sessionId);
 
         // Find user's completed eKYC session
         EkycSession ekycSession = sessionRepository.findByUserIdAndStatus(
@@ -591,15 +591,38 @@ public class EkycService {
             Map<String, Object> livenessResult = fptAiService.callLivenessApi(videoBase64);
             log.info("Liveness result: {}", livenessResult);
 
-            Map<String, Object> livenessData = (Map<String, Object>) livenessResult.get("data");
+            // FPT.AI returns: {"liveness": {"is_live": "true", "spoof_prob": "0.3593", ...}}
+            Map<String, Object> livenessData = (Map<String, Object>) livenessResult.get("liveness");
             if (livenessData == null) {
                 throw new EkycException("Invalid liveness response");
             }
 
-            Boolean isLive = (Boolean) livenessData.get("is_live");
-            Double score = getDoubleValue(livenessData, "score");
+            // Parse is_live (can be "true"/"false" string or boolean)
+            Object isLiveObj = livenessData.get("is_live");
+            Boolean isLive = false;
+            if (isLiveObj != null && !isLiveObj.equals("N/A")) {
+                if (isLiveObj instanceof Boolean) {
+                    isLive = (Boolean) isLiveObj;
+                } else {
+                    isLive = "true".equalsIgnoreCase(isLiveObj.toString());
+                }
+            }
 
-            if (!isLive || score < 0.80) {
+            // Parse spoof_prob as confidence (1 - spoof_prob)
+            Object spoofProbObj = livenessData.get("spoof_prob");
+            Double score = 0.0;
+            if (spoofProbObj != null && !spoofProbObj.equals("N/A")) {
+                try {
+                    double spoofProb = Double.parseDouble(spoofProbObj.toString());
+                    score = 1.0 - spoofProb; // Convert to confidence score
+                } catch (NumberFormatException e) {
+                    log.warn("Failed to parse spoof_prob: {}", spoofProbObj);
+                }
+            }
+
+            log.info("Liveness check: isLive={}, confidence={}", isLive, score);
+
+            if (!isLive || score < 0.60) {
                 return FaceAuthVerifyResponse.builder()
                         .verified(false)
                         .message("Liveness check failed")
@@ -607,8 +630,7 @@ public class EkycService {
             }
 
             // Save video and extract face
-            String sessionIdStr = UUID.randomUUID().toString();
-            String videoPath = mediaStorageService.saveVideo(videoBase64, sessionIdStr);
+            String videoPath = mediaStorageService.saveVideo(videoBase64, sessionId);
             String absoluteVideoPath = "uploads/" + videoPath;
             String newFaceBase64 = videoFrameExtractor.extractFrameAsBase64(absoluteVideoPath);
 
@@ -644,18 +666,18 @@ public class EkycService {
 
             // Save session to Redis if verified (5 minutes TTL, one-time use)
             if (isMatched) {
-                String redisKey = "face_auth_session:" + sessionIdStr;
+                String redisKey = "face_auth_session:" + sessionId;
                 redisTemplateForString.opsForValue().set(
                         redisKey,
                         "verified",
                         5,
                         TimeUnit.MINUTES
                 );
-                log.info("Face auth session saved to Redis: {} (expires in 5 minutes)", sessionIdStr);
+                log.info("Face auth session saved to Redis: {} (expires in 5 minutes)", sessionId);
             }
             return FaceAuthVerifyResponse.builder()
                     .verified(isMatched)
-                    .sessionId(sessionIdStr)
+                    .sessionId(sessionId)
                     .confidence(similarity)
                     .message(isMatched ? "Verification successful" : "Face does not match")
                     .build();

@@ -107,4 +107,34 @@ public class EkycController {
         log.info("GET::: /ekyc/sessions/{}/details for user {}", sessionId, userId);
         return ekycService.getSessionDetails(sessionId, userId);
     }
+
+    /**
+     * Check if face authentication is required for transaction
+     * Proxies to transactionService
+     */
+    @PostMapping("/check-face-auth")
+    public ResponseEntity<?> checkFaceAuthRequired(
+            @RequestParam Long userId,
+            @RequestParam String username,
+            @RequestParam String amount,
+            @RequestHeader Map<String, String> headers) {
+        
+        log.info("POST::: /ekyc/check-face-auth for user {} amount {}", username, amount);
+        return ekycService.checkFaceAuthRequired(userId, username, amount);
+    }
+
+    /**
+     * Verify face authentication for transaction
+     * Proxies to ekycService
+     */
+    @PostMapping(value = "/verify-transaction", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> verifyTransactionFaceAuth(
+            @RequestParam Long userId,
+            @RequestParam String sessionId,
+            @RequestParam("video") MultipartFile video,
+            @RequestHeader Map<String, String> headers) {
+        
+        log.info("POST::: /ekyc/verify-transaction for user {}, sessionId: {}", userId, sessionId);
+        return ekycService.verifyTransactionFaceAuth(userId, sessionId, video);
+    }
 }

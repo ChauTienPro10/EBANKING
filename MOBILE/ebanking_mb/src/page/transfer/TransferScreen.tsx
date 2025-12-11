@@ -537,10 +537,11 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({
         setIsLoading(false);
         setRequiresFaceAuth(true);
 
-        // Navigate to Face Auth Screen
+        // Navigate to Face Auth Screen with sessionId
         (navigation as any).navigate('FaceAuthScreen', {
           reason: faceAuthCheck.reason,
           amount: formData.amount,
+          sessionId: faceAuthCheck.sessionId, // Pass sessionId from check-face-auth
           onSuccess: (sessionId: string) => {
             setFaceAuthSessionId(sessionId);
             // Continue with account check after face auth success

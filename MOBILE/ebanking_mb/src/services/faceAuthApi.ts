@@ -40,7 +40,7 @@ export const checkFaceAuthRequired = async (
   // Remove commas from amount
   const cleanAmount = amount.replace(/,/g, '');
   const response = await fetch(
-    `${BACKEND_URL}/api/accounts/check-face-auth?userId=${userId}&username=${username}&amount=${cleanAmount}`,
+    `${BACKEND_URL}/ekyc/check-face-auth?userId=${userId}&username=${username}&amount=${cleanAmount}`,
     {
       method: 'POST',
       headers: {
@@ -62,11 +62,13 @@ export const checkFaceAuthRequired = async (
  */
 export const verifyTransactionFaceAuth = async (
   userId: number,
+  sessionId: string,
   videoPath: string,
 ): Promise<FaceAuthVerifyResponse> => {
   const token = getAuthToken();
   const formData = new FormData();
   formData.append('userId', userId.toString());
+  formData.append('sessionId', sessionId);
   formData.append('video', {
     uri: videoPath,
     type: 'video/mp4',

@@ -11,6 +11,8 @@ message TransferRequest {
   string transactionType = 5;
   string description = 6;
   string username = 7;
+  bool requiresFaceAuth = 8;
+  string faceAuthSessionId = 9;
 }
 
 
