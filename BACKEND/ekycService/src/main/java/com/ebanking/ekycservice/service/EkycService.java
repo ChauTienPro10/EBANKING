@@ -7,10 +7,12 @@ import com.ebanking.ekycservice.dto.response.*;
 import com.ebanking.ekycservice.entity.BiometricData;
 import com.ebanking.ekycservice.entity.DocumentInfo;
 import com.ebanking.ekycservice.entity.EkycSession;
+import com.ebanking.ekycservice.entity.FaceAuthVerification;
 import com.ebanking.ekycservice.exception.EkycException;
 import com.ebanking.ekycservice.repository.BiometricDataRepository;
 import com.ebanking.ekycservice.repository.DocumentInfoRepository;
 import com.ebanking.ekycservice.repository.EkycSessionRepository;
+import com.ebanking.ekycservice.repository.FaceAuthVerificationRepository;
 import com.ebanking.ekycservice.util.FileUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +37,7 @@ public class EkycService {
     private final EkycSessionRepository sessionRepository;
     private final DocumentInfoRepository documentInfoRepository;
     private final BiometricDataRepository biometricDataRepository;
+    private final FaceAuthVerificationRepository faceAuthVerificationRepository;
     private final FptAiService fptAiService;
     private final MediaStorageService mediaStorageService;
     private final VideoFrameExtractorHumble videoFrameExtractor;
@@ -651,16 +654,19 @@ public class EkycService {
             Double similarity = getDoubleValue(matchData, "similarity");
             Boolean isMatched = similarity >= 0.80;
 
-            // Save verification record (not linked to eKYC session)
-            BiometricData verifyBio = BiometricData.builder()
-                    .session(null) // Independent verification
+            // Save face auth verification record (separate from eKYC biometric_data)
+            FaceAuthVerification verification = FaceAuthVerification.builder()
+                    .sessionId(sessionId)
+                    .userId(userId)
                     .videoPath(videoPath)
+                    .faceImagePath(null) // Can save extracted face if needed
                     .isLive(isLive)
                     .livenessConfidence(score)
                     .faceMatch(isMatched)
                     .faceMatchScore(similarity)
+                    .verified(isMatched)
                     .build();
-            biometricDataRepository.save(verifyBio);
+            faceAuthVerificationRepository.save(verification);
 
             log.info("Face auth verification completed: matched={}, similarity={}", isMatched, similarity);
 
@@ -688,5 +694,23 @@ public class EkycService {
             log.error("Face auth verification failed: {}", e.getMessage(), e);
             throw new EkycException("Face auth verification failed: " + e.getMessage());
         }
+    }
+
+    /**
+     * Link transaction ID to face auth verification record
+     * Called by transactionService after successful transfer
+     */
+    @Transactional
+    public void linkTransactionToFaceAuth(String sessionId, Long transactionId) {
+        log.info("Linking transaction {} to face auth session {}", transactionId, sessionId);
+        
+        FaceAuthVerification verification = faceAuthVerificationRepository
+                .findBySessionId(sessionId)
+                .orElseThrow(() -> new EkycException("Face auth verification not found for session: " + sessionId));
+        
+        verification.setTransactionId(transactionId);
+        faceAuthVerificationRepository.save(verification);
+        
+        log.info("Successfully linked transaction {} to face auth session {}", transactionId, sessionId);
     }
 }

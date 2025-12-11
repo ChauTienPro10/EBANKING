@@ -95,4 +95,18 @@ public class EkycController {
         FaceAuthVerifyResponse result = ekycService.verifyTransactionFaceAuth(userId, sessionId, video);
         return ResponseEntity.ok(ApiResponse.success(result));
     }
+
+    /**
+     * Link transaction ID to face auth verification
+     * Called by transactionService after successful transfer
+     */
+    @PostMapping("/link-transaction")
+    public ResponseEntity<ApiResponse<Void>> linkTransactionToFaceAuth(
+            @RequestParam String sessionId,
+            @RequestParam Long transactionId) {
+        
+        log.info("Linking transaction {} to face auth session {}", transactionId, sessionId);
+        ekycService.linkTransactionToFaceAuth(sessionId, transactionId);
+        return ResponseEntity.ok(ApiResponse.success(null));
+    }
 }

@@ -103,6 +103,21 @@ public class EkycService {
     }
 
     /**
+     * Link transaction ID to face auth verification
+     * Forwards request to ekycService
+     */
+    public void linkTransactionToFaceAuth(String sessionId, Long transactionId) {
+        String url = ekycServiceUrl + "/api/ekyc/link-transaction?sessionId=" + sessionId + "&transactionId=" + transactionId;
+        
+        try {
+            restTemplate.postForEntity(url, null, Void.class);
+            log.info("Successfully linked transaction {} to face auth session {}", transactionId, sessionId);
+        } catch (Exception e) {
+            log.error("Failed to link transaction to face auth: {}", e.getMessage());
+        }
+    }
+
+    /**
      * Create eKYC session
      */
     public ResponseEntity<ApiResponse<SessionResponse>> createSession(Long userId) {

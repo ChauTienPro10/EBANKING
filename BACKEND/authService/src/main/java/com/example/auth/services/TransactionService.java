@@ -24,10 +24,12 @@ public class TransactionService {
     @Autowired private PinCodeService pinCodeService;
     private final TransactionMapper transactionMapper;
     private final TransactionServiceGrpc.TransactionServiceBlockingStub transactionServiceBlockingStub;
+    private final EkycService ekycService;
 
     @Autowired
-    public TransactionService(grpcPath grpcPath, TransactionMapper transactionMapper) {
+    public TransactionService(grpcPath grpcPath, TransactionMapper transactionMapper, EkycService ekycService) {
         this.transactionMapper = transactionMapper;
+        this.ekycService = ekycService;
         ManagedChannel channel = ManagedChannelBuilder
                 .forAddress(grpcPath.getTransactionServiceHost(), grpcPath.getTransactionServicePort())
                 .usePlaintext()
@@ -42,6 +44,18 @@ public class TransactionService {
         }
         TransactionProto.TransferRequest rq = transactionMapper.toTransferRequestProto(request);
         TransactionProto.TransferResponse rs = transactionServiceBlockingStub.transfer(rq);
+        
+        // Link transaction ID to face auth verification if face auth was used
+        if (request.getRequiresFaceAuth() != null && request.getRequiresFaceAuth() 
+                && request.getFaceAuthSessionId() != null && !request.getFaceAuthSessionId().isEmpty()) {
+            try {
+                ekycService.linkTransactionToFaceAuth(request.getFaceAuthSessionId(), rs.getTransactionId());
+                log.info("Linked transaction {} to face auth session {}", rs.getTransactionId(), request.getFaceAuthSessionId());
+            } catch (Exception e) {
+                log.error("Failed to link transaction to face auth: {}", e.getMessage());
+            }
+        }
+        
         return transactionMapper.toTranserResponseDto(rs);
     }
 

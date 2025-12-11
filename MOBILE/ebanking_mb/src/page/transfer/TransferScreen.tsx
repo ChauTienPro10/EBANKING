@@ -224,6 +224,7 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({
       });
     } finally {
       setTransferModalVisible(false);
+      setIsLoading(false); // Reset loading state
     }
   };
 

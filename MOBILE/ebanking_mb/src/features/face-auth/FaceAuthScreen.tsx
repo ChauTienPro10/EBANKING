@@ -28,6 +28,8 @@ import { verifyTransactionFaceAuth } from '../../services/faceAuthApi';
 // Use dedicated Face Auth camera component
 import FaceLivenessCameraScreen from './FaceLivenessCameraScreen';
 import GuidelinesView from '../ekyc/components/liveness-camera/GuidelinesView';
+import FaceAuthResultModal from './FaceAuthResultModal';
+
 type RouteParams = {
   FaceAuthScreen: {
     reason: 'HIGH_AMOUNT' | 'DAILY_LIMIT';
@@ -47,6 +49,12 @@ const FaceAuthScreen: React.FC = () => {
     'notice' | 'guidelines' | 'camera' | 'verifying'
   >('notice');
   const [isVerifying, setIsVerifying] = useState(false);
+
+  // Modal state
+  const [showResultModal, setShowResultModal] = useState(false);
+  const [verificationSuccess, setVerificationSuccess] = useState(false);
+  const [verificationMessage, setVerificationMessage] = useState('');
+  const [verifiedSessionId, setVerifiedSessionId] = useState('');
   const getReasonMessage = () => {
     if (reason === 'HIGH_AMOUNT') {
       return {
@@ -77,58 +85,23 @@ const FaceAuthScreen: React.FC = () => {
         videoPath,
       );
       if (result.verified) {
-        Alert.alert(
-          'Xác Thực Thành Công',
-          `Độ chính xác: ${(result.confidence * 100).toFixed(1)}%`,
-          [
-            {
-              text: 'Tiếp tục',
-              onPress: () => {
-                onSuccess(result.sessionId);
-                navigation.goBack();
-              },
-            },
-          ],
-        );
+        setVerificationSuccess(true);
+        setVerifiedSessionId(result.sessionId);
+        setVerificationMessage('');
+        setShowResultModal(true);
       } else {
-        Alert.alert(
-          'Xác Thực Thất Bại',
-          result.message || 'Khuôn mặt không khớp. Vui lòng thử lại.',
-          [
-            {
-              text: 'Thử lại',
-              onPress: () => {
-                setStep('notice');
-                setIsVerifying(false);
-              },
-            },
-            {
-              text: 'Hủy',
-              style: 'cancel',
-              onPress: () => navigation.goBack(),
-            },
-          ],
+        setVerificationSuccess(false);
+        setVerificationMessage(
+          'Quá trình xác thực thất bại. Vui lòng thử lại.',
         );
+        setShowResultModal(true);
       }
     } catch (error: any) {
-      Alert.alert(
-        'Lỗi',
-        error.message || 'Xác thực thất bại. Vui lòng thử lại.',
-        [
-          {
-            text: 'Thử lại',
-            onPress: () => {
-              setStep('notice');
-              setIsVerifying(false);
-            },
-          },
-          {
-            text: 'Hủy',
-            style: 'cancel',
-            onPress: () => navigation.goBack(),
-          },
-        ],
-      );
+      setVerificationSuccess(false);
+      setVerificationMessage('Quá trình xác thực thất bại. Vui lòng thử lại.');
+      setShowResultModal(true);
+    } finally {
+      setIsVerifying(false);
     }
   };
   // Step 1: Security Notice (chuẩn UX ngân hàng VN)
@@ -198,6 +171,26 @@ const FaceAuthScreen: React.FC = () => {
         <Text style={styles.verifyingText}>Đang xác thực khuôn mặt...</Text>
         <Text style={styles.verifyingSubtext}>Vui lòng đợi trong giây lát</Text>
       </View>
+
+      {/* Result Modal */}
+      <FaceAuthResultModal
+        visible={showResultModal}
+        success={verificationSuccess}
+        message={verificationMessage}
+        onContinue={() => {
+          setShowResultModal(false);
+          onSuccess(verifiedSessionId);
+          navigation.goBack();
+        }}
+        onRetry={() => {
+          setShowResultModal(false);
+          setStep('notice');
+        }}
+        onCancel={() => {
+          setShowResultModal(false);
+          navigation.goBack();
+        }}
+      />
     </SafeAreaView>
   );
 };
