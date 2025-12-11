@@ -28,6 +28,7 @@ import EKYCDetailScreen from '../features/ekyc/screens/EKYCDetailScreen';
 import OCRCameraScreen from '../features/ekyc/components/OCRCameraScreen';
 import ChatScreen from '../page/chatbot/ChatScreen';
 import NotiScreen from '../page/notify/notiScreen';
+import FaceAuthScreen from '../features/face-auth/FaceAuthScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -84,6 +85,9 @@ export default function MainStack() {
       <Stack.Screen name="ReviewScreen" component={ReviewScreen} />
       <Stack.Screen name="ResultScreen" component={ResultScreen} />
       <Stack.Screen name="EKYCDetail" component={EKYCDetailScreen} />
+
+      {/* Face Authentication for High-Value Transactions */}
+      <Stack.Screen name="FaceAuthScreen" component={FaceAuthScreen} />
     </Stack.Navigator>
   );
 }

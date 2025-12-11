@@ -78,4 +78,9 @@ export type RootStackParamList = {
     faceMatchResult?: any;
   };
   EKYCDetail: undefined;
+  FaceAuthScreen: {
+    reason: 'HIGH_AMOUNT' | 'DAILY_LIMIT';
+    amount: string;
+    onSuccess: (sessionId: string) => void;
+  };
 };

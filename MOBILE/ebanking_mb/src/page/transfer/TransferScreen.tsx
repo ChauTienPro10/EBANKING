@@ -44,6 +44,7 @@ import { RootStackParamList } from '../../navigation/types';
 import fetch from '../../utils/fetch';
 import { API } from '../../constants/api';
 import Toast from 'react-native-toast-message';
+import { checkFaceAuthRequired } from '../../services/faceAuthApi';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import TransactionFailedScreen from './Error';
@@ -126,6 +127,10 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({
   const [saveRecipientAccount, setSaveRecipientAccount] = useState(false);
   const [savedAccounts, setSavedAccounts] = useState<SavedAccount[]>([]);
   const [showSavedAccountsModal, setShowSavedAccountsModal] = useState(false);
+  const [faceAuthSessionId, setFaceAuthSessionId] = useState<string | null>(
+    null,
+  );
+  const [requiresFaceAuth, setRequiresFaceAuth] = useState(false);
 
   const dispatch: AppDispatch = store.dispatch;
 
@@ -179,6 +184,9 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({
         currency: 'VND',
         transactionType: 'TRANSFER',
         description: formData.content,
+        // NEW: Add face auth fields
+        requiresFaceAuth: requiresFaceAuth,
+        faceAuthSessionId: faceAuthSessionId,
       };
 
       const transferResponse = await fetch.post(API.TRANSFER, payload);
@@ -190,8 +198,15 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({
 
         // Lưu số tài khoản người nhận nếu checkbox được chọn
         if (saveRecipientAccount && formData.recipientAccount) {
-          await saveRecipientAccountToStorage(formData.recipientAccount, receiverName);
+          await saveRecipientAccountToStorage(
+            formData.recipientAccount,
+            receiverName,
+          );
         }
+
+        // Reset face auth state
+        setRequiresFaceAuth(false);
+        setFaceAuthSessionId(null);
 
         navigation.navigate('PendingTransactionScreen', {
           amount: '₫' + formData.amount,
@@ -216,7 +231,10 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({
     setTransferModalVisible(false);
   };
 
-  const saveRecipientAccountToStorage = async (accountNumber: string, accountName: string) => {
+  const saveRecipientAccountToStorage = async (
+    accountNumber: string,
+    accountName: string,
+  ) => {
     try {
       const existingAccountsJson = await AsyncStorage.getItem(STORAGE_KEY);
       const existingAccounts: SavedAccount[] = existingAccountsJson
@@ -508,6 +526,46 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({
     setIsLoading(true);
 
     try {
+      // Step 1: Check if face authentication is required
+      const faceAuthCheck = await checkFaceAuthRequired(
+        loginResponse?.id!,
+        loginResponse?.username!,
+        formData.amount,
+      );
+
+      if (faceAuthCheck.required) {
+        setIsLoading(false);
+        setRequiresFaceAuth(true);
+
+        // Navigate to Face Auth Screen
+        (navigation as any).navigate('FaceAuthScreen', {
+          reason: faceAuthCheck.reason,
+          amount: formData.amount,
+          onSuccess: (sessionId: string) => {
+            setFaceAuthSessionId(sessionId);
+            // Continue with account check after face auth success
+            proceedWithAccountCheck();
+          },
+        });
+        return;
+      }
+
+      // No face auth required, proceed normally
+      setRequiresFaceAuth(false);
+      setFaceAuthSessionId(null);
+      await proceedWithAccountCheck();
+    } catch (error: any) {
+      Alert.alert(
+        t('transfer.error.title'),
+        error.message || t('transfer.error.message'),
+      );
+      setIsLoading(false);
+    }
+  };
+
+  const proceedWithAccountCheck = async () => {
+    setIsLoading(true);
+    try {
       const response = await fetch.post(API.CHECK_ACCOUNT_NUMBER, {
         accountNumber: formData.recipientAccount,
       });
@@ -520,7 +578,6 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({
           text2: 'Tài khoản không tồn tại!',
         });
       }
-      // onCheckAccountNumberSuccess();
     } catch (error) {
       Alert.alert(t('transfer.error.title'), t('transfer.error.message'));
     } finally {
@@ -675,7 +732,10 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({
               checked={saveRecipientAccount}
               onChange={setSaveRecipientAccount}
             />
-            <Text style={styles.saveAccountText} onPress={() => setSaveRecipientAccount(!saveRecipientAccount)}>
+            <Text
+              style={styles.saveAccountText}
+              onPress={() => setSaveRecipientAccount(!saveRecipientAccount)}
+            >
               {t('transfer.save_recipient_account')}
             </Text>
           </View>
@@ -813,7 +873,9 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({
             >
               <ArrowLeftIcon size={24} color={Colors.textPrimary} />
             </TouchableOpacity>
-            <Text style={styles.modalTitle}>{t('transfer.saved_accounts')}</Text>
+            <Text style={styles.modalTitle}>
+              {t('transfer.saved_accounts')}
+            </Text>
             {/* <View style={styles.modalHeaderRight} /> */}
           </View>
 

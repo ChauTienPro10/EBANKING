@@ -45,4 +45,8 @@ export const API = {
   UPLOAD_AVATAR: `${AUTH_SERVICE}/auth/user/{userId}/avatar`,
   DELETE_AVATAR: `${AUTH_SERVICE}/auth/user/{userId}/avatar`,
   GET_AVATAR: `${AUTH_SERVICE}/auth/user/{userId}/avatar`,
+
+  // face auth
+  CHECK_FACE_AUTH_REQUIRED: `${AUTH_SERVICE}/api/accounts/check-face-auth`,
+  VERIFY_TRANSACTION_FACE_AUTH: `${AUTH_SERVICE}/ekyc/verify-transaction`,
 };
