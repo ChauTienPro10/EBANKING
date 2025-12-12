@@ -26,8 +26,6 @@ export const CardLimitSection: React.FC<CardLimitSectionProps> = ({
     return amount.toLocaleString('vi-VN');
   };
 
-
-  // Format to short form: 35000000 => "35tr"
   const formatShort = (amount: number): string => {
     if (amount >= 1000000000) {
       return `${(amount / 1000000000).toFixed(1)}tỷ`;

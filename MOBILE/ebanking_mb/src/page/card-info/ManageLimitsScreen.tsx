@@ -7,6 +7,7 @@ import {
   ScrollView,
   TextInput,
   TouchableOpacity,
+  Modal,
   ActivityIndicator,
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
@@ -15,6 +16,7 @@ import { useNavigation } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
 import Colors from '../../constants/color';
 import Header from '../../components/Header';
+import PinInput from '../../components/PinInput';
 import fetch from '../../utils/fetch';
 import { API } from '../../constants/api';
 
@@ -32,6 +34,8 @@ const ManageLimitsScreen: React.FC = () => {
   const [currentLimits, setCurrentLimits] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [showPinModal, setShowPinModal] = useState(false);
+  const [pinInputKey, setPinInputKey] = useState(0);
 
   // System maximum limits
   const SYSTEM_MAX_DAILY = 50000000;
@@ -124,13 +128,34 @@ const ManageLimitsScreen: React.FC = () => {
     return true;
   };
 
-  const handleSave = async () => {
+  const handleSave = () => {
     if (!validateLimits()) return;
+    setShowPinModal(true);
+  };
 
+  const handlePinComplete = async (pin: string) => {
     try {
       setSaving(true);
 
-      // Update limits directly without PIN verification
+      // Verify PIN
+      const pinPayload = {
+        username: loginResponse?.username,
+        pinCode: pin,
+      };
+
+      const pinResponse = await fetch.post(API.CHECK_PIN, pinPayload, true);
+
+      if (!pinResponse) {
+        Toast.show({
+          type: 'error',
+          text1: 'Sai mã PIN',
+          text2: 'Vui lòng thử lại',
+        });
+        setPinInputKey(prev => prev + 1);
+        return;
+      }
+
+      // Update limits
       const updatePayload = {
         dailyLimit: parseMoney(dailyLimit),
         singleTransactionLimit: parseMoney(singleLimit),
@@ -148,6 +173,7 @@ const ManageLimitsScreen: React.FC = () => {
           text1: 'Thành công',
           text2: 'Đã cập nhật hạn mức giao dịch',
         });
+        setShowPinModal(false);
         navigation.goBack();
       }
     } catch (error: any) {
@@ -159,6 +185,7 @@ const ManageLimitsScreen: React.FC = () => {
         text1: 'Lỗi',
         text2: message,
       });
+      setPinInputKey(prev => prev + 1);
     } finally {
       setSaving(false);
     }
@@ -189,7 +216,8 @@ const ManageLimitsScreen: React.FC = () => {
           <Text style={styles.infoTitle}>ℹ️ Lưu ý</Text>
           <Text style={styles.infoText}>
             • Hạn mức giao dịch đơn không được lớn hơn hạn mức ngày{'\n'}• Hạn
-            mức tối thiểu: {MIN_LIMIT.toLocaleString('vi-VN')} ₫
+            mức tối thiểu: {MIN_LIMIT.toLocaleString('vi-VN')} ₫{'\n'}• Cần xác
+            thực mã PIN để thay đổi hạn mức
           </Text>
         </View>
 
@@ -253,6 +281,39 @@ const ManageLimitsScreen: React.FC = () => {
           )}
         </TouchableOpacity>
       </View>
+
+      {/* PIN Modal */}
+      <Modal
+        visible={showPinModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowPinModal(false)}
+      >
+        <View style={styles.pinModalOverlay}>
+          <View style={styles.pinModalContent}>
+            <Text style={styles.pinModalTitle}>Xác nhận thay đổi</Text>
+            <Text style={styles.pinModalSubtitle}>
+              Nhập mã PIN để xác nhận thay đổi hạn mức
+            </Text>
+            <PinInput
+              key={pinInputKey}
+              length={4}
+              onComplete={handlePinComplete}
+              create={false}
+              hasBiometric={false}
+            />
+            <TouchableOpacity
+              style={styles.pinModalCancel}
+              onPress={() => {
+                setShowPinModal(false);
+                setPinInputKey(prev => prev + 1);
+              }}
+            >
+              <Text style={styles.pinModalCancelText}>Hủy</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -278,16 +339,18 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.main_bule + '10',
     padding: 16,
     borderRadius: 12,
+    marginBottom: 20,
   },
   infoTitle: {
     fontSize: 14,
     fontWeight: '600',
     color: Colors.textPrimary,
+    marginBottom: 8,
   },
   infoText: {
     fontSize: 12,
     color: Colors.grey3,
-    lineHeight: 16,
+    lineHeight: 18,
   },
   inputCard: {
     backgroundColor: Colors.white,
@@ -371,6 +434,42 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     color: Colors.white,
+  },
+  pinModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  pinModalContent: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    padding: 32,
+    width: '100%',
+    maxWidth: 400,
+    alignItems: 'center',
+  },
+  pinModalTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: Colors.textPrimary,
+    marginBottom: 8,
+  },
+  pinModalSubtitle: {
+    fontSize: 14,
+    color: Colors.grey3,
+    marginBottom: 24,
+    textAlign: 'center',
+  },
+  pinModalCancel: {
+    marginTop: 16,
+    paddingVertical: 12,
+  },
+  pinModalCancelText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: Colors.grey3,
   },
 });
 
