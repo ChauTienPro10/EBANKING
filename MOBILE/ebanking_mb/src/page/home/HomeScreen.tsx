@@ -115,6 +115,7 @@ const HomeScreen: React.FC = () => {
           userName={t('greetings.hello_user', {
             name: loginResponse?.fullName || loginResponse?.username,
           })}
+          userAvatarUrl={userInfo?.avatarUrl}
           notificationCount={notificationCount}
           onNotificationPress={handleNotificationPress}
           headerPaddingBottom={headerPaddingBottom}

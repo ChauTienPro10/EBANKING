@@ -40,7 +40,7 @@ public class UserController {
     @Value("${server.port:8001}")
     private String serverPort;
 
-    @Value("${server.host:192.168.0.185}")
+    @Value("${server.host}")
     private String serverHost;
 
     @GetMapping("/{userId}")

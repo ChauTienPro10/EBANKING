@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   balanceText: {
-    color: Colors.white,
+    color: Colors.main_green,
     fontSize: 24,
     fontWeight: 'bold',
   },
