@@ -14,4 +14,5 @@ public class FaceAuthCheckResponse {
     private String reason; // "HIGH_AMOUNT", "DAILY_LIMIT", etc.
     private String message;
     private String sessionId; // Generate new session ID if required is true
+    private String limit;
 }

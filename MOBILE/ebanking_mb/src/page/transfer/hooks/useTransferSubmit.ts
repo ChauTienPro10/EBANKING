@@ -111,6 +111,7 @@ export const useTransferSubmit = () => {
           reason: faceAuthCheck.reason,
           amount: formData.amount,
           sessionId: faceAuthCheck.sessionId,
+          limit: faceAuthCheck.limit,
           onSuccess: (sessionId: string) => {
             setFaceAuthSessionId(sessionId);
             // Continue with account check after face auth success

@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeScreen from '../page/home/HomeScreen';
 import MenuScreen from '../page/menu/MenuScreen';
 import CardScreen from '../page/card-info/CardScreen';
+import ManageLimitsScreen from '../page/card-info/ManageLimitsScreen';
 import SearchScreen from '../page/search/SearchScreen';
 import SettingsScreen from '../page/settings/SettingsScreen';
 import SupportScreen from '../page/support/SupportScreen';
@@ -16,7 +17,7 @@ import TransactionFailedScreen from '../page/transfer/Error';
 import TransactionHistoryScreen from '../page/transaction/TransactionHistoryScreen';
 import TransactionDetailScreen from '../page/transaction/TransactionDetailScreen';
 import ShowNotificationScreen from '../notification/showNoti';
-import setPinCodeScreen from '../PIN/pinCodeScreen';
+import SetPinCodeScreen from '../PIN/pinCodeScreen';
 import ScannerScreen from '../page/QR/ScannerScreen';
 import {
   EKYCScreen,
@@ -44,6 +45,7 @@ export default function MainStack() {
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="Menu" component={MenuScreen} />
       <Stack.Screen name="Card" component={CardScreen} />
+      <Stack.Screen name="ManageLimits" component={ManageLimitsScreen} />
       <Stack.Screen name="Search" component={SearchScreen} />
       <Stack.Screen name="Settings" component={SettingsScreen} />
       <Stack.Screen name="Support" component={SupportScreen} />
@@ -74,7 +76,7 @@ export default function MainStack() {
         name="ShowNotificationScreen"
         component={ShowNotificationScreen}
       />
-      <Stack.Screen name="SetPINCode" component={setPinCodeScreen} />
+      <Stack.Screen name="SetPINCode" component={SetPinCodeScreen} />
       <Stack.Screen name="ScannerScreen" component={ScannerScreen} />
       <Stack.Screen name="Notifications" component={NotiScreen} />
 

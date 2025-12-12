@@ -20,6 +20,7 @@ export interface FaceAuthCheckResponse {
   reason: 'HIGH_AMOUNT' | 'DAILY_LIMIT' | null;
   message: string | null;
   sessionId: string | null;
+  limit: string | null;
 }
 export interface FaceAuthVerifyResponse {
   verified: boolean;

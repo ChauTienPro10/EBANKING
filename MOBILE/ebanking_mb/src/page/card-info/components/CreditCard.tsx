@@ -18,8 +18,6 @@ interface CreditCardProps {
   isNumberVisible: boolean;
   maskedNumber: string;
   holderName: any;
-  expiryMonth: string;
-  expiryYear: string;
   onNumberPress: () => void;
   onNumberLongPress: () => void;
   isLocked?: boolean;
@@ -31,8 +29,6 @@ export const CreditCard: React.FC<CreditCardProps> = ({
   isNumberVisible,
   maskedNumber,
   holderName,
-  expiryMonth,
-  expiryYear,
   onNumberPress,
   onNumberLongPress,
   isLocked = false,
@@ -98,18 +94,11 @@ export const CreditCard: React.FC<CreditCardProps> = ({
             </Text>
           </TouchableOpacity>
 
-          {/* Bottom Row: Name and Expiry */}
+          {/* Bottom Row: Name */}
           <View style={styles.cardBottomRow}>
             <View style={styles.cardholderSection}>
               <Text style={styles.cardLabel}>Name</Text>
               <Text style={styles.cardholderName}>{holderName}</Text>
-            </View>
-
-            <View style={styles.expirySection}>
-              <Text style={styles.cardLabel}>Expired Date</Text>
-              <Text style={styles.expiryDate}>
-                {expiryMonth}/{expiryYear}
-              </Text>
             </View>
           </View>
 
