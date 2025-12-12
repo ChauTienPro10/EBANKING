@@ -15,6 +15,7 @@ import {
   clearNotifications,
 } from '../../store/slices/appSlice';
 import LogoutConfirmPopup from '../../popups/LogoutPopup';
+import LanguagePopup from '../../popups/LanguagePopup';
 import { useNavigation } from '@react-navigation/native';
 
 const SettingsScreen: React.FC = () => {
@@ -27,6 +28,7 @@ const SettingsScreen: React.FC = () => {
   const { activeTab, handleTabChange, handleNotificationPress } =
     useAppNavigation('settings');
   const [showLogoutPopup, setShowLogoutPopup] = useState(false);
+  const [showLanguagePopup, setShowLanguagePopup] = useState(false);
 
   const handleQRPress = () => {
     console.log('QR Code pressed - Open QR Scanner');
@@ -117,6 +119,9 @@ const SettingsScreen: React.FC = () => {
       case 'logout':
         setShowLogoutPopup(true);
         break;
+      case 'language':
+        setShowLanguagePopup(true);
+        break;
       case 'security':
         break;
       case 'biometric':
@@ -156,6 +161,10 @@ const SettingsScreen: React.FC = () => {
         visible={showLogoutPopup}
         onCancel={() => setShowLogoutPopup(false)}
         onConfirm={handleLogout}
+      />
+      <LanguagePopup
+        visible={showLanguagePopup}
+        onClose={() => setShowLanguagePopup(false)}
       />
       <BottomNavigation
         activeTab={activeTab}

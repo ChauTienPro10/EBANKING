@@ -38,6 +38,7 @@ import PinInput from '../../components/PinInput';
 import Toast from 'react-native-toast-message';
 import fetch from '../../utils/fetch';
 import { API } from '../../constants/api';
+import ReminderPopup from '../../popups/ReminderPopupProps';
 
 type FilterType = 'all' | 'sent' | 'received';
 type PendingAction = 'lock' | 'unlock' | 'access' | null;
@@ -62,6 +63,7 @@ const CardScreen: React.FC = () => {
   const [isAccessGranted, setIsAccessGranted] = useState(false);
   const [pinInputKey, setPinInputKey] = useState(0);
   const [isVerifyingPin, setIsVerifyingPin] = useState(false);
+  const [requireSetPin, setRequireSetPin] = useState(false);
   const loginResponse = useSelector((state: RootState) => state.app.loginResponse);
 
   // Custom hooks
@@ -69,6 +71,14 @@ const CardScreen: React.FC = () => {
     useCardActions();
   const { activeTab, handleBackPress, handleTabChange, handleQRPress } =
     useCardNavigation();
+
+  React.useEffect(() => {
+    if (loginResponse?.pinStatus !== true) {
+      setRequireSetPin(true);
+    } else {
+      setRequireSetPin(false);
+    }
+  }, [loginResponse]);
 
   // Card data
   // const fullCardNumber = '1237689076545678';
@@ -84,12 +94,12 @@ const CardScreen: React.FC = () => {
 
   const maskCardNumber = (value: string) => {
     const digits = value.replace(/\D/g, ""); // bỏ hết ký tự không phải số
-  
+
     if (digits.length < 12) return value; // không đủ số thì giữ nguyên
-  
+
     const first4 = digits.slice(0, 4);
     const last4 = digits.slice(-4);
-  
+
     return `${first4} **** **** ${last4}`;
   };
 
@@ -109,8 +119,10 @@ const CardScreen: React.FC = () => {
     useCallback(() => {
       setIsAccessGranted(false);
       setShowMenu(false);
-      openPinModal('access');
-    }, [openPinModal]),
+      if (loginResponse?.pinStatus === true) {
+        openPinModal('access');
+      }
+    }, [openPinModal, loginResponse]),
   );
 
   const handlePinComplete = async (pin: string) => {
@@ -306,6 +318,15 @@ const CardScreen: React.FC = () => {
         </View>
       )}
 
+      <ReminderPopup
+        visible={requireSetPin}
+        message={t('home.pin_not_set_message')}
+        confirmLabel={t('common.set_pin_now')}
+        onClose={() => {
+          setRequireSetPin(false);
+          handleTabChange('settings');
+        }}
+      />
       {/* PIN Modal */}
       <Modal
         visible={showPinModal}

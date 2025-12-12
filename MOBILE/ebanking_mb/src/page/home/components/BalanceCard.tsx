@@ -62,18 +62,20 @@ const BalanceCard: React.FC<BalanceCardProps> = ({
           ) : (
             <TouchableOpacity onPress={onOpenCard}>
               <Text style={styles.balanceTextOpenAccount}>
-                {account === null ? openAccountLabel : '*,***,***'}
+                {account === null ? openAccountLabel.toUpperCase() : '*,***,***'}
               </Text>
             </TouchableOpacity>
           )}
 
-          <TouchableOpacity style={styles.eyeButton} onPress={onToggleBalance}>
-            {isBalanceVisible ? (
-              <EyeOffIcon size={20} color={Colors.white} />
-            ) : (
-              <EyeIcon size={20} color={Colors.white} />
-            )}
-          </TouchableOpacity>
+          {account != null && (
+            <TouchableOpacity style={styles.eyeButton} onPress={onToggleBalance}>
+              {isBalanceVisible ? (
+                <EyeOffIcon size={20} color={Colors.white} />
+              ) : (
+                <EyeIcon size={20} color={Colors.white} />
+              )}
+            </TouchableOpacity>
+          )}
         </View>
 
         <View style={styles.balanceFooter}>

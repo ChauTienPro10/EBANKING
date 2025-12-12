@@ -52,16 +52,19 @@ const HomeScreen: React.FC = () => {
     navigation,
   } = useHomeNavigation(account, userInfo);
 
-  // Effects
-  useEffect(() => {
-    if (
-      userInfo?.fullName === '' ||
-      userInfo?.birthday === '' ||
-      userInfo?.address === ''
-    ) {
-      setRequireUpdateInfo(true);
-    }
-  }, [userInfo]);
+  // // Effects
+  // useEffect(() => {
+  //   if (
+  //     userInfo === null ||
+  //     userInfo === undefined ||
+  //     userInfo?.fullName === '' ||
+  //     userInfo?.birthday === '' ||
+  //     userInfo?.address === '' ||
+  //     userInfo.ekycStatus !== 'VERIFIED'
+  //   ) {
+  //     setRequireUpdateInfo(true);
+  //   }
+  // }, [userInfo]);
 
   // Event handlers
   const handleNotificationPress = () => {
@@ -91,7 +94,7 @@ const HomeScreen: React.FC = () => {
     <View style={styles.container}>
       <ReminderPopup
         visible={requireUpdateInfo}
-        message="Vui lòng cập nhật đầy đủ thông tin"
+        message={t('home.update_info_required')}
         onClose={() => {
           setRequireUpdateInfo(false);
           navigation.navigate('Profile' as never);

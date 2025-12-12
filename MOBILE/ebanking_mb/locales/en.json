@@ -1,4 +1,17 @@
 {
+  "err": {
+    "error_title": "Error",
+    "text_pin_dont_meet": "PIN does not match",
+    "text_can_not_set_pin": "Failed to set PIN",
+    "text_delete_pin_fail": "Cannot delete PIN",
+    "text_pin_invalid": "Invalid PIN",
+    "text_err_progress": "Processing error, please try again later",
+    "auth_otp_fail": "OTP authentication failed",
+    "otp_not_true": "Incorrect OTP",
+    "user_not_found": "User not found",
+    "password_invalid": "Invalid password",
+    "internal_error": "System error"
+  },
   "menu": {
     "title": "Menu",
     "greeting": "Hello, {userName}",
@@ -17,6 +30,8 @@
     "total_balance_vnd": "Total Balance VND",
     "earn_daily": "EARN DAILY",
     "upgrade_rank": "UPGRADE RANK",
+    "update_info_required": "Please update your full information",
+    "pin_not_set_message": "You have not set a PIN. Please set it now to secure your account.",
     "services_title": "Shopping - Entertainment - Investment",
     "lottery_king": "Lottery King",
     "data_4g": "4G Data/Top up",
@@ -96,7 +111,10 @@
     "privacy": "Privacy",
     "about": "About",
     "help": "Help",
-    "logout": "Logout"
+    "logout": "Logout",
+    "select_language": "Select Language",
+    "vi": "Vietnamese",
+    "en": "English"
   },
   "support": {
     "title": "Support",
@@ -339,7 +357,10 @@
     "done": "Done",
     "loading": "Loading...",
     "error": "Error",
-    "success": "Success"
+    "success": "Success",
+    "close": "Close",
+    "exit_app": "Exit App",
+    "set_pin_now": "Set PIN Now"
   },
   "mock_data": {
     "user": {
@@ -398,5 +419,9 @@
       "menu_mounted": "MenuScreen mounted",
       "current_tab": "Current tab: {{tab}}"
     }
+  },
+  "forgot_password": {
+    "use_phone": "Use phone number",
+    "use_email": "Use email"
   }
 }

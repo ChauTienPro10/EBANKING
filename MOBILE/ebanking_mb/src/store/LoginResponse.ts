@@ -9,4 +9,5 @@ interface LoginResponse {
     isMale: string;
     roles: Set<string> | string[];
     jwt: string;
+    pinStatus?: boolean;
 }

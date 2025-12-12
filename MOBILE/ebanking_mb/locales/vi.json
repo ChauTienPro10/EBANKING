@@ -30,7 +30,8 @@
     "total_balance_vnd": "Tổng số dư VND",
     "earn_daily": "SINH LỜI MỖI NGÀY",
     "card_management": "QUẢN LÝ THẺ",
-
+    "update_info_required": "Vui lòng cập nhật đầy đủ thông tin",
+    "pin_not_set_message": "Bạn chưa thiết lập mã PIN. Vui lòng thiết lập ngay để bảo vệ tài khoản.",
     "upgrade_rank": "NÂNG HẠNG",
     "services_title": "Mua sắm - Giải trí - Đầu tư",
     "lottery_king": "Vua xổ số",
@@ -80,12 +81,11 @@
     "settings": "Cài đặt",
     "support": "Hỗ trợ"
   },
-  "card": {   
+  "card": {
     "title": "Thẻ của tôi",
     "credit_card": "Thẻ tín dụng",
     "debit_card": "Thẻ ghi nợ",
     "card_limit": "Hạn mức thẻ",
-
     "balance_title": "Số dư thẻ",
     "balance_subtitle": "Số tiền hiện có thể dùng cho giao dịch thẻ",
     "balance_currency": "Đơn vị",
@@ -93,18 +93,15 @@
     "spent": "Đã chi tiêu",
     "remaining": "Còn lại",
     "total_limit": "Tổng hạn mức",
-
     "of": "trên",
     "view_details": "Xem chi tiết",
-    "transactions": "Giao dịch", 
+    "transactions": "Giao dịch",
     "all": "Tất cả",
     "sent": "Chi tiêu",
     "received": "Nhận tiền",
-
     "spent_of_limit": "{{spent}} đã chi tiêu trên {{limit}} hạn mức thẻ",
     "copied": "Đã sao chép",
     "card_number_copied": "Số thẻ đã được sao chép vào clipboard"
-
   },
   "settings": {
     "title": "Cài đặt",
@@ -116,7 +113,10 @@
     "privacy": "Quyền riêng tư",
     "about": "Giới thiệu",
     "help": "Trợ giúp",
-    "logout": "Đăng xuất"
+    "logout": "Đăng xuất",
+    "select_language": "Chọn ngôn ngữ",
+    "vi": "Tiếng Việt",
+    "en": "Tiếng Anh"
   },
   "support": {
     "title": "Hỗ trợ",
@@ -239,7 +239,6 @@
     "placeholder": "Tìm kiếm chức năng...",
     "no_results": "Không tìm thấy kết quả"
   },
-
   "transfer": {
     "title": "Chuyển tiền",
     "transfer_type": "Loại chuyển tiền",
@@ -305,7 +304,6 @@
     "text_fingerint_login": "Đăng nhập bằng vân tay",
     "text_password": "Mật khẩu",
     "text_password_new": "Mật khẩu mới",
-
     "text_email": "Email",
     "text_not_have_account": "Bạn chưa có tài khoản?",
     "text_sign_up": "Đăng ký",
@@ -370,7 +368,10 @@
     "done": "Hoàn thành",
     "loading": "Đang tải...",
     "error": "Lỗi",
-    "success": "Thành công"
+    "success": "Thành công",
+    "close": "Đóng",
+    "exit_app": "Thoát",
+    "set_pin_now": "Thiết lập"
   },
   "mock_data": {
     "user": {
