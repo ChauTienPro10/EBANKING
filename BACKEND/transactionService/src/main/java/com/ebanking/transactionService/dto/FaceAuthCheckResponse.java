@@ -7,11 +7,12 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@NoArgsConstructor @AllArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 public class FaceAuthCheckResponse {
     private Boolean required;
     private String reason; // "HIGH_AMOUNT", "DAILY_LIMIT", v.v...
     private String message;
     private String sessionId; // Generate new session ID if required is true
+    private String limit; // The limit that was exceeded (formatted with commas)
 }
-

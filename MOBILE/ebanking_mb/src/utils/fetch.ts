@@ -1,5 +1,5 @@
-import { store } from "../store";
-import { navigate } from "../navigation/navigate";
+import { store } from '../store';
+import { navigate } from '../navigation/navigate';
 
 const defaultHeaders: Record<string, string> = {
   'Content-Type': 'application/json',
@@ -11,8 +11,8 @@ function getAuthToken(): string | null {
 }
 
 async function post(url: string, body: any, authRequire: boolean = true) {
-  console.log("POST request to:", url);
-  console.log("Request body:", body);
+  console.log('POST request to:', url);
+  console.log('Request body:', body);
 
   const headers = { ...defaultHeaders };
 
@@ -59,10 +59,10 @@ async function post(url: string, body: any, authRequire: boolean = true) {
     if (rawText) {
       try {
         const data = JSON.parse(rawText);
-        console.log("Response data:", data);
+        console.log('Response data:', data);
         return data;
       } catch {
-        console.warn("Response is not valid JSON:", rawText);
+        console.warn('Response is not valid JSON:', rawText);
         return rawText;
       }
     } else {
@@ -82,9 +82,85 @@ async function post(url: string, body: any, authRequire: boolean = true) {
   }
 }
 
+async function get(
+  url: string,
+  params: any = {},
+  authRequire: boolean = false,
+) {
+  console.log('GET request to:', url);
 
+  const headers = { ...defaultHeaders };
 
-async function get(url: string, params: any = {}, authRequire: boolean = false) {
+  if (authRequire) {
+    const token = getAuthToken();
+    console.log('Auth token present:', !!token);
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    } else {
+      console.warn('Auth required but no token available');
+    }
+  }
+
+  const query = new URLSearchParams(params).toString();
+  const fullUrl = query ? `${url}?${query}` : url;
+
+  try {
+    const response = await fetch(fullUrl, {
+      method: 'GET',
+      headers,
+    });
+
+    const rawText = await response.text();
+
+    if (!response.ok) {
+      let errorMessage = `Lỗi ${response.status}: ${response.statusText}`;
+
+      try {
+        const errorJson = JSON.parse(rawText);
+        if (errorJson.message || errorJson.error) {
+          errorMessage = errorJson.message || errorJson.error;
+        }
+      } catch {
+        errorMessage = rawText || errorMessage;
+      }
+
+      console.error('GET error:', errorMessage);
+
+      // Handle 403 errors by navigating to SignIn
+      if (response.status === 403) {
+        navigate('SignIn' as never);
+      }
+
+      throw new Error(errorMessage);
+    }
+
+    if (rawText) {
+      try {
+        const data = JSON.parse(rawText);
+        console.log('Response data:', data);
+        return data;
+      } catch {
+        console.warn('Response is not valid JSON:', rawText);
+        return rawText;
+      }
+    } else {
+      throw new Error('Phản hồi từ máy chủ trống');
+    }
+  } catch (error: any) {
+    const message =
+      typeof error?.message === 'string'
+        ? error.message.replace('INTERNAL: ', '')
+        : 'Lỗi không xác định';
+
+    console.error('Lỗi khi gửi yêu cầu GET:', message);
+    throw error;
+  }
+}
+
+async function put(url: string, body: any, authRequire: boolean = true) {
+  console.log('PUT request to:', url);
+  console.log('Request body:', body);
+
   const headers = { ...defaultHeaders };
 
   if (authRequire) {
@@ -94,23 +170,64 @@ async function get(url: string, params: any = {}, authRequire: boolean = false) 
     }
   }
 
-  const query = new URLSearchParams(params).toString();
-  const fullUrl = query ? `${url}?${query}` : url;
+  try {
+    const response = await fetch(url, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify(body),
+    });
 
-  const response = await fetch(fullUrl, {
-    method: 'GET',
-    headers,
-  });
+    const rawText = await response.text();
 
-  if (!response.ok) {
-    console.error(response)
-    throw new Error(`GET ${url} failed: ${response.statusText}`);
+    if (!response.ok) {
+      let errorMessage = `Lỗi ${response.status}: ${response.statusText}`;
+
+      try {
+        const errorJson = JSON.parse(rawText);
+        if (errorJson.message || errorJson.error) {
+          errorMessage = errorJson.message || errorJson.error;
+        }
+      } catch {
+        errorMessage = rawText || errorMessage;
+      }
+
+      console.error('PUT error:', errorMessage);
+
+      if (response.status === 403) {
+        navigate('SignIn' as never);
+      }
+
+      throw new Error(errorMessage);
+    }
+
+    if (rawText) {
+      try {
+        const data = JSON.parse(rawText);
+        console.log('PUT Response data:', data);
+        return data;
+      } catch {
+        console.warn('PUT Response is not valid JSON:', rawText);
+        return rawText;
+      }
+    } else {
+      throw new Error('Phản hồi từ máy chủ trống');
+    }
+  } catch (error: any) {
+    const message =
+      typeof error?.message === 'string'
+        ? error.message.replace('INTERNAL: ', '')
+        : 'Lỗi không xác định';
+
+    console.error('Lỗi khi gửi yêu cầu PUT:', message);
+    if (message === '403' || message === 403) {
+      navigate('SignIn' as never);
+    }
+    throw error;
   }
-
-  return response.json();
 }
 
 export default {
   post,
   get,
+  put,
 };

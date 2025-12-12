@@ -35,13 +35,14 @@ type RouteParams = {
     reason: 'HIGH_AMOUNT' | 'DAILY_LIMIT';
     amount: string;
     sessionId: string; // Session ID from check-face-auth
+    limit: string; // User's limit that was exceeded
     onSuccess: (sessionId: string) => void;
   };
 };
 const FaceAuthScreen: React.FC = () => {
   const navigation = useNavigation();
   const route = useRoute<RouteProp<RouteParams, 'FaceAuthScreen'>>();
-  const { reason, amount, sessionId, onSuccess } = route.params;
+  const { reason, amount, sessionId, limit, onSuccess } = route.params;
   const loginResponse = useSelector(
     (state: RootState) => state.app.loginResponse,
   );
@@ -59,14 +60,14 @@ const FaceAuthScreen: React.FC = () => {
     if (reason === 'HIGH_AMOUNT') {
       return {
         title: 'Giao Dịch Giá Trị Cao',
-        subtitle: `Giao dịch ${amount} VND vượt hạn mức 10 triệu VND`,
+        subtitle: `Giao dịch ${amount} VND vượt hạn mức ${limit} VND`,
         description:
           'Để đảm bảo an toàn, vui lòng xác thực khuôn mặt trước khi tiếp tục.',
       };
     }
     return {
       title: 'Vượt Hạn Mức Ngày',
-      subtitle: 'Tổng giao dịch trong ngày vượt 50 triệu VND',
+      subtitle: `Tổng giao dịch trong ngày vượt ${limit} VND`,
       description:
         'Để đảm bảo an toàn, vui lòng xác thực khuôn mặt trước khi tiếp tục.',
     };

@@ -1,7 +1,9 @@
 package com.ebanking.transactionService.service;
+
 import com.ebanking.transactionService.dto.FaceAuthCheckResponse;
 import com.ebanking.transactionService.entity.Account;
 import com.ebanking.transactionService.entity.Transaction;
+import com.ebanking.transactionService.entity.TransactionLimit;
 import com.ebanking.transactionService.enums.KafkaTopic;
 import com.ebanking.transactionService.enums.TransactionStatus;
 import com.ebanking.transactionService.enums.TransactionType;
@@ -44,8 +46,7 @@ public class TransactionService {
     @Autowired
     public TransactionService(
             KafkaTemplate<String, Transaction> kafkaTemplate,
-            KafkaTemplate<String, String> stringKafkaTemplate
-    ) {
+            KafkaTemplate<String, String> stringKafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
         this.stringKafkaTemplate = stringKafkaTemplate;
     }
@@ -71,9 +72,9 @@ public class TransactionService {
     /**
      * Check if face authentication is required for this transaction
      *
-     * @param userId User ID
+     * @param userId   User ID
      * @param username Username
-     * @param amount Transaction amount
+     * @param amount   Transaction amount
      * @return FaceAuthCheckResponse with required flag and reason
      */
     public FaceAuthCheckResponse checkFaceAuthRequired(Long userId, String username, BigDecimal amount) {
@@ -82,31 +83,41 @@ public class TransactionService {
         // Generate session ID for tracking
         String sessionId = UUID.randomUUID().toString();
 
-        // Check 1: Single transaction > 10M
-        if (amount.compareTo(SINGLE_LIMIT) > 0) {
-            log.info("Face auth required: HIGH_AMOUNT (amount: {} > limit: {})", amount, SINGLE_LIMIT);
+        // Get user's custom limits (or default if not set)
+        LocalDate today = LocalDate.now();
+        TransactionLimit userLimit = limitRepository.findByUserIdAndLimitDate(userId, today)
+                .orElse(null);
+
+        // If no custom limit found, use system defaults
+        BigDecimal userSingleLimit = (userLimit != null) ? userLimit.getSingleTransactionLimit() : SINGLE_LIMIT;
+        BigDecimal userDailyLimit = (userLimit != null) ? userLimit.getDailyLimit() : DAILY_LIMIT;
+
+        // Check 1: Single transaction exceeds user's single limit
+        if (amount.compareTo(userSingleLimit) > 0) {
+            log.info("Face auth required: HIGH_AMOUNT (amount: {} > user limit: {})", amount, userSingleLimit);
             return FaceAuthCheckResponse.builder()
                     .required(true)
                     .reason("HIGH_AMOUNT")
-                    .message("Giao dịch trên 10 triệu VND cần xác thực khuôn mặt")
+                    .message("Giao dịch vượt hạn mức cho phép (" + formatMoney(userSingleLimit) + " VNĐ)")
                     .sessionId(sessionId)
+                    .limit(formatMoney(userSingleLimit))
                     .build();
         }
 
         // Check 2: Daily limit
-        LocalDate today = LocalDate.now();
         BigDecimal todayTotal = limitRepository.getTodayTotalAmount(username, today);
 
-        log.info("Today's total for user {}: {}", username, todayTotal);
+        log.info("Today's total for user {}: {}, daily limit: {}", username, todayTotal, userDailyLimit);
 
-        if (todayTotal.add(amount).compareTo(DAILY_LIMIT) > 0) {
+        if (todayTotal.add(amount).compareTo(userDailyLimit) > 0) {
             log.info("Face auth required: DAILY_LIMIT (today: {} + amount: {} > limit: {})",
-                    todayTotal, amount, DAILY_LIMIT);
+                    todayTotal, amount, userDailyLimit);
             return FaceAuthCheckResponse.builder()
                     .required(true)
                     .reason("DAILY_LIMIT")
-                    .message("Vượt hạn mức giao dịch trong ngày (50 triệu VND)")
+                    .message("Vượt hạn mức giao dịch trong ngày (" + formatMoney(userDailyLimit) + " VNĐ)")
                     .sessionId(sessionId)
+                    .limit(formatMoney(userDailyLimit))
                     .build();
         }
 
@@ -118,19 +129,56 @@ public class TransactionService {
                 .sessionId(null)
                 .build();
     }
+
+    private String formatMoney(BigDecimal amount) {
+        return String.format("%,.0f", amount);
+    }
+
+    /**
+     * Update used_amount in transaction_limit after successful transaction
+     */
+    private void updateUsedAmount(Long userId, String username, BigDecimal amount) {
+        LocalDate today = LocalDate.now();
+
+        // Get or create today's limit record
+        TransactionLimit limit = limitRepository.findByUserIdAndLimitDate(userId, today)
+                .orElseGet(() -> {
+                    TransactionLimit newLimit = new TransactionLimit();
+                    newLimit.setUserId(userId);
+                    newLimit.setLimitDate(today);
+                    newLimit.setDailyLimit(DAILY_LIMIT);
+                    newLimit.setSingleTransactionLimit(SINGLE_LIMIT);
+                    newLimit.setUsedAmount(BigDecimal.ZERO);
+                    newLimit.setCreatedAt(LocalDateTime.now());
+                    newLimit.setUpdatedAt(LocalDateTime.now());
+                    return limitRepository.save(newLimit);
+                });
+
+        // Update used amount
+        BigDecimal newUsedAmount = limit.getUsedAmount().add(amount);
+        limit.setUsedAmount(newUsedAmount);
+        limit.setUpdatedAt(LocalDateTime.now());
+        limitRepository.save(limit);
+
+        log.info("Updated used_amount for user {}: {} + {} = {}",
+                userId, limit.getUsedAmount().subtract(amount), amount, newUsedAmount);
+    }
+
     /**
      *
      * @param data
      * @return
      */
     @Transactional
-    public TransactionProto.TransferResponse transfer(TransactionProto.TransferRequest data) throws TransactionException {
+    public TransactionProto.TransferResponse transfer(TransactionProto.TransferRequest data)
+            throws TransactionException {
 
         if (data.getSenderAccountNumber().equals(data.getReceiverAccountNumber())) {
             throw new TransactionException("error_dont_send_yourself");
         }
         Account sender = accountRepository.findByAccountNumber(data.getSenderAccountNumber());
-        if (sender == null) throw new TransactionException("Tài khoản không hợp lệ");
+        if (sender == null)
+            throw new TransactionException("Tài khoản không hợp lệ");
         BigDecimal amount = new BigDecimal(data.getAmount());
         if (sender.getBalance().compareTo(amount) < 0) {
             throw new TransactionException("error_amount_not_enough");
@@ -170,8 +218,7 @@ public class TransactionService {
             faceAuthAt = LocalDateTime.now();
         }
 
-        Transaction transaction =
-        transactionRepository.save(Transaction.builder()
+        Transaction transaction = transactionRepository.save(Transaction.builder()
                 .senderAccountNumber(data.getSenderAccountNumber())
                 .receiverAccountNumber(data.getReceiverAccountNumber())
                 .amount(amount)
@@ -197,7 +244,8 @@ public class TransactionService {
      * @throws TransactionException
      */
     @Transactional
-    public TransactionProto.TransferResponse processTransfer(Transaction transaction) throws TransactionException, JsonProcessingException {
+    public TransactionProto.TransferResponse processTransfer(Transaction transaction)
+            throws TransactionException, JsonProcessingException {
 
         if (transaction.getSenderAccountNumber().equals(transaction.getReceiverAccountNumber())) {
             transaction.setStatus(TransactionStatus.FAILED.name());
@@ -229,6 +277,9 @@ public class TransactionService {
         accountRepository.save(receiver);
         transaction.setStatus(TransactionStatus.SUCCESS.name());
 
+        // Update used_amount in transaction_limit
+        updateUsedAmount(sender.getUserId(), transaction.getUsername(), amount);
+
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
@@ -236,19 +287,15 @@ public class TransactionService {
         String socketMessage = mapper.writeValueAsString(transaction);
         stringKafkaTemplate.send(KafkaTopic.TRANSFER_NOTIFY_REALTIME.getTopicName(), socketMessage);
 
-
         // publish success transaction event for notifications
         kafkaTemplate.send(KafkaTopic.TRANSACTION_NOTIFY.getTopicName(), transaction);
         // send email notification
         kafkaTemplate.send(KafkaTopic.TRANSFER_SEND_EMAIL.getTopicName(), transaction);
-        
+
         return transactionMapper.toTransferResponse(transactionRepository.save(transaction));
     }
 
     /**
-     *
-     * @param username
-     * @param sender
      * @param fromDate
      * @param toDate
      * @param page
@@ -256,10 +303,10 @@ public class TransactionService {
      * @return
      */
     public Page<Transaction> getTransactionHistory(String accountNumber,
-                                                   LocalDateTime fromDate,
-                                                   LocalDateTime toDate,
-                                                   int page,
-                                                   int size) {
+            LocalDateTime fromDate,
+            LocalDateTime toDate,
+            int page,
+            int size) {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("transactionAt").descending());
 
@@ -267,8 +314,7 @@ public class TransactionService {
                 accountNumber,
                 fromDate,
                 toDate,
-                pageable
-        );
+                pageable);
     }
 
     public Account getAccountInfoFromAccountNumber(String accountNumber) {

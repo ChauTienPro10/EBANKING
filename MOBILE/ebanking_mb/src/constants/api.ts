@@ -49,4 +49,8 @@ export const API = {
   // face auth
   CHECK_FACE_AUTH_REQUIRED: `${AUTH_SERVICE}/ekyc/check-face-auth`,
   VERIFY_TRANSACTION_FACE_AUTH: `${AUTH_SERVICE}/ekyc/verify-transaction`,
+
+  // transaction limits
+  GET_USER_LIMITS: `${AUTH_SERVICE}/trans/transaction-limits`,
+  UPDATE_USER_LIMITS: `${AUTH_SERVICE}/trans/transaction-limits`,
 };

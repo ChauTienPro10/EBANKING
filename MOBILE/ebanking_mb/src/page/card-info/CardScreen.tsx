@@ -78,6 +78,7 @@ const CardScreen: React.FC = () => {
   const loginResponse = useSelector(
     (state: RootState) => state.app.loginResponse,
   );
+  const [userLimits, setUserLimits] = useState<any>(null);
 
   // Custom hooks
   const { isCardNumberVisible, toggleCardNumberVisibility, copyCardNumber } =
@@ -108,6 +109,7 @@ const CardScreen: React.FC = () => {
           limit: 50,
         }),
       );
+      fetchUserLimits();
     }
   }, [
     isAccessGranted,
@@ -115,6 +117,21 @@ const CardScreen: React.FC = () => {
     account?.accountNumber,
     dispatch,
   ]);
+
+  const fetchUserLimits = async () => {
+    try {
+      const response = await fetch.get(
+        `${API.GET_USER_LIMITS}/${userInfo?.id}`,
+        {}, // params (empty object)
+        true, // authRequire
+      );
+      if (response) {
+        setUserLimits(response);
+      }
+    } catch (error) {
+      console.error('Error fetching limits:', error);
+    }
+  };
 
   const formatCardNumber = (value: string) => {
     return value
@@ -331,8 +348,6 @@ const CardScreen: React.FC = () => {
             isNumberVisible={isCardNumberVisible}
             maskedNumber={maskCardNumber(account?.accountNumber ?? '')}
             holderName={userInfo?.fullName}
-            expiryMonth={mockCardData.expiryMonth}
-            expiryYear={mockCardData.expiryYear}
             onNumberPress={toggleCardNumberVisibility}
             onNumberLongPress={() =>
               copyCardNumber(formatCardNumber(account?.accountNumber ?? ''))
@@ -341,8 +356,9 @@ const CardScreen: React.FC = () => {
           />
 
           <CardLimitSection
-            spentAmount={mockCardData.spentAmount}
-            cardLimit={mockCardData.cardLimit}
+            dailyLimit={userLimits?.dailyLimit || 50000000}
+            singleLimit={userLimits?.singleTransactionLimit || 10000000}
+            usedAmount={userLimits?.usedAmount || 0}
           />
         </ScrollView>
       ) : (
