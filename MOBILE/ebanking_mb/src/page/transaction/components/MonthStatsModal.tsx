@@ -27,7 +27,7 @@ const MonthStatsModal: React.FC<MonthStatsModalProps> = ({
   currentAccountNumber,
 }) => {
   // Calculate total income and expenses
-  const calculateStats = () => {
+  const calculateStats = (): { totalIncome: number; totalExpense: number } => {
     let totalIncome = 0;
     let totalExpense = 0;
 
@@ -89,7 +89,11 @@ const MonthStatsModal: React.FC<MonthStatsModalProps> = ({
                   </View>
                   <View style={styles.cardContent}>
                     <Text style={styles.statLabel}>Tổng thu</Text>
-                    <Text style={styles.incomeAmount}>
+                    <Text
+                      style={styles.incomeAmount}
+                      numberOfLines={1}
+                      adjustsFontSizeToFit
+                    >
                       +{totalIncome.toLocaleString('vi-VN')}đ
                     </Text>
                   </View>
@@ -114,7 +118,11 @@ const MonthStatsModal: React.FC<MonthStatsModalProps> = ({
                   </View>
                   <View style={styles.cardContent}>
                     <Text style={styles.statLabel}>Tổng chi</Text>
-                    <Text style={styles.expenseAmount}>
+                    <Text
+                      style={styles.expenseAmount}
+                      numberOfLines={1}
+                      adjustsFontSizeToFit
+                    >
                       -{totalExpense.toLocaleString('vi-VN')}đ
                     </Text>
                   </View>
@@ -244,12 +252,12 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   incomeAmount: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '700',
     color: '#2E7D32',
   },
   expenseAmount: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '700',
     color: '#C62828',
   },

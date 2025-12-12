@@ -37,13 +37,14 @@ export type RootStackParamList = {
     transactionId: string;
     date: string;
     receiver: string;
-    content: string; // ✅ thêm dòng này
+    content: string;
   };
   PendingTransactionScreen?: {
     amount: string;
     content: string;
     date: string;
     receiverName: string;
+    transactionId?: string;
   };
   TransactionFailedScreen?: { errorString: string };
   TransactionHistoryScreen?: undefined;
