@@ -2,6 +2,7 @@ import { store } from '../store';
 import Toast from 'react-native-toast-message';
 
 import { logout } from '../store/slices/appSlice';
+import { navigate } from '../navigation/navigate';
 
 const defaultHeaders: Record<string, string> = {
   'Content-Type': 'application/json',
