@@ -245,12 +245,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: 20,
-    paddingHorizontal: 20,
+    paddingBottom: 12,
+    paddingHorizontal: 16,
   },
   buttonContainer: {
-    marginTop: 36,
-    marginBottom: 40,
+    marginTop: 8,
   },
 });
 
