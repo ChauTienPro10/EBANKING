@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Colors from '../../../constants/color';
 import SettingsIcon from '../../../components/icon/SettingsIcon';
+import { useTranslation } from 'react-i18next';
 
 interface CardLimitSectionProps {
   dailyLimit: number;
@@ -25,6 +26,10 @@ export const CardLimitSection: React.FC<CardLimitSectionProps> = ({
     return amount.toLocaleString('vi-VN');
   };
 
+  const { t } = useTranslation();
+  const spentPercentage = (spentAmount / cardLimit) * 100;
+
+  // Format to short form: 35000000 => "35tr"
   const formatShort = (amount: number): string => {
     if (amount >= 1000000000) {
       return `${(amount / 1000000000).toFixed(1)}tỷ`;
@@ -47,53 +52,25 @@ export const CardLimitSection: React.FC<CardLimitSectionProps> = ({
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>HẠN MỨC GIAO DỊCH</Text>
-        <TouchableOpacity
-          style={styles.manageButton}
-          onPress={handleManagePress}
-        >
-          <SettingsIcon size={16} color={Colors.main_bule} />
-          <Text style={styles.manageButtonText}>Quản lý</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Daily Limit Progress */}
-      <View style={styles.limitCard}>
-        <View style={styles.limitHeader}>
-          <Text style={styles.limitLabel}>Hạn mức ngày</Text>
-          <View style={styles.percentageBadge}>
-            <Text style={styles.percentageText}>
-              {dailyPercentage.toFixed(0)}%
-            </Text>
-          </View>
-        </View>
-
-        <View style={styles.progressBarBackground}>
-          <View
-            style={[styles.progressBarFill, { width: `${dailyPercentage}%` }]}
-          />
-        </View>
-
-        <View style={styles.amountRow}>
-          <Text style={styles.usedText}>
-            Đã dùng:{' '}
-            <Text style={styles.usedAmount}>{formatShort(usedAmount)}</Text>
+        <Text style={styles.title}>HẠN MỨC THẺ</Text>
+        <View style={styles.percentageBadge}>
+          <Text style={styles.percentageText}>
+            {spentPercentage.toFixed(0)}%
           </Text>
-          <Text style={styles.limitText}>{formatShort(dailyLimit)}</Text>
         </View>
-
-        <Text style={styles.remainingText}>
-          Còn lại: {formatMoney(remainingDaily)} ₫
-        </Text>
       </View>
 
-      {/* Single Transaction Limit */}
-      <View style={styles.singleLimitCard}>
-        <Text style={styles.limitLabel}>Hạn mức giao dịch đơn</Text>
-        <Text style={styles.singleLimitAmount}>
-          {formatMoney(singleLimit)} ₫
-        </Text>
+      {/* Progress Bar */}
+      <View style={styles.progressBarBackground}>
+        <View
+          style={[styles.progressBarFill, { width: `${spentPercentage}%` }]}
+        />
       </View>
+
+      {/* Compact Ratio Display */}
+      <Text style={styles.limitRatio}>
+        {formatShort(spentAmount)} / {formatShort(cardLimit)}
+      </Text>
     </View>
   );
 };
@@ -158,7 +135,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   percentageText: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: '700',
     color: Colors.white,
   },
@@ -167,7 +144,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#E0F2F1',
     borderRadius: 4,
     overflow: 'hidden',
-    marginBottom: 8,
+    marginBottom: 12,
   },
   progressBarFill: {
     height: '100%',
@@ -197,6 +174,12 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: Colors.main_bule,
     fontWeight: '500',
+  },
+  limitRatio: {
+    fontSize: 14,
+    color: Colors.textPrimary,
+    textAlign: 'center',
+    fontWeight: '600',
   },
   singleLimitCard: {
     paddingTop: 16,
