@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   StyleSheet,
   ScrollView,
@@ -11,8 +11,12 @@ import {
 import { useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../../store';
+import { RootState, AppDispatch } from '../../store';
 import { setCardStatus } from '../../store/slices/appSlice';
+import {
+  fetchTransactionHistory,
+  TransferResponse,
+} from '../../store/fetchAPI/TransactionHistory';
 import Colors from '../../constants/color';
 import BottomNavigation from '../../components/BottomNavigation';
 import Header from '../../components/Header';
@@ -25,11 +29,7 @@ import {
 import CardDetailBottomSheet from './components/CardDetailBottomSheet';
 import { useCardActions } from './hooks/useCardActions';
 import { useCardNavigation } from './hooks/useCardNavigation';
-import {
-  mockCardData,
-  mockTransactions,
-  filterTransactions,
-} from './mockCardData';
+import { mockCardData } from './mockCardData';
 import MenuDotsIcon from '../../components/icon/MenuDotsIcon';
 import LockOpenIcon from '../../components/icon/LockOpenIcon';
 import LockIcon from '../../components/icon/LockIcon';
@@ -45,7 +45,7 @@ type PendingAction = 'lock' | 'unlock' | 'access' | null;
 
 const CardScreen: React.FC = () => {
   const { t } = useTranslation();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   // Get card status from Redux store
   const cardStatus = useSelector((state: RootState) => state.app.cardStatus);
@@ -54,6 +54,17 @@ const CardScreen: React.FC = () => {
   );
 
   const userInfo = useSelector((state: RootState) => state.app.userInfoData);
+  const loginResponse = useSelector(
+    (state: RootState) => state.app.loginResponse,
+  );
+
+  // Get real transaction history from Redux
+  const transactionHistory = useSelector(
+    (state: RootState) => state.transactionHistories.data,
+  );
+  const transactionLoading = useSelector(
+    (state: RootState) => state.transactionHistories.loading,
+  );
 
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
   const [showMenu, setShowMenu] = useState(false);
@@ -64,7 +75,9 @@ const CardScreen: React.FC = () => {
   const [pinInputKey, setPinInputKey] = useState(0);
   const [isVerifyingPin, setIsVerifyingPin] = useState(false);
   const [requireSetPin, setRequireSetPin] = useState(false);
-  const loginResponse = useSelector((state: RootState) => state.app.loginResponse);
+  const loginResponse = useSelector(
+    (state: RootState) => state.app.loginResponse,
+  );
 
   // Custom hooks
   const { isCardNumberVisible, toggleCardNumberVisibility, copyCardNumber } =
@@ -84,16 +97,34 @@ const CardScreen: React.FC = () => {
   // const fullCardNumber = '1237689076545678';
   // const maskedCardNumber = '1237 •••• •••• 5678';
   // const displayCardNumber = '1237 6890 7654 5678';
+  // Fetch transaction history when access is granted
+  useEffect(() => {
+    if (isAccessGranted && loginResponse?.username && account?.accountNumber) {
+      dispatch(
+        fetchTransactionHistory({
+          username: loginResponse.username,
+          sender: account.accountNumber,
+          page: 1,
+          limit: 50,
+        }),
+      );
+    }
+  }, [
+    isAccessGranted,
+    loginResponse?.username,
+    account?.accountNumber,
+    dispatch,
+  ]);
 
   const formatCardNumber = (value: string) => {
     return value
-      .replace(/\D/g, "")              // bỏ ký tự không phải số
-      .replace(/(.{4})/g, "$1 ")       // chèn khoảng trắng sau mỗi 4 số
-      .trim();                         // bỏ khoảng trắng cuối nếu có
+      .replace(/\D/g, '') // bỏ ký tự không phải số
+      .replace(/(.{4})/g, '$1 ') // chèn khoảng trắng sau mỗi 4 số
+      .trim(); // bỏ khoảng trắng cuối nếu có
   };
 
   const maskCardNumber = (value: string) => {
-    const digits = value.replace(/\D/g, ""); // bỏ hết ký tự không phải số
+    const digits = value.replace(/\D/g, ''); // bỏ hết ký tự không phải số
 
     if (digits.length < 12) return value; // không đủ số thì giữ nguyên
 
@@ -103,15 +134,24 @@ const CardScreen: React.FC = () => {
     return `${first4} **** **** ${last4}`;
   };
 
-  const filteredTransactions = filterTransactions(
-    mockTransactions,
-    activeFilter,
+  // Filter transactions based on active filter
+  const filteredTransactions = transactionHistory.filter(
+    (transaction: TransferResponse) => {
+      if (activeFilter === 'all') return true;
+      if (activeFilter === 'sent') {
+        return transaction.senderAccountNumber === account?.accountNumber;
+      }
+      if (activeFilter === 'received') {
+        return transaction.receiverAccountNumber === account?.accountNumber;
+      }
+      return true;
+    },
   );
 
   const openPinModal = useCallback((action: PendingAction) => {
     setPendingAction(action);
     setIsVerifyingPin(false);
-    setPinInputKey((prev) => prev + 1);
+    setPinInputKey(prev => prev + 1);
     setShowPinModal(true);
   }, []);
 
@@ -173,7 +213,7 @@ const CardScreen: React.FC = () => {
         text2: message,
       });
 
-      setPinInputKey((prev) => prev + 1);
+      setPinInputKey(prev => prev + 1);
     } finally {
       setIsVerifyingPin(false);
     }
@@ -279,6 +319,12 @@ const CardScreen: React.FC = () => {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.contentContainer}
         >
+          <CardBalanceSection
+            balance={account?.balance ?? mockCardData.balance}
+            currency={account?.currency ?? mockCardData.currency}
+            accountNumber={account?.accountNumber ?? null}
+            accountType={account?.accountType ?? 'SAVINGS'}
+          />
           <CreditCard
             bankName=".Pay"
             cardNumber={formatCardNumber(account?.accountNumber ?? '')}
@@ -288,25 +334,15 @@ const CardScreen: React.FC = () => {
             expiryMonth={mockCardData.expiryMonth}
             expiryYear={mockCardData.expiryYear}
             onNumberPress={toggleCardNumberVisibility}
-            onNumberLongPress={() => copyCardNumber(formatCardNumber(account?.accountNumber ?? ''))}
+            onNumberLongPress={() =>
+              copyCardNumber(formatCardNumber(account?.accountNumber ?? ''))
+            }
             isLocked={cardStatus === 'locked'}
-          />
-
-          <CardBalanceSection
-            balance={account?.balance ?? mockCardData.balance}
-            currency={account?.currency ?? mockCardData.currency}
-            accountNumber={account?.accountNumber ?? null}
           />
 
           <CardLimitSection
             spentAmount={mockCardData.spentAmount}
             cardLimit={mockCardData.cardLimit}
-          />
-
-          <TransactionList
-            transactions={filteredTransactions}
-            activeFilter={activeFilter}
-            onFilterChange={setActiveFilter}
           />
         </ScrollView>
       ) : (
@@ -365,48 +401,6 @@ const CardScreen: React.FC = () => {
           onClose={() => setShowDetailSheet(false)}
         />
       )}
-
-      {/* PIN Modal */}
-      <Modal
-        visible={showPinModal}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setShowPinModal(false)}
-      >
-        <View style={styles.pinModalOverlay}>
-          <View style={styles.pinModalContent}>
-            <Text style={styles.pinModalTitle}>
-              {pendingAction === 'lock'
-                ? 'Xác nhận khóa thẻ'
-                : 'Xác nhận mở khóa thẻ'}
-            </Text>
-            <Text style={styles.pinModalSubtitle}>
-              Nhập mã PIN của bạn để tiếp tục
-            </Text>
-            <PinInput
-              length={4}
-              onComplete={handlePinComplete}
-              create={false}
-              hasBiometric={false}
-            />
-            <TouchableOpacity
-              style={styles.pinModalCancel}
-              onPress={() => {
-                setShowPinModal(false);
-                setPendingAction(null);
-              }}
-            >
-              <Text style={styles.pinModalCancelText}>Hủy</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-
-      {/* Card Detail Bottom Sheet */}
-      <CardDetailBottomSheet
-        visible={showDetailSheet}
-        onClose={() => setShowDetailSheet(false)}
-      />
 
       <BottomNavigation
         activeTab={activeTab}
@@ -490,17 +484,23 @@ const styles = StyleSheet.create({
   },
   pinModalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
     justifyContent: 'center',
     alignItems: 'center',
+    padding: 20,
   },
   pinModalContent: {
-    backgroundColor: Colors.white,
-    borderRadius: 20,
-    padding: 24,
-    width: '85%',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    padding: 32,
+    width: '100%',
     maxWidth: 400,
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 20 },
+    shadowOpacity: 0.15,
+    shadowRadius: 30,
+    elevation: 15,
   },
   pinModalTitle: {
     fontSize: 20,
