@@ -1,0 +1,81 @@
+import { useState, useEffect } from 'react';
+import {
+  Bank,
+  FormErrors,
+  TransferFormData,
+  TransferParams,
+} from '../types/transfer.types';
+import { formatAmount } from '../utils/transfer.utils';
+import { CardIcon } from '../../../components/icon';
+
+export const useTransferForm = (initialParams?: TransferParams) => {
+  const [formData, setFormData] = useState<TransferFormData>({
+    recipientAccount: '',
+    amount: '',
+    content: 'Chuyển tiền',
+    transferType: 'internal',
+    selectedBank: undefined,
+  });
+
+  const [errors, setErrors] = useState<FormErrors>({});
+
+  useEffect(() => {
+    if (
+      initialParams?.receiver !== null &&
+      initialParams?.receiver !== undefined &&
+      initialParams?.receiver !== ''
+    ) {
+      handleInputChange('recipientAccount', initialParams.receiver);
+      handleAmountChange(initialParams.amount);
+      handleInputChange('content', initialParams.content);
+
+      if (
+        initialParams.bankCode !== null &&
+        initialParams.bankCode !== undefined &&
+        initialParams.bankCode !== ''
+      ) {
+        handleBankSelect({
+          id: '1',
+          name: 'Ngân hàng TMCP Ngoại thương Việt Nam (Vietcombank)',
+          code: 'VCB',
+          logo: CardIcon,
+        });
+        setFormData(prev => ({ ...prev, transferType: 'external' }));
+      }
+    }
+  }, []);
+
+  const handleInputChange = (
+    field: keyof TransferFormData,
+    value: string | 'internal' | 'external' | Bank,
+  ) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+
+    if (errors[field as keyof FormErrors]) {
+      setErrors(prev => ({ ...prev, [field]: undefined }));
+    }
+  };
+
+  const handleAmountChange = (value: string) => {
+    const formatted = formatAmount(value);
+    handleInputChange('amount', formatted);
+  };
+
+  const handleBankSelect = (bank: Bank) => {
+    setFormData(prev => ({ ...prev, selectedBank: bank }));
+  };
+
+  const setFormErrors = (newErrors: FormErrors) => {
+    setErrors(newErrors);
+  };
+
+  return {
+    formData,
+    errors,
+    handleInputChange,
+    handleAmountChange,
+    handleBankSelect,
+    setFormErrors,
+    setFormData,
+  };
+};

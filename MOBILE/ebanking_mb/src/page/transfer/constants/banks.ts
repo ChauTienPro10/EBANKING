@@ -1,0 +1,135 @@
+import {
+  CardIcon,
+  BusinessIcon,
+  TrendingUpIcon,
+  ShieldIcon,
+  CreditCardIcon,
+  CrownIcon,
+  StarIcon,
+  AirplaneIcon,
+  PeopleIcon,
+} from '../../../components/icon';
+import { Bank } from '../types/transfer.types';
+
+export const vietnamBanks: Bank[] = [
+  {
+    id: '1',
+    name: 'Ngân hàng TMCP Ngoại thương Việt Nam (Vietcombank)',
+    code: 'VCB',
+    logo: CardIcon,
+  },
+  {
+    id: '2',
+    name: 'Ngân hàng TMCP Công thương Việt Nam (VietinBank)',
+    code: 'CTG',
+    logo: BusinessIcon,
+  },
+  {
+    id: '3',
+    name: 'Ngân hàng TMCP Đầu tư và Phát triển Việt Nam (BIDV)',
+    code: 'BID',
+    logo: TrendingUpIcon,
+  },
+  {
+    id: '4',
+    name: 'Ngân hàng TMCP Quân đội (MB)',
+    code: 'MBB',
+    logo: ShieldIcon,
+  },
+  {
+    id: '5',
+    name: 'Ngân hàng TMCP Kỹ thương Việt Nam (Techcombank)',
+    code: 'TCB',
+    logo: CreditCardIcon,
+  },
+  {
+    id: '6',
+    name: 'Ngân hàng TMCP Việt Nam Thịnh Vượng (VPBank)',
+    code: 'VPB',
+    logo: CrownIcon,
+  },
+  {
+    id: '7',
+    name: 'Ngân hàng TMCP Sài Gòn Thương Tín (Sacombank)',
+    code: 'STB',
+    logo: StarIcon,
+  },
+  {
+    id: '8',
+    name: 'Ngân hàng TMCP Á Châu (ACB)',
+    code: 'ACB',
+    logo: CardIcon,
+  },
+  {
+    id: '9',
+    name: 'Ngân hàng TMCP Hàng Hải (MSB)',
+    code: 'MSB',
+    logo: AirplaneIcon,
+  },
+  {
+    id: '10',
+    name: 'Ngân hàng TMCP Tiên Phong (TPBank)',
+    code: 'TPB',
+    logo: TrendingUpIcon,
+  },
+  {
+    id: '11',
+    name: 'Ngân hàng TMCP Phương Đông (OCB)',
+    code: 'OCB',
+    logo: StarIcon,
+  },
+  {
+    id: '12',
+    name: 'Ngân hàng TMCP Sài Gòn (SCB)',
+    code: 'SCB',
+    logo: BusinessIcon,
+  },
+  {
+    id: '13',
+    name: 'Ngân hàng TMCP An Bình (ABBANK)',
+    code: 'ABB',
+    logo: ShieldIcon,
+  },
+  {
+    id: '14',
+    name: 'Ngân hàng TMCP Bảo Việt (BAOVIETBANK)',
+    code: 'BVB',
+    logo: ShieldIcon,
+  },
+  {
+    id: '15',
+    name: 'Ngân hàng TMCP Bắc Á (BAB)',
+    code: 'BAB',
+    logo: TrendingUpIcon,
+  },
+  {
+    id: '16',
+    name: 'Ngân hàng TMCP Việt Á (VAB)',
+    code: 'VAB',
+    logo: StarIcon,
+  },
+  {
+    id: '17',
+    name: 'Ngân hàng TMCP Nam Á (NAB)',
+    code: 'NAB',
+    logo: StarIcon,
+  },
+  {
+    id: '18',
+    name: 'Ngân hàng TMCP Quốc Dân (NCB)',
+    code: 'NCB',
+    logo: PeopleIcon,
+  },
+  {
+    id: '19',
+    name: 'Ngân hàng TMCP Đông Nam Á (SeABank)',
+    code: 'SSB',
+    logo: TrendingUpIcon,
+  },
+  {
+    id: '20',
+    name: 'Ngân hàng TMCP Bản Việt (VietCapitalBank)',
+    code: 'VCC',
+    logo: BusinessIcon,
+  },
+];

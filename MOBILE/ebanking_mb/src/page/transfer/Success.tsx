@@ -44,9 +44,10 @@ const TransactionSuccessScreen: React.FC<Props> = ({ navigation, route }) => {
   };
 
   // Mask transaction ID (show last 4 digits)
-  const maskTransactionId = (id: string) => {
-    if (!id || id.length <= 4) return id;
-    return `**** **** ${id.slice(-4)}`;
+  const maskTransactionId = (id: string | number) => {
+    const idStr = String(id); // Convert to string first
+    if (!idStr || idStr.length <= 4) return idStr;
+    return `**** **** ${idStr.slice(-4)}`;
   };
 
   return (
