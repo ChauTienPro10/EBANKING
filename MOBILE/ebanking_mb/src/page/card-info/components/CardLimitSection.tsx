@@ -2,7 +2,6 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Colors from '../../../constants/color';
-import { formatCurrency } from '../mockCardData';
 
 interface CardLimitSectionProps {
   spentAmount: number;
@@ -15,46 +14,40 @@ export const CardLimitSection: React.FC<CardLimitSectionProps> = ({
 }) => {
   const { t } = useTranslation();
   const spentPercentage = (spentAmount / cardLimit) * 100;
-  const remainingAmount = cardLimit - spentAmount;
+
+  // Format to short form: 35000000 => "35tr"
+  const formatShort = (amount: number): string => {
+    if (amount >= 1000000000) {
+      return `${(amount / 1000000000).toFixed(1)}tỷ`;
+    }
+    if (amount >= 1000000) {
+      return `${Math.round(amount / 1000000)}tr`;
+    }
+    return `${Math.round(amount / 1000)}k`;
+  };
 
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>{t('card.card_limit')}</Text>
-        <View style={styles.percentageChip}>
+        <Text style={styles.title}>HẠN MỨC THẺ</Text>
+        <View style={styles.percentageBadge}>
           <Text style={styles.percentageText}>
             {spentPercentage.toFixed(0)}%
           </Text>
         </View>
       </View>
 
-      {/* Amount Display */}
-      <View style={styles.amountSection}>
-        <View style={styles.amountRow}>
-          <Text style={styles.amountLabel}>{t('card.spent')}</Text>
-          <Text style={styles.spentAmount}>{formatCurrency(spentAmount)}</Text>
-        </View>
-        <View style={styles.amountRow}>
-          <Text style={styles.amountLabel}>{t('card.remaining')}</Text>
-          <Text style={styles.remainingAmount}>
-            {formatCurrency(remainingAmount)}
-          </Text>
-        </View>
-      </View>
-
       {/* Progress Bar */}
-      <View style={styles.progressBarContainer}>
-        <View style={styles.progressBarBackground}>
-          <View
-            style={[styles.progressBarFill, { width: `${spentPercentage}%` }]}
-          />
-        </View>
+      <View style={styles.progressBarBackground}>
+        <View
+          style={[styles.progressBarFill, { width: `${spentPercentage}%` }]}
+        />
       </View>
 
-      {/* Limit Info */}
-      <Text style={styles.limitInfo}>
-        {t('card.total_limit')}: {formatCurrency(cardLimit)}
+      {/* Compact Ratio Display */}
+      <Text style={styles.limitRatio}>
+        {formatShort(spentAmount)} / {formatShort(cardLimit)}
       </Text>
     </View>
   );
@@ -64,82 +57,54 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: Colors.white,
     marginHorizontal: 20,
-    marginTop: 20,
+    marginTop: 16,
     padding: 20,
     borderRadius: 16,
     shadowColor: Colors.black,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
     shadowRadius: 8,
-    elevation: 4,
+    elevation: 3,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 16,
   },
   title: {
-    fontSize: 16,
+    fontSize: 12,
     fontWeight: '600',
-    color: Colors.textPrimary,
-    letterSpacing: -0.3,
+    color: Colors.grey3,
+    letterSpacing: 0.5,
   },
-  percentageChip: {
+  percentageBadge: {
     backgroundColor: Colors.main_bule,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
     borderRadius: 12,
   },
   percentageText: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '700',
     color: Colors.white,
   },
-  amountSection: {
-    marginBottom: 16,
-  },
-  amountRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  amountLabel: {
-    fontSize: 13,
-    color: Colors.grey3,
-    fontWeight: '500',
-  },
-  spentAmount: {
-    fontSize: 17,
-    fontWeight: '700',
-    color: Colors.textPrimary,
-    letterSpacing: -0.3,
-  },
-  remainingAmount: {
-    fontSize: 17,
-    fontWeight: '700',
-    color: Colors.main_green,
-    letterSpacing: -0.3,
-  },
-  progressBarContainer: {
-    marginBottom: 12,
-  },
   progressBarBackground: {
-    height: 6,
-    backgroundColor: Colors.grey2,
-    borderRadius: 3,
+    height: 8,
+    backgroundColor: '#E0F2F1',
+    borderRadius: 4,
     overflow: 'hidden',
+    marginBottom: 12,
   },
   progressBarFill: {
     height: '100%',
     backgroundColor: Colors.main_bule,
-    borderRadius: 3,
+    borderRadius: 4,
   },
-  limitInfo: {
-    fontSize: 12,
-    color: Colors.grey3,
+  limitRatio: {
+    fontSize: 14,
+    color: Colors.textPrimary,
     textAlign: 'center',
-    fontWeight: '500',
+    fontWeight: '600',
   },
 });
