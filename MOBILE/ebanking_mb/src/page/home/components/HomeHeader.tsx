@@ -7,12 +7,14 @@ import {
   Animated,
 } from 'react-native';
 import { SearchIcon, BellIcon, UserIcon } from '../../../components/icon';
+import { Avatar } from '../../../components';
 import Colors from '../../../constants/color';
 import NotificationButton from '../../../components/NotificationButton';
 
 interface HomeHeaderProps {
   bankName: string;
   userName: string;
+  userAvatarUrl?: string;
   notificationCount: number;
   onNotificationPress: () => void;
   headerPaddingBottom: Animated.Value;
@@ -21,45 +23,54 @@ interface HomeHeaderProps {
 const HomeHeader: React.FC<HomeHeaderProps> = ({
   bankName,
   userName,
+  userAvatarUrl,
   notificationCount,
   onNotificationPress,
   headerPaddingBottom,
 }) => {
   return (
-    <Animated.View
-      style={[styles.headerContainer, { paddingBottom: headerPaddingBottom }]}
-    >
-      <View style={styles.headerTop}>
-        <View style={styles.headerLeft}>
-          <View style={styles.logoContainer}>
-            <Text style={styles.logoText}>{bankName}</Text>
+    <>
+      <Animated.View
+        style={[styles.headerContainer, { paddingBottom: headerPaddingBottom }]}
+      >
+        <View style={styles.headerTop}>
+          <View style={styles.headerLeft}>
+            <View style={styles.logoContainer}>
+              <Text style={styles.logoText}>{bankName}</Text>
+            </View>
+          </View>
+          <View style={styles.headerActions}>
+            <TouchableOpacity style={styles.headerActionButton}>
+              <SearchIcon size={20} color={Colors.white} />
+            </TouchableOpacity>
+            <NotificationButton
+              count={notificationCount}
+              onPress={onNotificationPress}
+              iconSize={20}
+              badgeSize={16}
+              badgeColor={Colors.orange}
+            />
           </View>
         </View>
-        <View style={styles.headerActions}>
-          <TouchableOpacity style={styles.headerActionButton}>
-            <SearchIcon size={20} color={Colors.white} />
-          </TouchableOpacity>
-          <NotificationButton
-            count={notificationCount}
-            onPress={onNotificationPress}
-            iconSize={20}
-            badgeSize={16}
-            badgeColor={Colors.orange}
-          />
-        </View>
-      </View>
+      </Animated.View>
 
-      <View style={styles.profileSection}>
-        <View style={styles.profileContainer}>
-          <View style={styles.avatarContainer}>
-            <UserIcon size={24} color={Colors.white} />
-          </View>
-          <View style={styles.profileInfo}>
-            <Text style={styles.profileGreeting}>{userName}</Text>
+      <View style={styles.profileSectionWrapper}>
+        <View style={styles.profileSection}>
+          <View style={styles.profileContainer}>
+            {userAvatarUrl ? (
+              <Avatar src={userAvatarUrl} size={50} showBorder={false} />
+            ) : (
+              <View style={styles.avatarContainer}>
+                <UserIcon size={24} color={Colors.white} />
+              </View>
+            )}
+            <View style={styles.profileInfo}>
+              <Text style={styles.profileGreeting}>{userName}</Text>
+            </View>
           </View>
         </View>
       </View>
-    </Animated.View>
+    </>
   );
 };
 
@@ -96,6 +107,10 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     position: 'relative',
   },
+  profileSectionWrapper: {
+    backgroundColor: Colors.main_bule,
+    paddingHorizontal: 16,
+  },
   profileSection: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -112,10 +127,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
   },
   profileInfo: {
     flex: 1,
+    marginLeft: 12,
   },
   profileGreeting: {
     fontSize: 16,

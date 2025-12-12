@@ -31,7 +31,7 @@ import {
 import DeviceInfo from 'react-native-device-info';
 import FlashMessage from 'react-native-flash-message';
 import { HOST_SERVER } from './constants/api';
-
+import fetch from './utils/fetch';
 declare const global: any;
 global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder;
@@ -40,6 +40,8 @@ global.TextDecoder = TextDecoder;
 import SockJS from 'sockjs-client/dist/sockjs';
 import { Stomp } from '@stomp/stompjs';
 import { useListenNotiFromFirebase } from './hooks/useListenNotiFromFirebase';
+import { setPinStatus } from './store/slices/appSlice';
+import { API } from './constants/api';
 
 const SOCKET_URL = `http://${HOST_SERVER}:8006/ws`;
 
@@ -164,6 +166,23 @@ const RootApp: React.FC = () => {
         }
       };
     }
+  }, [loginResponse]);
+
+  useEffect(() => {
+    const fetchPinStatus = async () => {
+      try {
+        const _pinStt = await fetch.get(
+          API.GET_PIN_STT.replace('{username}', loginResponse?.username || ''),
+          {},
+          true,
+        );
+        dispatch(setPinStatus(_pinStt));
+      } catch (error) {
+        console.error('Error fetching pin status:', error);
+      }
+    };
+
+    fetchPinStatus();
   }, [loginResponse]);
 
   useEffect(() => {

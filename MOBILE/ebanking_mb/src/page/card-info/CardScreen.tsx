@@ -65,6 +65,7 @@ const CardScreen: React.FC = () => {
   const transactionLoading = useSelector(
     (state: RootState) => state.transactionHistories.loading,
   );
+  const pinStatus = useSelector((state: RootState) => state.app.pinStatus);
 
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
   const [showMenu, setShowMenu] = useState(false);
@@ -75,9 +76,6 @@ const CardScreen: React.FC = () => {
   const [pinInputKey, setPinInputKey] = useState(0);
   const [isVerifyingPin, setIsVerifyingPin] = useState(false);
   const [requireSetPin, setRequireSetPin] = useState(false);
-  const loginResponse = useSelector(
-    (state: RootState) => state.app.loginResponse,
-  );
   const [userLimits, setUserLimits] = useState<any>(null);
 
   // Custom hooks
@@ -87,12 +85,13 @@ const CardScreen: React.FC = () => {
     useCardNavigation();
 
   React.useEffect(() => {
-    if (loginResponse?.pinStatus !== true) {
+    console.log('loginResponse', pinStatus);
+    if (pinStatus !== true) {
       setRequireSetPin(true);
     } else {
       setRequireSetPin(false);
     }
-  }, [loginResponse]);
+  }, [pinStatus]);
 
   // Card data
   // const fullCardNumber = '1237689076545678';
@@ -176,10 +175,10 @@ const CardScreen: React.FC = () => {
     useCallback(() => {
       setIsAccessGranted(false);
       setShowMenu(false);
-      if (loginResponse?.pinStatus === true) {
+      if (pinStatus === true && requireSetPin === false) {
         openPinModal('access');
       }
-    }, [openPinModal, loginResponse]),
+    }, [openPinModal, pinStatus, requireSetPin]),
   );
 
   const handlePinComplete = async (pin: string) => {
@@ -384,6 +383,7 @@ const CardScreen: React.FC = () => {
         visible={showPinModal}
         transparent
         animationType="fade"
+        statusBarTranslucent={true}
         onRequestClose={() => setShowPinModal(false)}
       >
         <View style={styles.pinModalOverlay}>
