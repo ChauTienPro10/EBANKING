@@ -1,6 +1,7 @@
 package com.example.auth.utils;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -17,6 +18,17 @@ public class HttpUltils {
     public <T> T get(String url, Class<T> responseType) {
         return restTemplate.getForObject(url, responseType);
     }
+
+    public <T> T get(String url, ParameterizedTypeReference<T> type) {
+        ResponseEntity<T> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                null,
+                type
+        );
+        return response.getBody();
+    }
+
 
     // Phương thức POST với body
     public <T, R> R post(String url, T requestBody, Class<R> responseType) {

@@ -86,7 +86,5 @@ public class TransactionNotificationConsumer {
     private void sendNotificationToUser(TransactionEvent transactionEvent, String username, String userRole) {
         String amount = transactionEvent.getAmount().toString();
         String transactionId = transactionEvent.getTransactionId().toString();
-        
-
     }
 }
