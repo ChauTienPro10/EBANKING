@@ -29,6 +29,7 @@
     "view_details": "View Details",
     "total_balance_vnd": "Total Balance VND",
     "earn_daily": "EARN DAILY",
+    "card_management": "CARD MANAGEMENT",
     "upgrade_rank": "UPGRADE RANK",
     "update_info_required": "Please update your full information",
     "pin_not_set_message": "You have not set a PIN. Please set it now to secure your account.",
@@ -63,6 +64,8 @@
     "withdraw": "Withdraw",
     "mobile_prepaid": "Mobile Prepaid",
     "pay_bill": "Pay Bill",
+    "pay_history": "Transaction History",
+    "profile": "Profile",
     "save_online": "Online Savings",
     "credit_card": "Credit Card",
     "transaction_report": "Transaction History",
@@ -424,5 +427,16 @@
   "forgot_password": {
     "use_phone": "Use phone number",
     "use_email": "Use email"
+  },
+  "onboarding": {
+    "header_title": "Complete Your Profile",
+    "header_subtitle": "Please complete the following steps to use all features",
+    "ekyc_title": "eKYC Verification",
+    "ekyc_description": "Verify your identity",
+    "ekyc_button": "Verify Now",
+    "pin_title": "Set Up PIN Code",
+    "pin_description": "Secure your account with a 4-digit PIN",
+    "pin_button": "Set Up PIN",
+    "later_button": "Later"
   }
 }

@@ -441,5 +441,16 @@
   "forgot_password": {
     "use_phone": "Sử dụng số điện thoại",
     "use_email": "Sử dụng email"
+  },
+  "onboarding": {
+    "header_title": "Hoàn thiện hồ sơ",
+    "header_subtitle": "Vui lòng hoàn tất các bước sau để sử dụng đầy đủ tính năng",
+    "ekyc_title": "Xác thực eKYC",
+    "ekyc_description": "Xác minh danh tính",
+    "ekyc_button": "Xác thực ngay",
+    "pin_title": "Thiết lập mã PIN",
+    "pin_description": "Bảo mật tài khoản với mã PIN 4 chữ số",
+    "pin_button": "Thiết lập PIN",
+    "later_button": "Để sau"
   }
 }
