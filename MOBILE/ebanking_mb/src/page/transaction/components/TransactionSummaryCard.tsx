@@ -57,7 +57,7 @@ const TransactionSummaryCard: React.FC<TransactionSummaryCardProps> = ({
           <Text style={styles.amount}>
             {isIncoming ? '' : '-'}
             {transaction.amount.toLocaleString('vi-VN')}
-            {transaction.currency}
+            {transaction.currency === 'VND' ? 'đ' : ` ${transaction.currency}`}
           </Text>
         </View>
       </View>
@@ -124,7 +124,7 @@ const TransactionSummaryCard: React.FC<TransactionSummaryCardProps> = ({
           <Text style={styles.detailLabel}>Số dư ví</Text>
           <Text style={styles.detailValue}>
             {transaction.balance.toLocaleString('vi-VN')}
-            {transaction.currency}
+            {transaction.currency === 'VND' ? 'đ' : ` ${transaction.currency}`}
           </Text>
         </View>
       )}

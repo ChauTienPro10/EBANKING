@@ -7,6 +7,9 @@ interface TransferInfoSectionProps {
   isIncoming: boolean;
   displayTitle: string;
   bankName: string | null;
+  senderName: string;
+  receiverName: string;
+  loadingNames: boolean;
 }
 
 const TransferInfoSection: React.FC<TransferInfoSectionProps> = ({
@@ -14,6 +17,9 @@ const TransferInfoSection: React.FC<TransferInfoSectionProps> = ({
   isIncoming,
   displayTitle,
   bankName,
+  senderName,
+  receiverName,
+  loadingNames,
 }) => {
   if (transaction.transactionType !== 'TRANSFER') {
     return null;
@@ -48,7 +54,13 @@ const TransferInfoSection: React.FC<TransferInfoSectionProps> = ({
         <Text style={styles.infoLabel}>
           {isIncoming ? 'Người gửi' : 'Người nhận'}
         </Text>
-        <Text style={styles.infoValue}>{displayTitle}</Text>
+        <Text style={styles.infoValue}>
+          {loadingNames
+            ? 'Đang tải...'
+            : isIncoming
+            ? senderName || displayTitle
+            : receiverName || displayTitle}
+        </Text>
       </View>
 
       {/* Amount */}
@@ -56,7 +68,7 @@ const TransferInfoSection: React.FC<TransferInfoSectionProps> = ({
         <Text style={styles.infoLabel}>Số tiền</Text>
         <Text style={styles.infoValue}>
           {transaction.amount.toLocaleString('vi-VN')}
-          {transaction.currency}
+          {transaction.currency === 'VND' ? 'đ' : ` ${transaction.currency}`}
         </Text>
       </View>
 

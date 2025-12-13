@@ -1,6 +1,6 @@
 // Filter Types and Interfaces
 
-export type TransactionStatus = 'SUCCESS' | 'PENDING' | 'FAILED';
+export type TransactionStatus = 'SUCCESS' | 'FAILED';
 
 export interface TimePeriodFilter {
   label: string;
@@ -86,7 +86,6 @@ export interface StatusOption {
 export const STATUS_OPTIONS: StatusOption[] = [
   { label: 'Tất cả', value: null },
   { label: 'Thành công', value: 'SUCCESS' },
-  { label: 'Đang xử lý', value: 'PENDING' },
   { label: 'Thất bại', value: 'FAILED' },
 ];
 

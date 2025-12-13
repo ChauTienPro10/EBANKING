@@ -12,9 +12,7 @@ import { RootState, AppDispatch } from '../../store';
 import {
   fetchTransactionHistory,
   TransferResponse,
-  loadMockData,
 } from '../../store/fetchAPI/TransactionHistory';
-import { MOCK_TRANSACTIONS } from './mockData';
 import Colors from '../../constants/color';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
@@ -60,16 +58,12 @@ const TransactionHistoryScreen: React.FC = () => {
   const currentAccountNumber = sender || '1234567890';
 
   useEffect(() => {
-    // Load mock data for development
-    dispatch(loadMockData(MOCK_TRANSACTIONS));
-
-    // TODO: Uncomment khi dùng API thật
-    // if (username && sender) {
-    //   dispatch(
-    //     fetchTransactionHistory({ username, sender, page: 1, limit: 20 }),
-    //   );
-    // }
-  }, [dispatch]);
+    if (username && sender) {
+      dispatch(
+        fetchTransactionHistory({ username, sender, page: 1, limit: 20 }),
+      );
+    }
+  }, [dispatch, username, sender]);
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -90,7 +84,7 @@ const TransactionHistoryScreen: React.FC = () => {
   const getFilteredTransactions = () => {
     let filtered = [...transactions];
 
-    // Apply tab filter (ALL, INCOMING, OUTGOING, PENDING)
+    // Apply tab filter (ALL, INCOMING, OUTGOING)
     if (activeFilter === 'INCOMING') {
       filtered = filtered.filter(
         t => t.receiverAccountNumber === currentAccountNumber,
@@ -99,8 +93,6 @@ const TransactionHistoryScreen: React.FC = () => {
       filtered = filtered.filter(
         t => t.senderAccountNumber === currentAccountNumber,
       );
-    } else if (activeFilter === 'PENDING') {
-      filtered = filtered.filter(t => t.status === 'PENDING');
     }
 
     // Apply advanced filters from modal

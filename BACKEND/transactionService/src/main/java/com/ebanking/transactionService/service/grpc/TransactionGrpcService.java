@@ -38,7 +38,7 @@ public class TransactionGrpcService extends TransactionServiceGrpc.TransactionSe
         try {
             LocalDateTime fromDate = LocalDateTime.parse(request.getFromDate() + "T00:00:00");
             LocalDateTime toDate = LocalDateTime.parse(request.getToDate() + "T23:59:59");
-            Page<Transaction> page = transactionService.getTransactionHistory(request.getUsername(),
+            Page<Transaction> page = transactionService.getTransactionHistory(
                     request.getSender(),
                     fromDate,
                     toDate,
@@ -52,6 +52,7 @@ public class TransactionGrpcService extends TransactionServiceGrpc.TransactionSe
                         .setSenderAccountNumber(tx.getSenderAccountNumber())
                         .setReceiverAccountNumber(tx.getReceiverAccountNumber())
                         .setAmount(tx.getAmount().toString())
+                        .setCurrency(tx.getCurrency())
                         .setTransactionAt(tx.getTransactionAt().toString())
                         .setStatus(tx.getStatus())
                         .setDescription(tx.getDescription())

@@ -1,8 +1,10 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Clipboard, Linking } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { TransferResponse } from '../../../store/fetchAPI/TransactionHistory';
 import { isIncomingTransaction } from '../../../utils/transactionUtils';
+import fetch from '../../../utils/fetch';
+import { API } from '../../../constants/api';
 
 interface UseTransactionDetailProps {
   transaction: TransferResponse;
@@ -17,6 +19,49 @@ export const useTransactionDetail = ({
 }: UseTransactionDetailProps) => {
   const isIncoming = isIncomingTransaction(transaction, currentAccountNumber);
   const date = new Date(transaction.transactionAt);
+
+  // State for account holder names
+  const [senderName, setSenderName] = useState<string>('');
+  const [receiverName, setReceiverName] = useState<string>('');
+  const [loadingNames, setLoadingNames] = useState(true);
+
+  // Fetch account holder names
+  useEffect(() => {
+    const fetchAccountNames = async () => {
+      if (transaction.transactionType !== 'TRANSFER') {
+        setLoadingNames(false);
+        return;
+      }
+
+      try {
+        // Fetch sender name
+        const senderResponse = await fetch.post(API.CHECK_ACCOUNT_NUMBER, {
+          accountNumber: transaction.senderAccountNumber,
+        });
+        if (senderResponse?.isExist) {
+          setSenderName(senderResponse.fullName);
+        }
+
+        // Fetch receiver name
+        const receiverResponse = await fetch.post(API.CHECK_ACCOUNT_NUMBER, {
+          accountNumber: transaction.receiverAccountNumber,
+        });
+        if (receiverResponse?.isExist) {
+          setReceiverName(receiverResponse.fullName);
+        }
+      } catch (error) {
+        console.error('Error fetching account names:', error);
+      } finally {
+        setLoadingNames(false);
+      }
+    };
+
+    fetchAccountNames();
+  }, [
+    transaction.senderAccountNumber,
+    transaction.receiverAccountNumber,
+    transaction.transactionType,
+  ]);
 
   // Format time and date
   const timeStr = date.toLocaleTimeString('vi-VN', {
@@ -97,16 +142,26 @@ export const useTransactionDetail = ({
 
   // Handle new transaction - navigate to Transfer screen with pre-filled data
   const handleNewTransaction = () => {
-    if (transaction.transactionType === 'TRANSFER' && !isIncoming) {
-      // For outgoing transfers, pre-fill receiver info
-      navigation.navigate('Transfer', {
-        receiver: transaction.receiverAccountNumber,
-        amount: '',
-        content: '',
-        bankCode: bankName || '',
-      });
+    if (transaction.transactionType === 'TRANSFER') {
+      if (isIncoming) {
+        // For incoming transfers, pre-fill sender info (so user can send back)
+        navigation.navigate('Transfer', {
+          receiver: transaction.senderAccountNumber,
+          amount: '',
+          content: '',
+          bankCode: bankName || '',
+        });
+      } else {
+        // For outgoing transfers, pre-fill receiver info
+        navigation.navigate('Transfer', {
+          receiver: transaction.receiverAccountNumber,
+          amount: '',
+          content: '',
+          bankCode: bankName || '',
+        });
+      }
     } else {
-      // For other cases, just navigate to transfer screen
+      // For other transaction types, just navigate to transfer screen
       navigation.navigate('Transfer', {
         receiver: '',
         amount: '',
@@ -134,6 +189,9 @@ export const useTransactionDetail = ({
     statusBadge,
     displayTitle,
     bankName,
+    senderName,
+    receiverName,
+    loadingNames,
     handleCopyTransactionId,
     handleSupport,
     handleNewTransaction,

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -39,6 +39,7 @@ import {
   ListIcon,
 } from '../../components/icon';
 import ConfirmTransferModal from '../../popups/ConfirmTransferModal';
+import EKYCRequiredModal from '../../components/EKYCRequiredModal';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/types';
 import fetch from '../../utils/fetch';
@@ -131,6 +132,7 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({
     null,
   );
   const [requiresFaceAuth, setRequiresFaceAuth] = useState(false);
+  const [showEKYCModal, setShowEKYCModal] = useState(false);
 
   const dispatch: AppDispatch = store.dispatch;
 
@@ -535,6 +537,19 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({
       );
 
       if (faceAuthCheck.required) {
+        // Check eKYC status before allowing face auth
+        const amountNum = parseFloat(formData.amount.replace(/,/g, ''));
+        if (amountNum > 10000000) {
+          // Check if user has completed eKYC
+          const ekycStatus = loginResponse?.ekycStatus;
+
+          if (!ekycStatus || ekycStatus !== 'VERIFIED') {
+            setIsLoading(false);
+            setShowEKYCModal(true);
+            return;
+          }
+        }
+
         setIsLoading(false);
         setRequiresFaceAuth(true);
 
@@ -928,6 +943,17 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({
           )}
         </View>
       </Modal>
+
+      {/* eKYC Required Modal */}
+      <EKYCRequiredModal
+        visible={showEKYCModal}
+        onClose={() => setShowEKYCModal(false)}
+        onGoToEKYC={() => {
+          setShowEKYCModal(false);
+          (navigation as any).navigate('Profile');
+        }}
+        amount={formData.amount}
+      />
     </View>
   );
 };
