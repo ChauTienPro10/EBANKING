@@ -38,10 +38,11 @@ const HomeScreen: React.FC = () => {
   // Custom hooks
   const { quickActions, services, bottomTabs } = useHomeData();
   const {
-    balanceCardHeight,
+    balanceCardScale,
     balanceCardOpacity,
+    balanceCardTranslateY,
+    balanceCardHeight,
     headerPaddingBottom,
-    headerBorderRadius,
     handleScroll,
   } = useBalanceCardAnimation();
   const {
@@ -105,8 +106,8 @@ const HomeScreen: React.FC = () => {
         style={[
           styles.headerWrapper,
           {
-            borderBottomLeftRadius: headerBorderRadius,
-            borderBottomRightRadius: headerBorderRadius,
+            borderBottomLeftRadius: 24,
+            borderBottomRightRadius: 24,
           },
         ]}
       >
@@ -126,8 +127,10 @@ const HomeScreen: React.FC = () => {
           isBalanceVisible={isBalanceVisible}
           onToggleBalance={() => setIsBalanceVisible(!isBalanceVisible)}
           onOpenCard={() => navigation.navigate('OpenCard', { userInfo })}
-          balanceCardHeight={balanceCardHeight}
+          balanceCardScale={balanceCardScale}
           balanceCardOpacity={balanceCardOpacity}
+          balanceCardTranslateY={balanceCardTranslateY}
+          balanceCardHeight={balanceCardHeight}
           totalBalanceLabel={t('labels.total_balance')}
           noCardLabel={t('labels.you_not_has_card')}
           openAccountLabel={t('labels.open_account_now')}
@@ -139,7 +142,9 @@ const HomeScreen: React.FC = () => {
         style={styles.content}
         showsVerticalScrollIndicator={false}
         onScroll={handleScroll}
-        scrollEventThrottle={32}
+        scrollEventThrottle={16}
+        removeClippedSubviews={true}
+        nestedScrollEnabled={false}
       >
         <QuickActions
           actions={quickActions}
