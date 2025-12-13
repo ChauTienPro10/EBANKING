@@ -215,8 +215,8 @@ const RootApp: React.FC = () => {
         <NavigationContainer ref={navigationRef}>
           {/* ✅ Important */}
           {/* TODO: Remove this bypass for production */}
-          <MainStack />
-          {/* {isLoggedIn ? <MainStack /> : <AuthNavigator />} */}
+          {/* <MainStack /> */}
+          {isLoggedIn ? <MainStack /> : <AuthNavigator />}
         </NavigationContainer>
       </View>
       <Toast />
