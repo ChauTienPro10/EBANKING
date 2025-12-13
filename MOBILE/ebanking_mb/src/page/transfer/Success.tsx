@@ -105,7 +105,12 @@ const TransactionSuccessScreen: React.FC<Props> = ({ navigation, route }) => {
         {/* Done Button - Outside Card */}
         <TouchableOpacity
           style={styles.doneButton}
-          onPress={() => navigation.navigate('Home')}
+          onPress={() =>
+            navigation.reset({
+              index: 0,
+              routes: [{ name: 'Home' }],
+            })
+          }
         >
           <Text style={styles.doneButtonText}>Hoàn tất</Text>
         </TouchableOpacity>
