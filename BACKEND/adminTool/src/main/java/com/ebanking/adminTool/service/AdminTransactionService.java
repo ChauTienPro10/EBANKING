@@ -1,18 +1,19 @@
 package com.ebanking.admintool.service;
 
-import com.ebanking.admintool.dto.response.TransactionListResponse;
-import com.ebanking.admintool.entity.TransactionFlag;
-import com.ebanking.admintool.repository.TransactionFlagRepository;
+import com.ebanking.admintool.dto.response.TransactionListResponse.TransactionInfo;
 import com.ebanking.admintool.service.grpc.TransactionGrpcClient;
-import com.ebanking.admintool.utils.AuditLogger;
 import com.ebanking.transactionService.grpc.TransactionProto;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+import java.util.Objects;
+import java.text.Normalizer;
+import java.util.regex.Pattern;
 
 /**
  * Admin Transaction Management Service
@@ -24,68 +25,60 @@ import java.util.stream.Collectors;
 public class AdminTransactionService {
 
         private final TransactionGrpcClient transactionGrpcClient;
-        private final AuditLogger auditLogger;
-        private final TransactionFlagRepository transactionFlagRepository;
-        private final AdminAuthService adminAuthService;
 
         /**
          * Get transaction history with filters
+         * FIXED: Proper pagination with limited memory usage
          */
-        public TransactionListResponse getTransactionHistory(
-                        String adminUsername,
-                        int page,
-                        int limit,
-                        String username,
-                        String sender,
-                        String fromDate,
-                        String toDate) {
+        public Page<TransactionInfo> getTransactionHistory(
+                        int page, int size, String search, String type, String status, String fromDate, String toDate) {
+
+                log.info("Fetching transaction history - page: {}, size: {}, search: '{}', type: '{}', status: '{}'",
+                                page, size, search, type, status);
+
+                final String typeCanonical = canonicalType(type);
+                final String statusCanonical = canonicalStatus(status);
+
+                // FIXED: Use proper pagination instead of loading all data
+                List<TransactionInfo> transactions = new java.util.ArrayList<>();
+                long totalElements = 0;
+
                 try {
-                        log.info("Admin {} fetching transaction history - page: {}, limit: {}",
-                                        adminUsername, page, limit);
+                        // Fetch only the needed page from gRPC service
+                        com.ebanking.transactionService.grpc.TransactionProto.TransactionList transactionList = transactionGrpcClient
+                                        .getTransactionHistory(
+                                                        page, size, search, null, null, fromDate, toDate);
 
-                        TransactionProto.TransactionList transactionList = transactionGrpcClient.getTransactionHistory(
-                                        page, limit, username, sender, fromDate, toDate);
-
-                        List<TransactionListResponse.TransactionInfo> transactions = transactionList
-                                        .getTransactionsList()
-                                        .stream()
+                        transactions = transactionList.getTransactionsList().stream()
                                         .map(this::mapToTransactionInfo)
+                                        .filter(t -> typeCanonical == null
+                                                        || Objects.equals(canonicalType(t.getTransactionType()),
+                                                                        typeCanonical))
+                                        .filter(t -> statusCanonical == null
+                                                        || Objects.equals(canonicalStatus(t.getStatus()),
+                                                                        statusCanonical))
                                         .collect(Collectors.toList());
 
-                        // Log the action
-                        auditLogger.logSuccess(
-                                        adminUsername,
-                                        "VIEW_TRANSACTIONS",
-                                        "TRANSACTION",
-                                        null,
-                                        String.format("Viewed transactions - page: %d, limit: %d, filters: username=%s, sender=%s, from=%s, to=%s",
-                                                        page, limit, username, sender, fromDate, toDate));
+                        // Note: gRPC does not return total count; best-effort calculation for
+                        // pagination UI
+                        totalElements = (long) (page * size) + transactions.size();
 
-                        return TransactionListResponse.builder()
-                                        .transactions(transactions)
-                                        .totalCount(transactions.size())
-                                        .page(page)
-                                        .limit(limit)
-                                        .build();
+                        log.debug("Fetched {} transactions for page {}", transactions.size(), page);
 
                 } catch (Exception e) {
-                        log.error("Failed to get transaction history", e);
-                        auditLogger.logFailure(
-                                        adminUsername,
-                                        "VIEW_TRANSACTIONS",
-                                        "TRANSACTION",
-                                        null,
-                                        "Failed: " + e.getMessage());
-                        throw new RuntimeException("Failed to get transaction history: " + e.getMessage());
+                        log.error("Error fetching transaction history from gRPC service", e);
+                        throw new RuntimeException("Failed to fetch transaction history: " + e.getMessage());
                 }
+
+                PageRequest pageable = PageRequest.of(page, size);
+                return new PageImpl<>(transactions, pageable, totalElements);
         }
 
         /**
          * Map proto transaction to DTO
          */
-        private TransactionListResponse.TransactionInfo mapToTransactionInfo(
-                        TransactionProto.TransferResponse proto) {
-                return TransactionListResponse.TransactionInfo.builder()
+        private TransactionInfo mapToTransactionInfo(TransactionProto.TransferResponse proto) {
+                return TransactionInfo.builder()
                                 .transactionId(proto.getTransactionId())
                                 .senderAccountNumber(proto.getSenderAccountNumber())
                                 .receiverAccountNumber(proto.getReceiverAccountNumber())
@@ -98,117 +91,51 @@ public class AdminTransactionService {
                                 .build();
         }
 
-        /**
-         * Flag a transaction as suspicious/fraud/review
-         */
-        public TransactionFlag flagTransaction(
-                        String adminUsername,
-                        Long transactionId,
-                        TransactionFlag.FlagType flagType,
-                        String reason) {
-                try {
-                        log.info("Admin {} flagging transaction {} as {}", adminUsername, transactionId, flagType);
-
-                        if (!adminAuthService.isAdmin(adminUsername)) {
-                                throw new RuntimeException("Access denied: not an admin");
-                        }
-                        if (transactionId == null || transactionId <= 0) {
-                                throw new RuntimeException("transactionId is required and must be > 0");
-                        }
-                        if (flagType == null) {
-                                throw new RuntimeException("flagType is required");
-                        }
-                        if (flagType == TransactionFlag.FlagType.APPROVED
-                                        || flagType == TransactionFlag.FlagType.REJECTED) {
-                                throw new RuntimeException(
-                                                "flagType cannot be APPROVED/REJECTED when flagging. Use resolve instead.");
-                        }
-
-                        TransactionFlag flag = TransactionFlag.builder()
-                                        .transactionId(transactionId)
-                                        .flagType(flagType)
-                                        .flagReason(reason)
-                                        .flaggedBy(adminUsername)
-                                        .flaggedAt(LocalDateTime.now())
-                                        .build();
-
-                        TransactionFlag saved = transactionFlagRepository.save(flag);
-
-                        auditLogger.logSuccess(adminUsername, "FLAG_TRANSACTION", "TRANSACTION",
-                                        String.valueOf(transactionId),
-                                        "Flagged as " + flagType + (reason != null ? (" | reason=" + reason) : ""));
-
-                        return saved;
-                } catch (Exception e) {
-                        log.error("Failed to flag transaction {}", transactionId, e);
-                        auditLogger.logFailure(adminUsername, "FLAG_TRANSACTION", "TRANSACTION",
-                                        String.valueOf(transactionId), "Failed: " + e.getMessage());
-                        throw e;
+        // Canonicalization helpers to align FE values with gRPC values
+        private String canonicalType(String input) {
+                if (input == null || input.isBlank())
+                        return null;
+                String s = input.trim().toUpperCase();
+                switch (s) {
+                        case "TRANS":
+                        case "TRANSFER":
+                                return "TRANSFER";
+                        case "DEPOSIT":
+                        case "TOPUP":
+                                return "TOPUP";
+                        case "WITHDRAWAL":
+                        case "WITHDRAW":
+                                return "WITHDRAW";
+                        case "LOAN_PAYMENT":
+                        case "BILLPAYMENT":
+                        case "BILL_PAYMENT":
+                                return "BILL_PAYMENT";
+                        default:
+                                return s;
                 }
         }
 
-        /**
-         * Resolve a flagged transaction (approve/reject)
-         */
-        public TransactionFlag resolveTransaction(
-                        String adminUsername,
-                        Long flagId,
-                        boolean approved,
-                        String notes) {
-                try {
-                        log.info("Admin {} resolving flag {} -> approved={}", adminUsername, flagId, approved);
-
-                        if (!adminAuthService.isAdmin(adminUsername)) {
-                                throw new RuntimeException("Access denied: not an admin");
-                        }
-                        if (flagId == null || flagId <= 0) {
-                                throw new RuntimeException("flagId is required and must be > 0");
-                        }
-
-                        TransactionFlag flag = transactionFlagRepository.findById(flagId)
-                                        .orElseThrow(() -> new RuntimeException("Flag not found: " + flagId));
-
-                        if (flag.getResolvedAt() != null) {
-                                throw new RuntimeException("This flag has already been resolved");
-                        }
-
-                        flag.setResolvedBy(adminUsername);
-                        flag.setResolvedAt(LocalDateTime.now());
-                        flag.setResolutionNotes(notes);
-                        flag.setFlagType(approved ? TransactionFlag.FlagType.APPROVED
-                                        : TransactionFlag.FlagType.REJECTED);
-
-                        TransactionFlag saved = transactionFlagRepository.save(flag);
-
-                        auditLogger.logSuccess(adminUsername, "RESOLVE_TRANSACTION_FLAG", "TRANSACTION",
-                                        String.valueOf(flag.getTransactionId()),
-                                        (approved ? "APPROVED" : "REJECTED")
-                                                        + (notes != null ? (" | notes=" + notes) : ""));
-
-                        return saved;
-                } catch (Exception e) {
-                        log.error("Failed to resolve flag {}", flagId, e);
-                        auditLogger.logFailure(adminUsername, "RESOLVE_TRANSACTION_FLAG", "TRANSACTION",
-                                        String.valueOf(flagId), "Failed: " + e.getMessage());
-                        throw e;
+        private String canonicalStatus(String input) {
+                if (input == null || input.isBlank())
+                        return null;
+                String s = input.trim().toUpperCase();
+                switch (s) {
+                        case "SUCCESS":
+                        case "SUCCEEDED":
+                        case "COMPLETED":
+                                return "SUCCESS";
+                        case "PENDING":
+                                return "PENDING";
+                        case "FAILED":
+                        case "FAILURE":
+                                return "FAILED";
+                        case "SUSPICIOUS":
+                        case "REVIEW":
+                        case "FRAUD":
+                                return "SUSPICIOUS";
+                        default:
+                                return s;
                 }
         }
 
-        /**
-         * List flags by transactionId (newest first)
-         */
-        public List<TransactionFlag> listFlagsByTransaction(String adminUsername, Long transactionId) {
-                try {
-                        if (!adminAuthService.isAdmin(adminUsername)) {
-                                throw new RuntimeException("Access denied: not an admin");
-                        }
-                        if (transactionId == null || transactionId <= 0) {
-                                throw new RuntimeException("transactionId is required and must be > 0");
-                        }
-                        return transactionFlagRepository.findByTransactionIdOrderByFlaggedAtDesc(transactionId);
-                } catch (Exception e) {
-                        log.error("Failed to list flags for transaction {}", transactionId, e);
-                        throw e;
-                }
-        }
 }

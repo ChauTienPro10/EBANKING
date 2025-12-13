@@ -1,0 +1,32 @@
+package com.ebanking.admintool.dto.request;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+import lombok.Data;
+
+/**
+ * Create Admin Request
+ * FIXED: Enhanced validation with size constraints and strong password
+ * requirements
+ */
+@Data
+public class CreateAdminRequest {
+
+    @NotBlank(message = "Username is required")
+    @Size(min = 3, max = 50, message = "Username must be between 3 and 50 characters")
+    private String username;
+
+    @NotBlank(message = "Password is required")
+    @Size(min = 8, message = "Password must be at least 8 characters")
+    @Pattern(regexp = "^(?=.*[A-Z])(?=.*[0-9])(?=.*[@#$%^&+=]).*$", message = "Password must contain at least one uppercase letter, one digit, and one special character (@#$%^&+=)")
+    private String password;
+
+    @NotBlank(message = "Full name is required")
+    @Size(min = 2, max = 100, message = "Full name must be between 2 and 100 characters")
+    private String fullName;
+
+    @NotBlank(message = "Role is required")
+    @Pattern(regexp = "ROLE_(ADMIN|SUPER_ADMIN|STAFF)", message = "Role must be one of: ROLE_ADMIN, ROLE_SUPER_ADMIN, ROLE_STAFF")
+    private String role;
+}

@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * Dashboard Statistics Response
  */
@@ -23,5 +25,29 @@ public class DashboardStatsResponse {
     private Long lockedAccounts;
     private Long failedTransactions;
     private Long pendingTransactions;
-}
 
+    // Safeguard arrays for charts (never null)
+    @Builder.Default
+    private List<DailyCount> dailyTransactionCounts = java.util.Collections.emptyList();
+
+    @Builder.Default
+    private List<TypeCount> accountTypeDistribution = java.util.Collections.emptyList();
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class DailyCount {
+        private String date; // ISO yyyy-MM-dd
+        private Long count;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class TypeCount {
+        private String type;
+        private Long count;
+    }
+}

@@ -31,23 +31,18 @@ public class AdminAuditController {
      * GET /api/admin/audit-logs
      */
     @GetMapping
-    public ResponseEntity<?> getRecentLogs(
+    public ResponseEntity<Page<AuditLog>> getRecentLogs(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "50") int size,
             Authentication authentication) {
-        try {
-            String adminUsername = authentication.getName();
-            log.info("Admin {} fetching audit logs - page: {}, size: {}", 
-                    adminUsername, page, size);
-            
-            Pageable pageable = PageRequest.of(page, size, Sort.by("timestamp").descending());
-            Page<AuditLog> logs = auditLogRepository.findRecentLogs(pageable);
-            
-            return ResponseEntity.ok(logs);
-        } catch (Exception e) {
-            log.error("Error fetching audit logs", e);
-            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
-        }
+        String adminUsername = authentication.getName();
+        log.info("Admin {} fetching audit logs - page: {}, size: {}",
+                adminUsername, page, size);
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("timestamp").descending());
+        Page<AuditLog> logs = auditLogRepository.findRecentLogs(pageable);
+
+        return ResponseEntity.ok(logs);
     }
 
     /**
@@ -55,23 +50,18 @@ public class AdminAuditController {
      * GET /api/admin/audit-logs/staff/{username}
      */
     @GetMapping("/staff/{username}")
-    public ResponseEntity<?> getLogsByStaff(
+    public ResponseEntity<Page<AuditLog>> getLogsByStaff(
             @PathVariable String username,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "50") int size,
             Authentication authentication) {
-        try {
-            String adminUsername = authentication.getName();
-            log.info("Admin {} fetching audit logs for staff: {}", adminUsername, username);
-            
-            Pageable pageable = PageRequest.of(page, size, Sort.by("timestamp").descending());
-            Page<AuditLog> logs = auditLogRepository.findByStaffUsername(username, pageable);
-            
-            return ResponseEntity.ok(logs);
-        } catch (Exception e) {
-            log.error("Error fetching audit logs by staff", e);
-            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
-        }
+        String adminUsername = authentication.getName();
+        log.info("Admin {} fetching audit logs for staff: {}", adminUsername, username);
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("timestamp").descending());
+        Page<AuditLog> logs = auditLogRepository.findByStaffUsername(username, pageable);
+
+        return ResponseEntity.ok(logs);
     }
 
     /**
@@ -79,29 +69,23 @@ public class AdminAuditController {
      * GET /api/admin/audit-logs/date-range
      */
     @GetMapping("/date-range")
-    public ResponseEntity<?> getLogsByDateRange(
+    public ResponseEntity<Page<AuditLog>> getLogsByDateRange(
             @RequestParam String startDate,
             @RequestParam String endDate,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "50") int size,
             Authentication authentication) {
-        try {
-            String adminUsername = authentication.getName();
-            log.info("Admin {} fetching audit logs from {} to {}", 
-                    adminUsername, startDate, endDate);
-            
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            LocalDateTime start = LocalDateTime.parse(startDate + " 00:00:00", formatter);
-            LocalDateTime end = LocalDateTime.parse(endDate + " 23:59:59", formatter);
-            
-            Pageable pageable = PageRequest.of(page, size, Sort.by("timestamp").descending());
-            Page<AuditLog> logs = auditLogRepository.findByTimestampBetween(start, end, pageable);
-            
-            return ResponseEntity.ok(logs);
-        } catch (Exception e) {
-            log.error("Error fetching audit logs by date range", e);
-            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
-        }
+        String adminUsername = authentication.getName();
+        log.info("Admin {} fetching audit logs from {} to {}",
+                adminUsername, startDate, endDate);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime start = LocalDateTime.parse(startDate + " 00:00:00", formatter);
+        LocalDateTime end = LocalDateTime.parse(endDate + " 23:59:59", formatter);
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("timestamp").descending());
+        Page<AuditLog> logs = auditLogRepository.findByTimestampBetween(start, end, pageable);
+
+        return ResponseEntity.ok(logs);
     }
 }
-
