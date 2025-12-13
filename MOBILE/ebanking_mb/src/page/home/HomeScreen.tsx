@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import ReminderPopup from '../../popups/ReminderPopupProps';
+import OnboardingModal from '../../components/OnboardingModal';
 import Colors from '../../constants/color';
 import BottomNavigation from '../../components/BottomNavigation';
 import HomeHeader from './components/HomeHeader';
@@ -28,12 +29,14 @@ const HomeScreen: React.FC = () => {
   const notificationCount = useSelector(
     (state: RootState) => state.app.notificationCount,
   );
+  const pinStatus = useSelector((state: RootState) => state.app.pinStatus);
 
   // Local state
   const { t } = useTranslation();
   const [isBalanceVisible, setIsBalanceVisible] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState('home');
   const [requireUpdateInfo, setRequireUpdateInfo] = React.useState(false);
+  const [showOnboardingModal, setShowOnboardingModal] = React.useState(false);
 
   // Custom hooks
   const { quickActions, services, bottomTabs } = useHomeData();
@@ -53,19 +56,22 @@ const HomeScreen: React.FC = () => {
     navigation,
   } = useHomeNavigation(account, userInfo);
 
-  // // Effects
-  // useEffect(() => {
-  //   if (
-  //     userInfo === null ||
-  //     userInfo === undefined ||
-  //     userInfo?.fullName === '' ||
-  //     userInfo?.birthday === '' ||
-  //     userInfo?.address === '' ||
-  //     userInfo.ekycStatus !== 'VERIFIED'
-  //   ) {
-  //     setRequireUpdateInfo(true);
-  //   }
-  // }, [userInfo]);
+  // Effects
+  useEffect(() => {
+    // Check if user needs to complete eKYC or PIN setup
+    const ekycIncomplete =
+      !userInfo?.ekycStatus || userInfo.ekycStatus !== 'VERIFIED';
+    const pinIncomplete = pinStatus !== true;
+
+    if (ekycIncomplete || pinIncomplete) {
+      // Add delay to prevent jarring animation when navigating back to home
+      const timer = setTimeout(() => {
+        setShowOnboardingModal(true);
+      }, 350);
+
+      return () => clearTimeout(timer);
+    }
+  }, [userInfo, pinStatus]);
 
   // Event handlers
   const handleNotificationPress = () => {
@@ -99,6 +105,21 @@ const HomeScreen: React.FC = () => {
         onClose={() => {
           setRequireUpdateInfo(false);
           navigation.navigate('Profile' as never);
+        }}
+      />
+
+      <OnboardingModal
+        visible={showOnboardingModal}
+        onClose={() => setShowOnboardingModal(false)}
+        ekycCompleted={userInfo?.ekycStatus === 'VERIFIED'}
+        pinCompleted={pinStatus === true}
+        onNavigateToEKYC={() => {
+          setShowOnboardingModal(false);
+          navigation.navigate('EKYC' as never);
+        }}
+        onNavigateToPIN={() => {
+          setShowOnboardingModal(false);
+          navigation.navigate('SetPINCode' as never);
         }}
       />
 
