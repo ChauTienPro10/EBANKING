@@ -66,7 +66,7 @@ public class FCMController {
         public ResponseEntity<List<NotifyResponse<NotiSystem>>> getAllSysNoti(
                         @RequestParam(defaultValue = "0") int index,
                         @RequestParam(defaultValue = "10") int limit) {
-                log.info("GET SYS NOTIFY");
+                log.info("GET SYS NOTIFY"); 
                 String url = fcmServiceUrl
                                 + "/notify/getSysNoti?index=" + index
                                 + "&limit=" + limit;

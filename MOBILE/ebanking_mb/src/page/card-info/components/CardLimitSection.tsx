@@ -3,7 +3,6 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Colors from '../../../constants/color';
 import SettingsIcon from '../../../components/icon/SettingsIcon';
-import { useTranslation } from 'react-i18next';
 
 interface CardLimitSectionProps {
   dailyLimit: number;
@@ -25,9 +24,6 @@ export const CardLimitSection: React.FC<CardLimitSectionProps> = ({
   const formatMoney = (amount: number): string => {
     return amount.toLocaleString('vi-VN');
   };
-
-  const { t } = useTranslation();
-  const spentPercentage = (spentAmount / cardLimit) * 100;
 
   const formatShort = (amount: number): string => {
     if (amount >= 1000000000) {
@@ -201,17 +197,6 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: Colors.main_bule,
     fontWeight: '500',
-  },
-  singleLimitCard: {
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: Colors.border,
-  },
-  singleLimitAmount: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: Colors.textPrimary,
-    marginTop: 4,
   },
   singleLimitCard: {
     paddingTop: 16,

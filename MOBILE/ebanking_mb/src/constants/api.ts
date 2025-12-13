@@ -1,6 +1,6 @@
 import { API_URL } from '@env';
 
-export const HOST_SERVER = '10.20.3.206';
+export const HOST_SERVER = '192.168.1.4';
 
 export const BASE_URL = `http://${HOST_SERVER}:8000/`;
 export const FCM_SERVICE = `http://${HOST_SERVER}:8004/`;

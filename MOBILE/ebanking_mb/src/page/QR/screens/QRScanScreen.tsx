@@ -4,12 +4,13 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  Alert,
   ActivityIndicator,
   Platform,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { launchImageLibrary } from 'react-native-image-picker';
+import RNQRGenerator from 'rn-qr-generator';
+import Toast from 'react-native-toast-message';
 import {
   Camera,
   useCameraDevice,
@@ -90,6 +91,42 @@ const QRScanScreen: React.FC = () => {
     loadInitialPermission();
   }, [loadInitialPermission]);
 
+  const processQRData = (value: string) => {
+    try {
+      // Try to parse as JSON first
+      const qrData = JSON.parse(value);
+
+      // Navigate with JSON data
+      navigation.navigate('Transfer', {
+        receiver: qrData.accountNumber || '',
+        amount: qrData.amount?.toString() || '0',
+        content: qrData.description || '',
+        bankCode: qrData.bank || '',
+      });
+    } catch (jsonError) {
+      // Fallback to pipe-delimited format: "receiver|amount|content|bankCode"
+      if (value.includes('|')) {
+        const arr = value.split('|').map(item => item.trim());
+
+        navigation.navigate('Transfer', {
+          receiver: arr[0] || '',
+          amount: arr[1] || '0',
+          content: arr[2] || '',
+          bankCode: arr[3] || '',
+        });
+      } else {
+        // Invalid format
+        Toast.show({
+          type: 'error',
+          text1: 'Lỗi QR Code',
+          text2: 'Định dạng QR code không hợp lệ. Vui lòng thử lại.',
+          position: 'top',
+          topOffset: 60,
+        });
+      }
+    }
+  };
+
   const pickImage = async () => {
     try {
       const result = await launchImageLibrary({
@@ -97,11 +134,53 @@ const QRScanScreen: React.FC = () => {
         quality: 1,
       });
 
-      if (result.assets && result.assets[0]) {
-        Alert.alert('Thành công', 'Đã chọn ảnh: ' + result.assets[0].fileName);
+      // User cancelled image picker
+      if (result.didCancel) {
+        return;
       }
+
+      // Check if image was selected
+      if (!result.assets || !result.assets[0] || !result.assets[0].uri) {
+        Toast.show({
+          type: 'error',
+          text1: 'Lỗi',
+          text2: 'Không thể chọn ảnh',
+          position: 'top',
+          topOffset: 60,
+        });
+        return;
+      }
+
+      const imageUri = result.assets[0].uri;
+
+      // Decode QR code from image
+      const response = await RNQRGenerator.detect({
+        uri: imageUri,
+      });
+
+      // Check if QR code was found
+      if (!response.values || response.values.length === 0) {
+        Toast.show({
+          type: 'error',
+          text1: 'Không tìm thấy mã QR',
+          text2: 'Ảnh không chứa mã QR hợp lệ',
+          position: 'top',
+          topOffset: 60,
+        });
+        return;
+      }
+
+      // Process the first QR code found
+      const qrValue = response.values[0];
+      processQRData(qrValue);
     } catch (error) {
-      Alert.alert('Lỗi', 'Không thể chọn ảnh');
+      Toast.show({
+        type: 'error',
+        text1: 'Lỗi',
+        text2: 'Không thể xử lý ảnh QR',
+        position: 'top',
+        topOffset: 60,
+      });
     }
   };
 
@@ -119,40 +198,8 @@ const QRScanScreen: React.FC = () => {
       }
 
       setIsProcessing(true);
-
-      try {
-        // Try to parse as JSON first
-        const qrData = JSON.parse(value);
-
-        // Navigate with JSON data
-        navigation.navigate('Transfer', {
-          receiver: qrData.accountNumber || '',
-          amount: qrData.amount?.toString() || '0',
-          content: qrData.description || '',
-          bankCode: qrData.bank || '',
-        });
-        setIsProcessing(false);
-      } catch (jsonError) {
-        // Fallback to pipe-delimited format: "receiver|amount|content"
-        if (value.includes('|')) {
-          const arr = value.split('|').map(item => item.trim());
-
-          navigation.navigate('Transfer', {
-            receiver: arr[0] || '',
-            amount: arr[1] || '0',
-            content: arr[2] || '',
-            bankCode: arr[3] || '',
-          });
-          setIsProcessing(false);
-        } else {
-          // Invalid format
-          Alert.alert(
-            'Lỗi QR Code',
-            'Định dạng QR code không hợp lệ. Vui lòng thử lại.',
-            [{ text: 'OK', onPress: () => setIsProcessing(false) }],
-          );
-        }
-      }
+      processQRData(value);
+      setIsProcessing(false);
     },
   });
 

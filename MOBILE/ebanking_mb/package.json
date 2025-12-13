@@ -61,6 +61,7 @@
     "react-native-vision-camera": "^4.7.3",
     "react-native-webview": "^13.16.0",
     "react-redux": "^9.2.0",
+    "rn-qr-generator": "^1.4.5",
     "sockjs-client": "^1.5.1",
     "text-encoding": "^0.7.0"
   },
