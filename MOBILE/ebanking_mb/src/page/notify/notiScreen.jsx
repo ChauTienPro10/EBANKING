@@ -5,8 +5,10 @@ import {
   SafeAreaView,
   TouchableOpacity,
   FlatList,
+
   RefreshControl,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { setNotificationCount } from '../../store/slices/appSlice';
@@ -17,11 +19,14 @@ import { API } from '../../constants/api';
 
 const NotiScreen = () => {
   const { t } = useTranslation();
+  const navigation = useNavigation();
   const dispatch = useDispatch();
   const notificationCount = useSelector(state => state.app.notificationCount);
-  const [activeTab, setActiveTab] = useState('personal'); // 'personal' or 'system'
+  const userInfoData = useSelector(state => state.app.userInfoData);
+  const [activeTab, setActiveTab] = useState('personal'); // 'personal', 'system', or 'transfer'
   const [notificationsSystem, setNotificationsSystem] = useState([]);
   const [notificationsPersonal, setNotificationsPersonal] = useState([]);
+  const [notificationsTransfer, setNotificationsTransfer] = useState([]);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [index, setIndex] = useState(0);
@@ -35,8 +40,10 @@ const NotiScreen = () => {
       setLoading(true);
       if (activeTab === 'system') {
         await getNotiSystem(index);
-      } else {
+      } else if (activeTab === 'personal') {
         await getNotiPersonal(index);
+      } else {
+        await getNotiTransfer(index);
       }
     } catch (error) {
       console.error('Error loading notifications:', error);
@@ -67,7 +74,11 @@ const NotiScreen = () => {
       setNotificationsSystem(notifications);
 
       // Update notification count based on unread notifications
-      updateNotificationCount(notificationsPersonal, notifications);
+      updateNotificationCount(
+        notificationsPersonal,
+        notifications,
+        notificationsTransfer,
+      );
     } catch (error) {
       console.error('Error loading system notifications:', error);
       setNotificationsSystem([]);
@@ -96,17 +107,55 @@ const NotiScreen = () => {
       setNotificationsPersonal(notifications);
 
       // Update notification count based on unread notifications
-      updateNotificationCount(notifications, notificationsSystem);
+      updateNotificationCount(
+        notifications,
+        notificationsSystem,
+        notificationsTransfer,
+      );
     } catch (error) {
       console.error('Error loading personal notifications:', error);
       setNotificationsPersonal([]);
     }
   };
 
-  const updateNotificationCount = (personal, system) => {
-    const unreadPersonal = personal.filter(n => !n.read).length;
-    const unreadSystem = system.filter(n => !n.read).length;
-    const totalUnread = unreadPersonal + unreadSystem;
+  const getNotiTransfer = async (index = 0) => {
+    try {
+      const response = await fetch.get(
+        API.GET_TRANS_NOTIFICATION,
+        { index, limit: 10 },
+        true, // authRequire
+      );
+
+      // Handle different response structures
+      let notifications = [];
+      if (Array.isArray(response)) {
+        notifications = response;
+      } else if (response?.data && Array.isArray(response.data)) {
+        notifications = response.data;
+      } else if (response?.data) {
+        notifications = [response.data];
+      }
+
+      console.log('Transfer notifications loaded:', notifications.length);
+      setNotificationsTransfer(notifications);
+
+      // Update notification count based on unread notifications
+      updateNotificationCount(
+        notificationsPersonal,
+        notificationsSystem,
+        notifications,
+      );
+    } catch (error) {
+      console.error('Error loading transfer notifications:', error);
+      setNotificationsTransfer([]);
+    }
+  };
+
+  const updateNotificationCount = (personal, system, transfer = []) => {
+    const unreadPersonal = personal.filter(n => !n.seen).length;
+    const unreadSystem = system.filter(n => !n.seen).length;
+    const unreadTransfer = transfer.filter(n => !n.seen).length;
+    const totalUnread = unreadPersonal + unreadSystem + unreadTransfer;
     dispatch(setNotificationCount(totalUnread));
   };
 
@@ -117,23 +166,34 @@ const NotiScreen = () => {
   };
 
   const handleNotificationPress = async notification => {
+    console.log('Notification pressed:', notification);
     // Mark as read if not read
-    if (!notification.read) {
+    if (!notification.seen) {
       try {
-        // TODO: Call API to mark as read
-        // await fetch.post(API.MARK_NOTIFICATION_READ, { id: notification.id }, true);
+        const userId = userInfoData?.id;
+        if (userId) {
+          const url = `${API.SEEN_NOTIFICATION}?notiId=${notification?.data?.id}&userId=${userId}`;
+          await fetch.get(url, {}, true);
+          await onRefresh();
+        }
 
         // Update local state
         if (activeTab === 'system') {
           setNotificationsSystem(prev =>
             prev.map(item =>
-              item.id === notification.id ? { ...item, read: true } : item,
+              item.id === notification?.data?.id ? { ...item, seen: true } : item,
+            ),
+          );
+        } else if (activeTab === 'personal') {
+          setNotificationsPersonal(prev =>
+            prev.map(item =>
+              item.id === notification?.data?.id ? { ...item, seen: true } : item,
             ),
           );
         } else {
-          setNotificationsPersonal(prev =>
+          setNotificationsTransfer(prev =>
             prev.map(item =>
-              item.id === notification.id ? { ...item, read: true } : item,
+              item.id === notification?.data?.id ? { ...item, seen: true } : item,
             ),
           );
         }
@@ -146,7 +206,22 @@ const NotiScreen = () => {
         console.error('Error marking notification as read:', error);
       }
     }
-    // TODO: Navigate to notification detail if needed
+
+    // Format detailed time for display
+    let formattedTime = '';
+    try {
+      if (notification.timestamp) {
+        formattedTime = new Date(notification.timestamp).toLocaleString('vi-VN');
+      }
+    } catch (e) {
+      formattedTime = formatTime(notification.timestamp);
+    }
+
+    navigation.navigate('ShowNotificationScreen', {
+      title: notification?.data?.title,
+      body: notification?.data?.message || notification?.data?.content,
+      time: formattedTime,
+    });
   };
 
   const formatTime = timestamp => {
@@ -175,7 +250,7 @@ const NotiScreen = () => {
       <TouchableOpacity
         style={[
           styles.notificationItem,
-          !item.read && styles.notificationItemUnread,
+          !item.seen && styles.notificationItemUnread,
         ]}
         onPress={() => handleNotificationPress(item)}
         activeOpacity={0.7}
@@ -184,12 +259,12 @@ const NotiScreen = () => {
           <View style={styles.notificationHeader}>
             <GText
               type="systemBold_16"
-              color={!item.read ? Colors.textPrimary : Colors.textSecondary}
+              color={!item.seen ? Colors.textPrimary : Colors.textSecondary}
               style={styles.notificationTitle}
             >
-              {item.title}
+              {item.data?.title}
             </GText>
-            {!item.read && <View style={styles.unreadDot} />}
+            {!item.seen && <View style={styles.unreadDot} />}
           </View>
           <GText
             type="systemLight_14"
@@ -197,7 +272,7 @@ const NotiScreen = () => {
             style={styles.notificationMessage}
             numberOfLines={2}
           >
-            {item.message}
+            {item.data?.message || item.data?.content}
           </GText>
           <GText
             type="systemLight_12"
@@ -237,7 +312,7 @@ const NotiScreen = () => {
           activeOpacity={0.7}
         >
           <GText
-            type="systemBold_16"
+            type="systemMedium_12"
             color={
               activeTab === 'personal' ? Colors.main_bule : Colors.textSecondary
             }
@@ -253,7 +328,7 @@ const NotiScreen = () => {
           activeOpacity={0.7}
         >
           <GText
-            type="systemBold_16"
+            type="systemMedium_12"
             color={
               activeTab === 'system' ? Colors.main_bule : Colors.textSecondary
             }
@@ -262,19 +337,43 @@ const NotiScreen = () => {
           </GText>
           {activeTab === 'system' && <View style={styles.tabIndicator} />}
         </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.tab, activeTab === 'transfer' && styles.tabActive]}
+          onPress={() => setActiveTab('transfer')}
+          activeOpacity={0.7}
+        >
+          <GText
+            type="systemMedium_12"
+            color={
+              activeTab === 'transfer' ? Colors.main_bule : Colors.textSecondary
+            }
+          >
+            {t('notifications.tab_transfer')}
+          </GText>
+          {activeTab === 'transfer' && <View style={styles.tabIndicator} />}
+        </TouchableOpacity>
       </View>
 
       {/* Notifications List */}
       <FlatList
         data={
-          activeTab === 'system' ? notificationsSystem : notificationsPersonal
+          activeTab === 'system'
+            ? notificationsSystem
+            : activeTab === 'personal'
+              ? notificationsPersonal
+              : notificationsTransfer
         }
         renderItem={renderNotificationItem}
         keyExtractor={(item, index) => item.id?.toString() || index.toString()}
         contentContainerStyle={[
           styles.listContainer,
-          (activeTab === 'system' ? notificationsSystem : notificationsPersonal)
-            .length === 0 && styles.listContainerEmpty,
+          (activeTab === 'system'
+            ? notificationsSystem
+            : activeTab === 'personal'
+              ? notificationsPersonal
+              : notificationsTransfer
+          ).length === 0 && styles.listContainerEmpty,
         ]}
         ListEmptyComponent={renderEmptyState}
         refreshControl={

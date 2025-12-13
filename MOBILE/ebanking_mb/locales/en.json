@@ -221,10 +221,11 @@
   },
   "notifications": {
     "title": "Notifications",
-    "tab_personal": "Personal Notifications",
-    "tab_system": "System Notifications",
+    "tab_personal": "Personal",
+    "tab_system": "System",
     "personal": "Personal",
     "system": "System",
+    "tab_transfer": "Transfer",
     "no_notifications": "No notifications",
     "mark_all_read": "Mark all as read",
     "empty_personal": "No personal notifications",

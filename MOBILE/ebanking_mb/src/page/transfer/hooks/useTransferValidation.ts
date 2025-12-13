@@ -25,11 +25,11 @@ export const useTransferValidation = () => {
       return t('transfer.validation.amount_invalid');
     }
 
-    if (numericAmount < 10000) {
+    if (numericAmount < 1000) {
       return t('transfer.validation.amount_minimum');
     }
 
-    if (numericAmount > 500000000) {
+    if (numericAmount > 1000000000) {
       return t('transfer.validation.amount_maximum');
     }
 

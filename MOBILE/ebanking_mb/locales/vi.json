@@ -12,6 +12,12 @@
     "password_invalid": "Mật khâu không hợp lệ",
     "internal_error": "Lỗi hệ thống"
   },
+  "pin_modal": {
+    "title": "Yêu cầu cài đặt PIN",
+    "message": "Bạn chưa cài đặt mã PIN. Vui lòng cài đặt mã PIN để thực hiện giao dịch an toàn.",
+    "go_home": "Về trang chủ",
+    "set_now": "Cài đặt ngay"
+  },
   "menu": {
     "title": "Menu",
     "greeting": "Xin chào, {userName}",
@@ -223,10 +229,11 @@
   },
   "notifications": {
     "title": "Thông báo",
-    "tab_personal": "Thông báo cá nhân",
-    "tab_system": "Thông báo hệ thống",
+    "tab_personal": "Cá nhân",
+    "tab_system": "Hệ thống",
     "personal": "Cá nhân",
     "system": "Hệ thống",
+    "tab_transfer": "Nhận tiền",
     "no_notifications": "Không có thông báo",
     "mark_all_read": "Đánh dấu tất cả đã đọc",
     "empty_personal": "Không có thông báo cá nhân",
@@ -265,7 +272,7 @@
       "account_invalid": "Số tài khoản không hợp lệ (10-16 chữ số)",
       "amount_required": "Vui lòng nhập số tiền",
       "amount_invalid": "Số tiền không hợp lệ",
-      "amount_minimum": "Số tiền tối thiểu là 10,000 VND",
+      "amount_minimum": "Số tiền tối thiểu là 1,000 VND",
       "amount_maximum": "Số tiền tối đa là 500,000,000 VND",
       "content_required": "Vui lòng nhập nội dung chuyển tiền",
       "bank_required": "Vui lòng chọn ngân hàng thụ hưởng",

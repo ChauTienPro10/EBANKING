@@ -57,6 +57,15 @@ const appSlice = createSlice({
     clearNotifications: state => {
       state.notificationCount = 0;
     },
+    logout: state => {
+      state.isLoggedIn = false;
+      state.loginResponse = null;
+      state.accountTransResponse = null;
+      state.userInfoData = null;
+      state.pinStatus = false;
+      state.cardStatus = 'active';
+      state.notificationCount = 0;
+    },
   },
   extraReducers: builder => {
     builder
@@ -85,6 +94,7 @@ export const {
   setCardStatus,
   setNotificationCount,
   clearNotifications,
+  logout,
 } = appSlice.actions;
 
 export default appSlice.reducer;

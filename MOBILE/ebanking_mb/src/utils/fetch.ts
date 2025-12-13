@@ -1,5 +1,7 @@
 import { store } from '../store';
-import { navigate } from '../navigation/navigate';
+import Toast from 'react-native-toast-message';
+
+import { logout } from '../store/slices/appSlice';
 
 const defaultHeaders: Record<string, string> = {
   'Content-Type': 'application/json',
@@ -50,7 +52,12 @@ async function post(url: string, body: any, authRequire: boolean = true) {
 
       // Có thể xử lý điều hướng nếu cần
       if (response.status === 403) {
-        navigate('SignIn' as never);
+        Toast.show({
+          type: 'error',
+          text1: 'Thông báo',
+          text2: 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.',
+        });
+        store.dispatch(logout());
       }
 
       throw new Error(errorMessage);
@@ -76,7 +83,12 @@ async function post(url: string, body: any, authRequire: boolean = true) {
 
     console.error('Lỗi khi gửi yêu cầu:', message);
     if (message === '403' || message === 403) {
-      navigate('SignIn' as never);
+      Toast.show({
+        type: 'error',
+        text1: 'Thông báo',
+        text2: 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.',
+      });
+      store.dispatch(logout());
     }
     throw error;
   }
@@ -128,7 +140,12 @@ async function get(
 
       // Handle 403 errors by navigating to SignIn
       if (response.status === 403) {
-        navigate('SignIn' as never);
+        Toast.show({
+          type: 'error',
+          text1: 'Thông báo',
+          text2: 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.',
+        });
+        store.dispatch(logout());
       }
 
       throw new Error(errorMessage);
@@ -194,7 +211,12 @@ async function put(url: string, body: any, authRequire: boolean = true) {
       console.error('PUT error:', errorMessage);
 
       if (response.status === 403) {
-        navigate('SignIn' as never);
+        Toast.show({
+          type: 'error',
+          text1: 'Thông báo',
+          text2: 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.',
+        });
+        store.dispatch(logout());
       }
 
       throw new Error(errorMessage);
@@ -220,7 +242,12 @@ async function put(url: string, body: any, authRequire: boolean = true) {
 
     console.error('Lỗi khi gửi yêu cầu PUT:', message);
     if (message === '403' || message === 403) {
-      navigate('SignIn' as never);
+      Toast.show({
+        type: 'error',
+        text1: 'Thông báo',
+        text2: 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.',
+      });
+      store.dispatch(logout());
     }
     throw error;
   }

@@ -10,6 +10,7 @@ import CustomButton from '../../components/CustomButton';
 import { Header } from '../../components';
 import ConfirmTransferModal from '../../popups/ConfirmTransferModal';
 import EKYCRequiredModal from '../../components/EKYCRequiredModal';
+import PinRequiredModal from '../../components/PinRequiredModal';
 import { RootStackParamList } from '../../navigation/types';
 import { RootState, AppDispatch, store } from '../../store';
 import { fetchUserInfo } from '../../store/fetchAPI/UserInfoFetch';
@@ -49,6 +50,7 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({
   const loginResponse = useSelector(
     (state: RootState) => state.app.loginResponse,
   );
+  const pinStatus = useSelector((state: RootState) => state.app.pinStatus);
 
   // Fetch latest user info on mount to ensure eKYC status is up-to-date
   useEffect(() => {
@@ -56,6 +58,14 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({
       dispatch(fetchUserInfo(loginResponse.id));
     }
   }, []);
+
+  // Check PIN status
+  const [showPinModal, setShowPinModal] = useState(false);
+  useEffect(() => {
+    if (pinStatus === false) {
+      setShowPinModal(true);
+    }
+  }, [pinStatus]);
 
   // Custom hooks
   const {
@@ -204,6 +214,18 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({
           (navigation as any).navigate('Profile');
         }}
         amount={formData.amount}
+      />
+
+      <PinRequiredModal
+        visible={showPinModal}
+        onClose={() => {
+          setShowPinModal(false);
+          navigation.navigate('Home');
+        }}
+        onGoToSetPin={() => {
+          setShowPinModal(false);
+          (navigation as any).navigate('SetPINCode');
+        }}
       />
     </View>
   );

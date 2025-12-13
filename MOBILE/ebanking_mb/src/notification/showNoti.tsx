@@ -4,18 +4,19 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import { Header } from '../components';
 
 type ShowNotificationScreenRouteProp = RouteProp<
-    { params: { title: string; body: string } },
+    { params: { title: string; body: string; time: string } },
     'params'
 >;
 
 const ShowNotificationScreen: React.FC = () => {
     const route = useRoute<ShowNotificationScreenRouteProp>();
-    const { title, body } = route.params;
+    const { title, body, time } = route.params;
 
     return (
         <View style={styles.container}>
             <Header title={title} />
             <View style={styles.content}>
+                <Text style={styles.time}>{time}</Text>
                 <Text style={styles.body}>{body}</Text>
             </View>
         </View>
@@ -34,9 +35,16 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 15,
     },
+    time: {
+        fontSize: 14,
+        color: '#888',
+        marginBottom: 10,
+        textAlign: 'right'
+    },
     body: {
         fontSize: 16,
         lineHeight: 22,
+        color: '#333'
     },
     content: {
         padding: 20

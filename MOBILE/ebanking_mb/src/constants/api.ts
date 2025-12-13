@@ -1,13 +1,13 @@
 import { API_URL } from '@env';
 
-export const HOST_SERVER = '10.20.3.206';
+export const HOST_SERVER = '192.168.1.4';
 
 export const BASE_URL = `http://${HOST_SERVER}:8000/`;
 export const FCM_SERVICE = `http://${HOST_SERVER}:8004/`;
 export const AUTH_SERVICE = BASE_URL + 'authService';
 // Call UserService directly (port 8001) to get full UserInfo with eKYC data
 export const USER_SERVICE_DIRECT = `http://${HOST_SERVER}:8001`;
-
+export const FCM_CONTROLLER_URL = `${BASE_URL}authService/fcm`;
 export const API = {
   LOGIN: `${AUTH_SERVICE}/auth/login`,
   REGISTER: `${AUTH_SERVICE}/auth/register`,
@@ -38,8 +38,10 @@ export const API = {
   ASK: `${BASE_URL}chatService/ask`,
 
   // notify
-  GET_NOTIFICATIONSYSTEM: `${FCM_SERVICE}notify/getSysNoti`,
-  GET_NOTIFICATIONPERSONAL: `${FCM_SERVICE}notify/getPerNoti`,
+  GET_NOTIFICATIONSYSTEM: `${FCM_CONTROLLER_URL}/getSysNoti`,
+  GET_NOTIFICATIONPERSONAL: `${FCM_CONTROLLER_URL}/getPerNoti`,
+  GET_TRANS_NOTIFICATION: `${FCM_CONTROLLER_URL}/getTransferNoti`,
+  SEEN_NOTIFICATION: `${FCM_CONTROLLER_URL}/seenNoti`,
 
   // avatar
   UPLOAD_AVATAR: `${AUTH_SERVICE}/auth/user/{userId}/avatar`,
