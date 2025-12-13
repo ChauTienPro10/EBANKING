@@ -24,17 +24,17 @@ const CardBalanceSection: React.FC<CardBalanceSectionProps> = ({
 
   const getAccountTypeLabel = (type: string) => {
     const typeMap: Record<string, string> = {
-      SAVINGS: 'Tài khoản tiết kiệm',
-      CHECKING: 'Tài khoản thanh toán',
-      CREDIT: 'Thẻ tín dụng',
-      DEBIT: 'Thẻ ghi nợ',
+      SAVINGS: t('card.account_type_savings'),
+      CHECKING: t('card.account_type_checking'),
+      CREDIT: t('card.account_type_credit'),
+      DEBIT: t('card.account_type_debit'),
     };
-    return typeMap[type.toUpperCase()] || 'Tài khoản';
+    return typeMap[type.toUpperCase()] || t('card.account_type_default');
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>SỐ DƯ KHẢ DỤNG</Text>
+      <Text style={styles.title}>{t('card.balance_available')}</Text>
       <Text style={styles.balance}>{formatBalance(balance)} ₫</Text>
       <Text style={styles.cardTypeText}>
         {getAccountTypeLabel(accountType)}

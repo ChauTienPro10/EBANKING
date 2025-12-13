@@ -8,6 +8,7 @@ import {
   Dimensions,
   ScrollView,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import Colors from '../../../constants/color';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store';
@@ -24,6 +25,7 @@ const CardDetailBottomSheet: React.FC<CardDetailBottomSheetProps> = ({
   visible,
   onClose,
 }) => {
+  const { t } = useTranslation();
   const account = useSelector(
     (state: RootState) => state.app.accountTransResponse,
   );
@@ -72,7 +74,7 @@ const CardDetailBottomSheet: React.FC<CardDetailBottomSheetProps> = ({
   };
 
   const statusLabel =
-    cardStatus === 'locked' ? 'Đang khóa' : 'Đang hoạt động';
+    cardStatus === 'locked' ? t('card.status_locked') : t('card.status_active');
 
   const currencyCode = account?.currency ?? mockCardData.currency;
 
@@ -96,77 +98,81 @@ const CardDetailBottomSheet: React.FC<CardDetailBottomSheetProps> = ({
           {/* Handle Bar */}
           <View style={styles.handleBar} />
 
-          <Text style={styles.title}>Chi tiết thẻ</Text>
+          <Text style={styles.title}>{t('card.menu_card_details')}</Text>
 
           <ScrollView
             style={styles.content}
             showsVerticalScrollIndicator={false}
           >
             <View style={styles.detailRow}>
-              <Text style={styles.label}>Số thẻ</Text>
+              <Text style={styles.label}>{t('card.detail_card_number')}</Text>
               <Text style={styles.value}>
                 {formatCardNumber(account?.accountNumber)}
               </Text>
             </View>
 
             <View style={styles.detailRow}>
-              <Text style={styles.label}>Chủ thẻ</Text>
+              <Text style={styles.label}>{t('card.detail_card_holder')}</Text>
               <Text style={styles.value}>
                 {userInfo?.fullName ?? mockCardData.cardHolderName}
               </Text>
             </View>
 
             <View style={styles.detailRow}>
-              <Text style={styles.label}>Loại thẻ</Text>
+              <Text style={styles.label}>{t('card.detail_card_type')}</Text>
               <Text style={styles.value}>
                 {formatTitleCase(account?.accountType) || mockCardData.cardType}
               </Text>
             </View>
 
             <View style={styles.detailRow}>
-              <Text style={styles.label}>Trạng thái</Text>
+              <Text style={styles.label}>{t('card.detail_status')}</Text>
               <Text style={styles.value}>{statusLabel}</Text>
             </View>
 
             <View style={styles.detailRow}>
-              <Text style={styles.label}>Ngày hết hạn</Text>
+              <Text style={styles.label}>{t('card.detail_expiry_date')}</Text>
               <Text style={styles.value}>
                 {mockCardData.expiryMonth}/{mockCardData.expiryYear}
               </Text>
             </View>
 
             <View style={styles.detailRow}>
-              <Text style={styles.label}>CVV</Text>
+              <Text style={styles.label}>{t('card.detail_cvv')}</Text>
               <Text style={styles.value}>•••</Text>
             </View>
 
             <View style={styles.detailRow}>
-              <Text style={styles.label}>Ngày phát hành</Text>
-              <Text style={styles.value}>{formatDate(account?.openedDate)}</Text>
+              <Text style={styles.label}>{t('card.detail_issue_date')}</Text>
+              <Text style={styles.value}>
+                {formatDate(account?.openedDate)}
+              </Text>
             </View>
 
             <View style={styles.detailRow}>
-              <Text style={styles.label}>Hạn mức thẻ</Text>
+              <Text style={styles.label}>{t('card.detail_card_limit')}</Text>
               <Text style={styles.valueHighlight}>
                 {formatCurrency(mockCardData.cardLimit)}
               </Text>
             </View>
 
             <View style={styles.detailRow}>
-              <Text style={styles.label}>Số dư khả dụng</Text>
+              <Text style={styles.label}>
+                {t('card.detail_available_balance')}
+              </Text>
               <Text style={styles.valueHighlight}>
                 {formatCurrency(availableBalance, currencyCode)}
               </Text>
             </View>
 
             <View style={styles.detailRow}>
-              <Text style={styles.label}>Đơn vị tiền tệ</Text>
+              <Text style={styles.label}>{t('card.detail_currency')}</Text>
               <Text style={styles.value}>{currencyCode}</Text>
             </View>
           </ScrollView>
 
           <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-            <Text style={styles.closeButtonText}>Đóng</Text>
+            <Text style={styles.closeButtonText}>{t('card.detail_close')}</Text>
           </TouchableOpacity>
         </View>
       </View>
