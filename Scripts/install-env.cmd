@@ -120,61 +120,61 @@ IF EXIST docker-compose.yml (
     exit /b 1
 )
 
-:: i NGINX-BE
-echo.
-echo === Starting Docker Compose in ./NGINX-BE ===
-cd /d "%~dp0NGINX-BE"
-IF EXIST docker-compose.yml (
-    docker-compose up -d
-    echo Docker kafka containers started.
-) ELSE (
-    echo ERROR: docker-compose.yml not found in NGINX-BE
-    pause
-    exit /b 1
-)
+@REM :: i NGINX-BE
+@REM echo.
+@REM echo === Starting Docker Compose in ./NGINX-BE ===
+@REM cd /d "%~dp0NGINX-BE"
+@REM IF EXIST docker-compose.yml (
+@REM     docker-compose up -d
+@REM     echo Docker kafka containers started.
+@REM ) ELSE (
+@REM     echo ERROR: docker-compose.yml not found in NGINX-BE
+@REM     pause
+@REM     exit /b 1
+@REM )
 
-:: Đi vào thư mục dự án web và cài npm
-echo.
-echo === Starting install web package ===
-cd /d "%~dp0FRONTEND\ebanking-fe"
+@REM :: Đi vào thư mục dự án web và cài npm
+@REM echo.
+@REM echo === Starting install web package ===
+@REM cd /d "%~dp0FRONTEND\ebanking-fe"
 
-IF EXIST package.json (
-    echo Running npm install...
-    call npm install
+@REM IF EXIST package.json (
+@REM     echo Running npm install...
+@REM     call npm install
 
-    IF %ERRORLEVEL% LEQ 1 (
-        echo npm install thành công!
-    ) ELSE (
-        echo  npm install bị lỗi với mã lỗi %ERRORLEVEL%.
-        pause
-        exit /b 1
-    )
-) ELSE (
-    echo  ERROR: package.json not found in ebanking-fe
-    pause
-    exit /b 1
-)
+@REM     IF %ERRORLEVEL% LEQ 1 (
+@REM         echo npm install thành công!
+@REM     ) ELSE (
+@REM         echo  npm install bị lỗi với mã lỗi %ERRORLEVEL%.
+@REM         pause
+@REM         exit /b 1
+@REM     )
+@REM ) ELSE (
+@REM     echo  ERROR: package.json not found in ebanking-fe
+@REM     pause
+@REM     exit /b 1
+@REM )
 
-:: Đi vào thư mục dự án mobile và cài npm
-echo.
-echo === Starting install mobile package ===
-cd /d "%~dp0MOBILE\ebanking-mb"
-IF EXIST package.json (
-    echo Running npm install...
-    call npm install
+@REM :: Đi vào thư mục dự án mobile và cài npm
+@REM echo.
+@REM echo === Starting install mobile package ===
+@REM cd /d "%~dp0MOBILE\ebanking-mb"
+@REM IF EXIST package.json (
+@REM     echo Running npm install...
+@REM     call npm install
 
-    IF %ERRORLEVEL% LEQ 1 (
-        echo npm install thanh cong
-    ) ELSE (
-        echo  npm install bị lỗi với mã lỗi %ERRORLEVEL%.
-        pause
-        exit /b 1
-    )
-) ELSE (
-    echo  ERROR: package.json not found in ebanking-fe
-    pause
-    exit /b 1
-)
+@REM     IF %ERRORLEVEL% LEQ 1 (
+@REM         echo npm install thanh cong
+@REM     ) ELSE (
+@REM         echo  npm install bị lỗi với mã lỗi %ERRORLEVEL%.
+@REM         pause
+@REM         exit /b 1
+@REM     )
+@REM ) ELSE (
+@REM     echo  ERROR: package.json not found in ebanking-fe
+@REM     pause
+@REM     exit /b 1
+@REM )
 
 endlocal
 pause
