@@ -64,6 +64,9 @@ public class TransactionService {
     TransactionLimitRepository limitRepository;
 
     @Autowired
+    private TransactionLimitService limitService;
+
+    @Autowired
     private RedisTemplate<String, String> redisTemplateForString;
 
     private static final BigDecimal SINGLE_LIMIT = new BigDecimal("10000000");
@@ -83,14 +86,12 @@ public class TransactionService {
         // Generate session ID for tracking
         String sessionId = UUID.randomUUID().toString();
 
-        // Get user's custom limits (or default if not set)
+        // Get user's custom limits using centralized service
         LocalDate today = LocalDate.now();
-        TransactionLimit userLimit = limitRepository.findByUserIdAndLimitDate(userId, today)
-                .orElse(null);
+        TransactionLimit userLimit = limitService.getOrCreateLimit(userId, today);
 
-        // If no custom limit found, use system defaults
-        BigDecimal userSingleLimit = (userLimit != null) ? userLimit.getSingleTransactionLimit() : SINGLE_LIMIT;
-        BigDecimal userDailyLimit = (userLimit != null) ? userLimit.getDailyLimit() : DAILY_LIMIT;
+        BigDecimal userSingleLimit = userLimit.getSingleTransactionLimit();
+        BigDecimal userDailyLimit = userLimit.getDailyLimit();
 
         // Check 1: Single transaction exceeds user's single limit
         if (amount.compareTo(userSingleLimit) > 0) {
@@ -134,35 +135,7 @@ public class TransactionService {
         return String.format("%,.0f", amount);
     }
 
-    /**
-     * Update used_amount in transaction_limit after successful transaction
-     */
-    private void updateUsedAmount(Long userId, String username, BigDecimal amount) {
-        LocalDate today = LocalDate.now();
 
-        // Get or create today's limit record
-        TransactionLimit limit = limitRepository.findByUserIdAndLimitDate(userId, today)
-                .orElseGet(() -> {
-                    TransactionLimit newLimit = new TransactionLimit();
-                    newLimit.setUserId(userId);
-                    newLimit.setLimitDate(today);
-                    newLimit.setDailyLimit(DAILY_LIMIT);
-                    newLimit.setSingleTransactionLimit(SINGLE_LIMIT);
-                    newLimit.setUsedAmount(BigDecimal.ZERO);
-                    newLimit.setCreatedAt(LocalDateTime.now());
-                    newLimit.setUpdatedAt(LocalDateTime.now());
-                    return limitRepository.save(newLimit);
-                });
-
-        // Update used amount
-        BigDecimal newUsedAmount = limit.getUsedAmount().add(amount);
-        limit.setUsedAmount(newUsedAmount);
-        limit.setUpdatedAt(LocalDateTime.now());
-        limitRepository.save(limit);
-
-        log.info("Updated used_amount for user {}: {} + {} = {}",
-                userId, limit.getUsedAmount().subtract(amount), amount, newUsedAmount);
-    }
 
     /**
      *
@@ -277,8 +250,8 @@ public class TransactionService {
         accountRepository.save(receiver);
         transaction.setStatus(TransactionStatus.SUCCESS.name());
 
-        // Update used_amount in transaction_limit
-        updateUsedAmount(sender.getUserId(), transaction.getUsername(), amount);
+        // Delegate to TransactionLimitService for used_amount update
+        limitService.incrementUsedAmount(sender.getUserId(), amount);
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
