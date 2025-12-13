@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -31,9 +32,7 @@ public class TransactionLimitService {
      */
     public TransactionLimitResponse getUserLimits(Long userId) {
         LocalDate today = LocalDate.now();
-        
-        TransactionLimit limit = limitRepository.findByUserIdAndLimitDate(userId, today)
-                .orElseGet(() -> createDefaultLimit(userId, today));
+        TransactionLimit limit = getOrCreateLimit(userId, today);
 
         return TransactionLimitResponse.builder()
                 .userId(userId)
@@ -49,6 +48,7 @@ public class TransactionLimitService {
 
     /**
      * Update user's transaction limits
+     * IMPORTANT: Only updates limit values, preserves used_amount
      */
     @Transactional
     public TransactionLimitResponse updateUserLimits(TransactionLimitRequest request) 
@@ -59,21 +59,24 @@ public class TransactionLimitService {
 
         LocalDate today = LocalDate.now();
         
-        TransactionLimit limit = limitRepository.findByUserIdAndLimitDate(
-                request.getUserId(), today)
-                .orElseGet(() -> createDefaultLimit(request.getUserId(), today));
+        // Get or create limit for today
+        TransactionLimit limit = getOrCreateLimit(request.getUserId(), today);
+        
+        // Store for logging
+        BigDecimal preservedUsedAmount = limit.getUsedAmount();
 
-        // Update limits
+        // Update ONLY the limit values, preserve used_amount
         limit.setDailyLimit(request.getDailyLimit());
         limit.setSingleTransactionLimit(request.getSingleTransactionLimit());
         limit.setUpdatedAt(LocalDateTime.now());
 
         TransactionLimit saved = limitRepository.save(limit);
         
-        log.info("Updated limits for user {}: daily={}, single={}", 
+        log.info("Updated limits for user {}: daily={}, single={}, used_amount={} (preserved)", 
                 request.getUserId(), 
-                request.getDailyLimit(), 
-                request.getSingleTransactionLimit());
+                saved.getDailyLimit(), 
+                saved.getSingleTransactionLimit(),
+                preservedUsedAmount);
 
         return TransactionLimitResponse.builder()
                 .userId(saved.getUserId())
@@ -88,23 +91,78 @@ public class TransactionLimitService {
     }
 
     /**
-     * Create default limit for user (fallback if not exists)
+     * Get or create limit for user on specific date
+     * - If exists: return existing
+     * - If new day: inherit settings from most recent, reset used_amount
+     * - If first time: use system defaults
+     * 
      */
-    private TransactionLimit createDefaultLimit(Long userId, LocalDate date) {
-        TransactionLimit limit = new TransactionLimit();
-        limit.setUserId(userId);
-        limit.setLimitDate(date);
-        limit.setDailyLimit(SYSTEM_MAX_DAILY);
-        limit.setSingleTransactionLimit(SYSTEM_MAX_SINGLE);
-        limit.setUsedAmount(BigDecimal.ZERO);
-        limit.setCreatedAt(LocalDateTime.now());
+    @Transactional
+    public TransactionLimit getOrCreateLimit(Long userId, LocalDate date) {
+        // Try to find existing limit for this date
+        Optional<TransactionLimit> existing = limitRepository.findByUserIdAndLimitDate(userId, date);
+        
+        if (existing.isPresent()) {
+            log.debug("Found existing limit for user {} on {}", userId, date);
+            return existing.get();
+        }
+        
+        // No limit for this date - need to create new one
+        log.info("Creating new limit for user {} on {}", userId, date);
+        
+        // Try to find user's most recent limit settings
+        Optional<TransactionLimit> previousLimit = limitRepository.findTopByUserIdOrderByLimitDateDesc(userId);
+        
+        TransactionLimit newLimit = new TransactionLimit();
+        newLimit.setUserId(userId);
+        newLimit.setLimitDate(date);
+        newLimit.setUsedAmount(BigDecimal.ZERO); // Always reset for new date
+        
+        if (previousLimit.isPresent()) {
+            // User has history - inherit their custom settings
+            TransactionLimit prev = previousLimit.get();
+            newLimit.setDailyLimit(prev.getDailyLimit());
+            newLimit.setSingleTransactionLimit(prev.getSingleTransactionLimit());
+            
+            log.info("Inherited limits for user {} from {}: daily={}, single={}", 
+                    userId, prev.getLimitDate(), 
+                    prev.getDailyLimit(), prev.getSingleTransactionLimit());
+        } else {
+            // First time user - use system defaults
+            newLimit.setDailyLimit(SYSTEM_MAX_DAILY);
+            newLimit.setSingleTransactionLimit(SYSTEM_MAX_SINGLE);
+            
+            log.info("First-time limit for user {}: using system defaults (daily={}, single={})", 
+                    userId, SYSTEM_MAX_DAILY, SYSTEM_MAX_SINGLE);
+        }
+        
+        newLimit.setCreatedAt(LocalDateTime.now());
+        newLimit.setUpdatedAt(LocalDateTime.now());
+        
+        return limitRepository.save(newLimit);
+    }
+
+    /**
+     * Update used amount after successful transaction
+     * PUBLIC method to be called by TransactionService
+     */
+    @Transactional
+    public void incrementUsedAmount(Long userId, BigDecimal amount) {
+        LocalDate today = LocalDate.now();
+        
+        // Use centralized method to get/create limit
+        TransactionLimit limit = getOrCreateLimit(userId, today);
+        
+        BigDecimal oldUsedAmount = limit.getUsedAmount();
+        BigDecimal newUsedAmount = oldUsedAmount.add(amount);
+        
+        limit.setUsedAmount(newUsedAmount);
         limit.setUpdatedAt(LocalDateTime.now());
         
-        TransactionLimit saved = limitRepository.save(limit);
-        log.info("Created default limits for user {}: daily={}, single={}", 
-                userId, SYSTEM_MAX_DAILY, SYSTEM_MAX_SINGLE);
+        limitRepository.save(limit);
         
-        return saved;
+        log.info("Incremented used_amount for user {}: {} + {} = {}", 
+                userId, oldUsedAmount, amount, newUsedAmount);
     }
 
     /**

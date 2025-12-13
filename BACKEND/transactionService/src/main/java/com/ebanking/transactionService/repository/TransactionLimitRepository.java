@@ -16,6 +16,12 @@ public interface TransactionLimitRepository extends JpaRepository<TransactionLim
     Optional<TransactionLimit> findByUserIdAndLimitDate(Long userId, LocalDate limitDate);
 
     /**
+     * Find user's most recent limit record (for inheriting settings to new day)
+     * Returns the limit with the latest limit_date for the given user
+     */
+    Optional<TransactionLimit> findTopByUserIdOrderByLimitDateDesc(Long userId);
+
+    /**
      * Calculate total successful transactions for user today
      */
     @Query("SELECT COALESCE(SUM(t.amount), 0) FROM Transaction t " +
