@@ -1,0 +1,121 @@
+spring:
+  application:
+    name: adminTool
+  
+  # Staging Database Configuration
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://db-staging:3306/ebanking_staging?useSSL=true&serverTimezone=UTC&allowPublicKeyRetrieval=false}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      minimum-idle: 8
+      maximum-pool-size: 20
+      idle-timeout: 450000
+      max-lifetime: 1500000
+      connection-timeout: 25000
+      pool-name: HikariPool-AdminTool-Staging
+      auto-commit: true
+  
+  # JPA / Hibernate Configuration
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        jdbc:
+          batch_size: 15
+          fetch_size: 40
+        order_inserts: true
+        order_updates: true
+    open-in-view: false
+  
+  # Security Configuration
+  security:
+    user:
+      name: ${ADMIN_USERNAME:admin}
+      password: ${ADMIN_PASSWORD}
+  
+  # Flyway Configuration (Database Migration)
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: false
+
+# Server Configuration
+server:
+  port: 8081
+  servlet:
+    context-path: /api
+  compression:
+    enabled: true
+    min-response-size: 1024
+
+# JWT Configuration
+jwt:
+  secret:
+    key: ${JWT_SECRET}
+  expiration:
+    minutes: 45
+  refresh:
+    days: 14
+
+# gRPC Service Endpoints
+grpc:
+  user:
+    service:
+      host: ${USER_SERVICE:user-service-staging}
+      port: ${USER_SERVICE_PORT:9001}
+  transaction:
+    service:
+      host: ${TRANSACTION_SERVICE:transaction-service-staging}
+      port: ${TRANSACTION_SERVICE_PORT:9003}
+
+# Rate Limiting Configuration
+rate:
+  limiter:
+    max:
+      attempts: 4
+    window:
+      minutes: 12
+    lock:
+      minutes: 20
+
+# Logging Configuration
+logging:
+  level:
+    root: INFO
+    com.ebanking.admintool: DEBUG
+    org.springframework.security: INFO
+    org.springframework.web: INFO
+    org.hibernate.SQL: INFO
+    io.grpc: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: /var/log/admintool/admintool-staging.log
+    max-size: 30MB
+    max-history: 20
+
+# Actuator Configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when-authorized
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+# Application Info
+app:
+  version: 1.0.0
+  environment: staging
+

@@ -20,6 +20,6 @@ public class AdminLoginResponse {
     private String fullName;
     private List<String> roles;
     private String jwt;
+    private String refreshToken;
     private String message;
 }
-

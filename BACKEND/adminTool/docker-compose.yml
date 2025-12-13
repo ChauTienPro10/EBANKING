@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  # MySQL Database
+  db:
+    image: mysql:8.0.43
+    container_name: admintool-db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root@123}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-DB_ADMIN}
+      MYSQL_USER: ${MYSQL_USER:-admin}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-admin@123}
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+      interval: 10s
+    networks:
+      - admintool-network
+
+  # Admin Tool Application
+  admintool:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: admintool-app
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-dev}
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/DB_ADMIN?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER:-admin}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD:-admin@123}
+      JWT_SECRET: ${JWT_SECRET:-chauduongphattien2201gmailcomsupersecretchauduongphattien2201gmailcomsupersecretchauduongphattien2201gmailcomsupersecretchauduongphattien2201gmailcomsupersecretchauduongphattien2201gmailcomsupersecretchauduongphattien2201gmailcomsupersecret1234567890123456}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin@123}
+      USER_SERVICE: ${USER_SERVICE:-user-service}
+      USER_SERVICE_PORT: ${USER_SERVICE_PORT:-9001}
+      TRANSACTION_SERVICE: ${TRANSACTION_SERVICE:-transaction-service}
+      TRANSACTION_SERVICE_PORT: ${TRANSACTION_SERVICE_PORT:-9003}
+    ports:
+      - "8081:8081"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/api/admin/health"]
+      timeout: 10s
+      retries: 5
+      interval: 30s
+    networks:
+      - admintool-network
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  admintool-network:
+    driver: bridge
+
