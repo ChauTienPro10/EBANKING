@@ -114,7 +114,12 @@ const PendingTransactionScreen: React.FC<Props> = ({ navigation, route }) => {
         {/* Back Button */}
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate('Home')}
+          onPress={() =>
+            navigation.reset({
+              index: 0,
+              routes: [{ name: 'Home' }],
+            })
+          }
         >
           <Text style={styles.buttonText}>Về trang chủ</Text>
         </TouchableOpacity>
