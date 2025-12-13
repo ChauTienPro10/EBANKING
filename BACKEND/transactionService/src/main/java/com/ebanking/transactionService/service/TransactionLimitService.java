@@ -32,9 +32,7 @@ public class TransactionLimitService {
      */
     public TransactionLimitResponse getUserLimits(Long userId) {
         LocalDate today = LocalDate.now();
-        
-        TransactionLimit limit = limitRepository.findByUserIdAndLimitDate(userId, today)
-                .orElseGet(() -> createDefaultLimit(userId, today));
+        TransactionLimit limit = getOrCreateLimit(userId, today);
 
         return TransactionLimitResponse.builder()
                 .userId(userId)
