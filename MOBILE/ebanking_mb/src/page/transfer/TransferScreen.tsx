@@ -1,9 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
+import React, { useEffect, useState, useCallback } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+  Platform,
+  Modal,
+  FlatList,
+} from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSelector } from 'react-redux';
 import Colors from '../../constants/color';
 import CustomButton from '../../components/CustomButton';
@@ -11,6 +19,7 @@ import { Header } from '../../components';
 import ConfirmTransferModal from '../../popups/ConfirmTransferModal';
 import EKYCRequiredModal from '../../components/EKYCRequiredModal';
 import PinRequiredModal from '../../components/PinRequiredModal';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/types';
 import { RootState, AppDispatch, store } from '../../store';
 import { fetchUserInfo } from '../../store/fetchAPI/UserInfoFetch';
@@ -94,6 +103,11 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({
   const [showBankModal, setShowBankModal] = useState(false);
   const [showSavedAccountsModal, setShowSavedAccountsModal] = useState(false);
   const [saveRecipientAccount, setSaveRecipientAccount] = useState(false);
+  const [faceAuthSessionId, setFaceAuthSessionId] = useState<string | null>(
+    null,
+  );
+  // const [requiresFaceAuth, setRequiresFaceAuth] = useState(false);
+  // const [showEKYCModal, setShowEKYCModal] = useState(false);
 
   // Handlers
   const onTransferPress = () => {
@@ -206,6 +220,9 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({
         onCancel={handleCancelTransfer}
       />
 
+
+
+      {/* eKYC Required Modal */}
       <EKYCRequiredModal
         visible={showEKYCModal}
         onClose={() => setShowEKYCModal(false)}
