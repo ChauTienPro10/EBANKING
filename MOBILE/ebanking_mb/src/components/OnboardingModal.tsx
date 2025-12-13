@@ -10,6 +10,7 @@ import {
   StatusBar,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { useTranslation } from 'react-i18next';
 import Colors from '../constants/color';
 
 interface OnboardingModalProps {
@@ -29,6 +30,8 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({
   onNavigateToEKYC,
   onNavigateToPIN,
 }) => {
+  const { t } = useTranslation();
+
   // Don't show modal if both are completed
   if (ekycCompleted && pinCompleted) {
     return null;
@@ -43,10 +46,10 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({
       iconColor: Colors.success,
       gradientStart: '#4CAF50',
       gradientEnd: '#66BB6A',
-      title: 'Xác thực eKYC',
-      description: 'Xác minh danh tính',
+      title: t('onboarding.ekyc_title'),
+      description: t('onboarding.ekyc_description'),
       action: onNavigateToEKYC,
-      buttonText: 'Xác thực ngay',
+      buttonText: t('onboarding.ekyc_button'),
     },
     {
       id: 'pin',
@@ -56,10 +59,10 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({
       iconColor: Colors.main_bule,
       gradientStart: Colors.main_bule,
       gradientEnd: Colors.cardGradientEnd,
-      title: 'Thiết lập mã PIN',
-      description: 'Bảo mật tài khoản với mã PIN 4 chữ số',
+      title: t('onboarding.pin_title'),
+      description: t('onboarding.pin_description'),
       action: onNavigateToPIN,
-      buttonText: 'Thiết lập PIN',
+      buttonText: t('onboarding.pin_button'),
     },
   ].filter(task => !task.completed);
 
@@ -96,9 +99,11 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({
             <View style={styles.headerIconContainer}>
               <Icon name="rocket" size={32} color={Colors.main_bule} />
             </View>
-            <Text style={styles.headerTitle}>Hoàn thiện hồ sơ</Text>
+            <Text style={styles.headerTitle}>
+              {t('onboarding.header_title')}
+            </Text>
             <Text style={styles.headerSubtitle}>
-              Vui lòng hoàn tất các bước sau để sử dụng đầy đủ tính năng
+              {t('onboarding.header_subtitle')}
             </Text>
           </View>
 
@@ -154,7 +159,9 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({
               onPress={onClose}
               activeOpacity={0.7}
             >
-              <Text style={styles.laterButtonText}>Để sau</Text>
+              <Text style={styles.laterButtonText}>
+                {t('onboarding.later_button')}
+              </Text>
             </TouchableOpacity>
           </View>
         </TouchableOpacity>
