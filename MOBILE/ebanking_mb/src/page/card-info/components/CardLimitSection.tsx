@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 import Colors from '../../../constants/color';
 import SettingsIcon from '../../../components/icon/SettingsIcon';
 
@@ -17,6 +18,7 @@ export const CardLimitSection: React.FC<CardLimitSectionProps> = ({
   usedAmount,
   onManagePress,
 }) => {
+  const { t } = useTranslation();
   const navigation = useNavigation();
   const dailyPercentage = Math.min((usedAmount / dailyLimit) * 100, 100);
   const remainingDaily = Math.max(dailyLimit - usedAmount, 0);
@@ -47,20 +49,20 @@ export const CardLimitSection: React.FC<CardLimitSectionProps> = ({
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>HẠN MỨC GIAO DỊCH</Text>
+        <Text style={styles.title}>{t('card.limit_section_title')}</Text>
         <TouchableOpacity
           style={styles.manageButton}
           onPress={handleManagePress}
         >
           <SettingsIcon size={16} color={Colors.main_bule} />
-          <Text style={styles.manageButtonText}>Quản lý</Text>
+          <Text style={styles.manageButtonText}>{t('card.limit_manage')}</Text>
         </TouchableOpacity>
       </View>
 
       {/* Daily Limit Progress */}
       <View style={styles.limitCard}>
         <View style={styles.limitHeader}>
-          <Text style={styles.limitLabel}>Hạn mức ngày</Text>
+          <Text style={styles.limitLabel}>{t('card.limit_daily')}</Text>
           <View style={styles.percentageBadge}>
             <Text style={styles.percentageText}>
               {dailyPercentage.toFixed(0)}%
@@ -76,20 +78,20 @@ export const CardLimitSection: React.FC<CardLimitSectionProps> = ({
 
         <View style={styles.amountRow}>
           <Text style={styles.usedText}>
-            Đã dùng:{' '}
+            {t('card.limit_used')}:{' '}
             <Text style={styles.usedAmount}>{formatShort(usedAmount)}</Text>
           </Text>
           <Text style={styles.limitText}>{formatShort(dailyLimit)}</Text>
         </View>
 
         <Text style={styles.remainingText}>
-          Còn lại: {formatMoney(remainingDaily)} ₫
+          {t('card.limit_remaining')}: {formatMoney(remainingDaily)} ₫
         </Text>
       </View>
 
       {/* Single Transaction Limit */}
       <View style={styles.singleLimitCard}>
-        <Text style={styles.limitLabel}>Hạn mức giao dịch đơn</Text>
+        <Text style={styles.limitLabel}>{t('card.limit_single')}</Text>
         <Text style={styles.singleLimitAmount}>
           {formatMoney(singleLimit)} ₫
         </Text>

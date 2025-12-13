@@ -189,8 +189,8 @@ const CardScreen: React.FC = () => {
     if (!loginResponse?.username) {
       Toast.show({
         type: 'error',
-        text1: 'Không tìm thấy người dùng',
-        text2: 'Vui lòng đăng nhập lại',
+        text1: t('card.toast_user_not_found'),
+        text2: t('card.toast_login_again'),
       });
       return;
     }
@@ -225,7 +225,7 @@ const CardScreen: React.FC = () => {
 
       Toast.show({
         type: 'error',
-        text1: 'Sai mã PIN',
+        text1: t('card.toast_wrong_pin'),
         text2: message,
       });
 
@@ -263,11 +263,11 @@ const CardScreen: React.FC = () => {
   const pinModalTitle = () => {
     switch (pendingAction) {
       case 'lock':
-        return 'Xác nhận khóa thẻ';
+        return t('card.pin_modal_lock_title');
       case 'unlock':
-        return 'Xác nhận mở khóa thẻ';
+        return t('card.pin_modal_unlock_title');
       case 'access':
-        return 'Xác thực mã PIN';
+        return t('card.pin_modal_access_title');
       default:
         return '';
     }
@@ -275,14 +275,14 @@ const CardScreen: React.FC = () => {
 
   const pinModalSubtitle = () => {
     if (isVerifyingPin) {
-      return 'Đang xác thực mã PIN...';
+      return t('card.pin_modal_verifying');
     }
 
     switch (pendingAction) {
       case 'access':
-        return 'Nhập mã PIN của bạn để xem thông tin thẻ';
+        return t('card.pin_modal_subtitle_access');
       default:
-        return 'Nhập mã PIN của bạn để tiếp tục';
+        return t('card.pin_modal_subtitle_default');
     }
   };
 
@@ -314,7 +314,9 @@ const CardScreen: React.FC = () => {
                 <LockOpenIcon size={20} color={Colors.textPrimary} />
               )}
               <Text style={styles.menuItemText}>
-                {cardStatus === 'active' ? 'Khóa thẻ' : 'Mở khóa thẻ'}
+                {cardStatus === 'active'
+                  ? t('card.menu_lock_card')
+                  : t('card.menu_unlock_card')}
               </Text>
             </TouchableOpacity>
             <View style={styles.menuDivider} />
@@ -323,7 +325,9 @@ const CardScreen: React.FC = () => {
               onPress={handleShowDetail}
             >
               <InfoCircleIcon size={20} color={Colors.textPrimary} />
-              <Text style={styles.menuItemText}>Chi tiết thẻ</Text>
+              <Text style={styles.menuItemText}>
+                {t('card.menu_card_details')}
+              </Text>
             </TouchableOpacity>
           </View>
         )}
@@ -362,9 +366,11 @@ const CardScreen: React.FC = () => {
         </ScrollView>
       ) : (
         <View style={styles.lockedContent}>
-          <Text style={styles.lockedContentTitle}>Thông tin được bảo vệ</Text>
+          <Text style={styles.lockedContentTitle}>
+            {t('card.locked_content_title')}
+          </Text>
           <Text style={styles.lockedContentSubtitle}>
-            Vui lòng xác thực mã PIN để xem chi tiết thẻ của bạn
+            {t('card.locked_content_subtitle')}
           </Text>
         </View>
       )}
@@ -404,7 +410,9 @@ const CardScreen: React.FC = () => {
                 setPendingAction(null);
               }}
             >
-              <Text style={styles.pinModalCancelText}>Hủy</Text>
+              <Text style={styles.pinModalCancelText}>
+                {t('card.pin_modal_cancel')}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
