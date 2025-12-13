@@ -110,4 +110,6 @@ public class NotificationController {
         List<NotiTransaction> notiTransactionList = notificationService.getNotiTransaction(index, limit);
         return ResponseEntity.ok(notiTransactionList);
     }
+
+
 }

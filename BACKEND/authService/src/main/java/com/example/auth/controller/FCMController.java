@@ -1,16 +1,18 @@
 package com.example.auth.controller;
 
 import com.example.auth.dto.SaveTockenDTO;
+import com.example.auth.dto.response.NotiSystem;
+import com.example.auth.dto.response.NotiTransaction;
 import com.example.auth.utils.HttpUltils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -47,4 +49,41 @@ public class FCMController {
                     .body("Failed to save token: " + e.getMessage());
         }
     }
+
+    @GetMapping("/getSysNoti")
+    public ResponseEntity<List<NotiSystem>> getAllSysNoti(
+            @RequestParam(defaultValue = "0") int index,
+            @RequestParam(defaultValue = "10") int limit
+    ) {
+        String url = fcmServiceUrl
+                + "/notify/getSysNoti?index=" + index
+                + "&limit=" + limit;
+
+        List<NotiSystem> notiSystemList =
+                httpUltils.get(
+                        url,
+                        new ParameterizedTypeReference<List<NotiSystem>>() {}
+                );
+
+        return ResponseEntity.ok(notiSystemList);
+    }
+
+    @GetMapping("/getTransferNoti")
+    public ResponseEntity<List<NotiTransaction>> getNotiTransactions(
+            @RequestParam(defaultValue = "0") int index,
+            @RequestParam(defaultValue = "10") int limit
+    ) {
+        String url = fcmServiceUrl
+                + "/notify/getTransferNoti?index=" + index
+                + "&limit=" + limit;
+
+        List<NotiTransaction> notiTransactionList =
+                httpUltils.get(
+                        url,
+                        new ParameterizedTypeReference<List<NotiTransaction>>() {}
+                );
+
+        return ResponseEntity.ok(notiTransactionList);
+    }
+
 }
