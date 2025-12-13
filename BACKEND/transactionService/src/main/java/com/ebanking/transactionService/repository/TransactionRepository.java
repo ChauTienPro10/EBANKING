@@ -15,12 +15,10 @@ import java.time.LocalDateTime;
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
 
     @Query("SELECT t FROM Transaction t WHERE " +
-            "(:username IS NULL OR t.username = :username) AND " +
-            "(:sender IS NULL OR t.senderAccountNumber = :sender) AND " +
+            "(:accountNumber IS NULL OR t.senderAccountNumber = :accountNumber OR t.receiverAccountNumber = :accountNumber) AND " +
             "t.transactionAt BETWEEN :fromDate AND :toDate")
-    Page<Transaction> findByUsernameAndSenderAndDateRange(
-            @Param("username") String username,
-            @Param("sender") String sender,
+    Page<Transaction> findByAccountNumberAndDateRange(
+            @Param("accountNumber") String accountNumber,
             @Param("fromDate") LocalDateTime fromDate,
             @Param("toDate") LocalDateTime toDate,
             Pageable pageable);

@@ -81,12 +81,14 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
           >
             {isIncoming ? '+' : '-'}
             {transaction.amount.toLocaleString('vi-VN')}
-            {transaction.currency}
+            {transaction.currency === 'VND' ? 'đ' : ` ${transaction.currency}`}
           </Text>
           {transaction.balance !== undefined && (
             <Text style={styles.balance}>
               Số dư ví: {transaction.balance.toLocaleString('vi-VN')}
-              {transaction.currency}
+              {transaction.currency === 'VND'
+                ? 'đ'
+                : ` ${transaction.currency}`}
             </Text>
           )}
         </View>

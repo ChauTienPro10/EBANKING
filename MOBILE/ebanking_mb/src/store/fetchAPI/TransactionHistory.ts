@@ -49,13 +49,7 @@ export const fetchTransactionHistory = createAsyncThunk<
 const transactionSlice = createSlice({
   name: 'transaction',
   initialState,
-  reducers: {
-    loadMockData: (state, action: PayloadAction<TransferResponse[]>) => {
-      state.data = action.payload;
-      state.loading = false;
-      state.error = null;
-    },
-  },
+  reducers: {},
   extraReducers: builder => {
     builder
       .addCase(fetchTransactionHistory.pending, state => {
@@ -76,5 +70,4 @@ const transactionSlice = createSlice({
   },
 });
 
-export const { loadMockData } = transactionSlice.actions;
 export default transactionSlice.reducer;

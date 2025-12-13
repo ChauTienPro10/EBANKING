@@ -34,6 +34,9 @@ const TransactionDetailScreen: React.FC = () => {
     statusBadge,
     displayTitle,
     bankName,
+    senderName,
+    receiverName,
+    loadingNames,
     handleCopyTransactionId,
     handleSupport,
     handleNewTransaction,
@@ -86,6 +89,9 @@ const TransactionDetailScreen: React.FC = () => {
           isIncoming={isIncoming}
           displayTitle={displayTitle}
           bankName={bankName}
+          senderName={senderName}
+          receiverName={receiverName}
+          loadingNames={loadingNames}
         />
 
         {/* Note for saving receiver - only for outgoing transfers */}

@@ -255,8 +255,7 @@ public class TransactionService {
      * @param size
      * @return
      */
-    public Page<Transaction> getTransactionHistory(String username,
-                                                   String sender,
+    public Page<Transaction> getTransactionHistory(String accountNumber,
                                                    LocalDateTime fromDate,
                                                    LocalDateTime toDate,
                                                    int page,
@@ -264,9 +263,8 @@ public class TransactionService {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("transactionAt").descending());
 
-        return transactionRepository.findByUsernameAndSenderAndDateRange(
-                username,
-                sender,
+        return transactionRepository.findByAccountNumberAndDateRange(
+                accountNumber,
                 fromDate,
                 toDate,
                 pageable

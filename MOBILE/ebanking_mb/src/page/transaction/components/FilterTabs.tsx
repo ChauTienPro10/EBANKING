@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import Colors from '../../../constants/color';
 
-export type FilterTab = 'ALL' | 'INCOMING' | 'OUTGOING' | 'PENDING';
+export type FilterTab = 'ALL' | 'INCOMING' | 'OUTGOING';
 
 interface FilterTabsProps {
   activeFilter: FilterTab;
@@ -23,16 +23,11 @@ const FilterTabs: React.FC<FilterTabsProps> = ({
     { key: 'ALL', label: 'Tất cả' },
     { key: 'INCOMING', label: 'Thu vào' },
     { key: 'OUTGOING', label: 'Gửi đi' },
-    { key: 'PENDING', label: 'Đang xử lý' },
   ];
 
   return (
     <View style={styles.filterContainer}>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.filterContent}
-      >
+      <View style={styles.filterContent}>
         {tabs.map(tab => (
           <TouchableOpacity
             key={tab.key}
@@ -52,7 +47,7 @@ const FilterTabs: React.FC<FilterTabsProps> = ({
             </Text>
           </TouchableOpacity>
         ))}
-      </ScrollView>
+      </View>
     </View>
   );
 };
@@ -66,14 +61,16 @@ const styles = StyleSheet.create({
     borderBottomColor: '#E0E0E0',
   },
   filterContent: {
+    flexDirection: 'row',
     paddingHorizontal: 12,
     paddingVertical: 12,
   },
   filterTab: {
+    flex: 1,
     paddingHorizontal: 16,
-    paddingVertical: 4,
-    marginRight: 8,
-    borderRadius: 4,
+    paddingVertical: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   filterTabActive: {
     backgroundColor: '#FFF',
