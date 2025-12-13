@@ -14,8 +14,10 @@ interface BalanceCardProps {
   isBalanceVisible: boolean;
   onToggleBalance: () => void;
   onOpenCard: () => void;
-  balanceCardHeight: Animated.Value;
+  balanceCardScale: Animated.Value;
   balanceCardOpacity: Animated.Value;
+  balanceCardTranslateY: Animated.Value;
+  balanceCardHeight: Animated.Value;
   totalBalanceLabel: string;
   noCardLabel: string;
   openAccountLabel: string;
@@ -27,62 +29,85 @@ const BalanceCard: React.FC<BalanceCardProps> = ({
   isBalanceVisible,
   onToggleBalance,
   onOpenCard,
-  balanceCardHeight,
+  balanceCardScale,
   balanceCardOpacity,
+  balanceCardTranslateY,
+  balanceCardHeight,
   totalBalanceLabel,
   noCardLabel,
   openAccountLabel,
   cardManagementLabel,
 }) => {
   return (
+    // Outer View: Handles height animation (JS thread) to remove white space
     <Animated.View
       style={[
         styles.balanceCardWrapper,
         {
           height: balanceCardHeight,
-          opacity: balanceCardOpacity,
         },
       ]}
     >
-      <View style={styles.balanceCard}>
-        <View style={styles.balanceHeader}>
-          {account != null && (
-            <Text style={styles.balanceTitle}>{totalBalanceLabel}</Text>
-          )}
-          {account === null && (
-            <Text style={styles.balanceTitle}>{noCardLabel}</Text>
-          )}
-        </View>
+      {/* Inner View: Handles transform + opacity (Native thread) for smooth animation */}
+      <Animated.View
+        style={[
+          styles.balanceCardInner,
+          {
+            opacity: balanceCardOpacity,
+            transform: [
+              { scaleY: balanceCardScale },
+              { translateY: balanceCardTranslateY },
+            ],
+          },
+        ]}
+        renderToHardwareTextureAndroid={true}
+        shouldRasterizeIOS={true}
+      >
+        <View style={styles.balanceCard}>
+          <View style={styles.balanceHeader}>
+            {account != null && (
+              <Text style={styles.balanceTitle}>{totalBalanceLabel}</Text>
+            )}
+            {account === null && (
+              <Text style={styles.balanceTitle}>{noCardLabel}</Text>
+            )}
+          </View>
 
-        <View style={styles.balanceAmount}>
-          {isBalanceVisible ? (
-            <Text style={styles.balanceText}>
-              {account?.balance.toLocaleString('en-US') + ' VND'}
-            </Text>
-          ) : (
-            <TouchableOpacity onPress={onOpenCard}>
-              <Text style={styles.balanceTextOpenAccount}>
-                {account === null ? openAccountLabel.toUpperCase() : '*,***,***'}
+          <View style={styles.balanceAmount}>
+            {isBalanceVisible ? (
+              <Text style={styles.balanceText}>
+                {account?.balance.toLocaleString('en-US') + ' VND'}
               </Text>
-            </TouchableOpacity>
-          )}
+            ) : (
+              <TouchableOpacity onPress={onOpenCard}>
+                <Text style={styles.balanceTextOpenAccount}>
+                  {account === null
+                    ? openAccountLabel.toUpperCase()
+                    : '*,***,***'}
+                </Text>
+              </TouchableOpacity>
+            )}
 
-          {account != null && (
-            <TouchableOpacity style={styles.eyeButton} onPress={onToggleBalance}>
-              {isBalanceVisible ? (
-                <EyeOffIcon size={20} color={Colors.white} />
-              ) : (
-                <EyeIcon size={20} color={Colors.white} />
-              )}
-            </TouchableOpacity>
-          )}
-        </View>
+            {account != null && (
+              <TouchableOpacity
+                style={styles.eyeButton}
+                onPress={onToggleBalance}
+              >
+                {isBalanceVisible ? (
+                  <EyeOffIcon size={20} color={Colors.white} />
+                ) : (
+                  <EyeIcon size={20} color={Colors.white} />
+                )}
+              </TouchableOpacity>
+            )}
+          </View>
 
-        <View style={styles.balanceFooter}>
-          <Text style={styles.balanceFooterText}>{cardManagementLabel}</Text>
-          <CardIcon size={16} color={Colors.white} />
+          <View style={styles.balanceFooter}>
+            <Text style={styles.balanceFooterText}>{cardManagementLabel}</Text>
+            <CardIcon size={16} color={Colors.white} />
+          </View>
         </View>
-      </View>
+      </Animated.View>
     </Animated.View>
   );
 };
@@ -94,11 +119,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingBottom: 16,
   },
+  balanceCardInner: {
+    flex: 1,
+  },
   balanceCard: {
     backgroundColor: 'rgba(255, 255, 255, 0.15)',
     borderRadius: 16,
     padding: 20,
-    height: '100%',
+    flex: 1,
   },
   balanceHeader: {
     flexDirection: 'row',
