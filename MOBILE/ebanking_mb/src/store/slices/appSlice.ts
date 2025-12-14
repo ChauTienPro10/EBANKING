@@ -81,6 +81,9 @@ const appSlice = createSlice({
         state.modalDismissalSession.pinReminderDismissed = false;
       }
     },
+    setPinActionTimestamp: (state, action: PayloadAction<number>) => {
+      state.modalDismissalSession.lastPinActionTime = action.payload;
+    },
     resetModalSession: state => {
       state.modalDismissalSession = {
         onboardingDismissed: false,
@@ -135,6 +138,7 @@ export const {
   setOnboardingDismissed,
   setPinReminderDismissed,
   setPinAction,
+  setPinActionTimestamp,
   resetModalSession,
   setCardStatus,
   setNotificationCount,

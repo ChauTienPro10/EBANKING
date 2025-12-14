@@ -205,7 +205,7 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({
 
       <ConfirmTransferModal
         visible={transferModalVisible}
-        data={genFormData(formData, receiverName)}
+        data={genFormData(formData, receiverName, t)}
         onConfirm={onConfirmPress}
         onCancel={handleCancelTransfer}
       />

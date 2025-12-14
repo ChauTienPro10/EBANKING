@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ScrollView,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import Colors from '../constants/color';
 import PinInput from '../components/PinInput';
 
@@ -23,6 +24,7 @@ const ConfirmTransferModal: React.FC<ConfirmTransferModalProps> = ({
   onConfirm,
   onCancel,
 }) => {
+  const { t } = useTranslation();
   const [pinAuth, setPinAuth] = useState(false);
 
   const handleComplete = (pin: string) => {
@@ -38,7 +40,9 @@ const ConfirmTransferModal: React.FC<ConfirmTransferModalProps> = ({
     >
       {pinAuth ? (
         <View style={styles.screenPIN}>
-          <Text style={styles.titlePIN}>Nhập mã PIN 4 số</Text>
+          <Text style={styles.titlePIN}>
+            {t('transfer.confirm.enter_pin_title')}
+          </Text>
           <View>
             <PinInput
               length={4}
@@ -51,7 +55,7 @@ const ConfirmTransferModal: React.FC<ConfirmTransferModalProps> = ({
       ) : (
         <View style={styles.overlay}>
           <View style={styles.container}>
-            <Text style={styles.title}>Xác nhận giao dịch</Text>
+            <Text style={styles.title}>{t('transfer.confirm.title')}</Text>
 
             <ScrollView
               style={styles.dataContainer}
@@ -74,13 +78,17 @@ const ConfirmTransferModal: React.FC<ConfirmTransferModalProps> = ({
 
             <View style={styles.buttonContainer}>
               <TouchableOpacity style={styles.cancelButton} onPress={onCancel}>
-                <Text style={styles.cancelButtonText}>Hủy</Text>
+                <Text style={styles.cancelButtonText}>
+                  {t('transfer.confirm.cancel_button')}
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.confirmButton}
                 onPress={() => setPinAuth(true)}
               >
-                <Text style={styles.confirmButtonText}>Xác nhận</Text>
+                <Text style={styles.confirmButtonText}>
+                  {t('transfer.confirm.confirm_button')}
+                </Text>
               </TouchableOpacity>
             </View>
           </View>

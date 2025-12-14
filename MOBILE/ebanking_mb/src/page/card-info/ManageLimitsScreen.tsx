@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../../store';
+import { setPinActionTimestamp } from '../../store/slices/appSlice';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import Toast from 'react-native-toast-message';
@@ -147,12 +148,19 @@ const ManageLimitsScreen: React.FC = () => {
       );
 
       if (updateResponse) {
+        // Set timestamp to trigger grace period in CardScreen
+        dispatch(setPinActionTimestamp(Date.now()));
+
         Toast.show({
           type: 'success',
           text1: t('card.manage_limits_success_title'),
           text2: t('card.manage_limits_success_message'),
         });
-        navigation.goBack();
+
+        // Delay navigation to let user see the toast
+        setTimeout(() => {
+          navigation.goBack();
+        }, 2500);
       }
     } catch (error: any) {
       const message =

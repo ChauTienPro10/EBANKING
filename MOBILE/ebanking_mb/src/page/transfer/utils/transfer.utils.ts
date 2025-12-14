@@ -9,12 +9,18 @@ export const formatAmount = (text: string): string => {
   return parts.join('.');
 };
 
-export const genFormData = (formData: TransferFormData, fullName: string) => {
+export const genFormData = (
+  formData: TransferFormData,
+  fullName: string,
+  t: (key: string) => string,
+) => {
   return {
-    'Số tiền': formData.amount,
-    'Tài khoản nhận': formData.recipientAccount,
-    'Tên người nhận': fullName,
-    'Nội dung': sanitizeTransferContent(formData.content), // Sanitize for display
+    [t('transfer.confirm.amount_label')]: formData.amount,
+    [t('transfer.confirm.recipient_account_label')]: formData.recipientAccount,
+    [t('transfer.confirm.recipient_name_label')]: fullName,
+    [t('transfer.confirm.content_label')]: sanitizeTransferContent(
+      formData.content,
+    ), // Sanitize for display
   };
 };
 

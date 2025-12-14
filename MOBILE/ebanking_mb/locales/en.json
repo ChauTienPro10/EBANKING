@@ -351,6 +351,40 @@
       "title": "Transfer Successful",
       "message": "You have transferred {{amount}} VND to account {{account}}"
     },
+    "confirm": {
+      "title": "Confirm Transaction",
+      "amount_label": "Amount",
+      "recipient_account_label": "Recipient Account",
+      "recipient_name_label": "Recipient Name",
+      "content_label": "Content",
+      "cancel_button": "Cancel",
+      "confirm_button": "Confirm",
+      "enter_pin_title": "Enter 4-digit PIN"
+    },
+    "transaction_success": {
+      "header_title": "Transaction",
+      "title": "Transaction Successful",
+      "details_header": "DETAILS",
+      "total_amount": "Total Amount",
+      "transaction_id": "Transaction ID",
+      "time": "Time",
+      "date": "Date",
+      "method": "Method",
+      "internal_transfer": "Internal Transfer",
+      "recipient": "Recipient",
+      "content": "Content",
+      "default_content": "Transfer",
+      "done_button": "Done"
+    },
+    "pending": {
+      "title": "Processing Transaction",
+      "subtitle": "Please wait a moment...",
+      "amount_label": "Amount",
+      "recipient_label": "Recipient",
+      "time_label": "Time",
+      "content_label": "Content",
+      "back_home": "Back to Home"
+    },
     "error": {
       "title": "Transfer Error",
       "message": "An error occurred while transferring. Please try again."
