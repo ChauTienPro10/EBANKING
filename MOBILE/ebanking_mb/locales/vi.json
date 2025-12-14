@@ -289,7 +289,17 @@
       "email_required": "Email không được để trống",
       "email_invalid": "Email không hợp lệ",
       "phone_required": "Số điện thoại không được để trống"
-    }
+    },
+    "ekyc_section_title": "Thông tin định danh",
+    "ekyc_verified": "Đã xác thực",
+    "ekyc_not_verified": "Chưa xác thực",
+    "ekyc_verified_date": "Xác thực ngày",
+    "ekyc_view_details": "Xem chi tiết",
+    "ekyc_verify_now": "Xác thực ngay",
+    "uploading_avatar": "Đang tải ảnh lên...",
+    "avatar_modal_title": "Chọn ảnh đại diện",
+    "avatar_modal_gallery": "Chọn từ thư viện",
+    "avatar_modal_camera": "Chụp ảnh selfie"
   },
   "notifications": {
     "title": "Thông báo",

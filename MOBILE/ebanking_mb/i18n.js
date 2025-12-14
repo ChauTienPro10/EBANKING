@@ -11,18 +11,17 @@ const resources = {
 };
 
 const locales = RNLocalize.getLocales();
-const systemLang = 'vi';
+// Get user's preferred language, fallback to 'vi' if not supported
+const systemLang = locales[0]?.languageCode === 'en' ? 'en' : 'vi';
 
-i18n
-  .use(initReactI18next)
-  .init({
-    resources,
-    lng: systemLang,
-    fallbackLng: 'en',
-    compatibilityJSON: 'v3',
-    interpolation: {
-      escapeValue: false,
-    },
-  });
+i18n.use(initReactI18next).init({
+  resources,
+  lng: systemLang,
+  fallbackLng: 'en',
+  compatibilityJSON: 'v3',
+  interpolation: {
+    escapeValue: false,
+  },
+});
 
 export default i18n;

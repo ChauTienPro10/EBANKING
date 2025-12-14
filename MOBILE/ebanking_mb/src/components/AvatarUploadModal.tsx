@@ -9,6 +9,7 @@ import {
   Dimensions,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { useTranslation } from 'react-i18next';
 import Colors from '../constants/color';
 
 const { width } = Dimensions.get('window');
@@ -26,6 +27,7 @@ const AvatarUploadModal: React.FC<AvatarUploadModalProps> = ({
   onSelectGallery,
   onTakePhoto,
 }) => {
+  const { t } = useTranslation();
   // Initialize with correct value based on visible prop to prevent flash
   const fadeAnim = React.useRef(new Animated.Value(visible ? 1 : 0)).current;
 
@@ -76,7 +78,9 @@ const AvatarUploadModal: React.FC<AvatarUploadModalProps> = ({
           <TouchableOpacity activeOpacity={1}>
             <View style={styles.modalContent}>
               <View style={styles.header}>
-                <Text style={styles.title}>Chọn ảnh đại diện</Text>
+                <Text style={styles.title}>
+                  {t('profile.avatar_modal_title')}
+                </Text>
                 <TouchableOpacity onPress={onClose} style={styles.closeButton}>
                   <Ionicons name="close" size={24} color={Colors.grey3} />
                 </TouchableOpacity>
@@ -97,7 +101,9 @@ const AvatarUploadModal: React.FC<AvatarUploadModalProps> = ({
                       color={Colors.main_bule}
                     />
                   </View>
-                  <Text style={styles.optionText}>Chọn từ thư viện</Text>
+                  <Text style={styles.optionText}>
+                    {t('profile.avatar_modal_gallery')}
+                  </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -110,7 +116,9 @@ const AvatarUploadModal: React.FC<AvatarUploadModalProps> = ({
                   <View style={[styles.iconContainer, styles.cameraIcon]}>
                     <Ionicons name="camera" size={32} color="#FF6B6B" />
                   </View>
-                  <Text style={styles.optionText}>Chụp ảnh selfie</Text>
+                  <Text style={styles.optionText}>
+                    {t('profile.avatar_modal_camera')}
+                  </Text>
                 </TouchableOpacity>
               </View>
             </View>
