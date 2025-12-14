@@ -3,6 +3,10 @@ import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Colors from '../constants/color';
 import TextStyles from '../constants/textStyle';
+import {
+  formatCurrencyByLanguage,
+  formatAmount as formatAmountUtil,
+} from '../utils/currency';
 
 interface BalanceDisplayProps {
   availableBalance: number;
@@ -26,24 +30,16 @@ const BalanceDisplay: React.FC<BalanceDisplayProps> = ({
     if (isMasked) {
       return t('ui.masked_text');
     }
-    
-    return new Intl.NumberFormat('vi-VN', {
-      style: 'currency',
-      currency: currency,
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
+
+    return formatCurrencyByLanguage(amount);
   };
 
   const formatAmount = (amount: number): string => {
     if (isMasked) {
       return '••••••••';
     }
-    
-    return new Intl.NumberFormat('vi-VN', {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
+
+    return formatAmountUtil(amount);
   };
 
   return (
@@ -54,27 +50,32 @@ const BalanceDisplay: React.FC<BalanceDisplayProps> = ({
           {formatCurrency(availableBalance)}
         </Text>
       </View>
-      
-      {showDetails && (ledgerBalance !== undefined || pendingBalance !== undefined) && (
-        <View style={styles.detailsContainer}>
-          {ledgerBalance !== undefined && (
-            <View style={styles.balanceRow}>
-              <Text style={styles.detailLabel}>{t('labels.ledger_balance')}</Text>
-              <Text style={styles.detailAmount}>
-                {formatAmount(ledgerBalance)} {currency}
-              </Text>
-            </View>
-          )}
-          {pendingBalance !== undefined && (
-            <View style={styles.balanceRow}>
-              <Text style={styles.detailLabel}>{t('labels.pending_balance')}</Text>
-              <Text style={styles.detailAmount}>
-                {formatAmount(pendingBalance)} {currency}
-              </Text>
-            </View>
-          )}
-        </View>
-      )}
+
+      {showDetails &&
+        (ledgerBalance !== undefined || pendingBalance !== undefined) && (
+          <View style={styles.detailsContainer}>
+            {ledgerBalance !== undefined && (
+              <View style={styles.balanceRow}>
+                <Text style={styles.detailLabel}>
+                  {t('labels.ledger_balance')}
+                </Text>
+                <Text style={styles.detailAmount}>
+                  {formatCurrency(ledgerBalance)}
+                </Text>
+              </View>
+            )}
+            {pendingBalance !== undefined && (
+              <View style={styles.balanceRow}>
+                <Text style={styles.detailLabel}>
+                  {t('labels.pending_balance')}
+                </Text>
+                <Text style={styles.detailAmount}>
+                  {formatCurrency(pendingBalance)}
+                </Text>
+              </View>
+            )}
+          </View>
+        )}
     </View>
   );
 };

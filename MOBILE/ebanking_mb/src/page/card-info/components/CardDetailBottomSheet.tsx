@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import Colors from '../../../constants/color';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store';
+import { formatCurrencyByLanguage } from '../../../utils/currency';
 
 interface CardDetailBottomSheetProps {
   visible: boolean;
@@ -78,16 +79,6 @@ const CardDetailBottomSheet: React.FC<CardDetailBottomSheetProps> = ({
     return `${day}/${month}/${year}`;
   };
 
-  const formatCurrency = (
-    amount?: number,
-    currency: string = 'VNĐ',
-  ): string => {
-    if (amount === undefined || amount === null) {
-      return '';
-    }
-    return `${amount.toLocaleString('vi-VN')} ${currency}`;
-  };
-
   const statusLabel =
     cardStatus === 'locked' ? t('card.status_locked') : t('card.status_active');
 
@@ -142,7 +133,7 @@ const CardDetailBottomSheet: React.FC<CardDetailBottomSheetProps> = ({
               <View style={styles.detailRow}>
                 <Text style={styles.label}>{t('card.detail_daily_limit')}</Text>
                 <Text style={styles.valueHighlight}>
-                  {formatCurrency(userLimits.dailyLimit, account?.currency)}
+                  {formatCurrencyByLanguage(userLimits.dailyLimit)}
                 </Text>
               </View>
             )}
@@ -153,10 +144,7 @@ const CardDetailBottomSheet: React.FC<CardDetailBottomSheetProps> = ({
                   {t('card.detail_single_limit')}
                 </Text>
                 <Text style={styles.valueHighlight}>
-                  {formatCurrency(
-                    userLimits.singleTransactionLimit,
-                    account?.currency,
-                  )}
+                  {formatCurrencyByLanguage(userLimits.singleTransactionLimit)}
                 </Text>
               </View>
             )}
@@ -167,7 +155,7 @@ const CardDetailBottomSheet: React.FC<CardDetailBottomSheetProps> = ({
                   {t('card.detail_available_balance')}
                 </Text>
                 <Text style={styles.valueHighlight}>
-                  {formatCurrency(account.balance, account?.currency)}
+                  {formatCurrencyByLanguage(account.balance)}
                 </Text>
               </View>
             )}

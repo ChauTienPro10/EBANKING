@@ -19,6 +19,8 @@ import Colors from '../../constants/color';
 import Header from '../../components/Header';
 import fetch from '../../utils/fetch';
 import { API } from '../../constants/api';
+import { formatCurrencyByLanguage } from '../../utils/currency';
+import i18n from '../../../i18n';
 
 const ManageLimitsScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -71,12 +73,62 @@ const ManageLimitsScreen: React.FC = () => {
   };
 
   const formatMoney = (value: string): string => {
+    // Remove all non-digit characters
     const number = value.replace(/[^0-9]/g, '');
     if (!number) return '';
-    return parseInt(number).toLocaleString('vi-VN');
+
+    const currentLanguage = i18n.language;
+    const numValue = parseInt(number);
+
+    // If English, the stored value is VND, display as USD
+    if (currentLanguage === 'en') {
+      const usdAmount = numValue / 25000;
+      return usdAmount.toLocaleString('en-US', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      });
+    }
+
+    // Vietnamese - display VND
+    return numValue.toLocaleString('vi-VN');
+  };
+
+  const handleDailyLimitChange = (text: string) => {
+    // Extract only numbers
+    const numbers = text.replace(/[^0-9]/g, '');
+
+    const currentLanguage = i18n.language;
+
+    // If English, user is typing USD, convert to VND for storage
+    if (currentLanguage === 'en') {
+      const usdValue = parseInt(numbers || '0');
+      const vndValue = usdValue * 25000;
+      setDailyLimit(vndValue.toString());
+    } else {
+      // Vietnamese - store VND directly
+      setDailyLimit(numbers);
+    }
+  };
+
+  const handleSingleLimitChange = (text: string) => {
+    // Extract only numbers
+    const numbers = text.replace(/[^0-9]/g, '');
+
+    const currentLanguage = i18n.language;
+
+    // If English, user is typing USD, convert to VND for storage
+    if (currentLanguage === 'en') {
+      const usdValue = parseInt(numbers || '0');
+      const vndValue = usdValue * 25000;
+      setSingleLimit(vndValue.toString());
+    } else {
+      // Vietnamese - store VND directly
+      setSingleLimit(numbers);
+    }
   };
 
   const parseMoney = (value: string): number => {
+    // Value is already in VND, just parse it
     return parseInt(value.replace(/[^0-9]/g, '') || '0');
   };
 
@@ -89,7 +141,7 @@ const ManageLimitsScreen: React.FC = () => {
         type: 'error',
         text1: t('card.manage_limits_error_invalid'),
         text2: t('card.manage_limits_error_min', {
-          minLimit: MIN_LIMIT.toLocaleString('vi-VN'),
+          minLimit: formatCurrencyByLanguage(MIN_LIMIT),
         }),
       });
       return false;
@@ -100,7 +152,7 @@ const ManageLimitsScreen: React.FC = () => {
         type: 'error',
         text1: t('card.manage_limits_error_exceed_system'),
         text2: t('card.manage_limits_error_daily_max', {
-          maxLimit: SYSTEM_MAX_DAILY.toLocaleString('vi-VN'),
+          maxLimit: formatCurrencyByLanguage(SYSTEM_MAX_DAILY),
         }),
       });
       return false;
@@ -111,7 +163,7 @@ const ManageLimitsScreen: React.FC = () => {
         type: 'error',
         text1: t('card.manage_limits_error_exceed_system'),
         text2: t('card.manage_limits_error_single_max', {
-          maxLimit: SYSTEM_MAX_SINGLE.toLocaleString('vi-VN'),
+          maxLimit: formatCurrencyByLanguage(SYSTEM_MAX_SINGLE),
         }),
       });
       return false;
@@ -203,7 +255,7 @@ const ManageLimitsScreen: React.FC = () => {
           </Text>
           <Text style={styles.infoText}>
             {t('card.manage_limits_info_text', {
-              minLimit: MIN_LIMIT.toLocaleString('vi-VN'),
+              minLimit: formatCurrencyByLanguage(MIN_LIMIT),
             })}
           </Text>
         </View>
@@ -216,14 +268,14 @@ const ManageLimitsScreen: React.FC = () => {
           <TextInput
             style={styles.input}
             value={formatMoney(dailyLimit)}
-            onChangeText={text => setDailyLimit(text)}
+            onChangeText={handleDailyLimitChange}
             keyboardType="numeric"
             placeholder="0"
             placeholderTextColor={Colors.grey3}
           />
           <Text style={styles.helperText}>
             {t('card.manage_limits_max_label', {
-              maxLimit: SYSTEM_MAX_DAILY.toLocaleString('vi-VN'),
+              maxLimit: formatCurrencyByLanguage(SYSTEM_MAX_DAILY),
             })}
           </Text>
         </View>
@@ -236,14 +288,14 @@ const ManageLimitsScreen: React.FC = () => {
           <TextInput
             style={styles.input}
             value={formatMoney(singleLimit)}
-            onChangeText={text => setSingleLimit(text)}
+            onChangeText={handleSingleLimitChange}
             keyboardType="numeric"
             placeholder="0"
             placeholderTextColor={Colors.grey3}
           />
           <Text style={styles.helperText}>
             {t('card.manage_limits_max_label', {
-              maxLimit: SYSTEM_MAX_SINGLE.toLocaleString('vi-VN'),
+              maxLimit: formatCurrencyByLanguage(SYSTEM_MAX_SINGLE),
             })}
           </Text>
         </View>
@@ -255,11 +307,11 @@ const ManageLimitsScreen: React.FC = () => {
               {t('card.manage_limits_usage_title')}
             </Text>
             <Text style={styles.usageAmount}>
-              {currentLimits.usedAmount.toLocaleString('vi-VN')} ₫
+              {formatCurrencyByLanguage(currentLimits.usedAmount)}
             </Text>
             <Text style={styles.usageSubtext}>
               {t('card.manage_limits_usage_remaining', {
-                amount: currentLimits.remainingAmount.toLocaleString('vi-VN'),
+                amount: formatCurrencyByLanguage(currentLimits.remainingAmount),
               })}
             </Text>
           </View>

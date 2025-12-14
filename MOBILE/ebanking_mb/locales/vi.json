@@ -590,5 +590,10 @@
     "message": "Tính năng này đang trong quá trình phát triển và sẽ sớm ra mắt.",
     "message_with_feature": "Tính năng {{feature}} đang trong quá trình phát triển và sẽ sớm ra mắt.",
     "button": "Đã hiểu"
+  },
+  "currency": {
+    "symbol": "đ",
+    "code": "VND",
+    "name": "Việt Nam Đồng"
   }
 }

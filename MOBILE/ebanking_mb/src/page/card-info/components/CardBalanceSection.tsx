@@ -3,6 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Colors from '../../../constants/color';
+import { formatCurrencyByLanguage } from '../../../utils/currency';
 
 interface CardBalanceSectionProps {
   balance?: number;
@@ -18,10 +19,6 @@ const CardBalanceSection: React.FC<CardBalanceSectionProps> = ({
   accountType = 'SAVINGS',
 }) => {
   const { t } = useTranslation();
-
-  const formatBalance = (amount: number) => {
-    return amount.toLocaleString('vi-VN');
-  };
 
   const getAccountTypeLabel = (type: string) => {
     const typeMap: Record<string, string> = {
@@ -55,7 +52,9 @@ const CardBalanceSection: React.FC<CardBalanceSectionProps> = ({
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{t('card.balance_available')}</Text>
-      <Text style={styles.balance}>{formatBalance(balance || 0)} ₫</Text>
+      <Text style={styles.balance}>
+        {formatCurrencyByLanguage(balance || 0)}
+      </Text>
       <Text style={styles.cardTypeText}>
         {getAccountTypeLabel(accountType)}
       </Text>
