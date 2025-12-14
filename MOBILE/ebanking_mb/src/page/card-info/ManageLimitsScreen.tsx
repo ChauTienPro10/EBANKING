@@ -12,6 +12,7 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../../store';
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 import Toast from 'react-native-toast-message';
 import Colors from '../../constants/color';
 import Header from '../../components/Header';
@@ -19,6 +20,7 @@ import fetch from '../../utils/fetch';
 import { API } from '../../constants/api';
 
 const ManageLimitsScreen: React.FC = () => {
+  const { t } = useTranslation();
   const navigation = useNavigation();
   const dispatch = useDispatch<AppDispatch>();
 
@@ -59,8 +61,8 @@ const ManageLimitsScreen: React.FC = () => {
     } catch (error: any) {
       Toast.show({
         type: 'error',
-        text1: 'Lỗi',
-        text2: 'Không thể tải thông tin hạn mức',
+        text1: t('common.error'),
+        text2: t('card.manage_limits_error_load'),
       });
     } finally {
       setLoading(false);
@@ -84,8 +86,10 @@ const ManageLimitsScreen: React.FC = () => {
     if (daily < MIN_LIMIT || single < MIN_LIMIT) {
       Toast.show({
         type: 'error',
-        text1: 'Hạn mức không hợp lệ',
-        text2: `Hạn mức tối thiểu là ${MIN_LIMIT.toLocaleString('vi-VN')} ₫`,
+        text1: t('card.manage_limits_error_invalid'),
+        text2: t('card.manage_limits_error_min', {
+          minLimit: MIN_LIMIT.toLocaleString('vi-VN'),
+        }),
       });
       return false;
     }
@@ -93,10 +97,10 @@ const ManageLimitsScreen: React.FC = () => {
     if (daily > SYSTEM_MAX_DAILY) {
       Toast.show({
         type: 'error',
-        text1: 'Vượt hạn mức hệ thống',
-        text2: `Hạn mức ngày tối đa là ${SYSTEM_MAX_DAILY.toLocaleString(
-          'vi-VN',
-        )} ₫`,
+        text1: t('card.manage_limits_error_exceed_system'),
+        text2: t('card.manage_limits_error_daily_max', {
+          maxLimit: SYSTEM_MAX_DAILY.toLocaleString('vi-VN'),
+        }),
       });
       return false;
     }
@@ -104,10 +108,10 @@ const ManageLimitsScreen: React.FC = () => {
     if (single > SYSTEM_MAX_SINGLE) {
       Toast.show({
         type: 'error',
-        text1: 'Vượt hạn mức hệ thống',
-        text2: `Hạn mức giao dịch đơn tối đa là ${SYSTEM_MAX_SINGLE.toLocaleString(
-          'vi-VN',
-        )} ₫`,
+        text1: t('card.manage_limits_error_exceed_system'),
+        text2: t('card.manage_limits_error_single_max', {
+          maxLimit: SYSTEM_MAX_SINGLE.toLocaleString('vi-VN'),
+        }),
       });
       return false;
     }
@@ -115,8 +119,8 @@ const ManageLimitsScreen: React.FC = () => {
     if (single > daily) {
       Toast.show({
         type: 'error',
-        text1: 'Hạn mức không hợp lệ',
-        text2: 'Hạn mức giao dịch đơn không được lớn hơn hạn mức ngày',
+        text1: t('card.manage_limits_error_invalid'),
+        text2: t('card.manage_limits_error_single_exceed_daily'),
       });
       return false;
     }
@@ -145,18 +149,18 @@ const ManageLimitsScreen: React.FC = () => {
       if (updateResponse) {
         Toast.show({
           type: 'success',
-          text1: 'Thành công',
-          text2: 'Đã cập nhật hạn mức giao dịch',
+          text1: t('card.manage_limits_success_title'),
+          text2: t('card.manage_limits_success_message'),
         });
         navigation.goBack();
       }
     } catch (error: any) {
       const message =
         error?.message?.replace('INTERNAL: ', '') ||
-        'Không thể cập nhật hạn mức';
+        t('card.manage_limits_error_update');
       Toast.show({
         type: 'error',
-        text1: 'Lỗi',
+        text1: t('common.error'),
         text2: message,
       });
     } finally {
@@ -167,7 +171,7 @@ const ManageLimitsScreen: React.FC = () => {
   if (loading) {
     return (
       <SafeAreaView style={styles.container}>
-        <Header title="Quản lý hạn mức" showBackButton />
+        <Header title={t('card.manage_limits_title')} showBackButton />
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={Colors.main_bule} />
         </View>
@@ -177,7 +181,7 @@ const ManageLimitsScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Header title="Quản lý hạn mức" showBackButton />
+      <Header title={t('card.manage_limits_title')} showBackButton />
 
       <ScrollView
         style={styles.content}
@@ -186,16 +190,21 @@ const ManageLimitsScreen: React.FC = () => {
       >
         {/* Info Card */}
         <View style={styles.infoCard}>
-          <Text style={styles.infoTitle}>ℹ️ Lưu ý</Text>
+          <Text style={styles.infoTitle}>
+            {t('card.manage_limits_info_title')}
+          </Text>
           <Text style={styles.infoText}>
-            • Hạn mức giao dịch đơn không được lớn hơn hạn mức ngày{'\n'}• Hạn
-            mức tối thiểu: {MIN_LIMIT.toLocaleString('vi-VN')} ₫
+            {t('card.manage_limits_info_text', {
+              minLimit: MIN_LIMIT.toLocaleString('vi-VN'),
+            })}
           </Text>
         </View>
 
         {/* Daily Limit */}
         <View style={styles.inputCard}>
-          <Text style={styles.inputLabel}>Hạn mức ngày</Text>
+          <Text style={styles.inputLabel}>
+            {t('card.manage_limits_daily_label')}
+          </Text>
           <TextInput
             style={styles.input}
             value={formatMoney(dailyLimit)}
@@ -205,13 +214,17 @@ const ManageLimitsScreen: React.FC = () => {
             placeholderTextColor={Colors.grey3}
           />
           <Text style={styles.helperText}>
-            Tối đa: {SYSTEM_MAX_DAILY.toLocaleString('vi-VN')} ₫
+            {t('card.manage_limits_max_label', {
+              maxLimit: SYSTEM_MAX_DAILY.toLocaleString('vi-VN'),
+            })}
           </Text>
         </View>
 
         {/* Single Transaction Limit */}
         <View style={styles.inputCard}>
-          <Text style={styles.inputLabel}>Hạn mức giao dịch đơn</Text>
+          <Text style={styles.inputLabel}>
+            {t('card.manage_limits_single_label')}
+          </Text>
           <TextInput
             style={styles.input}
             value={formatMoney(singleLimit)}
@@ -221,19 +234,25 @@ const ManageLimitsScreen: React.FC = () => {
             placeholderTextColor={Colors.grey3}
           />
           <Text style={styles.helperText}>
-            Tối đa: {SYSTEM_MAX_SINGLE.toLocaleString('vi-VN')} ₫
+            {t('card.manage_limits_max_label', {
+              maxLimit: SYSTEM_MAX_SINGLE.toLocaleString('vi-VN'),
+            })}
           </Text>
         </View>
 
         {/* Current Usage */}
         {currentLimits && (
           <View style={styles.usageCard}>
-            <Text style={styles.usageTitle}>Sử dụng hôm nay</Text>
+            <Text style={styles.usageTitle}>
+              {t('card.manage_limits_usage_title')}
+            </Text>
             <Text style={styles.usageAmount}>
               {currentLimits.usedAmount.toLocaleString('vi-VN')} ₫
             </Text>
             <Text style={styles.usageSubtext}>
-              Còn lại: {currentLimits.remainingAmount.toLocaleString('vi-VN')} ₫
+              {t('card.manage_limits_usage_remaining', {
+                amount: currentLimits.remainingAmount.toLocaleString('vi-VN'),
+              })}
             </Text>
           </View>
         )}
@@ -249,7 +268,9 @@ const ManageLimitsScreen: React.FC = () => {
           {saving ? (
             <ActivityIndicator color={Colors.white} />
           ) : (
-            <Text style={styles.saveButtonText}>Lưu thay đổi</Text>
+            <Text style={styles.saveButtonText}>
+              {t('card.manage_limits_save_button')}
+            </Text>
           )}
         </TouchableOpacity>
       </View>

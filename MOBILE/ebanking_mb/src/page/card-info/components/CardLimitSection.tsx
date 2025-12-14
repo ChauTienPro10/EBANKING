@@ -4,7 +4,6 @@ import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import Colors from '../../../constants/color';
 import SettingsIcon from '../../../components/icon/SettingsIcon';
-import { useTranslation } from 'react-i18next';
 
 interface CardLimitSectionProps {
   dailyLimit: number;
