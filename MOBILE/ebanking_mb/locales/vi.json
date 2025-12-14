@@ -589,5 +589,11 @@
     "north": "Miền Bắc",
     "central": "Miền Trung",
     "south": "Miền Nam"
+  },
+  "coming_soon": {
+    "title": "Đang phát triển",
+    "message": "Tính năng này đang trong quá trình phát triển và sẽ sớm ra mắt.",
+    "message_with_feature": "Tính năng {{feature}} đang trong quá trình phát triển và sẽ sớm ra mắt.",
+    "button": "Đã hiểu"
   }
 }

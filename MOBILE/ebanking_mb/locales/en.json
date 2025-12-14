@@ -575,5 +575,11 @@
     "north": "North",
     "central": "Central",
     "south": "South"
+  },
+  "coming_soon": {
+    "title": "Coming Soon",
+    "message": "This feature is currently under development and will be available soon.",
+    "message_with_feature": "The {{feature}} feature is currently under development and will be available soon.",
+    "button": "Got it"
   }
 }

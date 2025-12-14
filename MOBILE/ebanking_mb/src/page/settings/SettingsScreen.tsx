@@ -21,6 +21,7 @@ import {
 } from '../../store/slices/appSlice';
 import LogoutConfirmPopup from '../../popups/LogoutPopup';
 import LanguagePopup from '../../popups/LanguagePopup';
+import ComingSoonModal from '../../components/ComingSoonModal';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
@@ -99,6 +100,7 @@ const SettingsScreen: React.FC = () => {
     useAppNavigation('settings');
   const [showLogoutPopup, setShowLogoutPopup] = useState(false);
   const [showLanguagePopup, setShowLanguagePopup] = useState(false);
+  const [showComingSoonModal, setShowComingSoonModal] = useState(false);
 
   const handleQRPress = () => {
     console.log('QR Code pressed - Open QR Scanner');
@@ -204,7 +206,7 @@ const SettingsScreen: React.FC = () => {
             icon="lock-closed-outline"
             title={t('settings.privacy')}
             subtitle={t('settings.privacy_subtitle')}
-            onPress={() => {}}
+            onPress={() => setShowComingSoonModal(true)}
           />
         </View>
 
@@ -215,14 +217,14 @@ const SettingsScreen: React.FC = () => {
             icon="information-circle-outline"
             title={t('settings.about')}
             subtitle={t('settings.about_subtitle')}
-            onPress={() => {}}
+            onPress={() => setShowComingSoonModal(true)}
           />
           <View style={styles.divider} />
           <SettingItem
             icon="help-circle-outline"
             title={t('settings.help')}
             subtitle={t('settings.help_subtitle')}
-            onPress={() => {}}
+            onPress={() => setShowComingSoonModal(true)}
           />
         </View>
 
@@ -247,6 +249,10 @@ const SettingsScreen: React.FC = () => {
       <LanguagePopup
         visible={showLanguagePopup}
         onClose={() => setShowLanguagePopup(false)}
+      />
+      <ComingSoonModal
+        visible={showComingSoonModal}
+        onClose={() => setShowComingSoonModal(false)}
       />
       <BottomNavigation
         activeTab={activeTab}
