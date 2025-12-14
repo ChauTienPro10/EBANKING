@@ -8,11 +8,14 @@ import {
   Modal,
   Text,
 } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../../store';
-import { setCardStatus } from '../../store/slices/appSlice';
+import {
+  setCardStatus,
+  setPinReminderDismissed,
+} from '../../store/slices/appSlice';
 import {
   fetchTransactionHistory,
   TransferResponse,
@@ -66,6 +69,10 @@ const CardScreen: React.FC = () => {
     (state: RootState) => state.transactionHistories.loading,
   );
   const pinStatus = useSelector((state: RootState) => state.app.pinStatus);
+  const modalSession = useSelector(
+    (state: RootState) => state.app.modalDismissalSession,
+  );
+  const isFocused = useIsFocused();
 
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
   const [showMenu, setShowMenu] = useState(false);
@@ -86,12 +93,28 @@ const CardScreen: React.FC = () => {
 
   React.useEffect(() => {
     console.log('loginResponse', pinStatus);
-    if (pinStatus !== true) {
+
+    // Check if user just performed PIN action (within last 3 seconds)
+    const justPerformedPinAction =
+      modalSession.lastPinActionTime &&
+      Date.now() - modalSession.lastPinActionTime < 3000;
+
+    // Only show reminder if:
+    // 1. Screen is focused/active
+    // 2. PIN is not set
+    // 3. User hasn't dismissed it
+    // 4. Not within grace period
+    if (
+      isFocused &&
+      pinStatus !== true &&
+      !modalSession.pinReminderDismissed &&
+      !justPerformedPinAction
+    ) {
       setRequireSetPin(true);
     } else {
       setRequireSetPin(false);
     }
-  }, [pinStatus]);
+  }, [pinStatus, modalSession, isFocused]);
 
   // Card data
   // const fullCardNumber = '1237689076545678';
@@ -381,6 +404,7 @@ const CardScreen: React.FC = () => {
         confirmLabel={t('common.set_pin_now')}
         onClose={() => {
           setRequireSetPin(false);
+          dispatch(setPinReminderDismissed(true));
           handleTabChange('settings');
         }}
       />

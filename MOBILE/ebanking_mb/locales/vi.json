@@ -490,6 +490,10 @@
   "pin": {
     "enter_pin": "Nhập mã PIN 4 số",
     "re_enter_pin": "Nhập lại mã PIN",
-    "biometric_auth": "Xác thực bằng sinh trắc học"
+    "biometric_auth": "Xác thực bằng sinh trắc học",
+    "created_successfully": "Thiết lập PIN thành công",
+    "pin_is_now_active": "Mã PIN của bạn đã được kích hoạt",
+    "deleted_successfully": "Hủy PIN thành công",
+    "pin_has_been_removed": "Mã PIN đã được gỡ bỏ khỏi tài khoản"
   }
 }

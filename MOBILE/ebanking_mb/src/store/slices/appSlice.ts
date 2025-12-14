@@ -11,6 +11,12 @@ interface AppState {
   accountTransResponse: AccountTransResponse | null;
   userInfoData: UserInfoModel | null;
   pinStatus: boolean | null;
+  modalDismissalSession: {
+    onboardingDismissed: boolean;
+    pinReminderDismissed: boolean;
+    lastPinAction: 'create' | 'delete' | null;
+    lastPinActionTime: number | null;
+  };
   cardStatus: 'active' | 'locked';
   notificationCount: number;
 }
@@ -22,6 +28,12 @@ const initialState: AppState = {
   accountTransResponse: null,
   userInfoData: null,
   pinStatus: false,
+  modalDismissalSession: {
+    onboardingDismissed: false,
+    pinReminderDismissed: false,
+    lastPinAction: null,
+    lastPinActionTime: null,
+  },
   cardStatus: 'active',
   notificationCount: 0,
 };
@@ -47,6 +59,35 @@ const appSlice = createSlice({
     },
     setPinStatus: (state, action: PayloadAction<boolean>) => {
       state.pinStatus = action.payload;
+    },
+    setOnboardingDismissed: (state, action: PayloadAction<boolean>) => {
+      state.modalDismissalSession.onboardingDismissed = action.payload;
+    },
+    setPinReminderDismissed: (state, action: PayloadAction<boolean>) => {
+      state.modalDismissalSession.pinReminderDismissed = action.payload;
+    },
+    setPinAction: (
+      state,
+      action: PayloadAction<'create' | 'delete' | null>,
+    ) => {
+      state.modalDismissalSession.lastPinAction = action.payload;
+      state.modalDismissalSession.lastPinActionTime = action.payload
+        ? Date.now()
+        : null;
+
+      // Reset dismissal flags when PIN action occurs
+      if (action.payload) {
+        state.modalDismissalSession.onboardingDismissed = false;
+        state.modalDismissalSession.pinReminderDismissed = false;
+      }
+    },
+    resetModalSession: state => {
+      state.modalDismissalSession = {
+        onboardingDismissed: false,
+        pinReminderDismissed: false,
+        lastPinAction: null,
+        lastPinActionTime: null,
+      };
     },
     setCardStatus: (state, action: PayloadAction<'active' | 'locked'>) => {
       state.cardStatus = action.payload;
@@ -82,6 +123,10 @@ export const {
   setAccountTransResponse,
   setUserInfoData,
   setPinStatus,
+  setOnboardingDismissed,
+  setPinReminderDismissed,
+  setPinAction,
+  resetModalSession,
   setCardStatus,
   setNotificationCount,
   clearNotifications,

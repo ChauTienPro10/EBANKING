@@ -40,7 +40,7 @@ global.TextDecoder = TextDecoder;
 import SockJS from 'sockjs-client/dist/sockjs';
 import { Stomp } from '@stomp/stompjs';
 import { useListenNotiFromFirebase } from './hooks/useListenNotiFromFirebase';
-import { setPinStatus } from './store/slices/appSlice';
+import { setPinStatus, resetModalSession } from './store/slices/appSlice';
 import { API } from './constants/api';
 
 const SOCKET_URL = `http://${HOST_SERVER}:8006/ws`;
@@ -189,6 +189,8 @@ const RootApp: React.FC = () => {
     if (loginResponse?.id) {
       dispatch(fetchAccountTransInfo(loginResponse.id));
       dispatch(fetchUserInfo(loginResponse.id));
+      // Reset modal session on login for fresh state
+      dispatch(resetModalSession());
     }
   }, [loginResponse, dispatch]);
 

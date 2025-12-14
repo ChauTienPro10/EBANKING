@@ -16,7 +16,7 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { navigationRef } from '../navigation/navigate';
-import { setPinStatus } from '../store/slices/appSlice';
+import { setPinStatus, setPinAction } from '../store/slices/appSlice';
 
 interface PinInputProps {
   length?: number;
@@ -76,10 +76,26 @@ const PinInput: React.FC<PinInputProps> = ({
               setPin(Array(length).fill(''));
               inputsRef.current[0]?.focus();
             } else {
+              // PIN created successfully
+              dispatch(setPinStatus(true));
+              dispatch(setPinAction('create'));
+
+              Toast.show({
+                type: 'success',
+                text1: t('pin.created_successfully'),
+                text2: t('pin.pin_is_now_active'),
+              });
+
               setConfirmPin('');
               setPin(Array(length).fill(''));
               inputsRef.current[0]?.focus();
-              navigationRef.navigate('Settings');
+
+              // Navigate back or to Settings
+              if (navigationRef.canGoBack()) {
+                navigationRef.goBack();
+              } else {
+                navigationRef.navigate('Settings');
+              }
             }
           } catch (err: any) {
             console.error('set pin error: ', err);
@@ -118,10 +134,26 @@ const PinInput: React.FC<PinInputProps> = ({
               text2: t('err.' + response.error),
             });
           } else {
+            // PIN deleted successfully
+            dispatch(setPinStatus(false));
+            dispatch(setPinAction('delete'));
+
+            Toast.show({
+              type: 'success',
+              text1: t('pin.deleted_successfully'),
+              text2: t('pin.pin_has_been_removed'),
+            });
+
             setConfirmPin('');
             setPin(Array(length).fill(''));
             inputsRef.current[0]?.focus();
-            navigationRef.navigate('Settings');
+
+            // Navigate back or to Settings
+            if (navigationRef.canGoBack()) {
+              navigationRef.goBack();
+            } else {
+              navigationRef.navigate('Settings');
+            }
           }
         } catch (err: any) {
           console.error('set pin error: ', err);
