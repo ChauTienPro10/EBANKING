@@ -4,6 +4,8 @@ import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import Colors from '../../../constants/color';
 import SettingsIcon from '../../../components/icon/SettingsIcon';
+import { formatCurrencyByLanguage } from '../../../utils/currency';
+import i18n from '../../../../i18n';
 
 interface CardLimitSectionProps {
   dailyLimit: number;
@@ -28,6 +30,18 @@ export const CardLimitSection: React.FC<CardLimitSectionProps> = ({
   };
 
   const formatShort = (amount: number): string => {
+    const currentLanguage = i18n.language;
+
+    // If English, convert to USD first
+    if (currentLanguage === 'en') {
+      const usdAmount = amount / 25000; // VND to USD conversion
+      if (usdAmount >= 1000) {
+        return `$${(usdAmount / 1000).toFixed(1)}k`;
+      }
+      return `$${Math.round(usdAmount)}`;
+    }
+
+    // Vietnamese - show VND
     if (amount >= 1000000000) {
       return `${(amount / 1000000000).toFixed(1)}tỷ`;
     }
@@ -85,7 +99,8 @@ export const CardLimitSection: React.FC<CardLimitSectionProps> = ({
         </View>
 
         <Text style={styles.remainingText}>
-          {t('card.limit_remaining')}: {formatMoney(remainingDaily)} ₫
+          {t('card.limit_remaining')}:{' '}
+          {formatCurrencyByLanguage(remainingDaily)}
         </Text>
       </View>
 
@@ -93,7 +108,7 @@ export const CardLimitSection: React.FC<CardLimitSectionProps> = ({
       <View style={styles.singleLimitCard}>
         <Text style={styles.limitLabel}>{t('card.limit_single')}</Text>
         <Text style={styles.singleLimitAmount}>
-          {formatMoney(singleLimit)} ₫
+          {formatCurrencyByLanguage(singleLimit)}
         </Text>
       </View>
     </View>

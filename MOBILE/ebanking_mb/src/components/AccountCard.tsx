@@ -1,9 +1,23 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, Dimensions } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+  Dimensions,
+} from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Colors from '../constants/color';
 import TextStyles from '../constants/textStyle';
-import { EyeIcon, EyeOffIcon, TrendingUpIcon, CardIcon, HomeIcon } from './icon';
+import {
+  EyeIcon,
+  EyeOffIcon,
+  TrendingUpIcon,
+  CardIcon,
+  HomeIcon,
+} from './icon';
+import { formatCurrencyByLanguage } from '../utils/currency';
 
 const { width } = Dimensions.get('window');
 
@@ -43,27 +57,29 @@ const AccountCard: React.FC<AccountCardProps> = ({
     if (onPress) {
       onPress();
     } else if (!isAuthenticated) {
-      
-        Alert.prompt(
-          t('mock_data.messages.pin_auth'),
-          t('mock_data.messages.pin_prompt'),
-          [
-            { text: t('mock_data.messages.cancel'), style: 'cancel' },
-            { 
-              text: t('mock_data.messages.pin_confirm'), 
-              onPress: (pin?: string) => {
-                if (pin === t('ui.default_pin')) {
-                  setIsAuthenticated(true);
-                  setIsMasked(false);
-                  setShowDetails(true);
-                } else {
-                  Alert.alert(t('mock_data.messages.pin_error'), t('mock_data.messages.pin_incorrect'));
-                }
+      Alert.prompt(
+        t('mock_data.messages.pin_auth'),
+        t('mock_data.messages.pin_prompt'),
+        [
+          { text: t('mock_data.messages.cancel'), style: 'cancel' },
+          {
+            text: t('mock_data.messages.pin_confirm'),
+            onPress: (pin?: string) => {
+              if (pin === t('ui.default_pin')) {
+                setIsAuthenticated(true);
+                setIsMasked(false);
+                setShowDetails(true);
+              } else {
+                Alert.alert(
+                  t('mock_data.messages.pin_error'),
+                  t('mock_data.messages.pin_incorrect'),
+                );
               }
-            }
-          ],
-          'secure-text'
-        );
+            },
+          },
+        ],
+        'secure-text',
+      );
     } else {
       setShowDetails(!showDetails);
     }
@@ -82,13 +98,8 @@ const AccountCard: React.FC<AccountCardProps> = ({
     if (isMasked) {
       return '••••••••';
     }
-    
-    return new Intl.NumberFormat('vi-VN', {
-      style: 'currency',
-      currency: currency,
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
+
+    return formatCurrencyByLanguage(amount);
   };
 
   const getCardStyle = () => {
@@ -126,30 +137,34 @@ const AccountCard: React.FC<AccountCardProps> = ({
   };
 
   return (
-    <TouchableOpacity 
-      style={[styles.container, getCardStyle()]} 
+    <TouchableOpacity
+      style={[styles.container, getCardStyle()]}
       onPress={handleCardPress}
       activeOpacity={0.8}
       accessibilityLabel={`Tài khoản ${accountName}`}
       accessibilityHint="Nhấn để xem chi tiết số dư"
     >
-      <View
-        style={[styles.gradient, { backgroundColor: getCardColor() }]}
-      >
+      <View style={[styles.gradient, { backgroundColor: getCardColor() }]}>
         {/* Card Header */}
         <View style={styles.cardHeader}>
           <View style={styles.bankInfo}>
             <Text style={styles.bankName}>{t('ui.bank_name')}</Text>
-            {isAuthenticated && <Text style={styles.cardBrand}>{t('ui.card_brand')}</Text>}
+            {isAuthenticated && (
+              <Text style={styles.cardBrand}>{t('ui.card_brand')}</Text>
+            )}
           </View>
-          
+
           {showMaskToggle && isAuthenticated && (
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={handleMaskToggle}
               style={styles.maskButton}
-              accessibilityLabel={isMasked ? "Hiện số dư" : "Ẩn số dư"}
+              accessibilityLabel={isMasked ? 'Hiện số dư' : 'Ẩn số dư'}
             >
-              {isMasked ? <EyeOffIcon size={18} color={Colors.white} /> : <EyeIcon size={18} color={Colors.white} />}
+              {isMasked ? (
+                <EyeOffIcon size={18} color={Colors.white} />
+              ) : (
+                <EyeIcon size={18} color={Colors.white} />
+              )}
             </TouchableOpacity>
           )}
         </View>
@@ -171,7 +186,9 @@ const AccountCard: React.FC<AccountCardProps> = ({
 
         {/* Balance Section */}
         <View style={styles.balanceSection}>
-          <Text style={styles.balanceLabel}>{t('labels.available_balance')}</Text>
+          <Text style={styles.balanceLabel}>
+            {t('labels.available_balance')}
+          </Text>
           <Text style={styles.balanceAmount}>
             {formatCurrency(availableBalance)}
           </Text>
@@ -199,24 +216,33 @@ const AccountCard: React.FC<AccountCardProps> = ({
         </View>
 
         {/* Details Section */}
-        {showDetails && (ledgerBalance !== undefined || pendingBalance !== undefined) && (
-          <View style={styles.detailsContainer}>
-            <View style={styles.detailsRow}>
-              <Text style={styles.detailLabel}>{t('labels.ledger_balance')}</Text>
-              <Text style={styles.detailAmount}>
-                {isMasked ? t('ui.masked_text') : formatCurrency(ledgerBalance || 0)}
-              </Text>
-            </View>
-            {pendingBalance !== undefined && (
+        {showDetails &&
+          (ledgerBalance !== undefined || pendingBalance !== undefined) && (
+            <View style={styles.detailsContainer}>
               <View style={styles.detailsRow}>
-                <Text style={styles.detailLabel}>{t('labels.pending_balance')}</Text>
+                <Text style={styles.detailLabel}>
+                  {t('labels.ledger_balance')}
+                </Text>
                 <Text style={styles.detailAmount}>
-                  {isMasked ? t('ui.masked_text') : formatCurrency(pendingBalance)}
+                  {isMasked
+                    ? t('ui.masked_text')
+                    : formatCurrency(ledgerBalance || 0)}
                 </Text>
               </View>
-            )}
-          </View>
-        )}
+              {pendingBalance !== undefined && (
+                <View style={styles.detailsRow}>
+                  <Text style={styles.detailLabel}>
+                    {t('labels.pending_balance')}
+                  </Text>
+                  <Text style={styles.detailAmount}>
+                    {isMasked
+                      ? t('ui.masked_text')
+                      : formatCurrency(pendingBalance)}
+                  </Text>
+                </View>
+              )}
+            </View>
+          )}
       </View>
     </TouchableOpacity>
   );
