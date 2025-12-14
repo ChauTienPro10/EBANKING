@@ -361,32 +361,40 @@ const CardScreen: React.FC = () => {
         <ScrollView
           style={styles.content}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.contentContainer}
+          contentContainerStyle={
+            account?.accountNumber
+              ? styles.contentContainer
+              : styles.contentContainerCentered
+          }
         >
           <CardBalanceSection
-            balance={account?.balance ?? mockCardData.balance}
-            currency={account?.currency ?? mockCardData.currency}
-            accountNumber={account?.accountNumber ?? null}
+            balance={account?.balance}
+            currency={account?.currency}
+            accountNumber={account?.accountNumber}
             accountType={account?.accountType ?? 'SAVINGS'}
           />
-          <CreditCard
-            bankName=".Pay"
-            cardNumber={formatCardNumber(account?.accountNumber ?? '')}
-            isNumberVisible={isCardNumberVisible}
-            maskedNumber={maskCardNumber(account?.accountNumber ?? '')}
-            holderName={userInfo?.fullName}
-            onNumberPress={toggleCardNumberVisibility}
-            onNumberLongPress={() =>
-              copyCardNumber(formatCardNumber(account?.accountNumber ?? ''))
-            }
-            isLocked={cardStatus === 'locked'}
-          />
+          {account?.accountNumber && (
+            <>
+              <CreditCard
+                bankName=".Pay"
+                cardNumber={formatCardNumber(account?.accountNumber ?? '')}
+                isNumberVisible={isCardNumberVisible}
+                maskedNumber={maskCardNumber(account?.accountNumber ?? '')}
+                holderName={userInfo?.fullName}
+                onNumberPress={toggleCardNumberVisibility}
+                onNumberLongPress={() =>
+                  copyCardNumber(formatCardNumber(account?.accountNumber ?? ''))
+                }
+                isLocked={cardStatus === 'locked'}
+              />
 
-          <CardLimitSection
-            dailyLimit={userLimits?.dailyLimit || 50000000}
-            singleLimit={userLimits?.singleTransactionLimit || 10000000}
-            usedAmount={userLimits?.usedAmount || 0}
-          />
+              <CardLimitSection
+                dailyLimit={userLimits?.dailyLimit || 50000000}
+                singleLimit={userLimits?.singleTransactionLimit || 10000000}
+                usedAmount={userLimits?.usedAmount || 0}
+              />
+            </>
+          )}
         </ScrollView>
       ) : (
         <View style={styles.lockedContent}>
@@ -516,6 +524,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentContainer: {
+    paddingBottom: 100,
+  },
+  contentContainerCentered: {
+    flexGrow: 1,
+    justifyContent: 'center',
     paddingBottom: 100,
   },
   lockedContent: {

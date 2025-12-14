@@ -1,10 +1,11 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import Icon from 'react-native-vector-icons/Ionicons';
 import Colors from '../../../constants/color';
 
 interface CardBalanceSectionProps {
-  balance: number;
+  balance?: number;
   currency?: string;
   accountNumber?: string | null;
   accountType?: string; // From API: SAVINGS, CHECKING, etc.
@@ -32,10 +33,29 @@ const CardBalanceSection: React.FC<CardBalanceSectionProps> = ({
     return typeMap[type.toUpperCase()] || t('card.account_type_default');
   };
 
+  // Nếu không có accountNumber, hiển thị thông báo khuyến khích mở thẻ
+  if (!accountNumber) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.noAccountContainer}>
+          <View style={styles.iconContainer}>
+            <Icon name="card-outline" size={32} color={Colors.main_bule} />
+          </View>
+          <Text style={styles.noAccountTitle}>
+            {t('card.no_account_title')}
+          </Text>
+          <Text style={styles.noAccountMessage}>
+            {t('card.no_account_message')}
+          </Text>
+        </View>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{t('card.balance_available')}</Text>
-      <Text style={styles.balance}>{formatBalance(balance)} ₫</Text>
+      <Text style={styles.balance}>{formatBalance(balance || 0)} ₫</Text>
       <Text style={styles.cardTypeText}>
         {getAccountTypeLabel(accountType)}
       </Text>
@@ -74,6 +94,31 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: Colors.grey3,
     fontWeight: '500',
+  },
+  noAccountContainer: {
+    alignItems: 'center',
+  },
+  iconContainer: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: `${Colors.main_bule}10`,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  noAccountTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: Colors.grey3,
+    letterSpacing: 1,
+    marginBottom: 8,
+  },
+  noAccountMessage: {
+    fontSize: 14,
+    color: Colors.textSecondary,
+    lineHeight: 20,
+    textAlign: 'center',
+    paddingHorizontal: 8,
   },
 });
 
