@@ -419,7 +419,8 @@
     "success": "Thành công",
     "close": "Đóng",
     "exit_app": "Thoát",
-    "set_pin_now": "Thiết lập"
+    "set_pin_now": "Thiết lập",
+    "go_home": "Về trang chủ"
   },
   "mock_data": {
     "user": {
@@ -501,6 +502,7 @@
     "created_successfully": "Thiết lập PIN thành công",
     "pin_is_now_active": "Mã PIN của bạn đã được kích hoạt",
     "deleted_successfully": "Hủy PIN thành công",
-    "pin_has_been_removed": "Mã PIN đã được gỡ bỏ khỏi tài khoản"
+    "pin_has_been_removed": "Mã PIN đã được gỡ bỏ khỏi tài khoản",
+    "setup_required": "Yêu cầu thiết lập PIN"
   }
 }
