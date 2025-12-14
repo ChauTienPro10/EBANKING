@@ -1,6 +1,6 @@
 import { API_URL } from '@env';
 
-export const HOST_SERVER = '192.168.0.185';
+export const HOST_SERVER = '192.168.1.4';
 
 export const BASE_URL = `http://${HOST_SERVER}:8000/`;
 export const FCM_SERVICE = `http://${HOST_SERVER}:8004/`;
@@ -55,4 +55,9 @@ export const API = {
   // transaction limits
   GET_USER_LIMITS: `${AUTH_SERVICE}/trans/transaction-limits`,
   UPDATE_USER_LIMITS: `${AUTH_SERVICE}/trans/transaction-limits`,
+
+  // ket qua xo so
+  GET_XOSO_MIENBAC: `${AUTH_SERVICE}/xoso/mb`,
+  GET_XOSO_MIENTRUNG: `${AUTH_SERVICE}/xoso/mt`,
+  GET_XOSO_MIENNAM: `${AUTH_SERVICE}/xoso/mn`,
 };

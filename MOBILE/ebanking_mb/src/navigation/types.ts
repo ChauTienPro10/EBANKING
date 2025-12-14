@@ -10,6 +10,7 @@ export type RootStackParamList = {
   Card: undefined;
   ManageLimits: undefined;
   AccountAndCard: undefined;
+  Lottery: undefined;
   Transfer: {
     receiver: string;
     amount: string;

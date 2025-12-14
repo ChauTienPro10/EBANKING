@@ -196,7 +196,7 @@ const HomeScreen: React.FC = () => {
 
         <ServicesGrid
           services={services}
-          onServicePress={service => console.log('Service pressed:', service)}
+          onServicePress={handleServicePress}
           titleLabel={t('labels.services_title')}
         />
       </ScrollView>

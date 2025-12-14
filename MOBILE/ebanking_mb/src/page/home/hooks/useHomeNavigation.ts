@@ -43,7 +43,13 @@ export const useHomeNavigation = (account: any, userInfo: any) => {
   };
 
   const handleServicePress = (service: ServiceItemType) => {
-    console.log('Service pressed:', service);
+    switch (service.id) {
+      case 'lottery':
+        navigation.navigate('Lottery');
+        break;
+      default:
+        console.log('Service pressed:', service.id);
+    }
   };
 
   const handleQRPress = () => {

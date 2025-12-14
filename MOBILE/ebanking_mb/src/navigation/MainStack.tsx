@@ -30,6 +30,7 @@ import OCRCameraScreen from '../features/ekyc/components/OCRCameraScreen';
 import ChatScreen from '../page/chatbot/ChatScreen';
 import NotiScreen from '../page/notify/notiScreen';
 import FaceAuthScreen from '../features/face-auth/FaceAuthScreen';
+import LotteryScreen from '../page/lottery/LotteryScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -51,6 +52,7 @@ export default function MainStack() {
       <Stack.Screen name="Support" component={SupportScreen} />
       <Stack.Screen name="Chatbot" component={ChatScreen} />
       <Stack.Screen name="Transfer" component={TransferScreen} />
+      <Stack.Screen name="Lottery" component={LotteryScreen} />
       <Stack.Screen name="OpenCard" component={OpenAccountScreen} />
       <Stack.Screen
         name="TransactionSuccess"
