@@ -12,11 +12,15 @@ import { useTranslation } from 'react-i18next';
 import Colors from '../../../constants/color';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store';
-import { formatCurrency, mockCardData } from '../mockCardData';
 
 interface CardDetailBottomSheetProps {
   visible: boolean;
   onClose: () => void;
+  userLimits?: {
+    dailyLimit: number;
+    singleTransactionLimit: number;
+    usedAmount: number;
+  } | null;
 }
 
 const { height } = Dimensions.get('window');
@@ -24,6 +28,7 @@ const { height } = Dimensions.get('window');
 const CardDetailBottomSheet: React.FC<CardDetailBottomSheetProps> = ({
   visible,
   onClose,
+  userLimits,
 }) => {
   const { t } = useTranslation();
   const account = useSelector(
@@ -58,7 +63,7 @@ const CardDetailBottomSheet: React.FC<CardDetailBottomSheetProps> = ({
 
   const formatDate = (value?: string) => {
     if (!value) {
-      return mockCardData.issueDate;
+      return '';
     }
 
     const date = new Date(value);
@@ -73,13 +78,18 @@ const CardDetailBottomSheet: React.FC<CardDetailBottomSheetProps> = ({
     return `${day}/${month}/${year}`;
   };
 
+  const formatCurrency = (
+    amount?: number,
+    currency: string = 'VNĐ',
+  ): string => {
+    if (amount === undefined || amount === null) {
+      return '';
+    }
+    return `${amount.toLocaleString('vi-VN')} ${currency}`;
+  };
+
   const statusLabel =
     cardStatus === 'locked' ? t('card.status_locked') : t('card.status_active');
-
-  const currencyCode = account?.currency ?? mockCardData.currency;
-
-  const availableBalance =
-    account?.balance ?? mockCardData.cardLimit - mockCardData.spentAmount;
 
   return (
     <Modal
@@ -113,15 +123,13 @@ const CardDetailBottomSheet: React.FC<CardDetailBottomSheetProps> = ({
 
             <View style={styles.detailRow}>
               <Text style={styles.label}>{t('card.detail_card_holder')}</Text>
-              <Text style={styles.value}>
-                {userInfo?.fullName ?? mockCardData.cardHolderName}
-              </Text>
+              <Text style={styles.value}>{userInfo?.fullName || ''}</Text>
             </View>
 
             <View style={styles.detailRow}>
               <Text style={styles.label}>{t('card.detail_card_type')}</Text>
               <Text style={styles.value}>
-                {formatTitleCase(account?.accountType) || mockCardData.cardType}
+                {formatTitleCase(account?.accountType) || ''}
               </Text>
             </View>
 
@@ -130,45 +138,46 @@ const CardDetailBottomSheet: React.FC<CardDetailBottomSheetProps> = ({
               <Text style={styles.value}>{statusLabel}</Text>
             </View>
 
-            <View style={styles.detailRow}>
-              <Text style={styles.label}>{t('card.detail_expiry_date')}</Text>
-              <Text style={styles.value}>
-                {mockCardData.expiryMonth}/{mockCardData.expiryYear}
-              </Text>
-            </View>
+            {userLimits?.dailyLimit !== undefined && (
+              <View style={styles.detailRow}>
+                <Text style={styles.label}>{t('card.detail_daily_limit')}</Text>
+                <Text style={styles.valueHighlight}>
+                  {formatCurrency(userLimits.dailyLimit, account?.currency)}
+                </Text>
+              </View>
+            )}
 
-            <View style={styles.detailRow}>
-              <Text style={styles.label}>{t('card.detail_cvv')}</Text>
-              <Text style={styles.value}>•••</Text>
-            </View>
+            {userLimits?.singleTransactionLimit !== undefined && (
+              <View style={styles.detailRow}>
+                <Text style={styles.label}>
+                  {t('card.detail_single_limit')}
+                </Text>
+                <Text style={styles.valueHighlight}>
+                  {formatCurrency(
+                    userLimits.singleTransactionLimit,
+                    account?.currency,
+                  )}
+                </Text>
+              </View>
+            )}
 
-            <View style={styles.detailRow}>
-              <Text style={styles.label}>{t('card.detail_issue_date')}</Text>
-              <Text style={styles.value}>
-                {formatDate(account?.openedDate)}
-              </Text>
-            </View>
+            {account?.balance !== undefined && (
+              <View style={styles.detailRow}>
+                <Text style={styles.label}>
+                  {t('card.detail_available_balance')}
+                </Text>
+                <Text style={styles.valueHighlight}>
+                  {formatCurrency(account.balance, account?.currency)}
+                </Text>
+              </View>
+            )}
 
-            <View style={styles.detailRow}>
-              <Text style={styles.label}>{t('card.detail_card_limit')}</Text>
-              <Text style={styles.valueHighlight}>
-                {formatCurrency(mockCardData.cardLimit)}
-              </Text>
-            </View>
-
-            <View style={styles.detailRow}>
-              <Text style={styles.label}>
-                {t('card.detail_available_balance')}
-              </Text>
-              <Text style={styles.valueHighlight}>
-                {formatCurrency(availableBalance, currencyCode)}
-              </Text>
-            </View>
-
-            <View style={styles.detailRow}>
-              <Text style={styles.label}>{t('card.detail_currency')}</Text>
-              <Text style={styles.value}>{currencyCode}</Text>
-            </View>
+            {account?.currency && (
+              <View style={styles.detailRow}>
+                <Text style={styles.label}>{t('card.detail_currency')}</Text>
+                <Text style={styles.value}>{account.currency}</Text>
+              </View>
+            )}
           </ScrollView>
 
           <TouchableOpacity style={styles.closeButton} onPress={onClose}>

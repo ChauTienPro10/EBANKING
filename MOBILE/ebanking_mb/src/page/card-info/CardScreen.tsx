@@ -23,16 +23,10 @@ import {
 import Colors from '../../constants/color';
 import BottomNavigation from '../../components/BottomNavigation';
 import Header from '../../components/Header';
-import {
-  CreditCard,
-  CardLimitSection,
-  TransactionList,
-  CardBalanceSection,
-} from './components';
+import { CreditCard, CardLimitSection, CardBalanceSection } from './components';
 import CardDetailBottomSheet from './components/CardDetailBottomSheet';
 import { useCardActions } from './hooks/useCardActions';
 import { useCardNavigation } from './hooks/useCardNavigation';
-import { mockCardData } from './mockCardData';
 import MenuDotsIcon from '../../components/icon/MenuDotsIcon';
 import LockOpenIcon from '../../components/icon/LockOpenIcon';
 import LockIcon from '../../components/icon/LockIcon';
@@ -461,6 +455,7 @@ const CardScreen: React.FC = () => {
         <CardDetailBottomSheet
           visible={showDetailSheet}
           onClose={() => setShowDetailSheet(false)}
+          userLimits={userLimits}
         />
       )}
 
