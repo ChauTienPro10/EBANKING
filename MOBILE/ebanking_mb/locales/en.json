@@ -284,7 +284,17 @@
       "email_required": "Email is required",
       "email_invalid": "Invalid email format",
       "phone_required": "Phone number is required"
-    }
+    },
+    "ekyc_section_title": "Identity Verification",
+    "ekyc_verified": "Verified",
+    "ekyc_not_verified": "Not Verified",
+    "ekyc_verified_date": "Verified on",
+    "ekyc_view_details": "View Details",
+    "ekyc_verify_now": "Verify Now",
+    "uploading_avatar": "Uploading avatar...",
+    "avatar_modal_title": "Change Profile Photo",
+    "avatar_modal_gallery": "Choose from Gallery",
+    "avatar_modal_camera": "Take Selfie"
   },
   "notifications": {
     "title": "Notifications",

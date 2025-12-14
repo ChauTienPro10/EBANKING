@@ -55,12 +55,6 @@ const ProfileScreen: React.FC = () => {
   );
 
   useEffect(() => {
-    if (language) {
-      i18n.changeLanguage(language);
-    }
-  }, [language, i18n]);
-
-  useEffect(() => {
     const formatBirthday = (birthday: any): string => {
       if (!birthday) return '---';
       try {
@@ -253,7 +247,9 @@ const ProfileScreen: React.FC = () => {
       <LoadingPopup
         visible={isLoading || isUploading}
         message={
-          isUploading ? 'Đang tải ảnh lên...' : t('profile.loading_message')
+          isUploading
+            ? t('profile.uploading_avatar')
+            : t('profile.loading_message')
         }
       />
 
@@ -306,7 +302,9 @@ const ProfileScreen: React.FC = () => {
                 size={24}
                 color={Colors.success}
               />
-              <Text style={styles.ekycTitle}>Thông tin định danh</Text>
+              <Text style={styles.ekycTitle}>
+                {t('profile.ekyc_section_title')}
+              </Text>
             </View>
 
             <View style={styles.ekycBadge}>
@@ -315,11 +313,13 @@ const ProfileScreen: React.FC = () => {
                 size={20}
                 color={Colors.success}
               />
-              <Text style={styles.ekycVerifiedText}>Đã xác thực</Text>
+              <Text style={styles.ekycVerifiedText}>
+                {t('profile.ekyc_verified')}
+              </Text>
             </View>
 
             <Text style={styles.ekycDate}>
-              Xác thực ngày:{' '}
+              {t('profile.ekyc_verified_date')}:{' '}
               {userInfo.ekycVerifiedAt
                 ? new Date(userInfo.ekycVerifiedAt).toLocaleDateString('vi-VN')
                 : '---'}
@@ -329,7 +329,9 @@ const ProfileScreen: React.FC = () => {
               style={styles.ekycDetailButton}
               onPress={() => navigation.navigate('EKYCDetail' as never)}
             >
-              <Text style={styles.ekycDetailButtonText}>Xem chi tiết</Text>
+              <Text style={styles.ekycDetailButtonText}>
+                {t('profile.ekyc_view_details')}
+              </Text>
               <Ionicons
                 name="chevron-forward"
                 size={20}
@@ -341,19 +343,25 @@ const ProfileScreen: React.FC = () => {
           <View style={styles.ekycSection}>
             <View style={styles.ekycHeader}>
               <Ionicons name="shield-outline" size={24} color={Colors.grey3} />
-              <Text style={styles.ekycTitle}>Thông tin định danh</Text>
+              <Text style={styles.ekycTitle}>
+                {t('profile.ekyc_section_title')}
+              </Text>
             </View>
 
             <View style={styles.ekycBadgeWarning}>
               <Ionicons name="alert-circle" size={20} color={Colors.warning} />
-              <Text style={styles.ekycNotVerifiedText}>Chưa xác thực</Text>
+              <Text style={styles.ekycNotVerifiedText}>
+                {t('profile.ekyc_not_verified')}
+              </Text>
             </View>
 
             <TouchableOpacity
               style={styles.ekycVerifyButton}
               onPress={() => navigation.navigate('EKYC' as never)}
             >
-              <Text style={styles.ekycVerifyButtonText}>Xác thực ngay</Text>
+              <Text style={styles.ekycVerifyButtonText}>
+                {t('profile.ekyc_verify_now')}
+              </Text>
             </TouchableOpacity>
           </View>
         )}

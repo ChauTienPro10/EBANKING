@@ -9,12 +9,6 @@ export default function Home() {
   const language = useSelector((state: RootState) => state.app.language);
   const { t, i18n } = useTranslation();
 
-  useEffect(() => {
-    if (language) {
-      i18n.changeLanguage(language);
-    }
-  }, [language, i18n]);
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{t('home.welcome')}</Text>
