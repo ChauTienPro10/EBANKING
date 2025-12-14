@@ -10,6 +10,7 @@ import {
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/types';
 import { Header } from '../../components';
+import { useTranslation } from 'react-i18next';
 import Colors from '../../constants/color';
 
 type Props = NativeStackScreenProps<
@@ -18,6 +19,7 @@ type Props = NativeStackScreenProps<
 >;
 
 const PendingTransactionScreen: React.FC<Props> = ({ navigation, route }) => {
+  const { t } = useTranslation();
   const { amount, content, date, receiverName, transactionId } =
     route.params || {};
   const pulseAnim = useRef(new Animated.Value(1)).current;
@@ -51,7 +53,7 @@ const PendingTransactionScreen: React.FC<Props> = ({ navigation, route }) => {
     const timer = setTimeout(() => {
       navigation.replace('TransactionSuccess', {
         amount: amount || '0',
-        content: content || 'Chuyển tiền',
+        content: content || t('transfer.transaction_success.default_content'),
         date: date || new Date().toISOString(),
         receiver: receiverName || '-',
         transactionId: transactionId || Date.now().toString(), // Use real ID or fallback
@@ -97,18 +99,30 @@ const PendingTransactionScreen: React.FC<Props> = ({ navigation, route }) => {
         </Animated.View>
 
         {/* Title */}
-        <Text style={styles.title}>Đang xử lý giao dịch</Text>
-        <Text style={styles.subtitle}>Vui lòng chờ trong giây lát...</Text>
+        <Text style={styles.title}>{t('transfer.pending.title')}</Text>
+        <Text style={styles.subtitle}>{t('transfer.pending.subtitle')}</Text>
 
         {/* Transaction Details Card */}
         <View style={styles.card}>
-          <DetailRow label="Số tiền" value={amount || '0'} />
+          <DetailRow
+            label={t('transfer.pending.amount_label')}
+            value={amount || '0'}
+          />
           <Divider />
-          <DetailRow label="Người nhận" value={receiverName || '-'} />
+          <DetailRow
+            label={t('transfer.pending.recipient_label')}
+            value={receiverName || '-'}
+          />
           <Divider />
-          <DetailRow label="Thời gian" value={formatDateTime(date)} />
+          <DetailRow
+            label={t('transfer.pending.time_label')}
+            value={formatDateTime(date)}
+          />
           <Divider />
-          <DetailRow label="Nội dung" value={content || 'Chuyển tiền'} />
+          <DetailRow
+            label={t('transfer.pending.content_label')}
+            value={content || t('transfer.transaction_success.default_content')}
+          />
         </View>
 
         {/* Back Button */}
@@ -121,7 +135,9 @@ const PendingTransactionScreen: React.FC<Props> = ({ navigation, route }) => {
             })
           }
         >
-          <Text style={styles.buttonText}>Về trang chủ</Text>
+          <Text style={styles.buttonText}>
+            {t('transfer.pending.back_home')}
+          </Text>
         </TouchableOpacity>
       </Animated.View>
     </View>

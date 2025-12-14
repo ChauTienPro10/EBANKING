@@ -356,6 +356,40 @@
       "title": "Chuyển tiền thành công",
       "message": "Bạn đã chuyển {{amount}} VND đến tài khoản {{account}}"
     },
+    "confirm": {
+      "title": "Xác nhận giao dịch",
+      "amount_label": "Số tiền",
+      "recipient_account_label": "Tài khoản nhận",
+      "recipient_name_label": "Tên người nhận",
+      "content_label": "Nội dung",
+      "cancel_button": "Hủy",
+      "confirm_button": "Xác nhận",
+      "enter_pin_title": "Nhập mã PIN 4 số"
+    },
+    "transaction_success": {
+      "header_title": "Giao dịch",
+      "title": "Giao dịch thành công",
+      "details_header": "CHI TIẾT",
+      "total_amount": "Tổng số tiền",
+      "transaction_id": "Mã giao dịch",
+      "time": "Thời gian",
+      "date": "Ngày",
+      "method": "Phương thức",
+      "internal_transfer": "Chuyển khoản nội bộ",
+      "recipient": "Người nhận",
+      "content": "Nội dung",
+      "default_content": "Chuyển tiền",
+      "done_button": "Hoàn tất"
+    },
+    "pending": {
+      "title": "Đang xử lý giao dịch",
+      "subtitle": "Vui lòng chờ trong giây lát...",
+      "amount_label": "Số tiền",
+      "recipient_label": "Người nhận",
+      "time_label": "Thời gian",
+      "content_label": "Nội dung",
+      "back_home": "Về trang chủ"
+    },
     "error": {
       "title": "Lỗi chuyển tiền",
       "message": "Có lỗi xảy ra khi chuyển tiền. Vui lòng thử lại.",

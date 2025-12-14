@@ -9,12 +9,14 @@ import {
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/types';
 import { Header } from '../../components';
+import { useTranslation } from 'react-i18next';
 import Colors from '../../constants/color';
 import { CheckIcon } from '../../components/icon';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'TransactionSuccess'>;
 
 const TransactionSuccessScreen: React.FC<Props> = ({ navigation, route }) => {
+  const { t } = useTranslation();
   const { amount, transactionId, date, receiver, content } = route.params!;
 
   // Format amount with VND currency
@@ -52,7 +54,10 @@ const TransactionSuccessScreen: React.FC<Props> = ({ navigation, route }) => {
 
   return (
     <View style={styles.containerMaster}>
-      <Header title="Giao dịch" showBackButton={false} />
+      <Header
+        title={t('transfer.transaction_success.header_title')}
+        showBackButton={false}
+      />
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
@@ -70,33 +75,45 @@ const TransactionSuccessScreen: React.FC<Props> = ({ navigation, route }) => {
           </View>
 
           {/* Title */}
-          <Text style={styles.title}>Giao dịch thành công</Text>
+          <Text style={styles.title}>
+            {t('transfer.transaction_success.title')}
+          </Text>
 
           {/* Details Section */}
           <View style={styles.detailsSection}>
-            <Text style={styles.detailsHeader}>CHI TIẾT</Text>
+            <Text style={styles.detailsHeader}>
+              {t('transfer.transaction_success.details_header')}
+            </Text>
             <DetailRow
-              label="Tổng số tiền"
+              label={t('transfer.transaction_success.total_amount')}
               value={formatAmount(amount || '0')}
               highlight
             />
             <DetailRow
-              label="Mã giao dịch"
+              label={t('transfer.transaction_success.transaction_id')}
               value={maskTransactionId(transactionId || '-')}
             />
             <DetailRow
-              label="Thời gian"
+              label={t('transfer.transaction_success.time')}
               value={formatTime(date || new Date().toISOString())}
             />
             <DetailRow
-              label="Ngày"
+              label={t('transfer.transaction_success.date')}
               value={formatDate(date || new Date().toISOString())}
             />
-            <DetailRow label="Phương thức" value="Chuyển khoản nội bộ" />
-            <DetailRow label="Người nhận" value={receiver || '-'} />
             <DetailRow
-              label="Nội dung"
-              value={content || 'Chuyển tiền'}
+              label={t('transfer.transaction_success.method')}
+              value={t('transfer.transaction_success.internal_transfer')}
+            />
+            <DetailRow
+              label={t('transfer.transaction_success.recipient')}
+              value={receiver || '-'}
+            />
+            <DetailRow
+              label={t('transfer.transaction_success.content')}
+              value={
+                content || t('transfer.transaction_success.default_content')
+              }
               isLast
             />
           </View>
@@ -112,7 +129,9 @@ const TransactionSuccessScreen: React.FC<Props> = ({ navigation, route }) => {
             })
           }
         >
-          <Text style={styles.doneButtonText}>Hoàn tất</Text>
+          <Text style={styles.doneButtonText}>
+            {t('transfer.transaction_success.done_button')}
+          </Text>
         </TouchableOpacity>
       </ScrollView>
     </View>
