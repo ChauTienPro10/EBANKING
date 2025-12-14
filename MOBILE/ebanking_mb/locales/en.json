@@ -570,5 +570,11 @@
     "deleted_successfully": "PIN Deleted Successfully",
     "pin_has_been_removed": "PIN has been removed from your account",
     "setup_required": "PIN Setup Required"
+  },
+  "coming_soon": {
+    "title": "Coming Soon",
+    "message": "This feature is currently under development and will be available soon.",
+    "message_with_feature": "The {{feature}} feature is currently under development and will be available soon.",
+    "button": "Got it"
   }
 }

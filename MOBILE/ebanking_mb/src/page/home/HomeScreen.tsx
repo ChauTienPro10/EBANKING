@@ -6,6 +6,7 @@ import { RootState } from '../../store';
 import { setOnboardingDismissed } from '../../store/slices/appSlice';
 import ReminderPopup from '../../popups/ReminderPopupProps';
 import OnboardingModal from '../../components/OnboardingModal';
+import ComingSoonModal from '../../components/ComingSoonModal';
 import Colors from '../../constants/color';
 import BottomNavigation from '../../components/BottomNavigation';
 import HomeHeader from './components/HomeHeader';
@@ -41,6 +42,7 @@ const HomeScreen: React.FC = () => {
   const [activeTab, setActiveTab] = React.useState('home');
   const [requireUpdateInfo, setRequireUpdateInfo] = React.useState(false);
   const [showOnboardingModal, setShowOnboardingModal] = React.useState(false);
+  const [showComingSoonModal, setShowComingSoonModal] = React.useState(false);
 
   // Custom hooks
   const { quickActions, services, bottomTabs } = useHomeData();
@@ -58,7 +60,7 @@ const HomeScreen: React.FC = () => {
     handleQRPress,
     handleOpenCard,
     navigation,
-  } = useHomeNavigation(account, userInfo);
+  } = useHomeNavigation(account, userInfo, () => setShowComingSoonModal(true));
   const dispatch = useDispatch();
 
   // Effects
@@ -206,6 +208,11 @@ const HomeScreen: React.FC = () => {
         tabs={bottomTabs}
         onChange={handleTabChange}
         onQRPress={handleQRPress}
+      />
+
+      <ComingSoonModal
+        visible={showComingSoonModal}
+        onClose={() => setShowComingSoonModal(false)}
       />
     </View>
   );

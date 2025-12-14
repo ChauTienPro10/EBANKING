@@ -584,5 +584,11 @@
     "deleted_successfully": "Hủy PIN thành công",
     "pin_has_been_removed": "Mã PIN đã được gỡ bỏ khỏi tài khoản",
     "setup_required": "Yêu cầu thiết lập PIN"
+  },
+  "coming_soon": {
+    "title": "Đang phát triển",
+    "message": "Tính năng này đang trong quá trình phát triển và sẽ sớm ra mắt.",
+    "message_with_feature": "Tính năng {{feature}} đang trong quá trình phát triển và sẽ sớm ra mắt.",
+    "button": "Đã hiểu"
   }
 }

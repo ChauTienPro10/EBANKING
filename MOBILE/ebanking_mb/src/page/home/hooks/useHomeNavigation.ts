@@ -5,7 +5,11 @@ import { ActionItemType, ServiceItemType } from '../types';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
-export const useHomeNavigation = (account: any, userInfo: any) => {
+export const useHomeNavigation = (
+  account: any,
+  userInfo: any,
+  onShowComingSoon?: () => void,
+) => {
   const navigation = useNavigation<NavigationProp>();
 
   const handleActionPress = (action: ActionItemType) => {
@@ -23,19 +27,19 @@ export const useHomeNavigation = (account: any, userInfo: any) => {
         }
         break;
       case 'withdraw':
-        console.log('Navigate to withdraw screen');
+        onShowComingSoon?.();
         break;
       case 'trans_history':
         navigation.navigate('TransactionHistoryScreen' as never);
         break;
       case 'mobile_prepaid':
-        console.log('Navigate to mobile prepaid screen');
+        onShowComingSoon?.();
         break;
       case 'profile':
         navigation.navigate('Profile' as never);
         break;
       case 'loan':
-        console.log('Navigate to loan screen');
+        onShowComingSoon?.();
         break;
       default:
         console.log('Unknown action:', action.id);
@@ -46,6 +50,11 @@ export const useHomeNavigation = (account: any, userInfo: any) => {
     switch (service.id) {
       case 'lottery':
         navigation.navigate('Lottery');
+        break;
+      case 'data':
+      case 'game':
+      case 'flight':
+        onShowComingSoon?.();
         break;
       default:
         console.log('Service pressed:', service.id);
