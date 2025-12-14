@@ -142,7 +142,9 @@
     "detail_currency": "Đơn vị tiền tệ",
     "detail_close": "Đóng",
     "status_locked": "Đang khóa",
-    "status_active": "Đang hoạt động"
+    "status_active": "Đang hoạt động",
+    "no_account_title": "Chưa có tài khoản thẻ",
+    "no_account_message": "Mở tài khoản ngay để trải nghiệm đầy đủ các dịch vụ ngân hàng số"
   },
   "settings": {
     "title": "Cài đặt",
