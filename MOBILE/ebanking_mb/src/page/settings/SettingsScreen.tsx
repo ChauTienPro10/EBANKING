@@ -24,6 +24,7 @@ import LanguagePopup from '../../popups/LanguagePopup';
 import ComingSoonModal from '../../components/ComingSoonModal';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { MenuList } from '../../components';
 
 interface SettingItemProps {
   icon: string;
