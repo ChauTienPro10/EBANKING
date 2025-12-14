@@ -186,7 +186,20 @@
     "logout": "Đăng xuất",
     "select_language": "Chọn ngôn ngữ",
     "vi": "Tiếng Việt",
-    "en": "Tiếng Anh"
+    "en": "Tiếng Anh",
+    "section_account": "Tài khoản của bạn",
+    "section_security": "Bảo mật & Quyền riêng tư",
+    "section_about": "Thông tin",
+    "account_title": "Tài khoản",
+    "account_subtitle": "Xem và chỉnh sửa hồ sơ",
+    "notifications_subtitle": "Quản lý thông báo",
+    "language_subtitle": "Thay đổi ngôn ngữ",
+    "security_subtitle": "Quản lý mã PIN",
+    "biometric_subtitle": "Xác thực danh tính",
+    "privacy_subtitle": "Cài đặt quyền riêng tư",
+    "about_subtitle": "Thông tin ứng dụng",
+    "help_subtitle": "Nhận trợ giúp và hỗ trợ",
+    "version_info": "eBanking © 2025 v1.0"
   },
   "support": {
     "title": "Hỗ trợ",

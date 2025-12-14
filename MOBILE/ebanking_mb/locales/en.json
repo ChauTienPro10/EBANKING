@@ -181,7 +181,20 @@
     "logout": "Logout",
     "select_language": "Select Language",
     "vi": "Vietnamese",
-    "en": "English"
+    "en": "English",
+    "section_account": "Your Account",
+    "section_security": "Security & Privacy",
+    "section_about": "About",
+    "account_title": "Account",
+    "account_subtitle": "View and edit your profile",
+    "notifications_subtitle": "Manage notification preferences",
+    "language_subtitle": "Change app language",
+    "security_subtitle": "Manage your PIN code",
+    "biometric_subtitle": "Identity verification",
+    "privacy_subtitle": "Privacy settings",
+    "about_subtitle": "App information",
+    "help_subtitle": "Get help and support",
+    "version_info": "eBanking © 2025 v1.0"
   },
   "support": {
     "title": "Support",
