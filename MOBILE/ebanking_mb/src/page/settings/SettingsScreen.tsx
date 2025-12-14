@@ -207,7 +207,7 @@ const SettingsScreen: React.FC = () => {
             icon="lock-closed-outline"
             title={t('settings.privacy')}
             subtitle={t('settings.privacy_subtitle')}
-            onPress={() => {}}
+            onPress={() => setShowComingSoonModal(true)}
           />
         </View>
 
@@ -218,14 +218,14 @@ const SettingsScreen: React.FC = () => {
             icon="information-circle-outline"
             title={t('settings.about')}
             subtitle={t('settings.about_subtitle')}
-            onPress={() => {}}
+            onPress={() => setShowComingSoonModal(true)}
           />
           <View style={styles.divider} />
           <SettingItem
             icon="help-circle-outline"
             title={t('settings.help')}
             subtitle={t('settings.help_subtitle')}
-            onPress={() => {}}
+            onPress={() => setShowComingSoonModal(true)}
           />
         </View>
 
