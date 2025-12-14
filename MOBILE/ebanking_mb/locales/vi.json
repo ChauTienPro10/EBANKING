@@ -41,7 +41,7 @@
     "pin_not_set_message": "Bạn chưa thiết lập mã PIN. Vui lòng thiết lập ngay để bảo vệ tài khoản.",
     "upgrade_rank": "NÂNG HẠNG",
     "services_title": "Mua sắm - Giải trí - Đầu tư",
-    "lottery_king": "Vua xổ số",
+    "lottery_king": "Kết quả xổ số",
     "data_4g": "Data 4G/Nạp tiền",
     "game_card": "Megatek - Thẻ game",
     "flight_tickets": "Vé máy bay",
@@ -527,5 +527,10 @@
     "deleted_successfully": "Hủy PIN thành công",
     "pin_has_been_removed": "Mã PIN đã được gỡ bỏ khỏi tài khoản",
     "setup_required": "Yêu cầu thiết lập PIN"
+  },
+  "lottery": {
+    "north": "Miền Bắc",
+    "central": "Miền Trung",
+    "south": "Miền Nam"
   }
 }

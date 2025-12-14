@@ -6,9 +6,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.StringReader;
 
 @RestController
 @RequestMapping("/authService/xoso")
@@ -47,48 +52,145 @@ public class KQXOSoController {
     }
 
     private String extractDescription(String rssContent) {
-        if (rssContent == null)
-            return "";
-        // Regex to extract content inside <description><![CDATA[ ... ]]></description>
-        // Adjust regex based on actual RSS format if needed.
-        // Commonly it's inside <item><description>...</description></item>
-        // But often the main description or first item description contains the table.
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            factory.setNamespaceAware(false);
 
-        // Let's try to find the first <description> block inside an <item>
-        // or just the first CDATA inside a description if structure is simple.
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document doc = builder.parse(new InputSource(new StringReader(rssContent)));
 
-        Pattern pattern = Pattern.compile("<description><!\\[CDATA\\[(.*?)\\]\\]></description>", Pattern.DOTALL);
-        Matcher matcher = pattern.matcher(rssContent);
+            NodeList items = doc.getElementsByTagName("item");
 
-        // Usually the first description is channel description, second is item
-        // description (which has the result table)
-        if (matcher.find()) {
-            // Skip channel description if it doesn't contain table, typically we want the
-            // one in <item>
-            // Let's try to find the one that looks like a table or check multiple matches.
+            if (items == null || items.getLength() == 0) {
+                return "No data found";
+            }
 
-            // If we just loop through matches:
-            do {
-                String content = matcher.group(1);
-                if (content.contains("<table")) {
-                    return formatHtml(content);
+            StringBuilder html = new StringBuilder();
+            html.append("<html><head>")
+                    .append("<meta name='viewport' content='width=device-width, initial-scale=1'>")
+                    .append("<style>")
+                    .append("body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f0f2f5; margin: 0; padding: 10px; color: #333; }")
+                    .append(".lottery-card { background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px; padding: 20px; overflow: hidden; }")
+                    .append("h2 { color: #d32f2f; margin: 0 0 15px 0; font-size: 20px; text-align: center; border-bottom: 2px solid #fee; padding-bottom: 10px; }")
+                    .append(".province-group { margin-bottom: 25px; border: 1px solid #eee; border-radius: 8px; overflow: hidden; }")
+                    .append(".province-header { background-color: #d32f2f; color: white; padding: 10px; font-weight: bold; font-size: 16px; text-align: center; }")
+                    .append("table { width: 100%; border-collapse: collapse; font-size: 14px; }")
+                    .append("tr { border-bottom: 1px solid #eee; }")
+                    .append("tr:last-child { border-bottom: none; }")
+                    .append("td { padding: 8px 10px; vertical-align: middle; }")
+                    .append("td.prize-name { width: 80px; font-weight: bold; color: #555; background-color: #fafafa; border-right: 1px solid #eee; }")
+                    .append("td.prize-numbers { text-align: center; font-family: monospace; font-size: 16px; letter-spacing: 1px; color: #333; }")
+                    .append(".giai-dac-biet td.prize-numbers { color: #d32f2f; font-weight: bold; font-size: 20px; }")
+                    .append(".giai-dac-biet td.prize-name { color: #d32f2f; }")
+                    .append("small { display: block; text-align: center; color: #666; margin-top: 5px; font-size: 12px; }")
+                    .append("</style>")
+                    .append("</head><body>");
+
+            for (int i = 0; i < items.getLength(); i++) {
+                Element item = (Element) items.item(i);
+                String title = getText(item, "title");
+                String desc = getText(item, "description");
+                String pubDate = getText(item, "pubDate");
+
+                html.append("<div class='lottery-card'>");
+                html.append("<h2>").append(title).append("</h2>");
+
+                html.append(parseDescriptionToHtml(desc));
+
+                html.append("<small>Cập nhật: ").append(pubDate).append("</small>");
+                html.append("</div>");
+            }
+
+            html.append("</body></html>");
+            return html.toString();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Error parsing data: " + e.getMessage();
+        }
+    }
+
+    private String parseDescriptionToHtml(String description) {
+        StringBuilder sb = new StringBuilder();
+        String[] lines = description.split("\n");
+        boolean isTableOpen = false;
+
+        for (String line : lines) {
+            line = line.trim();
+            if (line.isEmpty())
+                continue;
+
+            if (line.startsWith("[") && line.endsWith("]")) {
+                if (isTableOpen) {
+                    sb.append("</table></div>");
+                    isTableOpen = false;
                 }
-            } while (matcher.find());
+                String provinceName = line.substring(1, line.length() - 1);
+                sb.append("<div class='province-group'>");
+                sb.append("<div class='province-header'>").append(provinceName).append("</div>");
+                sb.append("<table>");
+                isTableOpen = true;
+            } else if (line.contains(":")) {
+                if (!isTableOpen) {
+                    // Case for Miền Bắc or unstructured data (no province header found yet)
+                    sb.append("<div class='province-group'><table>");
+                    isTableOpen = true;
+                }
+
+                String[] parts = line.split(":", 2);
+                String prizeName = getPrizeName(parts[0].trim());
+                String numbers = parts[1].trim().replace("-", " - "); // Add spacing
+
+                String rowClass = "";
+                if (parts[0].trim().equalsIgnoreCase("ĐB") || parts[0].trim().equalsIgnoreCase("Đặc biệt")) {
+                    rowClass = " class='giai-dac-biet'";
+                }
+
+                sb.append("<tr").append(rowClass).append(">");
+                sb.append("<td class='prize-name'>").append(prizeName).append("</td>");
+                sb.append("<td class='prize-numbers'>").append(numbers).append("</td>");
+                sb.append("</tr>");
+            }
         }
 
-        return "No data found";
+        if (isTableOpen) {
+            sb.append("</table></div>");
+        }
+
+        return sb.toString();
     }
 
-    private String formatHtml(String content) {
-        // Add basic styling to make it look decent on mobile/webview
-        String style = "<style>" +
-                "table { width: 100%; border-collapse: collapse; }" +
-                "th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }" +
-                "th { background-color: #f2f2f2; }" +
-                "img { max-width: 100%; height: auto; }" +
-                "</style>";
-        return "<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">" + style
-                + "</head><body>" + content + "</body></html>";
+    private String getPrizeName(String shortName) {
+        switch (shortName) {
+            case "ĐB":
+            case "DB":
+                return "Giải Đặc Biệt";
+            case "1":
+                return "Giải Nhất";
+            case "2":
+                return "Giải Nhì";
+            case "3":
+                return "Giải Ba";
+            case "4":
+                return "Giải Tư";
+            case "5":
+                return "Giải Năm";
+            case "6":
+                return "Giải Sáu";
+            case "7":
+                return "Giải Bảy";
+            case "8":
+                return "Giải Tám";
+
+            default:
+                return shortName;
+        }
     }
 
+    private String getText(Element parent, String tag) {
+        NodeList list = parent.getElementsByTagName(tag);
+        if (list == null || list.getLength() == 0)
+            return "";
+        return list.item(0).getTextContent().trim();
+    }
 }

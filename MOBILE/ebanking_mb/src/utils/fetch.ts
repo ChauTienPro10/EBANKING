@@ -175,6 +175,51 @@ async function get(
   }
 }
 
+async function getHTMLText(
+  url: string,
+  params: any = {},
+  authRequire: boolean = false,
+) {
+  console.log('GET HTML request to:', url);
+
+  const headers = { ...defaultHeaders };
+
+  if (authRequire) {
+    const token = getAuthToken();
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+  }
+
+  const query = new URLSearchParams(params).toString();
+  const fullUrl = query ? `${url}?${query}` : url;
+
+  try {
+    const response = await fetch(fullUrl, {
+      method: 'GET',
+      headers,
+    });
+
+    const text = await response.text();
+
+    if (!response.ok) {
+      let errorMessage = `Lỗi ${response.status}: ${response.statusText}`;
+      throw new Error(text || errorMessage);
+    }
+
+    return text; // 👈 HTML thuần
+  } catch (error: any) {
+    const message =
+      typeof error?.message === 'string'
+        ? error.message.replace('INTERNAL: ', '')
+        : 'Lỗi không xác định';
+
+    console.error('Lỗi khi gửi GET HTML:', message);
+    throw error;
+  }
+}
+
+
 async function put(url: string, body: any, authRequire: boolean = true) {
   console.log('PUT request to:', url);
   console.log('Request body:', body);
@@ -258,4 +303,5 @@ export default {
   post,
   get,
   put,
+  getHTMLText
 };

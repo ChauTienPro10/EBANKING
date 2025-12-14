@@ -513,5 +513,10 @@
     "deleted_successfully": "PIN Deleted Successfully",
     "pin_has_been_removed": "PIN has been removed from your account",
     "setup_required": "PIN Setup Required"
+  },
+  "lottery": {
+    "north": "North",
+    "central": "Central",
+    "south": "South"
   }
 }

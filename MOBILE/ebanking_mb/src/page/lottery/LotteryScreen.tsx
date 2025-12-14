@@ -35,9 +35,8 @@ const LotteryScreen: React.FC = () => {
                     break;
             }
 
-            const response = await fetch.get(url, {}, true);
-            const html = await response.text();
-            setHtmlContent(html);
+            const response = await fetch.getHTMLText(url, {}, true);
+            setHtmlContent(response);
         } catch (error) {
             console.error('Error fetching lottery data:', error);
             setHtmlContent('<h1 style="text-align:center; margin-top: 50px;">Không thể tải dữ liệu</h1>');
