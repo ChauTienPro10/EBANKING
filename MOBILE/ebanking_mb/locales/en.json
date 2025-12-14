@@ -404,7 +404,8 @@
     "success": "Success",
     "close": "Close",
     "exit_app": "Exit App",
-    "set_pin_now": "Set PIN Now"
+    "set_pin_now": "Set PIN Now",
+    "go_home": "Go Home"
   },
   "mock_data": {
     "user": {
@@ -486,6 +487,7 @@
     "created_successfully": "PIN Created Successfully",
     "pin_is_now_active": "Your PIN has been activated",
     "deleted_successfully": "PIN Deleted Successfully",
-    "pin_has_been_removed": "PIN has been removed from your account"
+    "pin_has_been_removed": "PIN has been removed from your account",
+    "setup_required": "PIN Setup Required"
   }
 }

@@ -37,6 +37,7 @@ import MenuDotsIcon from '../../components/icon/MenuDotsIcon';
 import LockOpenIcon from '../../components/icon/LockOpenIcon';
 import LockIcon from '../../components/icon/LockIcon';
 import InfoCircleIcon from '../../components/icon/InfoCircleIcon';
+import Icon from 'react-native-vector-icons/Ionicons';
 import PinInput from '../../components/PinInput';
 import Toast from 'react-native-toast-message';
 import fetch from '../../utils/fetch';
@@ -389,6 +390,11 @@ const CardScreen: React.FC = () => {
         </ScrollView>
       ) : (
         <View style={styles.lockedContent}>
+          <View style={styles.lockedIconContainer}>
+            <View style={styles.lockedIconCircle}>
+              <Icon name="lock-closed" size={48} color={Colors.main_bule} />
+            </View>
+          </View>
           <Text style={styles.lockedContentTitle}>
             {t('card.locked_content_title')}
           </Text>
@@ -517,6 +523,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 32,
+  },
+  lockedIconContainer: {
+    marginBottom: 24,
+  },
+  lockedIconCircle: {
+    width: 86,
+    height: 86,
+    borderRadius: 43,
+    backgroundColor: `${Colors.main_bule}10`,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: `${Colors.main_bule}25`,
   },
   lockedContentTitle: {
     fontSize: 20,
