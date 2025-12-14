@@ -483,6 +483,10 @@
   "pin": {
     "enter_pin": "Enter 4-digit PIN",
     "re_enter_pin": "Re-enter PIN",
-    "biometric_auth": "Authenticate with biometrics"
+    "biometric_auth": "Authenticate with biometrics",
+    "created_successfully": "PIN Created Successfully",
+    "pin_is_now_active": "Your PIN has been activated",
+    "deleted_successfully": "PIN Deleted Successfully",
+    "pin_has_been_removed": "PIN has been removed from your account"
   }
 }

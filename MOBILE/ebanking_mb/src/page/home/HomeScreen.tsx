@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
 import { View, StyleSheet, ScrollView, Animated } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../store';
+import { setOnboardingDismissed } from '../../store/slices/appSlice';
 import ReminderPopup from '../../popups/ReminderPopupProps';
 import OnboardingModal from '../../components/OnboardingModal';
 import Colors from '../../constants/color';
@@ -30,6 +31,9 @@ const HomeScreen: React.FC = () => {
     (state: RootState) => state.app.notificationCount,
   );
   const pinStatus = useSelector((state: RootState) => state.app.pinStatus);
+  const modalSession = useSelector(
+    (state: RootState) => state.app.modalDismissalSession,
+  );
 
   // Local state
   const { t } = useTranslation();
@@ -55,6 +59,7 @@ const HomeScreen: React.FC = () => {
     handleOpenCard,
     navigation,
   } = useHomeNavigation(account, userInfo);
+  const dispatch = useDispatch();
 
   // Effects
   useEffect(() => {
@@ -63,15 +68,26 @@ const HomeScreen: React.FC = () => {
       !userInfo?.ekycStatus || userInfo.ekycStatus !== 'VERIFIED';
     const pinIncomplete = pinStatus !== true;
 
-    if (ekycIncomplete || pinIncomplete) {
-      // Add delay to prevent jarring animation when navigating back to home
+    // Check if user just performed PIN action (within last 3 seconds)
+    const justPerformedPinAction =
+      modalSession.lastPinActionTime &&
+      Date.now() - modalSession.lastPinActionTime < 3000;
+
+    // Don't show if user dismissed or just performed PIN action
+    if (
+      !modalSession.onboardingDismissed &&
+      !justPerformedPinAction &&
+      (ekycIncomplete || pinIncomplete)
+    ) {
       const timer = setTimeout(() => {
         setShowOnboardingModal(true);
       }, 350);
 
       return () => clearTimeout(timer);
+    } else {
+      setShowOnboardingModal(false);
     }
-  }, [userInfo, pinStatus]);
+  }, [userInfo, pinStatus, modalSession]);
 
   // Event handlers
   const handleNotificationPress = () => {
@@ -110,15 +126,20 @@ const HomeScreen: React.FC = () => {
 
       <OnboardingModal
         visible={showOnboardingModal}
-        onClose={() => setShowOnboardingModal(false)}
+        onClose={() => {
+          setShowOnboardingModal(false);
+          dispatch(setOnboardingDismissed(true));
+        }}
         ekycCompleted={userInfo?.ekycStatus === 'VERIFIED'}
         pinCompleted={pinStatus === true}
         onNavigateToEKYC={() => {
           setShowOnboardingModal(false);
+          dispatch(setOnboardingDismissed(true));
           navigation.navigate('EKYC' as never);
         }}
         onNavigateToPIN={() => {
           setShowOnboardingModal(false);
+          dispatch(setOnboardingDismissed(true));
           navigation.navigate('SetPINCode' as never);
         }}
       />
