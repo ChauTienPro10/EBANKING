@@ -138,6 +138,8 @@
     "detail_cvv": "CVV",
     "detail_issue_date": "Ngày phát hành",
     "detail_card_limit": "Hạn mức thẻ",
+    "detail_daily_limit": "Hạn mức ngày",
+    "detail_single_limit": "Hạn mức giao dịch đơn",
     "detail_available_balance": "Số dư khả dụng",
     "detail_currency": "Đơn vị tiền tệ",
     "detail_close": "Đóng",

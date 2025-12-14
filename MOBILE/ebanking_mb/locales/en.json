@@ -139,6 +139,8 @@
     "detail_cvv": "CVV",
     "detail_issue_date": "Issue Date",
     "detail_card_limit": "Card Limit",
+    "detail_daily_limit": "Daily Limit",
+    "detail_single_limit": "Single Transaction Limit",
     "detail_available_balance": "Available Balance",
     "detail_currency": "Currency",
     "detail_close": "Close",
