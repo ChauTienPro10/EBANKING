@@ -15,7 +15,7 @@ export const useBalanceCardAnimation = () => {
   const isAnimatingRef = useRef(false);
   const [isExpanded, setIsExpanded] = useState(true);
 
-  const COLLAPSE_THRESHOLD = 50;
+  const COLLAPSE_THRESHOLD = 50; // Reduced from 50 to work with fewer items
   const EXPAND_THRESHOLD = 0;
   const ANIMATION_DURATION = 300;
 
