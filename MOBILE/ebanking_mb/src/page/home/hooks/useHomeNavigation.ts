@@ -41,6 +41,9 @@ export const useHomeNavigation = (
       case 'statistics':
         navigation.navigate('Statistics' as never);
         break;
+      case 'suspicious':
+        navigation.navigate('SuspiciousTransactions' as never);
+        break;
       default:
         console.log('Unknown action:', action.id);
     }

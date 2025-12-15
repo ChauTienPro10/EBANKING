@@ -176,30 +176,6 @@ export const calculatePercentageChange = (
 };
 
 /**
- * Format currency for display with compact notation
- */
-export const formatCurrency = (amount: number): string => {
-  if (amount >= 1000000) {
-    // Format as millions with 1 decimal place
-    return (amount / 1000000).toFixed(1).replace('.0', '');
-  } else if (amount >= 1000) {
-    // Format as thousands with 1 decimal place
-    return (amount / 1000).toFixed(1).replace('.0', '');
-  }
-  return Math.round(amount).toString();
-};
-
-/**
- * Format currency with full number and proper thousand separators
- * VN: 23.613.000 (dot separator)
- * EN: 23,613,000 (comma separator)
- */
-export const formatCurrencyFull = (amount: number): string => {
-  // Use Vietnamese locale for proper formatting
-  return new Intl.NumberFormat('vi-VN').format(Math.round(amount));
-};
-
-/**
  * Get currency suffix based on amount
  */
 export const getCurrencySuffix = (amount: number): string => {

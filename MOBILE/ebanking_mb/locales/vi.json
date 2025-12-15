@@ -79,7 +79,8 @@
     "loan": "Vay vốn",
     "statistics": "Thống kê",
     "investments": "Đầu tư",
-    "insurance": "Bảo hiểm"
+    "insurance": "Bảo hiểm",
+    "suspicious_transactions": "Cảnh báo"
   },
   "bottom_navigation": {
     "home": "Trang chủ",
@@ -623,5 +624,34 @@
     "average_transaction": "Trung bình mỗi giao dịch",
     "total": "Tổng",
     "no_data": "Chưa có dữ liệu"
+  },
+  "suspicious_transactions": {
+    "title": "Giao dịch bất thường",
+    "summary_title": "Phát hiện bất thường",
+    "summary_message": "{{count}} giao dịch bất thường trong {{days}} ngày qua",
+    "risk_level_high": "Cao",
+    "risk_level_medium": "Trung bình",
+    "risk_level_low": "Thấp",
+    "reason_late_night": "Nửa đêm",
+    "reason_repeated": "Lặp lại",
+    "reason_large_amount": "Số tiền lớn",
+    "detail_title": "Chi tiết giao dịch",
+    "detail_recipient": "Người nhận:",
+    "detail_time": "Thời gian:",
+    "detail_transaction_id": "Mã giao dịch:",
+    "detail_description": "Nội dung:",
+    "suspicious_reasons_title": "Lý do đáng ngờ",
+    "recommendations_title": "Khuyến nghị",
+    "recommendation_1": "• Kiểm tra kỹ thông tin người nhận trước khi xác nhận",
+    "recommendation_2": "• Không chia sẻ mã PIN hoặc OTP với bất kỳ ai",
+    "recommendation_3": "• Liên hệ hotline nếu phát hiện giao dịch lạ",
+    "recommendation_4": "• Thay đổi mật khẩu ngân hàng điện tử ngay lập tức",
+    "report_fraud": "Báo cáo gian lận",
+    "confirm_safe": "Đã xác nhận",
+    "empty_title": "Không có giao dịch bất thường",
+    "empty_message": "Tất cả giao dịch của bạn đều an toàn",
+    "late_night_detail": "Giao dịch vào lúc {{time}}",
+    "repeated_detail": "{{count}} giao dịch đến cùng tài khoản trong 1 giờ",
+    "large_amount_detail": "Số tiền {{amount}} ₫ vượt ngưỡng an toàn"
   }
 }

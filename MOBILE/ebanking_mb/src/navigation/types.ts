@@ -55,6 +55,7 @@ export type RootStackParamList = {
     transaction: TransferResponse;
     currentAccountNumber: string;
   };
+  SuspiciousTransactions: undefined;
   OTPPage: { username: string; targetPage: string };
   ShowNotificationScreen: { title: string; body: string };
   SetPINCode: undefined;

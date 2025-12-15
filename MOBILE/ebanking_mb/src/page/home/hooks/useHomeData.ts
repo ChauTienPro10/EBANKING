@@ -37,6 +37,13 @@ export const useHomeData = () => {
         tag: null,
       },
       {
+        id: 'suspicious',
+        title: t('action_grid.suspicious_transactions'),
+        icon: 'shield-alert',
+        color: '#FF3B30',
+        tag: null,
+      },
+      {
         id: 'withdraw',
         title: t('action_grid.withdraw'),
         icon: 'cash',
