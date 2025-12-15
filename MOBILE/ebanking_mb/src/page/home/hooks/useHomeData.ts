@@ -39,7 +39,7 @@ export const useHomeData = () => {
       {
         id: 'suspicious',
         title: t('action_grid.suspicious_transactions'),
-        icon: 'shield-alert',
+        icon: 'alert-circle',
         color: '#FF3B30',
         tag: null,
       },
@@ -50,7 +50,6 @@ export const useHomeData = () => {
         color: Colors.main_green,
         tag: null,
       },
-
       {
         id: 'mobile_prepaid',
         title: t('action_grid.mobile_prepaid'),
