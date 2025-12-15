@@ -74,7 +74,8 @@
     "loan": "Loan",
     "statistics": "Statistics",
     "investments": "Investments",
-    "insurance": "Insurance"
+    "insurance": "Insurance",
+    "suspicious_transactions": "Alerts"
   },
   "bottom_navigation": {
     "home": "Home",
@@ -609,5 +610,34 @@
     "average_transaction": "Average Transaction",
     "total": "Total",
     "no_data": "No data available"
+  },
+  "suspicious_transactions": {
+    "title": "Suspicious Transactions",
+    "summary_title": "Unusual Activity Detected",
+    "summary_message": "{{count}} suspicious transactions in the last {{days}} days",
+    "risk_level_high": "High",
+    "risk_level_medium": "Medium",
+    "risk_level_low": "Low",
+    "reason_late_night": "Late Night",
+    "reason_repeated": "Repeated",
+    "reason_large_amount": "Large Amount",
+    "detail_title": "Transaction Details",
+    "detail_recipient": "Recipient:",
+    "detail_time": "Time:",
+    "detail_transaction_id": "Transaction ID:",
+    "detail_description": "Description:",
+    "suspicious_reasons_title": "Suspicious Reasons",
+    "recommendations_title": "Recommendations",
+    "recommendation_1": "• Verify recipient information before confirming",
+    "recommendation_2": "• Never share your PIN or OTP with anyone",
+    "recommendation_3": "• Contact hotline if you detect unusual transactions",
+    "recommendation_4": "• Change your online banking password immediately",
+    "report_fraud": "Report Fraud",
+    "confirm_safe": "Confirmed Safe",
+    "empty_title": "No Suspicious Transactions",
+    "empty_message": "All your transactions are safe",
+    "late_night_detail": "Transaction at {{time}}",
+    "repeated_detail": "{{count}} transactions to same account within 1 hour",
+    "large_amount_detail": "Amount {{amount}} ₫ exceeds safety threshold"
   }
 }

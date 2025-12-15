@@ -205,5 +205,5 @@ export const generateMockTransactions = (
   return transactions;
 };
 
-// Export mock data flag
-export const USE_MOCK_DATA = true;
+// Export mock data flag - DISABLED: Use real API data
+export const USE_MOCK_DATA = false;

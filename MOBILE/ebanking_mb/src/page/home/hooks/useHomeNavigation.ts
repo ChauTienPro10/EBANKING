@@ -43,6 +43,9 @@ export const useHomeNavigation = (
       case 'loan':
         onShowComingSoon?.();
         break;
+      case 'suspicious':
+        navigation.navigate('SuspiciousTransactions' as never);
+        break;
       default:
         console.log('Unknown action:', action.id);
     }

@@ -32,6 +32,7 @@ import NotiScreen from '../page/notify/notiScreen';
 import FaceAuthScreen from '../features/face-auth/FaceAuthScreen';
 import LotteryScreen from '../page/lottery/LotteryScreen';
 import StatisticsScreen from '../page/statistics/StatisticsScreen';
+import SuspiciousTransactionsScreen from '../page/transaction/SuspiciousTransactionsScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -75,6 +76,10 @@ export default function MainStack() {
       <Stack.Screen
         name="TransactionDetail"
         component={TransactionDetailScreen}
+      />
+      <Stack.Screen
+        name="SuspiciousTransactions"
+        component={SuspiciousTransactionsScreen}
       />
       <Stack.Screen
         name="ShowNotificationScreen"
