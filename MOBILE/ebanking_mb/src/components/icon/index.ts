@@ -5,6 +5,7 @@ export { default as CashIcon } from './CashIcon';
 export { default as MobileIcon } from './MobileIcon';
 export { default as ReceiptIcon } from './ReceiptIcon';
 export { default as TrendingUpIcon } from './TrendingUpIcon';
+export { default as BarChartIcon } from './BarChartIcon';
 export { default as ListIcon } from './ListIcon';
 export { default as PeopleIcon } from './PeopleIcon';
 export { default as BusinessIcon } from './BusinessIcon';

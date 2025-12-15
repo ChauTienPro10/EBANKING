@@ -72,6 +72,7 @@
     "transaction_report": "Transaction History",
     "beneficiary": "Beneficiary",
     "loan": "Loan",
+    "statistics": "Statistics",
     "investments": "Investments",
     "insurance": "Insurance"
   },
@@ -474,6 +475,7 @@
     "hello_user": "Hello, {{name}}"
   },
   "common": {
+    "currency_symbol": "$",
     "ok": "OK",
     "cancel": "Cancel",
     "confirm": "Confirm",
@@ -586,5 +588,26 @@
     "symbol": "$",
     "code": "USD",
     "name": "US Dollar"
+  },
+  "statistics": {
+    "title": "Spending Statistics",
+    "title_short": "Statistics",
+    "week": "Week",
+    "month": "Month",
+    "year": "Year",
+    "total_transactions": "Total transactions",
+    "total_incoming": "Incoming",
+    "total_outgoing": "Outgoing",
+    "transactions": "transactions",
+    "comparison_chart_title": "Comparison",
+    "trend_chart_title": "Trend",
+    "month_label": "{{month}}/{{year}}",
+    "year_label": "{{year}}",
+    "current_period": "Now",
+    "largest_transaction": "Largest Transaction",
+    "most_frequent_recipient": "Most Frequent Recipient",
+    "average_transaction": "Average Transaction",
+    "total": "Total",
+    "no_data": "No data available"
   }
 }

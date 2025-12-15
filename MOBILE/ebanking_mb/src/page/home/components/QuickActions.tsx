@@ -6,6 +6,7 @@ import {
   ReceiptIcon,
   MobileIcon,
   PersonIcon,
+  BarChartIcon,
 } from '../../../components/icon';
 import Colors from '../../../constants/color';
 
@@ -42,6 +43,8 @@ const QuickActions: React.FC<QuickActionsProps> = ({
         return <MobileIcon {...iconProps} />;
       case 'person':
         return <PersonIcon {...iconProps} />;
+      case 'bar-chart':
+        return <BarChartIcon {...iconProps} />;
       default:
         return <TransferIcon {...iconProps} />;
     }

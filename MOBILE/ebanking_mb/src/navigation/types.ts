@@ -31,6 +31,7 @@ export type RootStackParamList = {
   Settings: undefined;
   Support: undefined;
   Chatbot: undefined;
+  Statistics: undefined;
   Notifications: undefined;
   Search: undefined;
   OpenCard: { userInfo: UserInfoModel | null };

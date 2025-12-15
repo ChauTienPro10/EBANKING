@@ -38,8 +38,8 @@ export const useHomeNavigation = (
       case 'profile':
         navigation.navigate('Profile' as never);
         break;
-      case 'loan':
-        onShowComingSoon?.();
+      case 'statistics':
+        navigation.navigate('Statistics' as never);
         break;
       default:
         console.log('Unknown action:', action.id);
