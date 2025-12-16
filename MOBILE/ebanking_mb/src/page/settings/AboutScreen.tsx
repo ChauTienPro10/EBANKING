@@ -19,9 +19,9 @@ const AboutScreen: React.FC = () => {
 
   const handleContact = (type: 'phone' | 'email') => {
     if (type === 'phone') {
-      Linking.openURL('tel:1900xxxx');
+      Linking.openURL('tel:0812788212');
     } else {
-      Linking.openURL('mailto:support@ebanking.com');
+      Linking.openURL('mailto:itletatthang@gmail.com');
     }
   };
 
@@ -102,7 +102,7 @@ const AboutScreen: React.FC = () => {
             onPress={() => handleContact('phone')}
           >
             <Icon name="call-outline" size={20} color={Colors.main_bule} />
-            <Text style={styles.contactText}>1900 xxxx</Text>
+            <Text style={styles.contactText}>0812788212</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -110,7 +110,7 @@ const AboutScreen: React.FC = () => {
             onPress={() => handleContact('email')}
           >
             <Icon name="mail-outline" size={20} color={Colors.main_bule} />
-            <Text style={styles.contactText}>support@ebanking.com</Text>
+            <Text style={styles.contactText}>itletatthang@gmail.com</Text>
           </TouchableOpacity>
         </View>
 

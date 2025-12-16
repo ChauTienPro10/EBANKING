@@ -36,6 +36,7 @@ import SuspiciousTransactionsScreen from '../page/transaction/SuspiciousTransact
 import PrivacyScreen from '../page/settings/PrivacyScreen';
 import ChangePasswordScreen from '../page/settings/ChangePasswordScreen';
 import AboutScreen from '../page/settings/AboutScreen';
+import FAQScreen from '../page/support/FAQScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -92,6 +93,7 @@ export default function MainStack() {
       <Stack.Screen name="Privacy" component={PrivacyScreen} />
       <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
       <Stack.Screen name="About" component={AboutScreen} />
+      <Stack.Screen name="FAQ" component={FAQScreen} />
       <Stack.Screen name="ScannerScreen" component={ScannerScreen} />
       <Stack.Screen name="Notifications" component={NotiScreen} />
 
