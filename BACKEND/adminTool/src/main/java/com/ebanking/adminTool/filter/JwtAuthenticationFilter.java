@@ -1,3 +1,4 @@
+// java
 package com.ebanking.admintool.filter;
 
 import com.ebanking.admintool.utils.JWTUtils;
@@ -29,9 +30,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JWTUtils jwtUtils;
 
     private static final Set<String> PUBLIC_PATHS = Set.of(
-            "/api/admin/health",
+            "/admin/health",
             "/actuator/health",
             "/error");
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        // Use servlet path to avoid context-path mismatch
+        String path = request.getServletPath();
+        log.trace("JwtAuthenticationFilter.shouldNotFilter - servletPath={} requestURI={}", path, request.getRequestURI());
+
+        // Accept both API and non-API auth/setup endpoints as public
+        return path.startsWith("/api/admin/auth/") ||
+               path.startsWith("/admin/auth/") ||
+               path.startsWith("/api/admin/setup") ||
+               path.startsWith("/admin/setup") ||
+               PUBLIC_PATHS.contains(path);
+    }
 
     @Override
     protected void doFilterInternal(
@@ -39,9 +54,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
 
-        String path = request.getRequestURI();
+        String path = request.getServletPath();
         String method = request.getMethod();
 
+        // Extra safety check (though shouldNotFilter covers it)
         if (isPublicPath(path)) {
             log.trace("[PUBLIC] Bypassing JWT filter for {} {}", method, path);
             filterChain.doFilter(request, response);
@@ -62,9 +78,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (SecurityContextHolder.getContext().getAuthentication() == null) {
                 String username = jwtUtils.extractUsername(jwt);
                 if (username != null) {
-                    // Create a UserDetails object to pass to validateToken
-                    // In this context, we don't have the password, so it's left empty.
-                    // The primary validation is the token's signature and expiration.
+
                     var userDetails = org.springframework.security.core.userdetails.User.builder()
                             .username(username)
                             .password("") // Password is not needed for JWT validation
@@ -77,14 +91,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                 userDetails, null, userDetails.getAuthorities());
                         authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                         SecurityContextHolder.getContext().setAuthentication(authToken);
-                        log.debug("✅ [AUTHENTICATED] {} {} - User: {}", method, path, username);
+                        log.debug("[AUTHENTICATED] {} {} - User: {}", method, path, username);
                     }
                 }
             }
         } catch (Exception e) {
-            log.error("❌ [TOKEN_ERROR] {} {} - {}.", method, path, e.getMessage());
-            // When a token error occurs, we clear the context and let the exception
-            // handling deal with it.
+            log.error(" [TOKEN_ERROR] {} {} - {}.", method, path, e.getMessage());
             SecurityContextHolder.clearContext();
         }
 
@@ -93,7 +105,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private boolean isPublicPath(String path) {
         return path.startsWith("/api/admin/auth/") ||
-                PUBLIC_PATHS.contains(path) ||
-                path.matches("^/.*\\.(css|js|png|jpg|ico)$");
+               path.startsWith("/admin/auth/") ||
+               PUBLIC_PATHS.contains(path) ||
+               path.matches("^/.*\\.(css|js|png|jpg|ico)$");
     }
 }
