@@ -9,12 +9,19 @@ export const useHomeNavigation = (
   account: any,
   userInfo: any,
   onShowComingSoon?: () => void,
+  onShowOnboarding?: () => void,
 ) => {
   const navigation = useNavigation<NavigationProp>();
 
   const handleActionPress = (action: ActionItemType) => {
     switch (action.id) {
       case 'transfer':
+        // Check eKYC status before allowing Transfer navigation
+        if (userInfo?.ekycStatus !== 'VERIFIED') {
+          onShowOnboarding?.();
+          return;
+        }
+
         if (account) {
           navigation.navigate('Transfer', {
             receiver: '',

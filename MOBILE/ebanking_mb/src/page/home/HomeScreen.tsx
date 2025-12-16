@@ -60,7 +60,12 @@ const HomeScreen: React.FC = () => {
     handleQRPress,
     handleOpenCard,
     navigation,
-  } = useHomeNavigation(account, userInfo, () => setShowComingSoonModal(true));
+  } = useHomeNavigation(
+    account,
+    userInfo,
+    () => setShowComingSoonModal(true),
+    () => setShowOnboardingModal(true),
+  );
   const dispatch = useDispatch();
 
   // Effects
