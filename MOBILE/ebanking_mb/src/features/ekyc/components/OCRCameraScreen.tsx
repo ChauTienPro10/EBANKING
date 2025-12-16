@@ -19,6 +19,7 @@ import {
 } from 'react-native-vision-camera';
 import { useNavigation } from '@react-navigation/native';
 import ImagePicker from 'react-native-image-crop-picker';
+import { useTranslation } from 'react-i18next';
 import Colors from '../../../constants/color';
 import ProgressHeader from './shared/ProgressHeader';
 import PermissionView from './ocr-camera/PermissionView';
@@ -34,6 +35,7 @@ type CaptureState = 'front' | 'back' | 'complete';
 
 const OCRCameraScreen: React.FC = () => {
   const navigation = useNavigation();
+  const { t } = useTranslation();
   const { hasPermission, requestPermission } = useCameraPermission();
   const device = useCameraDevice('back');
   const camera = useRef<Camera>(null);
@@ -71,9 +73,9 @@ const OCRCameraScreen: React.FC = () => {
         cropperCircleOverlay: false,
         compressImageQuality: 0.95,
         includeBase64: false,
-        cropperToolbarTitle: 'Cắt ảnh CCCD',
-        cropperChooseText: 'Xong',
-        cropperCancelText: 'Hủy',
+        cropperToolbarTitle: t('ekyc_flow.camera.crop_front_title'),
+        cropperChooseText: t('ekyc_flow.camera.crop_done'),
+        cropperCancelText: t('ekyc_flow.camera.crop_cancel'),
       });
 
       setPreviewImage(croppedImage.path);
@@ -116,7 +118,9 @@ const OCRCameraScreen: React.FC = () => {
       <SafeAreaView style={styles.container}>
         <ProgressHeader currentStep={1} />
         <View style={styles.center}>
-          <Text style={styles.permissionText}>Không tìm thấy camera</Text>
+          <Text style={styles.permissionText}>
+            {t('ekyc_flow.camera.camera_not_found')}
+          </Text>
         </View>
       </SafeAreaView>
     );

@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import Colors from '../../../../constants/color';
 import ProgressHeader from '../shared/ProgressHeader';
 
@@ -14,43 +15,51 @@ interface GuidelinesViewProps {
 }
 
 const GuidelinesView: React.FC<GuidelinesViewProps> = ({ onStart }) => {
+  const { t } = useTranslation();
+
   return (
     <SafeAreaView style={styles.whiteContainer}>
       <ProgressHeader currentStep={2} />
       <View style={styles.guidelinesContainer}>
-        <Text style={styles.guidelinesTitle}>Hướng dẫn quay video</Text>
+        <Text style={styles.guidelinesTitle}>
+          {t('ekyc_flow.liveness.guidelines_title')}
+        </Text>
         <View style={styles.guidelinesList}>
           <View style={styles.guidelineItem}>
             <View style={styles.bulletPoint} />
             <Text style={styles.guidelineText}>
-              Di chuyển đến nơi có ánh sáng tốt
+              {t('ekyc_flow.liveness.guideline_2')}
             </Text>
           </View>
           <View style={styles.guidelineItem}>
             <View style={styles.bulletPoint} />
             <Text style={styles.guidelineText}>
-              Đảm bảo không bị ngược sáng
+              {t('ekyc_flow.liveness.guideline_1')}
             </Text>
           </View>
           <View style={styles.guidelineItem}>
             <View style={styles.bulletPoint} />
             <Text style={styles.guidelineText}>
-              Giữ khuôn mặt trong khung hình
+              {t('ekyc_flow.liveness.guideline_1')}
             </Text>
           </View>
           <View style={styles.guidelineItem}>
             <View style={styles.bulletPoint} />
-            <Text style={styles.guidelineText}>Nhìn thẳng vào camera</Text>
+            <Text style={styles.guidelineText}>
+              {t('ekyc_flow.liveness.guideline_3')}
+            </Text>
           </View>
           <View style={styles.guidelineItem}>
             <View style={styles.bulletPoint} />
             <Text style={styles.guidelineText}>
-              Không lay động trong 5 giây
+              {t('ekyc_flow.liveness.guideline_5')}
             </Text>
           </View>
         </View>
         <TouchableOpacity style={styles.startButton} onPress={onStart}>
-          <Text style={styles.startButtonText}>Bắt đầu quay</Text>
+          <Text style={styles.startButtonText}>
+            {t('ekyc_flow.liveness.start_button')}
+          </Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

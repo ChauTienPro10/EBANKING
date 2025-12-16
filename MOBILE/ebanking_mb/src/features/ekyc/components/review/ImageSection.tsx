@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 interface ImageSectionProps {
   frontImage: string;
@@ -10,16 +11,24 @@ const ImageSection: React.FC<ImageSectionProps> = ({
   frontImage,
   backImage,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <View style={styles.imageSection}>
-      <Text style={styles.sectionTitle}>CMND/CCCD</Text>
+      <Text style={styles.sectionTitle}>
+        {t('ekyc_flow.review.images_title')}
+      </Text>
       <View style={styles.imageGrid}>
         <View style={styles.imageContainer}>
-          <Text style={styles.imageLabel}>Mặt trước</Text>
+          <Text style={styles.imageLabel}>
+            {t('ekyc_flow.review.front_image')}
+          </Text>
           <Image source={{ uri: frontImage }} style={styles.image} />
         </View>
         <View style={styles.imageContainer}>
-          <Text style={styles.imageLabel}>Mặt sau</Text>
+          <Text style={styles.imageLabel}>
+            {t('ekyc_flow.review.back_image')}
+          </Text>
           <Image source={{ uri: backImage }} style={styles.image} />
         </View>
       </View>

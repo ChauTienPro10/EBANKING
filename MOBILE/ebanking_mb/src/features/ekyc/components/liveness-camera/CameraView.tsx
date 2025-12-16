@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { Camera, CameraDevice, VideoFile } from 'react-native-vision-camera';
 import Svg, { Circle } from 'react-native-svg';
+import { useTranslation } from 'react-i18next';
 import Colors from '../../../../constants/color';
 import ProgressHeader from '../shared/ProgressHeader';
 
@@ -39,6 +40,7 @@ const CameraView: React.FC<CameraViewProps> = ({
   onStartRecording,
   onStopRecording,
 }) => {
+  const { t } = useTranslation();
   // Animation for recording button pulse
   const pulseAnim = useRef(new Animated.Value(1)).current;
   // Animation for countdown circle
@@ -108,7 +110,8 @@ const CameraView: React.FC<CameraViewProps> = ({
         <View style={styles.recordingIndicator}>
           <View style={styles.recordingDot} />
           <Text style={styles.recordingText}>
-            Đang quay... {Math.max(0, 5 - recordingTime).toFixed(1)}s
+            {t('ekyc_flow.liveness.recording_message')}{' '}
+            {Math.max(0, 5 - recordingTime).toFixed(1)}s
           </Text>
         </View>
       )}
@@ -143,9 +146,15 @@ const CameraView: React.FC<CameraViewProps> = ({
         <View style={styles.bottomContainer}>
           {/* Instruction */}
           <View style={styles.instructionSection}>
-            <Text style={styles.instructionTitle}>Xác thực khuôn mặt</Text>
+            <Text style={styles.instructionTitle}>
+              {t('ekyc_flow.liveness.guidelines_title').replace(
+                ' quay video',
+                '',
+              )}
+            </Text>
             <Text style={styles.instructionSubtitle}>
-              Giữ khuôn mặt trong khung oval và nhìn thẳng vào camera
+              {t('ekyc_flow.liveness.guideline_1')}{' '}
+              {t('ekyc_flow.liveness.guideline_3').toLowerCase()}
             </Text>
           </View>
 

@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import Colors from '../../../../constants/color';
 import ProgressHeader from '../shared/ProgressHeader';
 
@@ -18,6 +19,8 @@ const CompleteView: React.FC<CompleteViewProps> = ({
   onContinue,
   onRetake,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <SafeAreaView style={styles.whiteContainer}>
       <ProgressHeader currentStep={2} />
@@ -25,17 +28,23 @@ const CompleteView: React.FC<CompleteViewProps> = ({
         <View style={styles.successIcon}>
           <Text style={styles.successIconText}>✓</Text>
         </View>
-        <Text style={styles.completeTitle}>Đã quay xong video</Text>
+        <Text style={styles.completeTitle}>
+          {t('ekyc_flow.liveness.complete_title')}
+        </Text>
         <Text style={styles.completeSubtitle}>
-          Video đã được ghi lại thành công
+          {t('ekyc_flow.liveness.complete_message')}
         </Text>
       </View>
       <View style={styles.completeControls}>
         <TouchableOpacity style={styles.primaryButton} onPress={onContinue}>
-          <Text style={styles.primaryButtonText}>Tiếp tục</Text>
+          <Text style={styles.primaryButtonText}>
+            {t('ekyc_flow.liveness.continue_button')}
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.secondaryButton} onPress={onRetake}>
-          <Text style={styles.secondaryButtonText}>Quay lại</Text>
+          <Text style={styles.secondaryButtonText}>
+            {t('ekyc_flow.liveness.retake_button')}
+          </Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

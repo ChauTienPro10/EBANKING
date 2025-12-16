@@ -8,6 +8,8 @@ import {
   StatusBar,
 } from 'react-native';
 import { Camera, CameraDevice } from 'react-native-vision-camera';
+import ImagePicker from 'react-native-image-crop-picker';
+import { useTranslation } from 'react-i18next';
 import Colors from '../../../../constants/color';
 import ProgressHeader from '../shared/ProgressHeader';
 
@@ -28,6 +30,8 @@ const CameraView: React.FC<CameraViewProps> = ({
   captureState,
   onCapture,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <View style={styles.container}>
       <StatusBar
@@ -66,9 +70,11 @@ const CameraView: React.FC<CameraViewProps> = ({
           {/* Instruction */}
           <View style={styles.instructionSection}>
             <Text style={styles.instructionTitle}>
-              Thẻ căn cước công dân{' '}
+              CMND/CCCD{' '}
               <Text style={styles.instructionHighlight}>
-                {captureState === 'front' ? 'Mặt trước' : 'Mặt sau'}
+                {captureState === 'front'
+                  ? t('ekyc_flow.complete.front_label')
+                  : t('ekyc_flow.complete.back_label')}
               </Text>
             </Text>
             <Text style={styles.instructionSubtitle}>

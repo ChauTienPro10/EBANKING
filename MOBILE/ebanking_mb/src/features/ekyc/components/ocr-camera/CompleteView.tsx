@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import Colors from '../../../../constants/color';
 import ProgressHeader from '../shared/ProgressHeader';
 
@@ -24,6 +25,8 @@ const CompleteView: React.FC<CompleteViewProps> = ({
   onContinue,
   onRetake,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <SafeAreaView style={styles.container}>
       <ProgressHeader currentStep={1} />
@@ -35,21 +38,27 @@ const CompleteView: React.FC<CompleteViewProps> = ({
         <Text style={styles.sectionTitle}>CMND/CCCD</Text>
         <View style={styles.imageGrid}>
           <View style={styles.imageCard}>
-            <Text style={styles.imageLabel}>Mặt trước</Text>
+            <Text style={styles.imageLabel}>
+              {t('ekyc_flow.complete.front_label')}
+            </Text>
             <Image source={{ uri: frontImage }} style={styles.thumbnail} />
           </View>
           <View style={styles.imageCard}>
-            <Text style={styles.imageLabel}>Mặt sau</Text>
+            <Text style={styles.imageLabel}>
+              {t('ekyc_flow.complete.back_label')}
+            </Text>
             <Image source={{ uri: backImage }} style={styles.thumbnail} />
           </View>
         </View>
         <TouchableOpacity style={styles.primaryButton} onPress={onContinue}>
           <Text style={styles.primaryButtonText}>
-            Tiếp tục xác thực khuôn mặt
+            {t('ekyc_flow.complete.continue_button')}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.secondaryButton} onPress={onRetake}>
-          <Text style={styles.secondaryButtonText}>Chụp lại</Text>
+          <Text style={styles.secondaryButtonText}>
+            {t('ekyc_flow.complete.retake_all_button')}
+          </Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import Colors from '../../../../constants/color';
 
 interface FooterProps {
@@ -8,13 +9,19 @@ interface FooterProps {
 }
 
 const Footer: React.FC<FooterProps> = ({ onBack, onConfirm }) => {
+  const { t } = useTranslation();
+
   return (
     <View style={styles.footer}>
       <TouchableOpacity style={styles.secondaryButton} onPress={onBack}>
-        <Text style={styles.secondaryButtonText}>Quay lại</Text>
+        <Text style={styles.secondaryButtonText}>
+          {t('ekyc_flow.review.back_button')}
+        </Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.primaryButton} onPress={onConfirm}>
-        <Text style={styles.primaryButtonText}>Xác nhận</Text>
+        <Text style={styles.primaryButtonText}>
+          {t('ekyc_flow.review.confirm_button')}
+        </Text>
       </TouchableOpacity>
     </View>
   );

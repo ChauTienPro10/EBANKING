@@ -7,6 +7,7 @@ import {
   SafeAreaView,
   Dimensions,
   Animated,
+  BackHandler,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
@@ -52,6 +53,26 @@ const ProfileScreen: React.FC = () => {
         dispatch(fetchUserInfo(loginResponse.id));
       }
     }, [loginResponse?.id, dispatch]),
+  );
+
+  // Handle hardware back button - navigate to Home instead of going back
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        // Navigate to Home tab
+        navigation.navigate('Home' as never);
+        return true; // Prevent default back behavior
+      };
+
+      // Add event listener (returns subscription)
+      const subscription = BackHandler.addEventListener(
+        'hardwareBackPress',
+        onBackPress,
+      );
+
+      // Cleanup using subscription.remove()
+      return () => subscription.remove();
+    }, [navigation]),
   );
 
   useEffect(() => {
