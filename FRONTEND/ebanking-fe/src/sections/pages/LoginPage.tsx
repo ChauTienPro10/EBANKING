@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import apiClient from "@/services/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -8,35 +9,43 @@ import { useTranslation } from "react-i18next";
 
 export function LoginPage() {
   const navigate = useNavigate();
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [otp, setOtp] = useState("");
-  const [stage, setStage] = useState<"login" | "otp">("login");
-  const [error, setError] = useState<string | null>(null);
-  const [attempts, setAttempts] = useState(0);
   const { t } = useTranslation();
 
-  const onSubmit = (e: React.FormEvent) => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (stage === "login") {
-      if (!username || !password) {
-        setError(t('auth.enterAll'));
-        return;
-      }
-      setError(null);
-      setStage("otp");
-    } else {
-      if (otp === "000000") {
-        setError(t('auth.locked'));
-        return;
-      }
-      if (otp.length === 6) {
+    if (!username || !password) {
+      setError(t("auth.enterAll"));
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await apiClient.post("/auth/login", {
+        username,
+        password,
+      });
+      const { jwt, refreshToken, message } = response.data;
+
+      if (jwt && refreshToken) {
+        localStorage.setItem("authToken", jwt);
+        localStorage.setItem("refreshToken", refreshToken);
         navigate("/app");
       } else {
-        const next = attempts + 1;
-        setAttempts(next);
-        setError(next >= 3 ? t('auth.locked') : t('auth.invalidOtp'));
+        setError(message || t("auth.loginFailed"));
       }
+    } catch (err: any) {
+      const errorMessage =
+        err.response?.data?.message || err.message || t("auth.loginError");
+      setError(errorMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -44,35 +53,38 @@ export function LoginPage() {
     <div className="flex min-h-svh items-center justify-center bg-muted/40 p-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle className="text-center">{t('auth.title')}</CardTitle>
+          <CardTitle className="text-center">{t("auth.title")}</CardTitle>
         </CardHeader>
         <CardContent>
-          <form className="space-y-4" onSubmit={onSubmit}>
-            {stage === "login" ? (
-              <>
-                <div className="space-y-2">
-                  <Label htmlFor="username">{t('auth.username')}</Label>
-                  <Input id="username" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="admin" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="password">{t('auth.password')}</Label>
-                  <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••" />
-                </div>
-              </>
-            ) : (
-              <div className="space-y-2">
-                <Label htmlFor="otp">{t('auth.otp')}</Label>
-                <Input id="otp" inputMode="numeric" value={otp} onChange={(e) => setOtp(e.target.value)} placeholder="6 digits" />
-                <p className="text-xs text-muted-foreground">{t('auth.otpHint')}</p>
-              </div>
-            )}
+          <form className="space-y-4" onSubmit={handleLogin}>
+            <div className="space-y-2">
+              <Label htmlFor="username">{t("auth.username")}</Label>
+              <Input
+                id="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="admin"
+                disabled={isLoading}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">{t("auth.password")}</Label>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••"
+                disabled={isLoading}
+              />
+            </div>
             {error && <div className="text-sm text-destructive">{error}</div>}
-            <Button type="submit" className="w-full">{stage === "login" ? t('auth.login') : t('auth.verifyOtp')}</Button>
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? t("auth.loading") : t("auth.login")}
+            </Button>
           </form>
         </CardContent>
       </Card>
     </div>
   );
 }
-
-

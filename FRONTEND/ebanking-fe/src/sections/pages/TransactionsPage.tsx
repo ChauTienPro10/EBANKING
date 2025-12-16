@@ -1,7 +1,14 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { DataTable } from "@/components/table/DataTable";
 import type { Column } from "@/components/table/DataTable";
 import { Pagination } from "@/components/table/Pagination";
@@ -18,8 +25,24 @@ import {
 import { useTransactionStore } from "@/stores/useTransactionStore";
 import { toast } from "@/components/ui/toast";
 import { useTranslation } from "react-i18next";
-import { RealtimeTransactionFeed } from "@/components/RealtimeTransactionFeed";
-import type { Transaction } from "@/services/mock/transactionService";
+import type { Transaction } from "@/services/transactionService";
+
+const formatCurrency = (amount: number, currency: string) => {
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency,
+  }).format(amount);
+};
+
+const transactionStatusMap: Record<
+  string,
+  { labelKey: string; color: "success" | "pending" | "failed" }
+> = {
+  SUCCESS: { labelKey: "transactions.statuses.success", color: "success" },
+  PENDING: { labelKey: "transactions.statuses.pending", color: "pending" },
+  FAILED: { labelKey: "transactions.statuses.failed", color: "failed" },
+  SUSPICIOUS: { labelKey: "transactions.statuses.suspicious", color: "failed" },
+};
 
 export function TransactionsPage() {
   const { t } = useTranslation();
@@ -29,15 +52,13 @@ export function TransactionsPage() {
     pagination,
     filters,
     fetchTransactions,
+    selectedTransaction,
+    selectTransaction,
     setPage,
     setLimit,
     setSearch,
     setFilter,
   } = useTransactionStore();
-
-  const [viewModalOpen, setViewModalOpen] = useState(false);
-  const [selectedTransaction, setSelectedTransaction] =
-    useState<Transaction | null>(null);
 
   useEffect(() => {
     fetchTransactions();
@@ -54,13 +75,13 @@ export function TransactionsPage() {
       "Timestamp",
     ];
     const rows = data.map((tx: Transaction) => [
-      tx.id,
-      tx.fromAccount,
-      tx.toAccount || "-",
+      tx.transactionId,
+      tx.senderAccountNumber,
+      tx.receiverAccountNumber || "-",
       tx.amount,
-      tx.type,
+      tx.transactionType,
       tx.status,
-      tx.timestamp,
+      tx.transactionAt,
     ]);
     const csv = [headers, ...rows].map((row) => row.join(",")).join("\n");
     const blob = new Blob([csv], { type: "text/csv" });
@@ -74,42 +95,41 @@ export function TransactionsPage() {
 
   const columns: Column<Transaction>[] = [
     {
-      key: "id",
+      key: "transactionId",
       header: t("transactions.table.id") || "ID",
-      render: (item) => <span className="font-medium">{item.id}</span>,
+      render: (item) => (
+        <span className="font-medium">{item.transactionId}</span>
+      ),
     },
     {
-      key: "type",
+      key: "transactionType",
       header: t("transactions.table.type") || "Type",
     },
     {
       key: "amount",
       header: t("transactions.table.amount") || "Amount",
-      render: (item) =>
-        `${item.amount.toLocaleString("vi-VN")} ${item.currency}`,
+      render: (item) => formatCurrency(item.amount, item.currency),
     },
     {
       key: "status",
       header: t("transactions.table.status") || "Status",
       render: (item) => {
-        const statusMap: Record<string, "success" | "pending" | "failed"> = {
-          Success: "success",
-          Pending: "pending",
-          Failed: "failed",
-          Suspicious: "failed",
+        const statusInfo = transactionStatusMap[item.status] || {
+          labelKey: item.status,
+          color: "pending",
         };
         return (
           <StatusBadge
-            status={statusMap[item.status] || "pending"}
-            label={item.status}
+            status={statusInfo.color}
+            label={t(statusInfo.labelKey) as string}
           />
         );
       },
     },
     {
-      key: "timestamp",
+      key: "transactionAt",
       header: t("transactions.table.time") || "Time",
-      render: (item) => new Date(item.timestamp).toLocaleString("vi-VN"),
+      render: (item) => new Date(item.transactionAt).toLocaleString("vi-VN"),
     },
   ];
 
@@ -125,23 +145,34 @@ export function TransactionsPage() {
           <SearchInput
             value={filters.search}
             onChange={setSearch}
-            placeholder={t("transactions.filters.id") || "Transaction ID"}
+            placeholder={t("transactions.filters.searchPlaceholder")}
           />
           <Select
             value={filters.type || "all"}
-            onChange={(e) =>
-              setFilter({
-                type: e.target.value === "all" ? undefined : e.target.value,
-              })
+            onValueChange={(value) =>
+              setFilter({ type: value === "all" ? undefined : value })
             }
           >
-            <option value="all">
-              {t("transactions.filterAll") || "All Types"}
-            </option>
-            <option value="Transfer">Transfer</option>
-            <option value="Topup">Topup</option>
-            <option value="Bill Payment">Bill Payment</option>
-            <option value="Withdraw">Withdraw</option>
+            <SelectTrigger>
+              <SelectValue placeholder={t("transactions.filters.allTypes")} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">
+                {t("transactions.filters.allTypes")}
+              </SelectItem>
+              <SelectItem value="TRANSFER">
+                {t("transactions.types.transfer")}
+              </SelectItem>
+              <SelectItem value="TOPUP">
+                {t("transactions.types.topup")}
+              </SelectItem>
+              <SelectItem value="BILL_PAYMENT">
+                {t("transactions.types.billPayment")}
+              </SelectItem>
+              <SelectItem value="WITHDRAW">
+                {t("transactions.types.withdraw")}
+              </SelectItem>
+            </SelectContent>
           </Select>
           <Input
             type="date"
@@ -160,8 +191,6 @@ export function TransactionsPage() {
         </CardContent>
       </Card>
 
-      <RealtimeTransactionFeed />
-
       <Card>
         <CardHeader>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -175,20 +204,32 @@ export function TransactionsPage() {
           <div className="flex gap-4">
             <Select
               value={filters.status || "all"}
-              onChange={(e) =>
-                setFilter({
-                  status: e.target.value === "all" ? undefined : e.target.value,
-                })
+              onValueChange={(value) =>
+                setFilter({ status: value === "all" ? undefined : value })
               }
-              className="w-full sm:w-40"
             >
-              <option value="all">
-                {t("transactions.filterAllStatus") || "All Status"}
-              </option>
-              <option value="Success">Success</option>
-              <option value="Pending">Pending</option>
-              <option value="Failed">Failed</option>
-              <option value="Suspicious">Suspicious</option>
+              <SelectTrigger className="w-full sm:w-40">
+                <SelectValue
+                  placeholder={t("transactions.filters.allStatuses")}
+                />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">
+                  {t("transactions.filters.allStatuses")}
+                </SelectItem>
+                <SelectItem value="SUCCESS">
+                  {t("transactions.statuses.success")}
+                </SelectItem>
+                <SelectItem value="PENDING">
+                  {t("transactions.statuses.pending")}
+                </SelectItem>
+                <SelectItem value="FAILED">
+                  {t("transactions.statuses.failed")}
+                </SelectItem>
+                <SelectItem value="SUSPICIOUS">
+                  {t("transactions.statuses.suspicious")}
+                </SelectItem>
+              </SelectContent>
             </Select>
           </div>
 
@@ -196,10 +237,8 @@ export function TransactionsPage() {
             columns={columns}
             data={data}
             loading={loading}
-            onView={(item) => {
-              setSelectedTransaction(item);
-              setViewModalOpen(true);
-            }}
+            rowKey="transactionId"
+            onView={(item) => selectTransaction(item)}
             emptyMessage={t("transactions.empty") || "No transactions found"}
           />
 
@@ -214,13 +253,16 @@ export function TransactionsPage() {
       </Card>
 
       {selectedTransaction && (
-        <Dialog open={viewModalOpen} onOpenChange={setViewModalOpen}>
+        <Dialog
+          open={!!selectedTransaction}
+          onOpenChange={() => selectTransaction(null)}
+        >
           <DialogContent className="max-w-2xl">
             <DialogClose />
             <DialogHeader>
               <DialogTitle>
                 {t("transactions.details") || "Transaction Details"} -{" "}
-                {selectedTransaction.id}
+                {selectedTransaction.transactionId}
               </DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
@@ -230,7 +272,7 @@ export function TransactionsPage() {
                     {t("transactions.fromAccount") || "From Account"}
                   </label>
                   <p className="font-medium">
-                    {selectedTransaction.fromAccount}
+                    {selectedTransaction.senderAccountNumber}
                   </p>
                 </div>
                 <div>
@@ -238,7 +280,7 @@ export function TransactionsPage() {
                     {t("transactions.toAccount") || "To Account"}
                   </label>
                   <p className="font-medium">
-                    {selectedTransaction.toAccount || "-"}
+                    {selectedTransaction.receiverAccountNumber || "-"}
                   </p>
                 </div>
                 <div>
@@ -246,15 +288,19 @@ export function TransactionsPage() {
                     {t("transactions.amount") || "Amount"}
                   </label>
                   <p className="font-medium">
-                    {selectedTransaction.amount.toLocaleString("vi-VN")}{" "}
-                    {selectedTransaction.currency}
+                    {formatCurrency(
+                      selectedTransaction.amount,
+                      selectedTransaction.currency
+                    )}
                   </p>
                 </div>
                 <div>
                   <label className="text-sm text-muted-foreground">
                     {t("transactions.type") || "Type"}
                   </label>
-                  <p className="font-medium">{selectedTransaction.type}</p>
+                  <p className="font-medium">
+                    {selectedTransaction.transactionType}
+                  </p>
                 </div>
                 <div>
                   <label className="text-sm text-muted-foreground">
@@ -262,13 +308,15 @@ export function TransactionsPage() {
                   </label>
                   <StatusBadge
                     status={
-                      selectedTransaction.status === "Success"
-                        ? "success"
-                        : selectedTransaction.status === "Pending"
-                        ? "pending"
-                        : "failed"
+                      transactionStatusMap[selectedTransaction.status]?.color ||
+                      "pending"
                     }
-                    label={selectedTransaction.status}
+                    label={
+                      t(
+                        transactionStatusMap[selectedTransaction.status]
+                          ?.labelKey || selectedTransaction.status
+                      ) as string
+                    }
                   />
                 </div>
                 <div>
@@ -276,7 +324,7 @@ export function TransactionsPage() {
                     {t("transactions.timestamp") || "Timestamp"}
                   </label>
                   <p className="font-medium">
-                    {new Date(selectedTransaction.timestamp).toLocaleString(
+                    {new Date(selectedTransaction.transactionAt).toLocaleString(
                       "vi-VN"
                     )}
                   </p>
