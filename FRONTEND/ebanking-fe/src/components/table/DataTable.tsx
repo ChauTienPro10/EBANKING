@@ -13,23 +13,26 @@ export interface Column<T> {
 
 interface DataTableProps<T> {
   columns: Column<T>[];
-  data: T[];
+  data?: T[];
   loading?: boolean;
+  rowKey: keyof T;
   onEdit?: (item: T) => void;
   onView?: (item: T) => void;
   onDelete?: (item: T) => void;
   emptyMessage?: string;
 }
 
-export function DataTable<T extends { id: string }>({
+export function DataTable<T extends object>({
   columns,
   data,
   loading = false,
   onEdit,
+  rowKey,
   onView,
   onDelete,
   emptyMessage = "No data available",
 }: DataTableProps<T>) {
+  const rows = Array.isArray(data) ? data : [];
   if (loading) {
     return (
       <div className="space-y-2">
@@ -44,7 +47,7 @@ export function DataTable<T extends { id: string }>({
     );
   }
 
-  if (data.length === 0) {
+  if (rows.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-center">
         <div className="text-muted-foreground mb-2">No data found</div>
@@ -67,9 +70,9 @@ export function DataTable<T extends { id: string }>({
           </TR>
         </THead>
         <TBody>
-          {data.map((item, index) => (
+          {rows.map((item, index) => (
             <motion.tr
-              key={item.id}
+              key={item[rowKey] as React.Key}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.2, delay: index * 0.02 }}

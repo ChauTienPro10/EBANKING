@@ -4,7 +4,10 @@
     "workspace": "{{role}} workspace",
     "logout": "Logout",
     "role": "Role",
-    "roles": { "Admin": "Admin", "Manager": "Manager", "Staff": "Staff" },
+    "roles": {
+      "Admin": "Admin",
+      "Staff": "Staff"
+    },
     "nav": {
       "dashboard": "Dashboard",
       "transactions": "Transactions",
@@ -17,8 +20,36 @@
       "loans": "Loans",
       "tickets": "Support Tickets",
       "logs": "System Logs",
-      "settings": "Settings"
+      "settings": "Settings",
+      "system": "System"
     }
+  },
+  "staff": {
+    "title": "Staff Management",
+    "create": "Add Staff",
+    "edit": "Edit Staff",
+    "deleteTitle": "Deactivate Staff",
+    "deleteDescription": "Are you sure you want to deactivate this staff member?",
+    "empty": "No staff members found",
+    "search": "Search by name, username...",
+    "filter": {
+      "allRoles": "All Roles",
+      "allStatuses": "All Statuses"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "table": {
+      "username": "Username",
+      "name": "Full Name",
+      "role": "Role",
+      "status": "Status"
+    }
+  },
+  "roles": {
+    "admin": "Administrator",
+    "staff": "Staff"
   },
   "auth": {
     "title": "eBanking Admin Console",
@@ -48,23 +79,92 @@
     "chartAccountTypes": "Account Types Distribution",
     "realtime": "Realtime",
     "recentTransactions": "Recent Transactions",
-    "realtimeTimeline": "Realtime Transaction Timeline"
+    "realtimeTimeline": "Realtime Transaction Timeline",
+    "noRecentTransactions": "No recent transactions",
+    "loading": "Loading data...",
+    "errors": {
+      "loadFailed": "Failed to load dashboard data."
+    }
   },
   "transactions": {
-    "search": "Search history",
-    "filters": { "id": "Transaction ID", "type": "Type", "from": "From date", "to": "To date" },
-    "realtime": "Realtime dashboard",
-    "list": "Transactions list",
-    "table": { "id": "ID", "type": "Type", "amount": "Amount", "status": "Status", "time": "Time" }
+    "search": "Search History",
+    "filters": {
+      "searchPlaceholder": "Search by Transaction ID, account...",
+      "allTypes": "All Types",
+      "allStatuses": "All Statuses",
+      "from": "From date",
+      "to": "To date"
+    },
+    "types": {
+      "transfer": "Transfer",
+      "topup": "Top-up",
+      "billPayment": "Bill Payment",
+      "withdraw": "Withdraw"
+    },
+    "statuses": {
+      "success": "Success",
+      "pending": "Pending",
+      "failed": "Failed",
+      "suspicious": "Suspicious"
+    },
+    "realtime": "Realtime Feed",
+    "list": "Transactions List",
+    "table": {
+      "id": "ID",
+      "type": "Type",
+      "amount": "Amount",
+      "status": "Status",
+      "time": "Time"
+    }
   },
   "customers": {
-    "filters": { "name": "Name", "phone": "Phone", "status": "Status", "kyc": "KYC" },
+    "filters": {
+      "name": "Name",
+      "phone": "Phone",
+      "status": "Status",
+      "kyc": "KYC"
+    },
     "list": "Customers list",
-    "table": { "name": "Name", "phone": "Phone", "status": "Status", "kyc": "KYC" }
+    "table": {
+      "name": "Name",
+      "phone": "Phone",
+      "status": "Status",
+      "kyc": "KYC"
+    },
+    "actions": {
+      "lock": "Lock",
+      "unlock": "Unlock",
+      "ban": "Ban"
+    },
+    "modals": {
+      "lockTitle": "Lock User",
+      "banTitle": "Ban User",
+      "reason": "Reason"
+    }
   },
   "accounts": {
     "list": "Accounts list",
-    "table": { "no": "Account No.", "type": "Type", "owner": "Owner", "balance": "Balance", "status": "Status" }
+    "table": {
+      "no": "Account No.",
+      "type": "Type",
+      "owner": "Owner",
+      "balance": "Balance",
+      "status": "Status"
+    },
+    "actions": {
+      "lock": "Lock",
+      "unlock": "Unlock",
+      "freeze": "Freeze",
+      "updateLimits": "Update Limits"
+    },
+    "modals": {
+      "lockTitle": "Lock Account",
+      "freezeTitle": "Freeze Account",
+      "updateLimitsTitle": "Update Limits",
+      "reason": "Reason",
+      "dailyLimit": "Daily Limit",
+      "perTransactionLimit": "Per Transaction Limit"
+    }
   },
   "reports": {
     "filters": "Report filters",
@@ -77,7 +177,16 @@
     "exportXls": "Export Excel",
     "exportPdf": "Export PDF"
   },
-  "audit": { "title": "Activity log", "table": { "time": "Time", "user": "User", "ip": "IP", "device": "Device", "action": "Action" } },
+  "audit": {
+    "title": "Activity log",
+    "table": {
+      "time": "Time",
+      "user": "User",
+      "ip": "IP",
+      "device": "Device",
+      "action": "Action"
+    }
+  },
   "loans": {
     "title": "Loan Applications",
     "search": "Search by customer or ID",
@@ -86,7 +195,14 @@
     "statusPending": "Pending",
     "statusRejected": "Rejected",
     "list": "Loans List",
-    "table": { "id": "ID", "customer": "Customer", "amount": "Amount", "duration": "Duration", "status": "Status", "action": "Action" },
+    "table": {
+      "id": "ID",
+      "customer": "Customer",
+      "amount": "Amount",
+      "duration": "Duration",
+      "status": "Status",
+      "action": "Action"
+    },
     "view": "View",
     "details": "Loan Details",
     "customer": "Customer",
@@ -101,11 +217,37 @@
     "title": "Support Tickets",
     "search": "Search by customer, subject or ID",
     "statusAll": "All Status",
-    "statusOpen": "Open",
-    "statusInProgress": "In Progress",
-    "statusResolved": "Resolved",
+    "filterAllCategory": "All Categories",
+    "filterAllPriority": "All Priorities",
+    "statuses": {
+      "open": "Open",
+      "inProgress": "In Progress",
+      "resolved": "Resolved",
+      "closed": "Closed"
+    },
+    "categories": {
+      "payment": "Payment",
+      "account": "Account",
+      "security": "Security",
+      "technical": "Technical",
+      "billing": "Billing"
+    },
+    "priorities": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "urgent": "Urgent"
+    },
     "list": "Tickets List",
-    "table": { "id": "ID", "customer": "Customer", "subject": "Subject", "category": "Category", "priority": "Priority", "status": "Status", "action": "Action" },
+    "table": {
+      "id": "ID",
+      "customer": "Customer",
+      "subject": "Subject",
+      "category": "Category",
+      "priority": "Priority",
+      "status": "Status",
+      "action": "Action"
+    },
     "view": "View",
     "customer": "Customer",
     "category": "Category",
@@ -122,7 +264,22 @@
     "actionAll": "All Actions",
     "roleAll": "All Roles",
     "list": "Logs List",
-    "table": { "time": "Time", "user": "User", "role": "Role", "action": "Action", "ip": "IP Address", "device": "Device", "details": "Details" }
+    "table": {
+      "time": "Time",
+      "user": "User",
+      "role": "Role",
+      "action": "Action",
+      "ip": "IP Address",
+      "device": "Device",
+      "details": "Details",
+      "result": "Result"
+    },
+    "securityNoteTitle": "Security Note:",
+    "securityNoteBody": "All system logs are read-only and cannot be modified or deleted for audit purposes.",
+    "results": {
+      "success": "Success",
+      "failed": "Failed"
+    }
   },
   "settings": {
     "title": "System Settings",
@@ -134,7 +291,10 @@
     "module": "Module"
   },
   "notifications": {
-    "tabs": { "send": "Send Notification", "history": "Notification History" },
+    "tabs": {
+      "send": "Send Notification",
+      "history": "Notification History"
+    },
     "receiver": {
       "title": "Receiver Selector",
       "single": "Single user",
@@ -162,7 +322,11 @@
         "body": "Enter message content",
         "link": "https://..."
       },
-      "priority": { "low": "Low", "normal": "Normal", "high": "High" }
+      "priority": {
+        "low": "Low",
+        "normal": "Normal",
+        "high": "High"
+      }
     },
     "preview": {
       "panelTitle": "Preview",
@@ -197,7 +361,11 @@
         "statusAll": "All status",
         "keyword": "Search title"
       },
-      "status": { "success": "Success", "failed": "Failed", "scheduled": "Scheduled" },
+      "status": {
+        "success": "Success",
+        "failed": "Failed",
+        "scheduled": "Scheduled"
+      },
       "loading": "Loading history...",
       "empty": "No notifications found",
       "pagination": {
@@ -224,8 +392,15 @@
       "schedule": "Schedule",
       "sendNow": "Send now",
       "receivers": "Receivers",
-      "table": { "receiver": "Receiver", "status": "Delivery status" },
-      "delivery": { "delivered": "Delivered", "failed": "Failed", "pending": "Pending" }
+      "table": {
+        "receiver": "Receiver",
+        "status": "Delivery status"
+      },
+      "delivery": {
+        "delivered": "Delivered",
+        "failed": "Failed",
+        "pending": "Pending"
+      }
     },
     "errors": {
       "titleRequired": "Title is required",
@@ -238,10 +413,11 @@
       "error": "Unable to send notification"
     }
   },
-  "common": { "notFound": "Not Found" }
+  "common": {
+    "notFound": "Not Found",
+    "cancel": "Cancel",
+    "create": "Create",
+    "update": "Update",
+    "saving": "Saving..."
+  }
 }
-
-
-
-
-

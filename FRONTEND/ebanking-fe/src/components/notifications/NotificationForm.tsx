@@ -1,7 +1,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Select } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { DateTimePicker } from "@/components/ui/datetime-picker";
 import { useNotificationStore } from "@/stores/useNotificationStore";
@@ -79,16 +85,27 @@ export function NotificationForm() {
             </label>
             <Select
               value={form.priority}
-              onChange={(e) => setFormValue("priority", e.target.value)}
-              options={[
-                { value: "low", label: t("notifications.form.priority.low") },
-                {
-                  value: "normal",
-                  label: t("notifications.form.priority.normal"),
-                },
-                { value: "high", label: t("notifications.form.priority.high") },
-              ]}
-            />
+              onValueChange={(value) =>
+                setFormValue("priority", value as "low" | "normal" | "high")
+              }
+            >
+              <SelectTrigger>
+                <SelectValue
+                  placeholder={t("notifications.form.placeholders.priority")}
+                />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="low">
+                  {t("notifications.form.priority.low")}
+                </SelectItem>
+                <SelectItem value="normal">
+                  {t("notifications.form.priority.normal")}
+                </SelectItem>
+                <SelectItem value="high">
+                  {t("notifications.form.priority.high")}
+                </SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <div className="space-y-2">
             <label className="text-sm font-medium">

@@ -18,9 +18,7 @@ export function NotificationHistoryTable() {
   const setFilters = useNotificationStore((state) => state.setFilters);
   const setPage = useNotificationStore((state) => state.setPage);
   const loadHistory = useNotificationStore((state) => state.loadHistory);
-  const loadingHistory = useNotificationStore(
-    (state) => state.loadingHistory
-  );
+  const loadingHistory = useNotificationStore((state) => state.loadingHistory);
   const selectNotification = useNotificationStore(
     (state) => state.selectNotification
   );
@@ -43,7 +41,10 @@ export function NotificationHistoryTable() {
             value={filters.staff ?? "all"}
             onChange={(e) => setFilters({ staff: e.target.value })}
             options={[
-              { value: "all", label: t("notifications.history.filters.staffAll") },
+              {
+                value: "all",
+                label: t("notifications.history.filters.staffAll"),
+              },
               { value: "Pham Tuan", label: "Pham Tuan" },
               { value: "Tran My", label: "Tran My" },
               { value: "System", label: "System" },
@@ -53,10 +54,22 @@ export function NotificationHistoryTable() {
             value={filters.status ?? "all"}
             onChange={(e) => setFilters({ status: e.target.value })}
             options={[
-              { value: "all", label: t("notifications.history.filters.statusAll") },
-              { value: "success", label: t("notifications.history.status.success") },
-              { value: "failed", label: t("notifications.history.status.failed") },
-              { value: "scheduled", label: t("notifications.history.status.scheduled") },
+              {
+                value: "all",
+                label: t("notifications.history.filters.statusAll"),
+              },
+              {
+                value: "success",
+                label: t("notifications.history.status.success"),
+              },
+              {
+                value: "failed",
+                label: t("notifications.history.status.failed"),
+              },
+              {
+                value: "scheduled",
+                label: t("notifications.history.status.scheduled"),
+              },
             ]}
           />
           <Input
@@ -83,6 +96,7 @@ export function NotificationHistoryTable() {
                 <TH>{t("notifications.history.table.staff")}</TH>
                 <TH>{t("notifications.history.table.title")}</TH>
                 <TH>{t("notifications.history.table.receivers")}</TH>
+                <TH>{t("notifications.form.fields.priority")}</TH>
                 <TH>{t("notifications.history.table.status")}</TH>
                 <TH>{t("notifications.history.table.action")}</TH>
               </TR>
@@ -110,6 +124,23 @@ export function NotificationHistoryTable() {
                     <TD>
                       <Badge
                         variant={
+                          item.priority === "high"
+                            ? "destructive"
+                            : item.priority === "low"
+                            ? "secondary"
+                            : "outline"
+                        }
+                      >
+                        {t(
+                          `notifications.form.priority.${
+                            item.priority || "normal"
+                          }`
+                        )}
+                      </Badge>
+                    </TD>
+                    <TD>
+                      <Badge
+                        variant={
                           item.status === "success"
                             ? "success"
                             : item.status === "failed"
@@ -121,7 +152,11 @@ export function NotificationHistoryTable() {
                       </Badge>
                     </TD>
                     <TD>
-                      <Button variant="outline" size="sm" onClick={() => selectNotification(item.id)}>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => selectNotification(item.id)}
+                      >
                         {t("notifications.history.table.view")}
                       </Button>
                     </TD>
@@ -162,5 +197,3 @@ export function NotificationHistoryTable() {
     </Card>
   );
 }
-
-

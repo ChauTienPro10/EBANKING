@@ -5,16 +5,10 @@ import {
   Home,
   CreditCard,
   Users,
-  UserCog,
-  FileChartColumn,
   ShieldCheck,
   LogOut,
   Sun,
   Moon,
-  MessageSquare,
-  FileText,
-  Settings,
-  Bell,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -22,13 +16,6 @@ import { useTranslation } from "react-i18next";
 type Role = "Admin" | "Manager" | "Staff";
 
 const NAV_ITEMS = [
-  {
-    to: "/app/notifications",
-    label: "Notifications",
-    translationKey: "notifications",
-    icon: Bell,
-    roles: ["Admin", "Manager", "Staff"] as Role[],
-  },
   {
     to: "/app",
     label: "Dashboard",
@@ -44,34 +31,6 @@ const NAV_ITEMS = [
     roles: ["Admin", "Manager", "Staff"] as Role[],
   },
   {
-    to: "/app/customers",
-    label: "Customers",
-    translationKey: "customers",
-    icon: Users,
-    roles: ["Admin", "Manager", "Staff"] as Role[],
-  },
-  {
-    to: "/app/accounts",
-    label: "Accounts",
-    translationKey: "accounts",
-    icon: UserCog,
-    roles: ["Admin", "Manager"] as Role[],
-  },
-  {
-    to: "/app/reports",
-    label: "Reports",
-    translationKey: "reports",
-    icon: FileChartColumn,
-    roles: ["Admin", "Manager"] as Role[],
-  },
-  {
-    to: "/app/audit",
-    label: "Audit & Security",
-    translationKey: "audit",
-    icon: ShieldCheck,
-    roles: ["Admin"] as Role[],
-  },
-  {
     to: "/app/staff",
     label: "Staff",
     translationKey: "staff",
@@ -79,24 +38,10 @@ const NAV_ITEMS = [
     roles: ["Admin", "Manager"] as Role[],
   },
   {
-    to: "/app/tickets",
-    label: "Support Tickets",
-    translationKey: "tickets",
-    icon: MessageSquare,
-    roles: ["Admin", "Manager", "Staff"] as Role[],
-  },
-  {
-    to: "/app/logs",
-    label: "System Logs",
-    translationKey: "logs",
-    icon: FileText,
-    roles: ["Admin"] as Role[],
-  },
-  {
-    to: "/app/settings",
-    label: "Settings",
-    translationKey: "settings",
-    icon: Settings,
+    to: "/app/audit",
+    label: "Audit & Security",
+    translationKey: "audit",
+    icon: ShieldCheck,
     roles: ["Admin"] as Role[],
   },
 ];

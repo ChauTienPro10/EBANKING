@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import * as transactionService from "@/services/mock/transactionService";
-import type { Transaction, PaginationParams, PaginatedResponse } from "@/services/mock/transactionService";
+import * as transactionService from "@/services/transactionService";
+import type { Transaction, PaginationParams } from "@/services/transactionService";
 
 interface TransactionStore {
   data: Transaction[];
@@ -19,8 +19,10 @@ interface TransactionStore {
     toDate?: string;
   };
   sort?: { field: string; direction: "asc" | "desc" };
+  selectedTransaction: Transaction | null;
 
   fetchTransactions: () => Promise<void>;
+  selectTransaction: (transaction: Transaction | null) => void;
   setPage: (page: number) => void;
   setLimit: (limit: number) => void;
   setSearch: (search: string) => void;
@@ -42,6 +44,7 @@ export const useTransactionStore = create<TransactionStore>((set, get) => ({
     search: "",
   },
   sort: undefined,
+  selectedTransaction: null,
 
   fetchTransactions: async () => {
     set({ loading: true, error: null });
@@ -52,18 +55,19 @@ export const useTransactionStore = create<TransactionStore>((set, get) => ({
         limit: pagination.limit,
         search: filters.search || undefined,
         filter: {
-          ...(filters.type && { type: filters.type }),
-          ...(filters.status && { status: filters.status }),
-          ...(filters.fromDate && filters.toDate && { fromDate: filters.fromDate, toDate: filters.toDate }),
+          type: filters.type,
+          status: filters.status,
+          fromDate: filters.fromDate,
+          toDate: filters.toDate,
         },
         sort,
       };
-      const response: PaginatedResponse<Transaction> = await transactionService.getTransactions(params);
+      const response = await transactionService.getTransactions(params);
       set({
-        data: response.data,
+        data: response.content,
         pagination: {
           ...pagination,
-          total: response.total,
+          total: response.totalElements,
         },
         loading: false,
       });
@@ -109,6 +113,8 @@ export const useTransactionStore = create<TransactionStore>((set, get) => ({
       sort: undefined,
     });
   },
+
+  selectTransaction: (transaction) => set({ selectedTransaction: transaction }),
 }));
 
 
