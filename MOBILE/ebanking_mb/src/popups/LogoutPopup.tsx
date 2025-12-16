@@ -11,19 +11,24 @@ interface Props {
 }
 
 const LogoutConfirmPopup = ({ visible, onCancel, onConfirm }: Props) => {
-
   const { t } = useTranslation();
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onCancel}>
+    <Modal
+      visible={visible}
+      transparent
+      animationType="fade"
+      onRequestClose={onCancel}
+    >
       <View style={styles.overlay}>
         <View style={styles.popup}>
-          <Text style={styles.title}>{t('logout_popup.are_you_sure_logout')}</Text>
+          <Text style={styles.title}>
+            {t('logout_popup.are_you_sure_logout')}
+          </Text>
 
           <View style={styles.buttonContainer}>
             <TouchableOpacity onPress={onCancel} style={styles.cancelButton}>
               <Text style={styles.cancelText}>{t('logout_popup.cancel')}</Text>
             </TouchableOpacity>
-            <View style={{ width: 100 }} />
             <TouchableOpacity onPress={onConfirm} style={styles.logoutButton}>
               <Text style={styles.logoutText}>{t('logout_popup.logout')}</Text>
             </TouchableOpacity>
@@ -38,15 +43,69 @@ export default LogoutConfirmPopup;
 
 const styles = StyleSheet.create({
   overlay: {
-    flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'center', alignItems: 'center',
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   popup: {
-    backgroundColor: 'white', width: '80%', padding: 20, borderRadius: 10, alignItems: 'center',
+    backgroundColor: Colors.white,
+    width: '85%',
+    maxWidth: 400,
+    paddingVertical: 32,
+    paddingHorizontal: 24,
+    borderRadius: 16,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 24,
+    elevation: 12,
   },
-  title: { fontSize: 18, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' },
-  buttonContainer: { flexDirection: 'row', justifyContent: 'space-between' },
-  cancelButton: { backgroundColor: Colors.white, padding: 10, borderRadius: 5, marginRight: 10 },
-  cancelText: { color: Colors.black, fontWeight: 'bold' },
-  logoutButton: { backgroundColor: Colors.main_bule, padding: 10, borderRadius: 5 },
-  logoutText: { color: 'white', fontWeight: 'bold' },
+  title: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: Colors.textPrimary,
+    marginBottom: 32,
+    textAlign: 'center',
+    lineHeight: 28,
+    letterSpacing: -0.3,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    width: '100%',
+    gap: 12,
+  },
+  cancelButton: {
+    flex: 1,
+    backgroundColor: Colors.background,
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  cancelText: {
+    color: Colors.textSecondary,
+    fontSize: 16,
+    fontWeight: '600',
+    letterSpacing: -0.2,
+  },
+  logoutButton: {
+    flex: 1,
+    backgroundColor: Colors.main_bule,
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  logoutText: {
+    color: Colors.white,
+    fontSize: 16,
+    fontWeight: '600',
+    letterSpacing: -0.2,
+  },
 });
