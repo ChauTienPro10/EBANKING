@@ -62,6 +62,7 @@ export type RootStackParamList = {
   Privacy: undefined;
   ChangePassword: undefined;
   About: undefined;
+  FAQ: undefined;
   ScannerScreen: {
     onScanSuccess: (value: string) => void;
   };

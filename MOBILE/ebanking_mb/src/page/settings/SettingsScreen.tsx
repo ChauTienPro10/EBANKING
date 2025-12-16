@@ -302,7 +302,7 @@ const SettingsScreen: React.FC = () => {
             icon="help-circle-outline"
             title={t('settings.help')}
             subtitle={t('settings.help_subtitle')}
-            onPress={() => setShowComingSoonModal(true)}
+            onPress={() => navigation.navigate('Support' as never)}
           />
         </View>
 

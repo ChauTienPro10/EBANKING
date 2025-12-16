@@ -107,7 +107,10 @@ const SupportScreen: React.FC = () => {
       // let phone = `tel:${phoneNumber}`;
       Linking.openURL(`tel:${'0812788212'}`);
     } else if (option.id === 'email') {
-      Linking.openURL(`mailto:${'itchauduongphattien@gmail.com'}`);
+      Linking.openURL(`mailto:${'itletatthang@gmail.com'}`);
+    } else if (option.id === 'faq') {
+      navigation.navigate('FAQ' as never);
+      return;
     }
     console.log('Support option selected:', option);
   };
