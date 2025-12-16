@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Switch,
+  Modal,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useAppNavigation } from '../../hooks/useNavigation';
@@ -25,6 +26,10 @@ import ComingSoonModal from '../../components/ComingSoonModal';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { MenuList } from '../../components';
+import PinInput from '../../components/PinInput';
+import Toast from 'react-native-toast-message';
+import fetch from '../../utils/fetch';
+import { API } from '../../constants/api';
 
 interface SettingItemProps {
   icon: string;
@@ -102,6 +107,13 @@ const SettingsScreen: React.FC = () => {
   const [showLogoutPopup, setShowLogoutPopup] = useState(false);
   const [showLanguagePopup, setShowLanguagePopup] = useState(false);
   const [showComingSoonModal, setShowComingSoonModal] = useState(false);
+  const [showPinModal, setShowPinModal] = useState(false);
+  const [pinInputKey, setPinInputKey] = useState(0);
+  const [isVerifyingPin, setIsVerifyingPin] = useState(false);
+
+  const loginResponse = useSelector(
+    (state: RootState) => state.app.loginResponse,
+  );
 
   const handleQRPress = () => {
     console.log('QR Code pressed - Open QR Scanner');
@@ -136,6 +148,71 @@ const SettingsScreen: React.FC = () => {
     // Navigate to SetPINCode screen
     // The PinInput component will handle both create and delete based on current status
     navigation.navigate('SetPINCode' as never);
+  };
+
+  const handlePrivacyPress = () => {
+    if (pinStatus !== true) {
+      // If PIN is not set, show toast and redirect to PIN setup
+      Toast.show({
+        type: 'info',
+        text1: t('privacy.pin_required_title'),
+        text2: t('privacy.pin_required_message'),
+      });
+      navigation.navigate('SetPINCode' as never);
+      return;
+    }
+    // Show PIN modal for authentication
+    setIsVerifyingPin(false);
+    setPinInputKey(prev => prev + 1);
+    setShowPinModal(true);
+  };
+
+  const handlePinComplete = async (pin: string) => {
+    if (isVerifyingPin) {
+      return;
+    }
+
+    if (!loginResponse?.username) {
+      Toast.show({
+        type: 'error',
+        text1: t('err.user_not_found'),
+      });
+      return;
+    }
+
+    setIsVerifyingPin(true);
+
+    try {
+      const payload = {
+        username: loginResponse.username,
+        pinCode: pin,
+      };
+
+      const response = await fetch.post(API.CHECK_PIN, payload, true);
+
+      if (!response) {
+        throw new Error('PIN verification failed');
+      }
+
+      setShowPinModal(false);
+      // Navigate to Privacy screen after successful PIN verification
+      navigation.navigate('Privacy' as never);
+    } catch (error: any) {
+      const message =
+        typeof error?.message === 'string'
+          ? error.message.replace('INTERNAL: ', '')
+          : 'PIN verification failed';
+
+      Toast.show({
+        type: 'error',
+        text1: t('err.pin_not_true'),
+        text2: message,
+      });
+
+      setPinInputKey(prev => prev + 1);
+    } finally {
+      setIsVerifyingPin(false);
+    }
   };
 
   return (
@@ -207,7 +284,7 @@ const SettingsScreen: React.FC = () => {
             icon="lock-closed-outline"
             title={t('settings.privacy')}
             subtitle={t('settings.privacy_subtitle')}
-            onPress={() => setShowComingSoonModal(true)}
+            onPress={handlePrivacyPress}
           />
         </View>
 
@@ -255,6 +332,44 @@ const SettingsScreen: React.FC = () => {
         visible={showComingSoonModal}
         onClose={() => setShowComingSoonModal(false)}
       />
+
+      {/* PIN Modal for Privacy Access */}
+      <Modal
+        visible={showPinModal}
+        transparent
+        animationType="fade"
+        statusBarTranslucent={true}
+        onRequestClose={() => setShowPinModal(false)}
+      >
+        <View style={styles.pinModalOverlay}>
+          <View style={styles.pinModalContent}>
+            <Text style={styles.pinModalTitle}>
+              {t('privacy.pin_required_title')}
+            </Text>
+            <Text style={styles.pinModalSubtitle}>
+              {isVerifyingPin
+                ? t('card.pin_modal_verifying')
+                : t('privacy.pin_required_message')}
+            </Text>
+            <PinInput
+              key={pinInputKey}
+              length={4}
+              onComplete={handlePinComplete}
+              create={false}
+              hasBiometric={false}
+            />
+            <TouchableOpacity
+              style={styles.pinModalCancel}
+              onPress={() => setShowPinModal(false)}
+            >
+              <Text style={styles.pinModalCancelText}>
+                {t('common.cancel')}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
       <BottomNavigation
         activeTab={activeTab}
         tabs={bottomTabs}
@@ -343,6 +458,49 @@ const styles = StyleSheet.create({
     color: Colors.grey3,
     textAlign: 'center',
     marginTop: 24,
+  },
+  pinModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  pinModalContent: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    padding: 32,
+    width: '100%',
+    maxWidth: 400,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 20 },
+    shadowOpacity: 0.15,
+    shadowRadius: 30,
+    elevation: 15,
+  },
+  pinModalTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: Colors.textPrimary,
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  pinModalSubtitle: {
+    fontSize: 14,
+    color: Colors.grey3,
+    marginBottom: 24,
+    textAlign: 'center',
+  },
+  pinModalCancel: {
+    marginTop: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+  },
+  pinModalCancelText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: Colors.grey3,
   },
 });
 

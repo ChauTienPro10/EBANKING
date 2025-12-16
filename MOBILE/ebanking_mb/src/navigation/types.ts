@@ -59,6 +59,8 @@ export type RootStackParamList = {
   OTPPage: { username: string; targetPage: string };
   ShowNotificationScreen: { title: string; body: string };
   SetPINCode: undefined;
+  Privacy: undefined;
+  ChangePassword: undefined;
   ScannerScreen: {
     onScanSuccess: (value: string) => void;
   };
