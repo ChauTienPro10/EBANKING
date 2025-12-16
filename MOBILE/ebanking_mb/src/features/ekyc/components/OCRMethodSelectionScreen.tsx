@@ -20,6 +20,7 @@ import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { launchImageLibrary } from 'react-native-image-picker';
 import ImageCropper from 'react-native-image-crop-picker';
+import { useTranslation } from 'react-i18next';
 import Colors from '../../../constants/color';
 import ProgressHeader from './shared/ProgressHeader';
 import PreviewView from './ocr-camera/PreviewView';
@@ -34,6 +35,7 @@ type UploadState = 'selection' | 'uploadPrompt' | 'front' | 'back' | 'complete';
 
 const OCRMethodSelectionScreen: React.FC = () => {
   const navigation = useNavigation();
+  const { t } = useTranslation();
 
   // State management for upload flow
   const [uploadState, setUploadState] =
@@ -67,11 +69,11 @@ const OCRMethodSelectionScreen: React.FC = () => {
       }
 
       const granted = await PermissionsAndroid.request(permission, {
-        title: 'Quyền truy cập thư viện ảnh',
-        message: 'Ứng dụng cần quyền truy cập để chọn ảnh CCCD',
-        buttonNeutral: 'Hỏi lại sau',
-        buttonNegative: 'Từ chối',
-        buttonPositive: 'Đồng ý',
+        title: t('ekyc_flow.method_selection.permission_title'),
+        message: t('ekyc_flow.method_selection.permission_message'),
+        buttonNeutral: t('ekyc_flow.method_selection.permission_neutral'),
+        buttonNegative: t('ekyc_flow.method_selection.permission_negative'),
+        buttonPositive: t('ekyc_flow.method_selection.permission_positive'),
       });
 
       return granted === PermissionsAndroid.RESULTS.GRANTED;
@@ -105,7 +107,10 @@ const OCRMethodSelectionScreen: React.FC = () => {
       // Error occurred
       if (result.errorCode) {
         console.error('[Upload] Image library error:', result.errorMessage);
-        Alert.alert('Lỗi', 'Không thể mở thư viện ảnh. Vui lòng thử lại.');
+        Alert.alert(
+          t('ekyc_flow.method_selection.error_title'),
+          t('ekyc_flow.method_selection.error_library'),
+        );
         return null;
       }
 
@@ -117,7 +122,10 @@ const OCRMethodSelectionScreen: React.FC = () => {
       const selectedImage = result.assets[0];
       if (!selectedImage.uri) {
         console.error('[Upload] No URI in selected image');
-        Alert.alert('Lỗi', 'Không thể đọc ảnh đã chọn.');
+        Alert.alert(
+          t('ekyc_flow.method_selection.error_title'),
+          t('ekyc_flow.method_selection.error_read_image'),
+        );
         return null;
       }
 
@@ -133,9 +141,11 @@ const OCRMethodSelectionScreen: React.FC = () => {
         mediaType: 'photo',
         includeBase64: false,
         cropperToolbarTitle:
-          side === 'front' ? 'Cắt ảnh mặt trước CCCD' : 'Cắt ảnh mặt sau CCCD',
-        cropperChooseText: 'Xong',
-        cropperCancelText: 'Hủy',
+          side === 'front'
+            ? t('ekyc_flow.camera.crop_front_title')
+            : t('ekyc_flow.camera.crop_back_title'),
+        cropperChooseText: t('ekyc_flow.camera.crop_done'),
+        cropperCancelText: t('ekyc_flow.camera.crop_cancel'),
       });
 
       return croppedImage.path;
@@ -147,7 +157,10 @@ const OCRMethodSelectionScreen: React.FC = () => {
 
       // Real error
       console.error('[Upload] Image picker/cropper error:', error);
-      Alert.alert('Lỗi', 'Không thể xử lý ảnh. Vui lòng thử lại.');
+      Alert.alert(
+        t('ekyc_flow.method_selection.error_title'),
+        t('ekyc_flow.method_selection.error_process_image'),
+      );
       return null;
     }
   };
@@ -172,9 +185,9 @@ const OCRMethodSelectionScreen: React.FC = () => {
 
     if (!hasPermission) {
       Alert.alert(
-        'Cần cấp quyền',
-        'Vui lòng cấp quyền truy cập thư viện ảnh để tiếp tục.',
-        [{ text: 'Đồng ý' }],
+        t('ekyc_flow.method_selection.permission_required_title'),
+        t('ekyc_flow.method_selection.permission_required_message'),
+        [{ text: t('ekyc_flow.method_selection.permission_positive') }],
       );
       // Stay on upload prompt
       setUploadState(side === 'front' ? 'uploadPrompt' : 'back');
@@ -318,7 +331,9 @@ const OCRMethodSelectionScreen: React.FC = () => {
 
       {/* Content */}
       <View style={styles.content}>
-        <Text style={styles.title}>Vui lòng chọn nội dung</Text>
+        <Text style={styles.title}>
+          {t('ekyc_flow.method_selection.title')}
+        </Text>
 
         {/* Camera Option */}
         <TouchableOpacity
@@ -330,7 +345,9 @@ const OCRMethodSelectionScreen: React.FC = () => {
           <View style={styles.iconContainer}>
             <Icon name="camera" size={32} color={Colors.main_bule} />
           </View>
-          <Text style={styles.optionText}>Chụp ảnh</Text>
+          <Text style={styles.optionText}>
+            {t('ekyc_flow.method_selection.camera_option')}
+          </Text>
         </TouchableOpacity>
 
         {/* Upload Option */}
@@ -343,7 +360,9 @@ const OCRMethodSelectionScreen: React.FC = () => {
           <View style={styles.iconContainer}>
             <Icon name="upload" size={32} color={Colors.main_bule} />
           </View>
-          <Text style={styles.optionText}>Tải ảnh lên</Text>
+          <Text style={styles.optionText}>
+            {t('ekyc_flow.method_selection.upload_option')}
+          </Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

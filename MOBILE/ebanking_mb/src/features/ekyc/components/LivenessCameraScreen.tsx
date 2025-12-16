@@ -11,6 +11,7 @@ import {
   useCameraPermission,
 } from 'react-native-vision-camera';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 import Colors from '../../../constants/color';
 import ProgressHeader from './shared/ProgressHeader';
 import GuidelinesView from './liveness-camera/GuidelinesView';
@@ -20,6 +21,7 @@ import CameraView from './liveness-camera/CameraView';
 const LivenessCameraScreen: React.FC = () => {
   const navigation = useNavigation();
   const route = useRoute();
+  const { t } = useTranslation();
   const { frontImage, backImage } = (route.params as any) || {};
 
   const { hasPermission } = useCameraPermission();
@@ -41,7 +43,10 @@ const LivenessCameraScreen: React.FC = () => {
   const startRecording = async () => {
     if (!camera.current || isRecording || !isCameraReady) {
       if (!isCameraReady) {
-        Alert.alert('Thông báo', 'Camera đang khởi tạo, vui lòng đợi...');
+        Alert.alert(
+          t('ekyc_flow.liveness.camera_error_title'),
+          t('ekyc_flow.liveness.camera_initializing'),
+        );
       }
       return;
     }
@@ -91,13 +96,19 @@ const LivenessCameraScreen: React.FC = () => {
         },
         onRecordingError: error => {
           clearInterval(recordingInterval);
-          Alert.alert('Lỗi', 'Không thể quay video. Vui lòng thử lại.');
+          Alert.alert(
+            t('ekyc_flow.liveness.camera_error_title'),
+            t('ekyc_flow.liveness.recording_error'),
+          );
           setIsRecording(false);
           setRecordingTime(0);
         },
       });
     } catch (error) {
-      Alert.alert('Lỗi', 'Không thể bắt đầu quay. Vui lòng thử lại.');
+      Alert.alert(
+        t('ekyc_flow.liveness.camera_error_title'),
+        t('ekyc_flow.liveness.start_error'),
+      );
       setIsRecording(false);
     }
   };
@@ -129,7 +140,7 @@ const LivenessCameraScreen: React.FC = () => {
         <ProgressHeader currentStep={2} />
         <View style={styles.permissionContainer}>
           <Text style={styles.permissionText}>
-            Cần quyền truy cập Camera để quay video xác thực
+            {t('ekyc_flow.liveness.permission_required')}
           </Text>
         </View>
       </SafeAreaView>
@@ -141,7 +152,9 @@ const LivenessCameraScreen: React.FC = () => {
       <SafeAreaView style={styles.whiteContainer}>
         <ProgressHeader currentStep={2} />
         <View style={styles.permissionContainer}>
-          <Text style={styles.permissionText}>Không tìm thấy camera trước</Text>
+          <Text style={styles.permissionText}>
+            {t('ekyc_flow.liveness.camera_not_found')}
+          </Text>
         </View>
       </SafeAreaView>
     );
@@ -169,8 +182,8 @@ const LivenessCameraScreen: React.FC = () => {
       onCameraReady={() => setIsCameraReady(true)}
       onCameraError={() => {
         Alert.alert(
-          'Lỗi Camera',
-          'Không thể khởi tạo camera. Vui lòng thử lại.',
+          t('ekyc_flow.liveness.camera_error_title'),
+          t('ekyc_flow.liveness.camera_error_message'),
         );
       }}
       onStartRecording={startRecording}

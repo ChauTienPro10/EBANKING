@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Toast from 'react-native-toast-message';
+import { useTranslation } from 'react-i18next';
 import Colors from '../../../../constants/color';
 import ProgressHeader from '../shared/ProgressHeader';
 
@@ -29,6 +30,7 @@ const UploadPromptView: React.FC<UploadPromptViewProps> = ({
   onContinue,
   onConfirm,
 }) => {
+  const { t } = useTranslation();
   const currentImage = side === 'front' ? frontImage : backImage;
   const hasImage = !!currentImage;
   const hasBothImages = !!(frontImage && backImage);
@@ -38,7 +40,7 @@ const UploadPromptView: React.FC<UploadPromptViewProps> = ({
       if (!frontImage) {
         Toast.show({
           type: 'error',
-          text1: 'Vui lòng chọn ảnh mặt trước trước khi tiếp tục',
+          text1: t('ekyc_flow.upload.front_instruction'),
           position: 'top',
           visibilityTime: 3000,
           topOffset: 40,
@@ -51,7 +53,7 @@ const UploadPromptView: React.FC<UploadPromptViewProps> = ({
       if (!backImage) {
         Toast.show({
           type: 'error',
-          text1: 'Vui lòng chọn ảnh mặt sau trước khi tiếp tục',
+          text1: t('ekyc_flow.upload.back_instruction'),
           position: 'top',
           visibilityTime: 3000,
           topOffset: 40,
@@ -67,7 +69,10 @@ const UploadPromptView: React.FC<UploadPromptViewProps> = ({
     if (!hasBothImages) {
       Toast.show({
         type: 'error',
-        text1: 'Vui lòng chọn đầy đủ ảnh mặt trước và mặt sau',
+        text1:
+          t('ekyc_flow.upload.front_instruction') +
+          ' ' +
+          t('ekyc_flow.upload.back_instruction'),
         position: 'top',
         visibilityTime: 3000,
         topOffset: 40,
@@ -93,7 +98,9 @@ const UploadPromptView: React.FC<UploadPromptViewProps> = ({
           ) : (
             <>
               <Icon name="cloud-upload-outline" size={80} color="#9CA3AF" />
-              <Text style={styles.uploadText}>Nhấn vào đây để tải ảnh lên</Text>
+              <Text style={styles.uploadText}>
+                {t('ekyc_flow.upload.upload_button')}
+              </Text>
             </>
           )}
         </TouchableOpacity>
@@ -101,14 +108,20 @@ const UploadPromptView: React.FC<UploadPromptViewProps> = ({
         {/* Instructions */}
         <View style={styles.instructionContainer}>
           <View style={styles.mainInstructionContainer}>
-            <Text style={styles.instructionTitle}>Thẻ căn cước công dân</Text>
+            <Text style={styles.instructionTitle}>CMND/CCCD</Text>
             <View style={styles.badge}>
               <Text style={styles.badgeText}>
-                {side === 'front' ? 'Mặt trước' : 'Mặt sau'}
+                {side === 'front'
+                  ? t('ekyc_flow.complete.front_label')
+                  : t('ekyc_flow.complete.back_label')}
               </Text>
             </View>
           </View>
-          <Text style={styles.instructionSubtitle}>Tải ảnh giấy tờ lên</Text>
+          <Text style={styles.instructionSubtitle}>
+            {side === 'front'
+              ? t('ekyc_flow.upload.front_title')
+              : t('ekyc_flow.upload.back_title')}
+          </Text>
         </View>
 
         {/* Action Buttons */}
@@ -122,7 +135,9 @@ const UploadPromptView: React.FC<UploadPromptViewProps> = ({
               ]}
               onPress={handleContinuePress}
             >
-              <Text style={styles.continueButtonText}>Tiếp Theo</Text>
+              <Text style={styles.continueButtonText}>
+                {t('ekyc_flow.upload.continue_button')}
+              </Text>
             </TouchableOpacity>
           )}
 
@@ -135,7 +150,9 @@ const UploadPromptView: React.FC<UploadPromptViewProps> = ({
               ]}
               onPress={handleContinuePress}
             >
-              <Text style={styles.continueButtonText}>Tiếp Theo</Text>
+              <Text style={styles.continueButtonText}>
+                {t('ekyc_flow.upload.continue_button')}
+              </Text>
             </TouchableOpacity>
           )}
 
@@ -145,7 +162,9 @@ const UploadPromptView: React.FC<UploadPromptViewProps> = ({
               style={styles.confirmButton}
               onPress={handleConfirmPress}
             >
-              <Text style={styles.confirmButtonText}>Xác nhận</Text>
+              <Text style={styles.confirmButtonText}>
+                {t('ekyc_flow.upload.confirm_button')}
+              </Text>
             </TouchableOpacity>
           )}
         </View>

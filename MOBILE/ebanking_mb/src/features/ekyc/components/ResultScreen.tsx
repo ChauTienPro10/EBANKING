@@ -15,6 +15,7 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { fetchUserInfo } from '../../../store/fetchAPI/UserInfoFetch';
 import type { RootState } from '../../../store';
 import Colors from '../../../constants/color';
@@ -25,6 +26,7 @@ const ResultScreen: React.FC = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const route = useRoute();
+  const { t } = useTranslation();
   const loginResponse = useSelector(
     (state: RootState) => state.app.loginResponse,
   );
@@ -81,8 +83,8 @@ const ResultScreen: React.FC = () => {
       setTimeout(() => {
         Toast.show({
           type: 'success',
-          text1: 'eKYC thành công',
-          text2: 'Thông tin từ CCCD đã được cập nhật vào hồ sơ của bạn',
+          text1: t('ekyc_flow.result.toast_success'),
+          text2: t('ekyc_flow.result.toast_success_message'),
           position: 'top',
           visibilityTime: 4000,
         });
@@ -91,8 +93,8 @@ const ResultScreen: React.FC = () => {
       console.error('❌ Error during eKYC completion:', error);
       Toast.show({
         type: 'error',
-        text1: 'Lỗi',
-        text2: 'Không thể hoàn tất xác thực',
+        text1: t('ekyc_flow.result.toast_error'),
+        text2: t('ekyc_flow.result.toast_error_message'),
       });
       // Navigate to Profile anyway
       navigation.navigate('Profile' as never);
@@ -109,9 +111,11 @@ const ResultScreen: React.FC = () => {
           <View style={styles.failIcon}>
             <Text style={styles.failIconText}>×</Text>
           </View>
-          <Text style={styles.resultTitle}>Xác thực thất bại</Text>
+          <Text style={styles.resultTitle}>
+            {t('ekyc_flow.result.failure_title')}
+          </Text>
           <Text style={styles.resultMessage}>
-            Không thể xác thực danh tính của bạn. Vui lòng thử lại.
+            {t('ekyc_flow.result.failure_message')}
           </Text>
         </View>
         <View style={[styles.footer, { paddingTop: 16 }]}>
@@ -119,10 +123,14 @@ const ResultScreen: React.FC = () => {
             style={styles.retryButton}
             onPress={() => navigation.goBack()}
           >
-            <Text style={styles.buttonText}>Thử lại</Text>
+            <Text style={styles.buttonText}>
+              {t('ekyc_flow.result.retry_button')}
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
-            <Text style={styles.closeButtonText}>Đóng</Text>
+            <Text style={styles.closeButtonText}>
+              {t('ekyc_flow.result.close_button')}
+            </Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -171,57 +179,79 @@ const ResultScreen: React.FC = () => {
           <View style={styles.successIcon}>
             <Text style={styles.successIconText}>✓</Text>
           </View>
-          <Text style={styles.resultTitle}>Xác thực thành công!</Text>
+          <Text style={styles.resultTitle}>
+            {t('ekyc_flow.result.success_title')}
+          </Text>
           <Text style={styles.resultMessage}>
-            Vui lòng kiểm tra thông tin bên dưới
+            {t('ekyc_flow.result.success_message')}
           </Text>
 
           {/* Personal Information Card */}
           <View style={styles.infoCard}>
-            <Text style={styles.cardTitle}>Thông tin cá nhân</Text>
+            <Text style={styles.cardTitle}>
+              {t('ekyc_flow.result.personal_info_title')}
+            </Text>
 
             <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Họ và tên</Text>
+              <Text style={styles.infoLabel}>
+                {t('ekyc_flow.result.full_name')}
+              </Text>
               <Text style={styles.infoValue}>{ocrData.name}</Text>
             </View>
 
             <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Số CCCD</Text>
+              <Text style={styles.infoLabel}>
+                {t('ekyc_flow.result.id_number')}
+              </Text>
               <Text style={styles.infoValue}>{ocrData.id}</Text>
             </View>
 
             <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Ngày sinh</Text>
+              <Text style={styles.infoLabel}>
+                {t('ekyc_flow.result.date_of_birth')}
+              </Text>
               <Text style={styles.infoValue}>{ocrData.dob}</Text>
             </View>
 
             <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Giới tính</Text>
+              <Text style={styles.infoLabel}>
+                {t('ekyc_flow.result.gender')}
+              </Text>
               <Text style={styles.infoValue}>{ocrData.gender}</Text>
             </View>
 
             <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Quốc tịch</Text>
+              <Text style={styles.infoLabel}>
+                {t('ekyc_flow.result.nationality')}
+              </Text>
               <Text style={styles.infoValue}>{ocrData.nationality}</Text>
             </View>
 
             <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Địa chỉ</Text>
+              <Text style={styles.infoLabel}>
+                {t('ekyc_flow.result.address')}
+              </Text>
               <Text style={styles.infoValueMultiline}>{ocrData.address}</Text>
             </View>
           </View>
 
           {/* Document Info Card */}
           <View style={styles.infoCard}>
-            <Text style={styles.cardTitle}>Thông tin giấy tờ</Text>
+            <Text style={styles.cardTitle}>
+              {t('ekyc_flow.result.document_info_title')}
+            </Text>
 
             <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Ngày cấp</Text>
+              <Text style={styles.infoLabel}>
+                {t('ekyc_flow.result.issue_date')}
+              </Text>
               <Text style={styles.infoValue}>{ocrData.issueDate}</Text>
             </View>
 
             <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Ngày hết hạn</Text>
+              <Text style={styles.infoLabel}>
+                {t('ekyc_flow.result.expiry_date')}
+              </Text>
               <Text style={styles.infoValue}>{ocrData.expiryDate}</Text>
             </View>
           </View>
@@ -229,7 +259,9 @@ const ResultScreen: React.FC = () => {
           {/* Verification Status */}
           <View style={styles.statusCard}>
             <View style={styles.statusRow}>
-              <Text style={styles.statusLabel}>Độ khớp khuôn mặt</Text>
+              <Text style={styles.statusLabel}>
+                {t('ekyc_flow.result.face_match_score')}
+              </Text>
               <View style={styles.statusBadge}>
                 <Text style={styles.statusValue}>
                   {faceMatchResult?.similarity
@@ -240,9 +272,7 @@ const ResultScreen: React.FC = () => {
             </View>
           </View>
 
-          <Text style={styles.noteText}>
-            Vui lòng kiểm tra kỹ thông tin trước khi xác nhận.
-          </Text>
+          <Text style={styles.noteText}>{t('ekyc_flow.result.note')}</Text>
         </View>
       </ScrollView>
 
@@ -255,7 +285,9 @@ const ResultScreen: React.FC = () => {
           {isCompleting ? (
             <ActivityIndicator color={Colors.white} />
           ) : (
-            <Text style={styles.buttonText}>Xác nhận</Text>
+            <Text style={styles.buttonText}>
+              {t('ekyc_flow.result.confirm_button')}
+            </Text>
           )}
         </TouchableOpacity>
       </View>

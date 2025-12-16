@@ -14,6 +14,7 @@ import {
   Alert,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 import Colors from '../../../constants/color';
 import {
   processOCR,
@@ -28,10 +29,11 @@ import Footer from './review/Footer';
 const ReviewScreen: React.FC = () => {
   const navigation = useNavigation();
   const route = useRoute();
+  const { t } = useTranslation();
   const { frontImage, backImage, videoPath } = (route.params as any) || {};
 
   const [loading, setLoading] = useState(false);
-  const [step, setStep] = useState('Đang xử lý ảnh CMND/CCCD...');
+  const [step, setStep] = useState(t('ekyc_flow.review.step_ocr'));
   const [sessionId, setSessionId] = useState<string | null>(null);
 
   const handleSubmit = async () => {
@@ -39,13 +41,13 @@ const ReviewScreen: React.FC = () => {
       setLoading(true);
 
       // Step 0: Create session (userId extracted from JWT by backend)
-      setStep('Đang khởi tạo phiên...');
+      setStep(t('ekyc_flow.review.step_init'));
       const { createEKYCSession } = await import('../services/ekycApi');
       const session = await createEKYCSession(); // No userId - extracted from JWT
       setSessionId(session.sessionId);
 
       // Step 1: Process OCR
-      setStep('Đang xử lý CMND/CCCD...');
+      setStep(t('ekyc_flow.review.step_ocr'));
       const ocrResult = await processOCR(
         session.sessionId,
         frontImage,
@@ -53,14 +55,14 @@ const ReviewScreen: React.FC = () => {
       );
 
       // Step 2: Process Liveness
-      setStep('Đang xác thực khuôn mặt...');
+      setStep(t('ekyc_flow.review.step_liveness'));
       const livenessResult = await processLiveness(
         session.sessionId,
         videoPath,
       );
 
       // Step 3: Face Match
-      setStep('Đang so sánh khuôn mặt...');
+      setStep(t('ekyc_flow.review.step_face_match'));
       const faceMatchResult = await processFaceMatch(session.sessionId);
 
       setLoading(false);
@@ -182,7 +184,7 @@ const ReviewScreen: React.FC = () => {
           <ActivityIndicator size="large" color={Colors.main_bule} />
           <Text style={styles.loadingText}>{step}</Text>
           <Text style={styles.loadingSubtext}>
-            Vui lòng đợi trong giây lát...
+            {t('ekyc_flow.review.loading_subtitle')}
           </Text>
         </View>
       </SafeAreaView>
@@ -194,7 +196,7 @@ const ReviewScreen: React.FC = () => {
       <ProgressHeader currentStep={3} />
 
       <ScrollView style={styles.scrollView}>
-        <Text style={styles.title}>Xác nhận thông tin</Text>
+        <Text style={styles.title}>{t('ekyc_flow.review.title')}</Text>
 
         <ImageSection frontImage={frontImage} backImage={backImage} />
 

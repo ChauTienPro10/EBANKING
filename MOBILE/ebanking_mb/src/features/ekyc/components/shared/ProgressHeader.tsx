@@ -1,69 +1,74 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import Colors from '../../../../constants/color';
 
 interface ProgressHeaderProps {
   currentStep: 1 | 2 | 3;
 }
 
-const ProgressHeader: React.FC<ProgressHeaderProps> = ({ currentStep }) => (
-  <View style={styles.progressHeader}>
-    <View style={styles.progressContainer}>
-      <View style={styles.stepWrapper}>
-        <View
-          style={[styles.progressStep, currentStep >= 1 && styles.activeStep]}
-        >
-          <Text
-            style={currentStep >= 1 ? styles.activeStepText : styles.stepText}
+const ProgressHeader: React.FC<ProgressHeaderProps> = ({ currentStep }) => {
+  const { t } = useTranslation();
+
+  return (
+    <View style={styles.progressHeader}>
+      <View style={styles.progressContainer}>
+        <View style={styles.stepWrapper}>
+          <View
+            style={[styles.progressStep, currentStep >= 1 && styles.activeStep]}
           >
-            1
+            <Text
+              style={currentStep >= 1 ? styles.activeStepText : styles.stepText}
+            >
+              1
+            </Text>
+          </View>
+          <Text style={currentStep === 1 ? styles.activeLabel : styles.label}>
+            {t('ekyc_flow.progress.step_1')}
           </Text>
         </View>
-        <Text style={currentStep === 1 ? styles.activeLabel : styles.label}>
-          Xác thực
-        </Text>
-      </View>
 
-      <View
-        style={[styles.progressLine, currentStep >= 2 && styles.activeLine]}
-      />
-
-      <View style={styles.stepWrapper}>
         <View
-          style={[styles.progressStep, currentStep >= 2 && styles.activeStep]}
-        >
-          <Text
-            style={currentStep >= 2 ? styles.activeStepText : styles.stepText}
+          style={[styles.progressLine, currentStep >= 2 && styles.activeLine]}
+        />
+
+        <View style={styles.stepWrapper}>
+          <View
+            style={[styles.progressStep, currentStep >= 2 && styles.activeStep]}
           >
-            2
+            <Text
+              style={currentStep >= 2 ? styles.activeStepText : styles.stepText}
+            >
+              2
+            </Text>
+          </View>
+          <Text style={currentStep === 2 ? styles.activeLabel : styles.label}>
+            {t('ekyc_flow.progress.step_2')}
           </Text>
         </View>
-        <Text style={currentStep === 2 ? styles.activeLabel : styles.label}>
-          Quay video
-        </Text>
-      </View>
 
-      <View
-        style={[styles.progressLine, currentStep >= 3 && styles.activeLine]}
-      />
-
-      <View style={styles.stepWrapper}>
         <View
-          style={[styles.progressStep, currentStep >= 3 && styles.activeStep]}
-        >
-          <Text
-            style={currentStep >= 3 ? styles.activeStepText : styles.stepText}
+          style={[styles.progressLine, currentStep >= 3 && styles.activeLine]}
+        />
+
+        <View style={styles.stepWrapper}>
+          <View
+            style={[styles.progressStep, currentStep >= 3 && styles.activeStep]}
           >
-            3
+            <Text
+              style={currentStep >= 3 ? styles.activeStepText : styles.stepText}
+            >
+              3
+            </Text>
+          </View>
+          <Text style={currentStep === 3 ? styles.activeLabel : styles.label}>
+            {t('ekyc_flow.progress.step_3')}
           </Text>
         </View>
-        <Text style={currentStep === 3 ? styles.activeLabel : styles.label}>
-          Kiểm tra
-        </Text>
       </View>
     </View>
-  </View>
-);
+  );
+};
 
 const styles = StyleSheet.create({
   progressHeader: {

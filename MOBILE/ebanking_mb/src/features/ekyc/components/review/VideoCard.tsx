@@ -1,16 +1,23 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import Colors from '../../../../constants/color';
 
 const VideoCard: React.FC = () => {
+  const { t } = useTranslation();
+
   return (
     <View style={styles.videoCard}>
       <View style={styles.videoIconContainer}>
         <Text style={styles.videoIcon}>🎥</Text>
       </View>
       <View style={styles.videoContent}>
-        <Text style={styles.videoTitle}>Video xác thực</Text>
-        <Text style={styles.videoStatus}>Video đã được ghi lại thành công</Text>
+        <Text style={styles.videoTitle}>
+          {t('ekyc_flow.review.video_title')}
+        </Text>
+        <Text style={styles.videoStatus}>
+          {t('ekyc_flow.review.video_recorded')}
+        </Text>
       </View>
       <View style={styles.videoCheckmark}>
         <Text style={styles.checkmarkText}>✓</Text>
