@@ -33,6 +33,8 @@ import FaceAuthScreen from '../features/face-auth/FaceAuthScreen';
 import LotteryScreen from '../page/lottery/LotteryScreen';
 import StatisticsScreen from '../page/statistics/StatisticsScreen';
 import SuspiciousTransactionsScreen from '../page/transaction/SuspiciousTransactionsScreen';
+import PrivacyScreen from '../page/settings/PrivacyScreen';
+import ChangePasswordScreen from '../page/settings/ChangePasswordScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -86,6 +88,8 @@ export default function MainStack() {
         component={ShowNotificationScreen}
       />
       <Stack.Screen name="SetPINCode" component={SetPinCodeScreen} />
+      <Stack.Screen name="Privacy" component={PrivacyScreen} />
+      <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
       <Stack.Screen name="ScannerScreen" component={ScannerScreen} />
       <Stack.Screen name="Notifications" component={NotiScreen} />
 
