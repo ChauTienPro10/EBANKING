@@ -9,7 +9,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useTranslation } from "react-i18next";
 
 interface FieldConfig {
   name: string;
@@ -38,6 +45,7 @@ export function CRUDModal({
   onSubmit,
   loading = false,
 }: CRUDModalProps) {
+  const { t } = useTranslation();
   const [formData, setFormData] = React.useState<Record<string, unknown>>(
     initialData || {}
   );
@@ -65,7 +73,7 @@ export function CRUDModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="min-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-full sm:max-w-xl max-h-[90vh] overflow-y-auto">
         <DialogClose />
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
@@ -81,17 +89,20 @@ export function CRUDModal({
               </Label>
               {field.type === "select" ? (
                 <Select
-                  id={field.name}
                   value={String(formData[field.name] || "")}
-                  onChange={(e) => handleChange(field.name, e.target.value)}
+                  onValueChange={(value) => handleChange(field.name, value)}
                   required={field.required}
                 >
-                  <option value="">Select {field.label}</option>
-                  {field.options?.map((opt) => (
-                    <option key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </option>
-                  ))}
+                  <SelectTrigger id={field.name}>
+                    <SelectValue placeholder={`Select ${field.label}`} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {field.options?.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
                 </Select>
               ) : (
                 <Input
@@ -111,10 +122,14 @@ export function CRUDModal({
               onClick={() => onOpenChange(false)}
               disabled={loading}
             >
-              Cancel
+              {t("common.cancel")}
             </Button>
             <Button type="submit" disabled={loading}>
-              {loading ? "Saving..." : initialData ? "Update" : "Create"}
+              {loading
+                ? t("common.saving")
+                : initialData
+                ? t("common.update")
+                : t("common.create")}
             </Button>
           </div>
         </form>

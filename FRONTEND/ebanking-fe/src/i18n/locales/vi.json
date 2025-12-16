@@ -4,7 +4,10 @@
     "workspace": "Không gian làm việc {{role}}",
     "logout": "Đăng xuất",
     "role": "Vai trò",
-    "roles": { "Admin": "Admin", "Manager": "Quản lý", "Staff": "Nhân viên" },
+    "roles": {
+      "Admin": "Admin",
+      "Staff": "Nhân viên"
+    },
     "nav": {
       "dashboard": "Tổng quan",
       "transactions": "Giao dịch",
@@ -17,8 +20,36 @@
       "loans": "Vay vốn",
       "tickets": "Hỗ trợ",
       "logs": "Nhật ký hệ thống",
-      "settings": "Cài đặt"
+      "settings": "Cài đặt",
+      "system": "Hệ thống"
     }
+  },
+  "staff": {
+    "title": "Quản lý nhân viên",
+    "create": "Thêm nhân viên",
+    "edit": "Sửa nhân viên",
+    "deleteTitle": "Vô hiệu hóa nhân viên",
+    "deleteDescription": "Bạn có chắc muốn vô hiệu hóa nhân viên này không?",
+    "empty": "Không tìm thấy nhân viên nào",
+    "search": "Tìm kiếm theo tên, username...",
+    "filter": {
+      "allRoles": "Tất cả vai trò",
+      "allStatuses": "Tất cả trạng thái"
+    },
+    "status": {
+      "active": "Hoạt động",
+      "inactive": "Vô hiệu hóa"
+    },
+    "table": {
+      "username": "Tên đăng nhập",
+      "name": "Họ và tên",
+      "role": "Vai trò",
+      "status": "Trạng thái"
+    }
+  },
+  "roles": {
+    "admin": "Quản trị viên",
+    "staff": "Nhân viên"
   },
   "auth": {
     "title": "Bảng điều khiển eBanking",
@@ -48,23 +79,92 @@
     "chartAccountTypes": "Phân bố loại tài khoản",
     "realtime": "Realtime",
     "recentTransactions": "Giao dịch gần đây",
-    "realtimeTimeline": "Dòng thời gian giao dịch realtime"
+    "realtimeTimeline": "Dòng thời gian giao dịch realtime",
+    "noRecentTransactions": "Không có giao dịch nào gần đây",
+    "loading": "Đang tải dữ liệu...",
+    "errors": {
+      "loadFailed": "Không thể tải dữ liệu dashboard."
+    }
   },
   "transactions": {
     "search": "Tra cứu lịch sử",
-    "filters": { "id": "Mã giao dịch", "type": "Loại", "from": "Từ ngày", "to": "Đến ngày" },
+    "filters": {
+      "searchPlaceholder": "Tìm theo Mã GD, tài khoản...",
+      "allTypes": "Tất cả loại GD",
+      "allStatuses": "Tất cả trạng thái",
+      "from": "Từ ngày",
+      "to": "Đến ngày"
+    },
+    "types": {
+      "transfer": "Chuyển tiền",
+      "topup": "Nạp tiền",
+      "billPayment": "Thanh toán hóa đơn",
+      "withdraw": "Rút tiền"
+    },
+    "statuses": {
+      "success": "Thành công",
+      "pending": "Đang chờ",
+      "failed": "Thất bại",
+      "suspicious": "Nghi vấn"
+    },
     "realtime": "Bảng realtime",
     "list": "Danh sách giao dịch",
-    "table": { "id": "Mã", "type": "Loại", "amount": "Số tiền", "status": "Trạng thái", "time": "Thời gian" }
+    "table": {
+      "id": "Mã",
+      "type": "Loại",
+      "amount": "Số tiền",
+      "status": "Trạng thái",
+      "time": "Thời gian"
+    }
   },
   "customers": {
-    "filters": { "name": "Tên", "phone": "Số điện thoại", "status": "Trạng thái", "kyc": "KYC" },
+    "filters": {
+      "name": "Tên",
+      "phone": "Số điện thoại",
+      "status": "Trạng thái",
+      "kyc": "KYC"
+    },
     "list": "Danh sách khách hàng",
-    "table": { "name": "Tên", "phone": "SĐT", "status": "Trạng thái", "kyc": "KYC" }
+    "table": {
+      "name": "Tên",
+      "phone": "SĐT",
+      "status": "Trạng thái",
+      "kyc": "KYC"
+    },
+    "actions": {
+      "lock": "Khóa",
+      "unlock": "Mở khóa",
+      "ban": "Cấm"
+    },
+    "modals": {
+      "lockTitle": "Khóa người dùng",
+      "banTitle": "Cấm người dùng",
+      "reason": "Lý do"
+    }
   },
   "accounts": {
     "list": "Danh sách tài khoản",
-    "table": { "no": "Số tài khoản", "type": "Loại", "owner": "Chủ sở hữu", "balance": "Số dư", "status": "Trạng thái" }
+    "table": {
+      "no": "Số tài khoản",
+      "type": "Loại",
+      "owner": "Chủ sở hữu",
+      "balance": "Số dư",
+      "status": "Trạng thái"
+    },
+    "actions": {
+      "lock": "Khóa",
+      "unlock": "Mở khóa",
+      "freeze": "Đóng băng",
+      "updateLimits": "Cập nhật hạn mức"
+    },
+    "modals": {
+      "lockTitle": "Khóa tài khoản",
+      "freezeTitle": "Đóng băng tài khoản",
+      "updateLimitsTitle": "Cập nhật hạn mức",
+      "reason": "Lý do",
+      "dailyLimit": "Hạn mức hàng ngày",
+      "perTransactionLimit": "Hạn mức mỗi giao dịch"
+    }
   },
   "reports": {
     "filters": "Bộ lọc báo cáo",
@@ -77,7 +177,16 @@
     "exportXls": "Xuất Excel",
     "exportPdf": "Xuất PDF"
   },
-  "audit": { "title": "Nhật ký hoạt động", "table": { "time": "Thời gian", "user": "Nhân viên", "ip": "IP", "device": "Thiết bị", "action": "Hành động" } },
+  "audit": {
+    "title": "Nhật ký hoạt động",
+    "table": {
+      "time": "Thời gian",
+      "user": "Nhân viên",
+      "ip": "IP",
+      "device": "Thiết bị",
+      "action": "Hành động"
+    }
+  },
   "loans": {
     "title": "Đơn vay vốn",
     "search": "Tìm theo khách hàng hoặc mã",
@@ -86,7 +195,14 @@
     "statusPending": "Chờ duyệt",
     "statusRejected": "Từ chối",
     "list": "Danh sách đơn vay",
-    "table": { "id": "Mã", "customer": "Khách hàng", "amount": "Số tiền", "duration": "Thời hạn", "status": "Trạng thái", "action": "Thao tác" },
+    "table": {
+      "id": "Mã",
+      "customer": "Khách hàng",
+      "amount": "Số tiền",
+      "duration": "Thời hạn",
+      "status": "Trạng thái",
+      "action": "Thao tác"
+    },
     "view": "Xem",
     "details": "Chi tiết đơn vay",
     "customer": "Khách hàng",
@@ -100,12 +216,38 @@
   "tickets": {
     "title": "Hỗ trợ khách hàng",
     "search": "Tìm theo khách hàng, chủ đề hoặc mã",
-    "statusAll": "Tất cả",
-    "statusOpen": "Mở",
-    "statusInProgress": "Đang xử lý",
-    "statusResolved": "Đã giải quyết",
+    "statusAll": "Tất cả trạng thái",
+    "filterAllCategory": "Tất cả danh mục",
+    "filterAllPriority": "Tất cả độ ưu tiên",
+    "statuses": {
+      "open": "Mở",
+      "inProgress": "Đang xử lý",
+      "resolved": "Đã giải quyết",
+      "closed": "Đã đóng"
+    },
+    "categories": {
+      "payment": "Thanh toán",
+      "account": "Tài khoản",
+      "security": "Bảo mật",
+      "technical": "Kỹ thuật",
+      "billing": "Hóa đơn"
+    },
+    "priorities": {
+      "low": "Thấp",
+      "medium": "Trung bình",
+      "high": "Cao",
+      "urgent": "Khẩn cấp"
+    },
     "list": "Danh sách ticket",
-    "table": { "id": "Mã", "customer": "Khách hàng", "subject": "Chủ đề", "category": "Danh mục", "priority": "Độ ưu tiên", "status": "Trạng thái", "action": "Thao tác" },
+    "table": {
+      "id": "Mã",
+      "customer": "Khách hàng",
+      "subject": "Chủ đề",
+      "category": "Danh mục",
+      "priority": "Độ ưu tiên",
+      "status": "Trạng thái",
+      "action": "Thao tác"
+    },
     "view": "Xem",
     "customer": "Khách hàng",
     "category": "Danh mục",
@@ -122,7 +264,22 @@
     "actionAll": "Tất cả hành động",
     "roleAll": "Tất cả vai trò",
     "list": "Danh sách nhật ký",
-    "table": { "time": "Thời gian", "user": "Người dùng", "role": "Vai trò", "action": "Hành động", "ip": "Địa chỉ IP", "device": "Thiết bị", "details": "Chi tiết" }
+    "table": {
+      "time": "Thời gian",
+      "user": "Người dùng",
+      "role": "Vai trò",
+      "action": "Hành động",
+      "ip": "Địa chỉ IP",
+      "device": "Thiết bị",
+      "details": "Chi tiết",
+      "result": "Kết quả"
+    },
+    "securityNoteTitle": "Lưu ý bảo mật:",
+    "securityNoteBody": "Tất cả nhật ký hệ thống đều ở chế độ chỉ đọc và không thể sửa đổi hoặc xóa vì mục đích kiểm toán.",
+    "results": {
+      "success": "Thành công",
+      "failed": "Thất bại"
+    }
   },
   "settings": {
     "title": "Cài đặt hệ thống",
@@ -134,7 +291,10 @@
     "module": "Module"
   },
   "notifications": {
-    "tabs": { "send": "Gửi thông báo", "history": "Lịch sử thông báo" },
+    "tabs": {
+      "send": "Gửi thông báo",
+      "history": "Lịch sử thông báo"
+    },
     "receiver": {
       "title": "Chọn người nhận",
       "single": "Một người dùng",
@@ -162,7 +322,11 @@
         "body": "Nhập nội dung thông báo",
         "link": "https://..."
       },
-      "priority": { "low": "Thấp", "normal": "Bình thường", "high": "Cao" }
+      "priority": {
+        "low": "Thấp",
+        "normal": "Bình thường",
+        "high": "Cao"
+      }
     },
     "preview": {
       "panelTitle": "Xem trước",
@@ -197,7 +361,11 @@
         "statusAll": "Tất cả trạng thái",
         "keyword": "Tìm theo tiêu đề"
       },
-      "status": { "success": "Thành công", "failed": "Thất bại", "scheduled": "Đã lên lịch" },
+      "status": {
+        "success": "Thành công",
+        "failed": "Thất bại",
+        "scheduled": "Đã lên lịch"
+      },
       "loading": "Đang tải lịch sử...",
       "empty": "Chưa có thông báo nào",
       "pagination": {
@@ -224,8 +392,15 @@
       "schedule": "Thời gian",
       "sendNow": "Gửi ngay",
       "receivers": "Danh sách người nhận",
-      "table": { "receiver": "Người nhận", "status": "Trạng thái giao nhận" },
-      "delivery": { "delivered": "Đã gửi", "failed": "Thất bại", "pending": "Đang chờ" }
+      "table": {
+        "receiver": "Người nhận",
+        "status": "Trạng thái giao nhận"
+      },
+      "delivery": {
+        "delivered": "Đã gửi",
+        "failed": "Thất bại",
+        "pending": "Đang chờ"
+      }
     },
     "errors": {
       "titleRequired": "Vui lòng nhập tiêu đề",
@@ -238,10 +413,11 @@
       "error": "Không thể gửi thông báo"
     }
   },
-  "common": { "notFound": "Không tìm thấy" }
+  "common": {
+    "notFound": "Không tìm thấy",
+    "cancel": "Hủy",
+    "create": "Tạo",
+    "update": "Cập nhật",
+    "saving": "Đang lưu..."
+  }
 }
-
-
-
-
-

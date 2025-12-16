@@ -1,56 +1,99 @@
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TBody, TD, TH, THead, TR } from "@/components/ui/table";
-import { LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import {
+  LineChart,
+  Line,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
-import usersData from "@/data/users.json";
-import accountsData from "@/data/accounts.json";
-import transactionsData from "@/data/transactions.json";
-import loansData from "@/data/loans.json";
+import { getDashboardStats } from "@/services/dashboardService";
+import type { DashboardStats } from "@/services/dashboardService";
+import type { Transaction } from "@/services/transactionService";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
 export function DashboardPage() {
   const { t } = useTranslation();
-  
-  const today = new Date().toISOString().split("T")[0];
-  const todayTransactions = transactionsData.transactions.filter(
-    (tx) => tx.timestamp.startsWith(today)
-  );
-  const suspiciousTx = transactionsData.transactions.filter(
-    (tx) => tx.status === "Suspicious"
-  );
-  
-  const approvedLoans = loansData.loans.filter((l) => l.status === "Approved").length;
-  const pendingLoans = loansData.loans.filter((l) => l.status === "Pending").length;
-  const rejectedLoans = loansData.loans.filter((l) => l.status === "Rejected").length;
-  
-  const savingAccounts = accountsData.accounts.filter((a) => a.type === "Saving").length;
-  const currentAccounts = accountsData.accounts.filter((a) => a.type === "Current").length;
-  
-  const last7Days = Array.from({ length: 7 }, (_, i) => {
-    const date = new Date();
-    date.setDate(date.getDate() - (6 - i));
-    return date.toISOString().split("T")[0];
-  });
-  
-  const dailyTxData = last7Days.map((date) => {
-    const count = transactionsData.transactions.filter((tx) =>
-      tx.timestamp.startsWith(date)
-    ).length;
-    return { date: new Date(date).toLocaleDateString("vi-VN", { month: "short", day: "numeric" }), count };
-  });
-  
-  const accountTypeData = [
-    { name: "Saving", value: savingAccounts },
-    { name: "Current", value: currentAccounts },
-  ];
-  
-  const recentTransactions = transactionsData.transactions
-    .slice()
-    .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
-    .slice(0, 5);
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await getDashboardStats();
+        setStats(response.data);
+      } catch (err) {
+        console.error("Failed to fetch dashboard stats", err);
+        setError("dashboard.errors.loadFailed");
+      } finally {
+        setLoading(false);
+      }
+    };
+    void fetchStats();
+  }, [setError]);
+
+  const dailyCounts = stats?.dailyTransactionCounts ?? [];
+  const dailyTxData = dailyCounts.map((item) => ({
+    ...item,
+    date: new Date(item.date).toLocaleDateString("vi-VN", {
+      month: "short",
+      day: "numeric",
+    }),
+  }));
+
+  const typeDist = stats?.accountTypeDistribution ?? [];
+  const accountTypeData = typeDist.map((item) => ({
+    name: item.type,
+    value: item.count,
+  }));
+
+  // Recent transactions are not part of stats endpoint, this can be a separate feature.
+  const recentTransactions: Transaction[] = [];
+
+  if (loading) {
+    return (
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {[...Array(4)].map((_, i) => (
+            <Skeleton key={i} className="h-24" />
+          ))}
+        </div>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          {[...Array(3)].map((_, i) => (
+            <Skeleton key={i} className="h-24" />
+          ))}
+        </div>
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+          <Skeleton className="h-80 lg:col-span-2" />
+          <Skeleton className="h-80" />
+        </div>
+        <Skeleton className="h-64" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return <div className="text-center text-destructive">{t(error)}</div>;
+  }
+
+  if (!stats) {
+    return <div className="text-center">{t("dashboard.loading")}</div>;
+  }
 
   return (
     <div className="space-y-4">
@@ -67,7 +110,7 @@ export function DashboardPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="text-2xl font-semibold">
-              {usersData.customers.length}
+              {stats.totalUsers}
             </CardContent>
           </Card>
         </motion.div>
@@ -83,7 +126,7 @@ export function DashboardPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="text-2xl font-semibold">
-              {accountsData.accounts.length}
+              {stats.totalAccounts}
             </CardContent>
           </Card>
         </motion.div>
@@ -99,7 +142,7 @@ export function DashboardPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="text-2xl font-semibold">
-              {todayTransactions.length}
+              {stats.totalTransactionsToday}
             </CardContent>
           </Card>
         </motion.div>
@@ -115,12 +158,12 @@ export function DashboardPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="text-2xl font-semibold text-destructive">
-              {suspiciousTx.length}
+              {stats.suspiciousTransactions}
             </CardContent>
           </Card>
         </motion.div>
       </div>
-      
+
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -129,10 +172,12 @@ export function DashboardPage() {
         >
           <Card>
             <CardHeader>
-              <CardTitle className="text-sm">{t("dashboard.metrics.loansApproved")}</CardTitle>
+              <CardTitle className="text-sm">
+                {t("dashboard.metrics.activeUsers")}
+              </CardTitle>
             </CardHeader>
             <CardContent className="text-2xl font-semibold text-green-600">
-              {approvedLoans}
+              {stats.activeUsers}
             </CardContent>
           </Card>
         </motion.div>
@@ -143,10 +188,12 @@ export function DashboardPage() {
         >
           <Card>
             <CardHeader>
-              <CardTitle className="text-sm">{t("dashboard.metrics.loansPending")}</CardTitle>
+              <CardTitle className="text-sm">
+                {t("dashboard.metrics.lockedAccounts")}
+              </CardTitle>
             </CardHeader>
             <CardContent className="text-2xl font-semibold text-amber-600">
-              {pendingLoans}
+              {stats.lockedAccounts}
             </CardContent>
           </Card>
         </motion.div>
@@ -157,10 +204,12 @@ export function DashboardPage() {
         >
           <Card>
             <CardHeader>
-              <CardTitle className="text-sm">{t("dashboard.metrics.loansRejected")}</CardTitle>
+              <CardTitle className="text-sm">
+                {t("dashboard.metrics.failedTransactions")}
+              </CardTitle>
             </CardHeader>
             <CardContent className="text-2xl font-semibold text-red-600">
-              {rejectedLoans}
+              {stats.failedTransactions}
             </CardContent>
           </Card>
         </motion.div>
@@ -185,7 +234,12 @@ export function DashboardPage() {
                   <YAxis />
                   <Tooltip />
                   <Legend />
-                  <Line type="monotone" dataKey="count" stroke="#8884d8" strokeWidth={2} />
+                  <Line
+                    type="monotone"
+                    dataKey="count"
+                    stroke="#8884d8"
+                    strokeWidth={2}
+                  />
                 </LineChart>
               </ResponsiveContainer>
             </CardContent>
@@ -208,13 +262,18 @@ export function DashboardPage() {
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                    label={({ name, percent }) =>
+                      `${name} ${(percent * 100).toFixed(0)}%`
+                    }
                     outerRadius={80}
                     fill="#8884d8"
                     dataKey="value"
                   >
-                    {accountTypeData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    {accountTypeData.map((_, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
                     ))}
                   </Pie>
                   <Tooltip />
@@ -246,29 +305,41 @@ export function DashboardPage() {
                 </TR>
               </THead>
               <TBody>
-                {recentTransactions.map((tx) => (
-                  <TR key={tx.id}>
-                    <TD className="font-medium">{tx.id}</TD>
-                    <TD>{tx.type}</TD>
-                    <TD>{tx.amount.toLocaleString("vi-VN")} {tx.currency}</TD>
-                    <TD>
-                      <Badge
-                        variant={
-                          tx.status === "Success"
-                            ? "success"
-                            : tx.status === "Failed"
-                            ? "destructive"
-                            : tx.status === "Suspicious"
-                            ? "destructive"
-                            : "warning"
-                        }
-                      >
-                        {tx.status}
-                      </Badge>
+                {recentTransactions.length === 0 ? (
+                  <TR>
+                    <TD colSpan={5} className="text-center">
+                      {t("dashboard.noRecentTransactions")}
                     </TD>
-                    <TD>{new Date(tx.timestamp).toLocaleTimeString("vi-VN")}</TD>
                   </TR>
-                ))}
+                ) : (
+                  recentTransactions.map((tx) => (
+                    <TR key={tx.transactionId}>
+                      <TD className="font-medium">{tx.transactionId}</TD>
+                      <TD>{tx.transactionType}</TD>
+                      <TD>
+                        {tx.amount.toLocaleString("vi-VN")} {tx.currency}
+                      </TD>
+                      <TD>
+                        <Badge
+                          variant={
+                            tx.status === "Success"
+                              ? "success"
+                              : tx.status === "Failed"
+                              ? "destructive"
+                              : tx.status === "Suspicious"
+                              ? "destructive"
+                              : "warning"
+                          }
+                        >
+                          {tx.status}
+                        </Badge>
+                      </TD>
+                      <TD>
+                        {new Date(tx.transactionAt).toLocaleTimeString("vi-VN")}
+                      </TD>
+                    </TR>
+                  ))
+                )}
               </TBody>
             </Table>
           </CardContent>
