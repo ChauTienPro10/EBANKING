@@ -3,6 +3,15 @@ import { AccountTransResponse } from '../AccountTransResponse';
 import { fetchAccountTransInfo } from '../fetchAPI/AccountFetch';
 import { UserInfoModel } from '../UserInfoModel';
 import { fetchUserInfo } from '../fetchAPI/UserInfoFetch';
+import { AnalysisData } from '../AnalysisModel';
+import {
+  fetchAnalysis30Days,
+  fetchAnalysisCurrentMonth,
+  fetchAnalysisPreviousMonth,
+  fetchAnalysisCurrentWeek,
+  fetchAnalysisPreviousWeek,
+  fetchAnalysisCustom,
+} from '../fetchAPI/AnalysisFetch';
 
 interface AppState {
   language: string;
@@ -19,6 +28,12 @@ interface AppState {
   };
   cardStatus: 'active' | 'locked';
   notificationCount: number;
+  analysis30Days: AnalysisData | null;
+  analysisCurrentMonth: AnalysisData | null;
+  analysisPreviousMonth: AnalysisData | null;
+  analysisCurrentWeek: AnalysisData | null;
+  analysisPreviousWeek: AnalysisData | null;
+  analysisCustom: AnalysisData | null;
 }
 
 const initialState: AppState = {
@@ -36,6 +51,12 @@ const initialState: AppState = {
   },
   cardStatus: 'active',
   notificationCount: 0,
+  analysis30Days: null,
+  analysisCurrentMonth: null,
+  analysisPreviousMonth: null,
+  analysisCurrentWeek: null,
+  analysisPreviousWeek: null,
+  analysisCustom: null,
 };
 
 const appSlice = createSlice({
@@ -109,6 +130,12 @@ const appSlice = createSlice({
       state.pinStatus = false;
       state.cardStatus = 'active';
       state.notificationCount = 0;
+      state.analysis30Days = null;
+      state.analysisCurrentMonth = null;
+      state.analysisPreviousMonth = null;
+      state.analysisCurrentWeek = null;
+      state.analysisPreviousWeek = null;
+      state.analysisCustom = null;
     },
   },
   extraReducers: builder => {
@@ -124,6 +151,42 @@ const appSlice = createSlice({
       })
       .addCase(fetchUserInfo.rejected, (state, action) => {
         console.error('[FETCH FAILED]', action.payload);
+      })
+      .addCase(fetchAnalysis30Days.fulfilled, (state, action) => {
+        state.analysis30Days = action.payload;
+      })
+      .addCase(fetchAnalysis30Days.rejected, (state, action) => {
+        console.error('[FETCH FAILED] Analysis30Days', action.payload);
+      })
+      .addCase(fetchAnalysisCurrentMonth.fulfilled, (state, action) => {
+        state.analysisCurrentMonth = action.payload;
+      })
+      .addCase(fetchAnalysisCurrentMonth.rejected, (state, action) => {
+        console.error('[FETCH FAILED] AnalysisCurrentMonth', action.payload);
+      })
+      .addCase(fetchAnalysisPreviousMonth.fulfilled, (state, action) => {
+        state.analysisPreviousMonth = action.payload;
+      })
+      .addCase(fetchAnalysisPreviousMonth.rejected, (state, action) => {
+        console.error('[FETCH FAILED] AnalysisPreviousMonth', action.payload);
+      })
+      .addCase(fetchAnalysisCurrentWeek.fulfilled, (state, action) => {
+        state.analysisCurrentWeek = action.payload;
+      })
+      .addCase(fetchAnalysisCurrentWeek.rejected, (state, action) => {
+        console.error('[FETCH FAILED] AnalysisCurrentWeek', action.payload);
+      })
+      .addCase(fetchAnalysisPreviousWeek.fulfilled, (state, action) => {
+        state.analysisPreviousWeek = action.payload;
+      })
+      .addCase(fetchAnalysisPreviousWeek.rejected, (state, action) => {
+        console.error('[FETCH FAILED] AnalysisPreviousWeek', action.payload);
+      })
+      .addCase(fetchAnalysisCustom.fulfilled, (state, action) => {
+        state.analysisCustom = action.payload;
+      })
+      .addCase(fetchAnalysisCustom.rejected, (state, action) => {
+        console.error('[FETCH FAILED] AnalysisCustom', action.payload);
       });
   },
 });
