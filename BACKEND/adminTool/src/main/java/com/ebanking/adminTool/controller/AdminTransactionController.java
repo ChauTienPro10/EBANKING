@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
  * Admin Transaction Management Controller
  */
 @RestController
-@RequestMapping("/api/admin/transactions")
+@RequestMapping("/admin/transactions")
 @RequiredArgsConstructor
 @Slf4j
 public class AdminTransactionController {

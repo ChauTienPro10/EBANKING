@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -40,20 +41,24 @@ public class SecurityConfig {
                                 .sessionManagement(session -> session
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                                 .authorizeHttpRequests(auth -> auth
-                                                // 1) Auth endpoints (public)
-                                                .requestMatchers("/api/admin/auth/**").permitAll()
-                                                // 2) Health & monitoring (public)
-                                                .requestMatchers("/api/admin/health", "/actuator/health",
-                                                                "/actuator/info")
+                                                .requestMatchers(
+                                                                "/api/admin/auth/**",
+                                                                "/admin/auth/**",
+                                                                "/api/admin/setup/**",
+                                                                "/admin/setup/**",
+                                                                "/api/admin/health",
+                                                                "/admin/health",
+                                                                "/actuator/**",
+                                                                "/swagger-ui/**",
+                                                                "/v3/api-docs/**",
+                                                                "/error",
+                                                                "/static/**",
+                                                                "/*.png", "/*.ico", "/*.jpg", "/*.css", "/*.js")
                                                 .permitAll()
-                                                // 3) Static resources (public)
-                                                .requestMatchers("/error", "/static/**", "/*.png", "/*.ico", "/*.jpg")
-                                                .permitAll()
-                                                // 4) Admin endpoints (protected)
-                                                .requestMatchers("/api/admin/**").authenticated()
-                                                // 5) Deny everything else
-                                                .anyRequest().denyAll())
+                                                .anyRequest().authenticated())
                                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                                .httpBasic(AbstractHttpConfigurer::disable)
+                                .formLogin(AbstractHttpConfigurer::disable)
                                 .exceptionHandling(ex -> ex.authenticationEntryPoint((req, res, ae) -> {
                                         res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                                         res.setContentType("application/json;charset=UTF-8");
@@ -85,8 +90,16 @@ public class SecurityConfig {
         }
 
         @Bean
+        public org.springframework.security.authentication.AuthenticationManager authenticationManager(
+                        org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration configuration)
+                        throws Exception {
+                return configuration.getAuthenticationManager();
+        }
+
+        @Bean
         public PasswordEncoder passwordEncoder() {
-                return new BCryptPasswordEncoder();
+                return new BCryptPasswordEncoder(
+                                org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder.BCryptVersion.$2A);
         }
 
 }
