@@ -202,7 +202,23 @@
     "privacy_subtitle": "Cài đặt quyền riêng tư",
     "about_subtitle": "Thông tin ứng dụng",
     "help_subtitle": "Nhận trợ giúp và hỗ trợ",
-    "version_info": "eBanking © 2025 v1.0"
+    "version_info": "TTA E-Bank © 2025 v1.0"
+  },
+  "about": {
+    "title": "Giới thiệu",
+    "app_name": "TTA E-Bank",
+    "version": "Phiên bản 1.0.0",
+    "greeting": "Xin chào,",
+    "description": "TTA E-Bank là ứng dụng ngân hàng số được chúng tôi phát triển và mô phỏng dưới dạng đồ án tốt nghiệp. Chúng tôi mong muốn mang đến trải nghiệm ngân hàng đơn giản, an toàn và tiện lợi cho người dùng.",
+    "features_title": "Tính năng nổi bật:",
+    "feature_secure": "Giao dịch an toàn với mã hóa",
+    "feature_fast": "Chuyển tiền nhanh chóng và tức thì",
+    "feature_support": "Hỗ trợ khách hàng 24/7",
+    "feature_multicurrency": "Hỗ trợ đa tiền tệ",
+    "closing": "Cảm ơn bạn đã sử dụng ứng dụng của chúng tôi!",
+    "team": "Nhóm phát triển TTA E-Bank",
+    "contact_title": "Liên hệ",
+    "copyright": "© 2025 TTA E-Bank - Đồ án tốt nghiệp"
   },
   "privacy": {
     "title": "Quyền riêng tư",

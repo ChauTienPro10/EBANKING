@@ -197,7 +197,23 @@
     "privacy_subtitle": "Privacy settings",
     "about_subtitle": "App information",
     "help_subtitle": "Get help and support",
-    "version_info": "eBanking © 2025 v1.0"
+    "version_info": "TTA E-Bank © 2025 v1.0"
+  },
+  "about": {
+    "title": "About",
+    "app_name": "TTA E-Bank",
+    "version": "Version 1.0.0",
+    "greeting": "Hello,",
+    "description": "TTA E-Bank is a digital banking application that we developed and modeled as our graduation project. We aim to provide users with a simple, secure, and convenient banking experience.",
+    "features_title": "Key Features:",
+    "feature_secure": "Secure transactions with encryption",
+    "feature_fast": "Fast and instant money transfers",
+    "feature_support": "24/7 customer support",
+    "feature_multicurrency": "Multi-currency support",
+    "closing": "Thank you for using our application!",
+    "team": "TTA E-Bank Development Team",
+    "contact_title": "Contact Us",
+    "copyright": "© 2025 TTA E-Bank - Graduation Project"
   },
   "privacy": {
     "title": "Privacy",

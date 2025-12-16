@@ -295,7 +295,7 @@ const SettingsScreen: React.FC = () => {
             icon="information-circle-outline"
             title={t('settings.about')}
             subtitle={t('settings.about_subtitle')}
-            onPress={() => setShowComingSoonModal(true)}
+            onPress={() => navigation.navigate('About' as never)}
           />
           <View style={styles.divider} />
           <SettingItem

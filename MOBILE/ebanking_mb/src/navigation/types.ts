@@ -61,6 +61,7 @@ export type RootStackParamList = {
   SetPINCode: undefined;
   Privacy: undefined;
   ChangePassword: undefined;
+  About: undefined;
   ScannerScreen: {
     onScanSuccess: (value: string) => void;
   };
