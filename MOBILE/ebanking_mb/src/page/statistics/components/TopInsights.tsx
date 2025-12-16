@@ -127,7 +127,7 @@ const TopInsights: React.FC<TopInsightsProps> = ({
         </View>
         <View style={styles.cardContent}>
           <Text style={styles.amount}>
-            {formatCurrencyByLanguage(averageTransaction)}
+            {formatCurrencyByLanguage(Math.round(averageTransaction))}
           </Text>
         </View>
       </View>

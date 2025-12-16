@@ -8,6 +8,8 @@ import {
   PersonIcon,
   BarChartIcon,
   AlertIcon,
+  CardIcon,
+  TrendingUpIcon,
 } from '../../../components/icon';
 import Colors from '../../../constants/color';
 
@@ -48,6 +50,10 @@ const QuickActions: React.FC<QuickActionsProps> = ({
         return <BarChartIcon {...iconProps} />;
       case 'alert-circle':
         return <AlertIcon {...iconProps} />;
+      case 'card':
+        return <CardIcon {...iconProps} />;
+      case 'trending-up':
+        return <TrendingUpIcon {...iconProps} />;
       default:
         return <TransferIcon {...iconProps} />;
     }

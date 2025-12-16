@@ -44,6 +44,10 @@ export const useHomeNavigation = (
       case 'suspicious':
         navigation.navigate('SuspiciousTransactions' as never);
         break;
+      case 'bnpl':
+      case 'loan':
+        onShowComingSoon?.();
+        break;
       default:
         console.log('Unknown action:', action.id);
     }
