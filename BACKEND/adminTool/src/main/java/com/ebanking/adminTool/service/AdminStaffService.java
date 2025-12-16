@@ -30,31 +30,33 @@ public class AdminStaffService {
     private final PasswordValidator passwordValidator;
 
     public Page<AdminDto> list(String requester, int page, int size, String search, String role, Boolean active) {
-        Pageable pageable = PageRequest.of(Math.max(page, 0), Math.max(size, 1));
+        int maxSize = Math.min(Math.max(size, 1), 100);
+        Pageable pageable = PageRequest.of(Math.max(page, 0), maxSize);
         Page<Admin> result = adminRepository.searchAdmins(
-                (search == null || search.isBlank()) ? null : search,
-                (role == null || role.isBlank()) ? null : role,
+                (search == null || search.isBlank()) ? null : search.trim(),
+                (role == null || role.isBlank()) ? null : role.trim(),
                 active,
                 pageable);
         auditLogger.logSuccess(requester, "LIST_ADMINS", "ADMIN", null,
-                "page=" + page + ", size=" + size + ", q=" + search + ", role=" + role + ", active=" + active, null);
+                "page=" + page + ", size=" + maxSize + ", q=" + search + ",  role=" + role + ", active=" + active, null);
         return result.map(AdminDto::fromEntity);
     }
 
     @Transactional
     public AdminDto create(String requester, CreateAdminRequest req) {
         if (adminRepository.existsByUsername(req.getUsername())) {
-            auditLogger.logFailure(requester, "CREATE_ADMIN", "ADMIN", null, "username exists: " + req.getUsername(), null);
-            throw new BusinessException("USERNAME_EXISTS", "Username already exists", HttpStatus.CONFLICT);
+            auditLogger.logFailure(requester, "CREATE_ADMIN", "ADMIN", null, "username conflicts", null);
+            throw new BusinessException("ADMIN_ERROR", "Unable to create admin account", HttpStatus.BAD_REQUEST);
         }
         
-    
         passwordValidator.validate(req.getPassword());
         
+        String sanitizedFullName = req.getFullName().replaceAll("[<>\"'&]", "");
+        
         Admin admin = Admin.builder()
-                .username(req.getUsername())
+                .username(req.getUsername().trim().toLowerCase())
                 .password(passwordEncoder.encode(req.getPassword()))
-                .fullName(req.getFullName())
+                .fullName(sanitizedFullName.trim())
                 .role(req.getRole())
                 .build();
         Admin saved = adminRepository.save(admin);
@@ -108,11 +110,10 @@ public class AdminStaffService {
                 .orElseThrow(() -> new ResourceNotFoundException("Admin", requester));
         if (!passwordEncoder.matches(oldPassword, admin.getPassword())) {
             auditLogger.logFailure(requester, "CHANGE_PASSWORD", "ADMIN", String.valueOf(admin.getId()),
-                    "Old password mismatch", null);
-            throw new BusinessException("INVALID_OLD_PASSWORD", "Old password is incorrect", HttpStatus.BAD_REQUEST);
+                    "Password mismatch", null);
+            throw new BusinessException("INVALID_CREDENTIALS", "Unable to change password", HttpStatus.BAD_REQUEST);
         }
         
-        // Validate new password strength
         passwordValidator.validate(newPassword);
         
         admin.setPassword(passwordEncoder.encode(newPassword));

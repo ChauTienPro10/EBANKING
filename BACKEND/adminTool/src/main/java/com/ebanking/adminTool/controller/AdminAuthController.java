@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import jakarta.annotation.security.PermitAll;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -26,7 +27,7 @@ import org.springframework.web.bind.annotation.*;
  * Admin Authentication Controller
  */
 @RestController
-@RequestMapping("/api/admin/auth")
+@RequestMapping("/admin/auth")
 @RequiredArgsConstructor
 @Slf4j
 public class AdminAuthController {
@@ -44,6 +45,7 @@ public class AdminAuthController {
      * FIXED: Now passes IP address to audit logger
      */
     @PostMapping("/login")
+    @PermitAll
     public ResponseEntity<AdminLoginResponse> login(@RequestBody AdminLoginRequest request,
             HttpServletRequest httpRequest) {
         String ip = httpRequest.getRemoteAddr();

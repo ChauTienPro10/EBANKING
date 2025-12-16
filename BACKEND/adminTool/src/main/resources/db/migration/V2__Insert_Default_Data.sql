@@ -8,5 +8,5 @@
 -- Note: Password is 'admin' hashed with BCrypt
 -- DataSeeder.java will also create this if it doesn't exist
 INSERT IGNORE INTO admins (username, password, full_name, role, active) VALUES
-('admin', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcg7b3XeKeUxWdeS86E36P4/TVm', 'Default Admin', 'ROLE_SUPER_ADMIN', TRUE);
+('admin', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcg7b3XeKeUxWdeS86E36P4/TVm', 'Default Admin', 'ROLE_ADMIN', TRUE);
 

@@ -17,7 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/admin/admins")
+@RequestMapping("/admin/admins")
 @RequiredArgsConstructor
 @Slf4j
 public class AdminStaffController {
@@ -25,7 +25,7 @@ public class AdminStaffController {
     private final AdminStaffService adminStaffService;
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<AdminDto>> list(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -39,7 +39,7 @@ public class AdminStaffController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AdminDto> create(
             @Valid @RequestBody CreateAdminRequest request,
             Authentication authentication) {
@@ -49,7 +49,7 @@ public class AdminStaffController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AdminDto> update(
             @PathVariable Long id,
             @Valid @RequestBody UpdateAdminRequest request,
@@ -60,7 +60,7 @@ public class AdminStaffController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deactivate(
             @PathVariable Long id,
             Authentication authentication) {
@@ -70,7 +70,7 @@ public class AdminStaffController {
     }
 
     @PostMapping("/{id}/reset-password")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> resetPassword(
             @PathVariable Long id,
             @Valid @RequestBody ResetPasswordRequest request,
