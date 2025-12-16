@@ -60,4 +60,29 @@ export const API = {
   GET_XOSO_MIENBAC: `${AUTH_SERVICE}/xoso/mb`,
   GET_XOSO_MIENTRUNG: `${AUTH_SERVICE}/xoso/mt`,
   GET_XOSO_MIENNAM: `${AUTH_SERVICE}/xoso/mn`,
+
+
+  // analysis
+  ANALYSIS_URL: `${AUTH_SERVICE}/analytics`,
+  ANALYSIS_GET_30DAYS: `${AUTH_SERVICE}/info`,
+  ANALYSIS_GET_CURRENT_MONTH: `${AUTH_SERVICE}/current-month/{username}`,
+  ANALYSIS_GET_PREVIOUS_MONTH: `${AUTH_SERVICE}/previous-month/{username}`,
+  ANALYSIS_GET_CURRENT_WEEK: `${AUTH_SERVICE}/current-week/{username}`,
+  ANALYSIS_GET_PREVIOUS_WEEK: `${AUTH_SERVICE}/previous-week/{username}`,
+  ANALYSIS_GET_CUSTOM: `${AUTH_SERVICE}/custom/{username}`,
+
+
+  // Lock account
+  // LOCK_ACCOUNT: `${AUTH_SERVICE}/lock-account`,
+  // LOCK_ACCOUNT_BY_ADMIN: `${AUTH_SERVICE}/lock-account/{username}`,
+  // UNLOCK_ACCOUNT: `${AUTH_SERVICE}/unlock`,
+  // CHECK_LOCK_ACCOUNT: `${AUTH_SERVICE}/check/{username}`,
+  // GET_CURRENT_LOCK_ACCOUNT: `${AUTH_SERVICE}/current/{username}`,
+  // GET_HISTORY_LOCK_ACCOUNT: `${AUTH_SERVICE}/history/{username}`,
+  // GET_LOCKED_ACCOUNT: `${AUTH_SERVICE}/locked`,
+  // GET_LOCKED_ACCOUNT_BY_ADMIN: `${AUTH_SERVICE}/locked-by/{adminUsername}`,
+  SELF_LOCK_ACCOUNT: `${AUTH_SERVICE}/self-lock`,
+  SELF_UNLOCK_ACCOUNT: `${AUTH_SERVICE}/self-unlock`,
+  CAN_SELF_UNLOCK: `${AUTH_SERVICE}/can-self-unlock/{username}`,
+  GET_LOCK_TYPE: `${AUTH_SERVICE}/lock-type/{username}`,
 };
