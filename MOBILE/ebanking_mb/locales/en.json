@@ -72,6 +72,7 @@
     "transaction_report": "Transaction History",
     "beneficiary": "Beneficiary",
     "loan": "Loan",
+    "bnpl": "Buy Now Pay Later",
     "statistics": "Statistics",
     "investments": "Investments",
     "insurance": "Insurance",
