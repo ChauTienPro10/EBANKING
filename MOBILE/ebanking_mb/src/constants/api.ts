@@ -1,6 +1,6 @@
 import { API_URL } from '@env';
 
-export const HOST_SERVER = '192.168.1.2';
+export const HOST_SERVER = '192.168.0.185';
 
 export const BASE_URL = `http://${HOST_SERVER}:8000/`;
 export const FCM_SERVICE = `http://${HOST_SERVER}:8004/`;
@@ -61,7 +61,6 @@ export const API = {
   GET_XOSO_MIENTRUNG: `${AUTH_SERVICE}/xoso/mt`,
   GET_XOSO_MIENNAM: `${AUTH_SERVICE}/xoso/mn`,
 
-
   // analysis
   ANALYSIS_URL: `${AUTH_SERVICE}/analytics`,
   ANALYSIS_GET_30DAYS: `${AUTH_SERVICE}/info`,
@@ -70,7 +69,6 @@ export const API = {
   ANALYSIS_GET_CURRENT_WEEK: `${AUTH_SERVICE}/current-week/{username}`,
   ANALYSIS_GET_PREVIOUS_WEEK: `${AUTH_SERVICE}/previous-week/{username}`,
   ANALYSIS_GET_CUSTOM: `${AUTH_SERVICE}/custom/{username}`,
-
 
   // Lock account
   // LOCK_ACCOUNT: `${AUTH_SERVICE}/lock-account`,
