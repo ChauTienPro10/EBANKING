@@ -19,6 +19,14 @@ import AuthNavigator from './navigation/AuthNavigator';
 import MainStack from './navigation/MainStack';
 import { fetchAccountTransInfo } from './store/fetchAPI/AccountFetch';
 import { fetchUserInfo } from './store/fetchAPI/UserInfoFetch';
+import {
+  fetchAnalysis30Days,
+  fetchAnalysisCurrentMonth,
+  fetchAnalysisPreviousMonth,
+  fetchAnalysisCurrentWeek,
+  fetchAnalysisPreviousWeek,
+  fetchAnalysisWeeklyStats,
+} from './store/fetchAPI/AnalysisFetch';
 import { TextEncoder, TextDecoder } from 'text-encoding';
 import { navigationRef } from './navigation/navigate';
 import {
@@ -186,13 +194,24 @@ const RootApp: React.FC = () => {
   }, [loginResponse]);
 
   useEffect(() => {
-    if (loginResponse?.id) {
+    if (isLoggedIn && loginResponse?.id) {
       dispatch(fetchAccountTransInfo(loginResponse.id));
       dispatch(fetchUserInfo(loginResponse.id));
+
+      // Fetch analysis data
+      if (loginResponse.username) {
+        dispatch(fetchAnalysis30Days(loginResponse.username));
+        dispatch(fetchAnalysisCurrentMonth(loginResponse.username));
+        dispatch(fetchAnalysisPreviousMonth(loginResponse.username));
+        dispatch(fetchAnalysisCurrentWeek(loginResponse.username));
+        dispatch(fetchAnalysisPreviousWeek(loginResponse.username));
+        dispatch(fetchAnalysisWeeklyStats(loginResponse.username));
+      }
+
       // Reset modal session on login for fresh state
       dispatch(resetModalSession());
     }
-  }, [loginResponse, dispatch]);
+  }, [isLoggedIn, loginResponse, dispatch]);
 
   useListenNotiFromFirebase();
   const keyboardVerticalOffset = Platform.select({

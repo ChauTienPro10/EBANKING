@@ -11,6 +11,7 @@ interface TrendLineChartProps {
   labels: string[];
   period: TimePeriod;
   title: string;
+  currency?: 'VND' | 'USD';
 }
 
 const TrendLineChart: React.FC<TrendLineChartProps> = ({
@@ -18,19 +19,20 @@ const TrendLineChart: React.FC<TrendLineChartProps> = ({
   labels,
   period,
   title,
+  currency,
 }) => {
   const { i18n } = useTranslation();
   const currentLanguage = i18n.language;
 
   const screenWidth = Dimensions.get('window').width;
 
-  // Convert data based on language
+  // Convert data based on currency prop
   const chartData = {
     labels: labels,
     datasets: [
       {
         data: data.map(value => {
-          if (currentLanguage === 'en') {
+          if (currency === 'USD') {
             // For USD: show actual converted values (no millions)
             return convertVNDtoUSD(value);
           }
@@ -73,13 +75,29 @@ const TrendLineChart: React.FC<TrendLineChartProps> = ({
     fillShadowGradientOpacity: 0.1,
   };
 
+  // Check for empty or all-zero data
+  const isAllZeros = data.length === 0 || data.every(v => v === 0);
+
+  if (isAllZeros) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.titleRow}>
+          <Text style={styles.title}>{title}</Text>
+        </View>
+        <View style={[styles.chart, { height: 220, alignItems: 'center', justifyContent: 'center', backgroundColor: Colors.white }]}>
+          <Text style={{ color: Colors.textSecondary }}>{i18n.t('statistics.no_data') || 'No Data'}</Text>
+        </View>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.titleRow}>
         <Text style={styles.title}>{title}</Text>
         <View style={styles.currencyBadge}>
           <Text style={styles.currencyBadgeText}>
-            {currentLanguage === 'en' ? '$' : '₫'}
+            {currency === 'USD' ? '$' : '₫'}
           </Text>
         </View>
       </View>
@@ -90,7 +108,7 @@ const TrendLineChart: React.FC<TrendLineChartProps> = ({
         chartConfig={chartConfig}
         bezier
         style={styles.chart}
-        yAxisSuffix={currentLanguage === 'en' ? '' : 'M'}
+        yAxisSuffix={currency === 'USD' ? '' : 'M'}
         yAxisLabel=""
         withInnerLines={true}
         withOuterLines={false}

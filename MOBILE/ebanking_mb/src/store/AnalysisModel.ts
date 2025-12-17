@@ -40,4 +40,8 @@ export interface AnalysisData {
     accountHasBeenTransferWithTheMostAmountInPeriod: number;
     midnightTransactionsCount: number;
     frequentTransactionsToSameAccountCount: number;
+    transactionCountInPeriodByUsername: number;
+    mostAccountInfoTransferManyTimeInPeriodTotalAmount: number;
+    mostAccountInfoTransferManyTimeInPeriodCount: number;
+    totalIncomingAmount: number;
 }

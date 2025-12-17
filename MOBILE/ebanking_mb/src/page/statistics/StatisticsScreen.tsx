@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+// Re-trigger bundle
 import {
   View,
   Text,
@@ -9,10 +10,19 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { RootState } from '../../store';
+import { RootState, AppDispatch } from '../../store';
+import { AnalysisData } from '../../store/AnalysisModel';
+import {
+  fetchAnalysis30Days,
+  fetchAnalysisCurrentMonth,
+  fetchAnalysisPreviousMonth,
+  fetchAnalysisCurrentWeek,
+  fetchAnalysisPreviousWeek,
+  fetchAnalysisWeeklyStats,
+} from '../../store/fetchAPI/AnalysisFetch';
 import Colors from '../../constants/color';
 import PeriodDropdown from './components/PeriodDropdown';
 import StatisticsCard from './components/StatisticsCard';
@@ -29,83 +39,114 @@ import {
 import { generateMockTransactions, USE_MOCK_DATA } from './utils/mockData';
 
 const StatisticsScreen: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigation = useNavigation();
+  const dispatch = useDispatch<AppDispatch>();
   const [selectedPeriod, setSelectedPeriod] = useState<TimePeriod>('month');
   const [refreshing, setRefreshing] = useState(false);
 
-  // Get data from Redux
-  const transactionsFromRedux = useSelector(
-    (state: RootState) => state.transactionHistories.data,
+  // Default currency based on language, but allow toggle
+  const [displayCurrency, setDisplayCurrency] = useState<'VND' | 'USD'>(
+    i18n.language === 'en' ? 'USD' : 'VND'
   );
+
+  const toggleCurrency = () => {
+    setDisplayCurrency(prev => prev === 'VND' ? 'USD' : 'VND');
+  };
+
+  // Get data from Redux
+  const {
+    analysisCurrentMonth,
+    analysisPreviousMonth,
+    analysisCurrentWeek,
+    analysisPreviousWeek,
+    analysisWeeklyStats,
+    isLoggedIn,
+    loginResponse
+  } = useSelector((state: RootState) => state.app);
+
   const currentAccountNumber = useSelector(
     (state: RootState) => state.app.accountTransResponse?.accountNumber || '',
   );
 
-  // Use mock data if enabled and no real transactions
-  const transactions = useMemo(() => {
-    if (USE_MOCK_DATA && transactionsFromRedux.length === 0) {
-      return generateMockTransactions(
-        currentAccountNumber || '1234567890123456',
-      );
+  // Derive current and previous period data based on selection
+  const periodData = useMemo(() => {
+    let current: AnalysisData | null = null;
+    let previous: AnalysisData | null = null;
+
+    if (selectedPeriod === 'week') {
+      current = analysisCurrentWeek;
+      previous = analysisPreviousWeek;
+    } else if (selectedPeriod === 'month') {
+      current = analysisCurrentMonth;
+      previous = analysisPreviousMonth;
     }
-    return transactionsFromRedux;
-  }, [transactionsFromRedux, currentAccountNumber]);
-
-  // Calculate statistics for current and previous periods
-  const statistics = useMemo(() => {
-    const currentTransactions = filterTransactionsByPeriod(
-      transactions,
-      selectedPeriod,
-      0,
-    );
-    const previousTransactions = filterTransactionsByPeriod(
-      transactions,
-      selectedPeriod,
-      1,
-    );
-
-    const currentStats = calculatePeriodStats(
-      currentTransactions,
-      currentAccountNumber,
-    );
-    const previousStats = calculatePeriodStats(
-      previousTransactions,
-      currentAccountNumber,
-    );
+    // For 'year', fall back to month or handle separately if API supports year
+    // currently API only supports week/month logic in store slices shown
 
     return {
-      current: currentStats,
-      previous: previousStats,
+      current,
+      previous,
       currentLabel: getPeriodLabel(selectedPeriod, 0, t),
       previousLabel: getPeriodLabel(selectedPeriod, 1, t),
     };
-  }, [transactions, selectedPeriod, currentAccountNumber, t]);
+  }, [
+    selectedPeriod,
+    analysisCurrentWeek,
+    analysisPreviousWeek,
+    analysisCurrentMonth,
+    analysisPreviousMonth,
+    t,
+  ]);
 
   // Calculate trend data for line chart
   const trendData = useMemo(() => {
-    const currentTransactions = filterTransactionsByPeriod(
-      transactions,
-      selectedPeriod,
-      0,
-    );
-    return calculateTrendData(
-      currentTransactions,
-      selectedPeriod,
-      currentAccountNumber,
-    );
-  }, [transactions, selectedPeriod, currentAccountNumber]);
+    if (selectedPeriod === 'week' && analysisWeeklyStats) {
+      // Map analysisWeeklyStats to chart data
+      const labels = analysisWeeklyStats.map(stat => {
+        // Assume we have a date field or we compute from index (Mon-Sun)
+        const d = (stat as any).date ? new Date((stat as any).date) : new Date();
+        return `${d.getDate()}/${d.getMonth() + 1}`;
+      });
+      const data = analysisWeeklyStats.map(stat => stat.totalAmountInPeriodByUsername);
+      return { labels, data };
+    }
 
-  const onRefresh = () => {
+    // Fallback for month or missing data: use empty or simple layout
+    return { labels: [], data: [] };
+  }, [analysisWeeklyStats, selectedPeriod]);
+
+  const onRefresh = async () => {
     setRefreshing(true);
-    // In a real app, you would dispatch a Redux action to fetch new data
-    setTimeout(() => setRefreshing(false), 1000);
+    if (isLoggedIn && loginResponse?.username) {
+      await Promise.all([
+        dispatch(fetchAnalysis30Days(loginResponse.username)),
+        dispatch(fetchAnalysisCurrentMonth(loginResponse.username)),
+        dispatch(fetchAnalysisPreviousMonth(loginResponse.username)),
+        dispatch(fetchAnalysisCurrentWeek(loginResponse.username)),
+        dispatch(fetchAnalysisPreviousWeek(loginResponse.username)),
+        dispatch(fetchAnalysisWeeklyStats(loginResponse.username)),
+      ]);
+    }
+    setRefreshing(false);
   };
 
-  const currentTotal =
-    statistics.current.totalIncoming + statistics.current.totalOutgoing;
-  const previousTotal =
-    statistics.previous.totalIncoming + statistics.previous.totalOutgoing;
+  const currentTotal = periodData.current?.totalAmountInPeriodByUsername || 0;
+  const previousTotal = periodData.previous?.totalAmountInPeriodByUsername || 0;
+  const totalIncoming = periodData.current?.totalIncomingAmount || 0;
+
+  const currentTransactionCount = periodData.current?.transactionCountInPeriodByUsername || 0;
+
+  // Map AnalysisData to TopInsights props
+  const largestTransaction = periodData.current?.transactionLargestInPeriodByUsername || null;
+
+  const mostFrequentRecipient = periodData.current?.mostAccountInfoTransferManyTimeInPeriod ? {
+    accountNumber: periodData.current.mostAccountInfoTransferManyTimeInPeriod.accountNumber,
+    count: periodData.current.mostAccountInfoTransferManyTimeInPeriodCount,
+    totalAmount: periodData.current.mostAccountInfoTransferManyTimeInPeriodTotalAmount
+  } : null;
+
+  const averageTransaction = currentTransactionCount > 0 ? currentTotal / currentTransactionCount : 0;
 
   return (
     <View style={styles.container}>
@@ -126,13 +167,18 @@ const StatisticsScreen: React.FC = () => {
           <Text style={styles.headerTitle}>{t('statistics.title_short')}</Text>
         </View>
         <View style={styles.headerRight}>
-          <PeriodDropdown
-            selectedPeriod={selectedPeriod}
-            onPeriodChange={setSelectedPeriod}
-            weekLabel={t('statistics.week')}
-            monthLabel={t('statistics.month')}
-            yearLabel={t('statistics.year')}
-          />
+          <View style={styles.headerControls}>
+            <TouchableOpacity onPress={toggleCurrency} style={styles.currencyToggle}>
+              <Text style={styles.currencyToggleText}>{displayCurrency}</Text>
+            </TouchableOpacity>
+            <PeriodDropdown
+              selectedPeriod={selectedPeriod}
+              onPeriodChange={setSelectedPeriod}
+              weekLabel={t('statistics.week')}
+              monthLabel={t('statistics.month')}
+              yearLabel={t('statistics.year')}
+            />
+          </View>
         </View>
       </View>
 
@@ -152,23 +198,26 @@ const StatisticsScreen: React.FC = () => {
         {/* Summary Cards */}
         <View style={styles.cardsRow}>
           <StatisticsCard
-            icon="swap-horizontal"
-            label={t('statistics.total_transactions')}
-            value={statistics.current.totalTransactions}
-            color={Colors.main_bule}
-            isCount={true}
+            icon="arrow-up-circle"
+            label={t('statistics.total_outgoing')}
+            value={currentTotal}
+            color={Colors.error}
+            currency={displayCurrency}
           />
           <StatisticsCard
             icon="arrow-down-circle"
             label={t('statistics.total_incoming')}
-            value={statistics.current.totalIncoming}
+            value={totalIncoming}
             color={Colors.success}
+            currency={displayCurrency}
           />
           <StatisticsCard
-            icon="arrow-up-circle"
-            label={t('statistics.total_outgoing')}
-            value={statistics.current.totalOutgoing}
-            color={Colors.error}
+            icon="swap-horizontal"
+            label={t('statistics.total_transactions')}
+            value={currentTransactionCount}
+            color={Colors.main_bule}
+            isCount={true}
+            currency={displayCurrency}
           />
         </View>
 
@@ -176,10 +225,11 @@ const StatisticsScreen: React.FC = () => {
         <ComparisonChart
           currentPeriodTotal={currentTotal}
           previousPeriodTotal={previousTotal}
-          currentLabel={statistics.currentLabel}
-          previousLabel={statistics.previousLabel}
+          currentLabel={periodData.currentLabel}
+          previousLabel={periodData.previousLabel}
           chartTitle={t('statistics.comparison_chart_title')}
           currentPeriodLabel={t('statistics.current_period')}
+          currency={displayCurrency}
         />
 
         {/* Trend Line Chart */}
@@ -188,13 +238,14 @@ const StatisticsScreen: React.FC = () => {
           labels={trendData.labels}
           period={selectedPeriod}
           title={t('statistics.trend_chart_title')}
+          currency={displayCurrency}
         />
 
         {/* Top Insights */}
         <TopInsights
-          largestTransaction={statistics.current.largestTransaction}
-          mostFrequentRecipient={statistics.current.mostFrequentRecipient}
-          averageTransaction={statistics.current.averageTransaction}
+          largestTransaction={largestTransaction}
+          mostFrequentRecipient={mostFrequentRecipient}
+          averageTransaction={averageTransaction}
           currentAccountNumber={currentAccountNumber}
           largestLabel={t('statistics.largest_transaction')}
           frequentLabel={t('statistics.most_frequent_recipient')}
@@ -202,6 +253,7 @@ const StatisticsScreen: React.FC = () => {
           transactionsLabel={t('statistics.transactions')}
           totalLabel={t('statistics.total')}
           noDataLabel={t('statistics.no_data')}
+          currency={displayCurrency}
         />
 
         {/* Bottom spacing */}
@@ -236,7 +288,7 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 10,
   },
   headerLeft: {
-    width: 70,
+    width: 40,
     alignItems: 'flex-start',
   },
   headerCenter: {
@@ -245,8 +297,24 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   headerRight: {
-    width: 70,
+    width: 110, // Increased width
     alignItems: 'flex-end',
+  },
+  headerControls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8
+  },
+  currencyToggle: {
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 4
+  },
+  currencyToggleText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 12
   },
   backButton: {
     alignItems: 'center',

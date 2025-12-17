@@ -2,11 +2,11 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from '../../../constants/color';
-import { formatCurrencyByLanguage } from '../../../utils/currency';
-import { TransferResponse } from '../../../store/fetchAPI/TransactionHistory';
+import { formatCurrencyByLanguage, convertVNDtoUSD } from '../../../utils/currency';
+import { AnalysisTransaction } from '../../../store/AnalysisModel';
 
-interface TopInsightsProps {
-  largestTransaction: TransferResponse | null;
+export interface TopInsightsProps {
+  largestTransaction: AnalysisTransaction | null;
   mostFrequentRecipient: {
     accountNumber: string;
     count: number;
@@ -20,6 +20,7 @@ interface TopInsightsProps {
   transactionsLabel: string;
   totalLabel: string;
   noDataLabel: string;
+  currency?: 'VND' | 'USD';
 }
 
 const TopInsights: React.FC<TopInsightsProps> = ({
@@ -33,6 +34,7 @@ const TopInsights: React.FC<TopInsightsProps> = ({
   transactionsLabel,
   totalLabel,
   noDataLabel,
+  currency,
 }) => {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -42,6 +44,21 @@ const TopInsights: React.FC<TopInsightsProps> = ({
   const formatAccountNumber = (accountNumber: string) => {
     // Show full account number
     return accountNumber;
+  };
+
+  // Helper to format values based on currency prop logic
+  const formatValue = (val: number) => {
+    if (currency === 'USD') {
+      const usd = convertVNDtoUSD(val);
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 2
+      }).format(usd);
+    } else if (currency === 'VND') {
+      return `${val.toLocaleString('vi-VN')} đ`;
+    }
+    return formatCurrencyByLanguage(val);
   };
 
   return (
@@ -62,18 +79,18 @@ const TopInsights: React.FC<TopInsightsProps> = ({
         {largestTransaction ? (
           <View style={styles.cardContent}>
             <Text style={styles.amount}>
-              {formatCurrencyByLanguage(
+              {formatValue(
                 parseFloat(largestTransaction.amount.toString()),
               )}
             </Text>
             <Text style={styles.detail}>
               {largestTransaction.receiverAccountNumber === currentAccountNumber
                 ? `← ${formatAccountNumber(
-                    largestTransaction.senderAccountNumber,
-                  )}`
+                  largestTransaction.senderAccountNumber,
+                )}`
                 : `→ ${formatAccountNumber(
-                    largestTransaction.receiverAccountNumber,
-                  )}`}
+                  largestTransaction.receiverAccountNumber,
+                )}`}
             </Text>
             <Text style={styles.date}>
               {formatDate(largestTransaction.transactionAt)}
@@ -104,7 +121,7 @@ const TopInsights: React.FC<TopInsightsProps> = ({
             </Text>
             <Text style={styles.detail}>
               {mostFrequentRecipient.count} {transactionsLabel} • {totalLabel}:{' '}
-              {formatCurrencyByLanguage(mostFrequentRecipient.totalAmount)}
+              {formatValue(mostFrequentRecipient.totalAmount)}
             </Text>
           </View>
         ) : (
@@ -127,7 +144,7 @@ const TopInsights: React.FC<TopInsightsProps> = ({
         </View>
         <View style={styles.cardContent}>
           <Text style={styles.amount}>
-            {formatCurrencyByLanguage(Math.round(averageTransaction))}
+            {formatValue(Math.round(averageTransaction))}
           </Text>
         </View>
       </View>

@@ -5,6 +5,7 @@ export const HOST_SERVER = '192.168.1.2';
 export const BASE_URL = `http://${HOST_SERVER}:8000/`;
 export const FCM_SERVICE = `http://${HOST_SERVER}:8004/`;
 export const AUTH_SERVICE = BASE_URL + 'authService';
+export const ANALYSIS_URL = AUTH_SERVICE + '/analytics';
 // Call UserService directly (port 8001) to get full UserInfo with eKYC data
 export const USER_SERVICE_DIRECT = `http://${HOST_SERVER}:8001`;
 export const FCM_CONTROLLER_URL = `${BASE_URL}authService/fcm`;
@@ -63,13 +64,13 @@ export const API = {
 
 
   // analysis
-  ANALYSIS_URL: `${AUTH_SERVICE}/analytics`,
-  ANALYSIS_GET_30DAYS: `${AUTH_SERVICE}/info`,
-  ANALYSIS_GET_CURRENT_MONTH: `${AUTH_SERVICE}/current-month/{username}`,
-  ANALYSIS_GET_PREVIOUS_MONTH: `${AUTH_SERVICE}/previous-month/{username}`,
-  ANALYSIS_GET_CURRENT_WEEK: `${AUTH_SERVICE}/current-week/{username}`,
-  ANALYSIS_GET_PREVIOUS_WEEK: `${AUTH_SERVICE}/previous-week/{username}`,
-  ANALYSIS_GET_CUSTOM: `${AUTH_SERVICE}/custom/{username}`,
+
+  ANALYSIS_GET_30DAYS: `${ANALYSIS_URL}/info`,
+  ANALYSIS_GET_CURRENT_MONTH: `${ANALYSIS_URL}/current-month/{username}`,
+  ANALYSIS_GET_PREVIOUS_MONTH: `${ANALYSIS_URL}/previous-month/{username}`,
+  ANALYSIS_GET_CURRENT_WEEK: `${ANALYSIS_URL}/current-week/{username}`,
+  ANALYSIS_GET_PREVIOUS_WEEK: `${ANALYSIS_URL}/previous-week/{username}`,
+  ANALYSIS_GET_CUSTOM: `${ANALYSIS_URL}/custom/{username}`,
 
 
   // Lock account

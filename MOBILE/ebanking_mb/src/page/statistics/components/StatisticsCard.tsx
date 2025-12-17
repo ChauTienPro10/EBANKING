@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from '../../../constants/color';
-import { formatCurrencyByLanguage } from '../../../utils/currency';
+import { formatCurrencyByLanguage, convertVNDtoUSD } from '../../../utils/currency';
 
 interface StatisticsCardProps {
   icon: string;
@@ -11,6 +11,7 @@ interface StatisticsCardProps {
   color: string;
   subtitle?: string;
   isCount?: boolean; // For transaction count (no currency)
+  currency?: 'VND' | 'USD';
 }
 
 const StatisticsCard: React.FC<StatisticsCardProps> = ({
@@ -20,7 +21,27 @@ const StatisticsCard: React.FC<StatisticsCardProps> = ({
   color,
   subtitle,
   isCount = false,
+  currency,
 }) => {
+  const getFormattedValue = () => {
+    if (isCount) return value.toString();
+
+    // If currency override is provided
+    if (currency === 'USD') {
+      const usdVal = convertVNDtoUSD(value);
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 2,
+      }).format(usdVal);
+    } else if (currency === 'VND') {
+      return `${value.toLocaleString('vi-VN')} đ`;
+    }
+
+    // Default fallback to language-based
+    return formatCurrencyByLanguage(value);
+  };
+
   return (
     <View style={styles.container}>
       <View style={[styles.iconContainer, { backgroundColor: color + '20' }]}>
@@ -30,7 +51,7 @@ const StatisticsCard: React.FC<StatisticsCardProps> = ({
         {label}
       </Text>
       <Text style={styles.value} numberOfLines={2}>
-        {isCount ? value.toString() : formatCurrencyByLanguage(value)}
+        {getFormattedValue()}
       </Text>
       {isCount && subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
     </View>

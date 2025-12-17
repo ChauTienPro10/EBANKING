@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
+import java.math.BigDecimal;
 
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
@@ -31,6 +32,15 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
                         "t.status = 'SUCCESS' AND " +
                         "FUNCTION('UNIX_TIMESTAMP', t.transactionAt) BETWEEN :fromDate AND :toDate")
         Long getTotalAmountInPeriodByUsername(@Param("username") String username,
+                        @Param("fromDate") long fromDate,
+                        @Param("toDate") long toDate);
+
+        // Get total number of transactions in a period by username
+        @Query("SELECT COUNT(t) FROM Transaction t WHERE " +
+                        "t.username = :username AND " +
+                        "t.status = 'SUCCESS' AND " +
+                        "FUNCTION('UNIX_TIMESTAMP', t.transactionAt) BETWEEN :fromDate AND :toDate")
+        Long countTransactionsInPeriodByUsername(@Param("username") String username,
                         @Param("fromDate") long fromDate,
                         @Param("toDate") long toDate);
 
@@ -61,6 +71,18 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
                         @Param("fromDate") long fromDate,
                         @Param("toDate") long toDate);
 
+        // Get transfer statistics (count and total amount) for a specific receiver
+        // account
+        @Query("SELECT COUNT(t), COALESCE(SUM(t.amount), 0) FROM Transaction t WHERE " +
+                        "t.username = :username AND " +
+                        "t.receiverAccountNumber = :receiverAccountNumber AND " +
+                        "t.status = 'SUCCESS' AND " +
+                        "FUNCTION('UNIX_TIMESTAMP', t.transactionAt) BETWEEN :fromDate AND :toDate")
+        java.util.List<Object[]> getTransferStatsByReceiver(@Param("username") String username,
+                        @Param("receiverAccountNumber") String receiverAccountNumber,
+                        @Param("fromDate") long fromDate,
+                        @Param("toDate") long toDate);
+
         // Get the largest transfer amount in a period by username
         @Query("SELECT COALESCE(MAX(t.amount), 0) FROM Transaction t WHERE " +
                         "t.username = :username AND " +
@@ -82,6 +104,24 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
         Long getAccountHasBeenTransferWithTheMostAmountInPeriod(@Param("username") String username,
                         @Param("fromDate") long fromDate,
                         @Param("toDate") long toDate);
+
+        // Get total incoming amount for an account in a period
+        @Query("SELECT COALESCE(SUM(t.amount), 0) FROM Transaction t WHERE " +
+                        "t.receiverAccountNumber = :accountNumber AND " +
+                        "t.status = 'SUCCESS' AND " +
+                        "t.transactionAt BETWEEN :fromDate AND :toDate")
+        BigDecimal getTotalIncomingAmountByAccountNumber(@Param("accountNumber") String accountNumber,
+                        @Param("fromDate") LocalDateTime fromDate,
+                        @Param("toDate") LocalDateTime toDate);
+
+        // Get total outgoing amount for an account in a period
+        @Query("SELECT COALESCE(SUM(t.amount), 0) FROM Transaction t WHERE " +
+                        "t.senderAccountNumber = :accountNumber AND " +
+                        "t.status = 'SUCCESS' AND " +
+                        "t.transactionAt BETWEEN :fromDate AND :toDate")
+        BigDecimal getTotalOutgoingAmountByAccountNumber(@Param("accountNumber") String accountNumber,
+                        @Param("fromDate") LocalDateTime fromDate,
+                        @Param("toDate") LocalDateTime toDate);
 
         // ========== PHÁT HIỆN GIAO DỊCH BẤT THƯỜNG ==========
 

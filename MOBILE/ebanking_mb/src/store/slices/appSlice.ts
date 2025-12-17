@@ -11,6 +11,7 @@ import {
   fetchAnalysisCurrentWeek,
   fetchAnalysisPreviousWeek,
   fetchAnalysisCustom,
+  fetchAnalysisWeeklyStats,
 } from '../fetchAPI/AnalysisFetch';
 
 interface AppState {
@@ -34,6 +35,7 @@ interface AppState {
   analysisCurrentWeek: AnalysisData | null;
   analysisPreviousWeek: AnalysisData | null;
   analysisCustom: AnalysisData | null;
+  analysisWeeklyStats: AnalysisData[] | null;
 }
 
 const initialState: AppState = {
@@ -57,6 +59,7 @@ const initialState: AppState = {
   analysisCurrentWeek: null,
   analysisPreviousWeek: null,
   analysisCustom: null,
+  analysisWeeklyStats: null,
 };
 
 const appSlice = createSlice({
@@ -136,6 +139,7 @@ const appSlice = createSlice({
       state.analysisCurrentWeek = null;
       state.analysisPreviousWeek = null;
       state.analysisCustom = null;
+      state.analysisWeeklyStats = null;
     },
   },
   extraReducers: builder => {
@@ -187,6 +191,12 @@ const appSlice = createSlice({
       })
       .addCase(fetchAnalysisCustom.rejected, (state, action) => {
         console.error('[FETCH FAILED] AnalysisCustom', action.payload);
+      })
+      .addCase(fetchAnalysisWeeklyStats.fulfilled, (state, action) => {
+        state.analysisWeeklyStats = action.payload;
+      })
+      .addCase(fetchAnalysisWeeklyStats.rejected, (state, action) => {
+        console.error('[FETCH FAILED] AnalysisWeeklyStats', action.payload);
       });
   },
 });
