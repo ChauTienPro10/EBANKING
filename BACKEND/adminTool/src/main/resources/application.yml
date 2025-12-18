@@ -54,3 +54,8 @@ management:
 app:
   version: 1.0.0
 
+# Firebase Service Configuration
+firebase:
+  service:
+    url: ${FIREBASE_SERVICE_URL:http://localhost:8083/notify}
+
