@@ -9,11 +9,13 @@ import {
   LogOut,
   Sun,
   Moon,
+  Wallet,
+  Bell,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-type Role = "Admin" | "Manager" | "Staff";
+type Role = "Admin" | "Staff";
 
 const NAV_ITEMS = [
   {
@@ -21,21 +23,35 @@ const NAV_ITEMS = [
     label: "Dashboard",
     translationKey: "dashboard",
     icon: Home,
-    roles: ["Admin", "Manager", "Staff"] as Role[],
+    roles: ["Admin", "Staff"] as Role[],
   },
   {
     to: "/app/transactions",
     label: "Transactions",
     translationKey: "transactions",
     icon: CreditCard,
-    roles: ["Admin", "Manager", "Staff"] as Role[],
+    roles: ["Admin", "Staff"] as Role[],
+  },
+  {
+    to: "/app/accounts",
+    label: "Accounts",
+    translationKey: "accounts",
+    icon: Wallet,
+    roles: ["Admin", "Staff"] as Role[],
+  },
+  {
+    to: "/app/notifications",
+    label: "Notifications",
+    translationKey: "notifications",
+    icon: Bell,
+    roles: ["Admin", "Staff"] as Role[],
   },
   {
     to: "/app/staff",
     label: "Staff",
     translationKey: "staff",
     icon: Users,
-    roles: ["Admin", "Manager"] as Role[],
+    roles: ["Admin"] as Role[],
   },
   {
     to: "/app/audit",
@@ -81,7 +97,6 @@ export function DashboardLayout() {
             onChange={(e) => setRole(e.target.value as Role)}
           >
             <option value="Admin">{t("app.roles.Admin")}</option>
-            <option value="Manager">{t("app.roles.Manager")}</option>
             <option value="Staff">{t("app.roles.Staff")}</option>
           </select>
         </div>
