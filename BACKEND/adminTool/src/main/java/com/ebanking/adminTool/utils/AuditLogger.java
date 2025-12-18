@@ -1,7 +1,7 @@
-package com.ebanking.admintool.utils;
+package com.ebanking.adminTool.utils;
 
-import com.ebanking.admintool.entity.AuditLog;
-import com.ebanking.admintool.repository.AuditLogRepository;
+import com.ebanking.adminTool.entity.AuditLog;
+import com.ebanking.adminTool.repository.AuditLogRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

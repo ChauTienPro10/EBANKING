@@ -1,4 +1,4 @@
-package com.ebanking.admintool.exception;
+package com.ebanking.adminTool.exception;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;

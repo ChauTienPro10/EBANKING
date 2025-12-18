@@ -1,6 +1,6 @@
-package com.ebanking.admintool.controller;
+package com.ebanking.adminTool.controller;
 
-import com.ebanking.admintool.service.AdminTransactionService;
+import com.ebanking.adminTool.service.AdminTransactionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

@@ -1,7 +1,7 @@
-package com.ebanking.admintool.service;
+package com.ebanking.adminTool.service;
 
-import com.ebanking.admintool.dto.response.TransactionListResponse.TransactionInfo;
-import com.ebanking.admintool.service.grpc.TransactionGrpcClient;
+import com.ebanking.adminTool.dto.response.TransactionListResponse.TransactionInfo;
+import com.ebanking.adminTool.service.grpc.TransactionGrpcClient;
 import com.ebanking.transactionService.grpc.TransactionProto;
 import java.util.List;
 import java.util.stream.Collectors;

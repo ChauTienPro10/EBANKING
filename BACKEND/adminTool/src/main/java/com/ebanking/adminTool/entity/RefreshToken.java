@@ -1,4 +1,4 @@
-package com.ebanking.admintool.entity;
+package com.ebanking.adminTool.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

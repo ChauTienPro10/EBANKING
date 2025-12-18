@@ -1,11 +1,11 @@
-package com.ebanking.admintool.controller;
+package com.ebanking.adminTool.controller;
 
-import com.ebanking.admintool.dto.request.ChangePasswordRequest;
-import com.ebanking.admintool.dto.request.CreateAdminRequest;
-import com.ebanking.admintool.dto.request.ResetPasswordRequest;
-import com.ebanking.admintool.dto.request.UpdateAdminRequest;
-import com.ebanking.admintool.dto.response.AdminDto;
-import com.ebanking.admintool.service.AdminStaffService;
+import com.ebanking.adminTool.dto.request.ChangePasswordRequest;
+import com.ebanking.adminTool.dto.request.CreateAdminRequest;
+import com.ebanking.adminTool.dto.request.ResetPasswordRequest;
+import com.ebanking.adminTool.dto.request.UpdateAdminRequest;
+import com.ebanking.adminTool.dto.response.AdminDto;
+import com.ebanking.adminTool.service.AdminStaffService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

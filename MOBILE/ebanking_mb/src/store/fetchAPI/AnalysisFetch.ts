@@ -31,7 +31,8 @@ const emptyAnalysisData: AnalysisData = {
     frequentTransactionsToSameAccountCount: 0,
     transactionCountInPeriodByUsername: 0,
     mostAccountInfoTransferManyTimeInPeriodCount: 0,
-    mostAccountInfoTransferManyTimeInPeriodTotalAmount: 0
+    mostAccountInfoTransferManyTimeInPeriodTotalAmount: 0,
+    totalIncomingAmount: 0
 };
 
 export const fetchAnalysis30Days = createAsyncThunk<

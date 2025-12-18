@@ -1,6 +1,6 @@
-package com.ebanking.admintool.controller;
+package com.ebanking.adminTool.controller;
 
-import com.ebanking.admintool.config.EnvironmentConfiguration;
+import com.ebanking.adminTool.config.EnvironmentConfiguration;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;

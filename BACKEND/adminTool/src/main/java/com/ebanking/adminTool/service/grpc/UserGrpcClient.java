@@ -1,8 +1,8 @@
-package com.ebanking.admintool.service.grpc;
+package com.ebanking.adminTool.service.grpc;
 
 import com.banking.userService.grpc.UserProto;
 import com.banking.userService.grpc.UserServiceGrpc;
-import com.ebanking.admintool.config.GrpcConfig;
+import com.ebanking.adminTool.config.GrpcConfig;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import lombok.extern.slf4j.Slf4j;

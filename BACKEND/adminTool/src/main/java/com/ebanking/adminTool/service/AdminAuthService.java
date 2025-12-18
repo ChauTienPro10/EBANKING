@@ -1,12 +1,12 @@
-package com.ebanking.admintool.service;
+package com.ebanking.adminTool.service;
 
-import com.ebanking.admintool.dto.request.AdminLoginRequest;
-import com.ebanking.admintool.dto.response.AdminLoginResponse;
-import com.ebanking.admintool.entity.Admin;
-import com.ebanking.admintool.exception.BusinessException;
-import com.ebanking.admintool.repository.AdminRepository;
-import com.ebanking.admintool.utils.AuditLogger;
-import com.ebanking.admintool.utils.JWTUtils;
+import com.ebanking.adminTool.dto.request.AdminLoginRequest;
+import com.ebanking.adminTool.dto.response.AdminLoginResponse;
+import com.ebanking.adminTool.entity.Admin;
+import com.ebanking.adminTool.exception.BusinessException;
+import com.ebanking.adminTool.repository.AdminRepository;
+import com.ebanking.adminTool.utils.AuditLogger;
+import com.ebanking.adminTool.utils.JWTUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

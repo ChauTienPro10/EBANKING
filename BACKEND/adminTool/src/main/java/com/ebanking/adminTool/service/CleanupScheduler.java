@@ -1,7 +1,7 @@
-package com.ebanking.admintool.service;
+package com.ebanking.adminTool.service;
 
-import com.ebanking.admintool.repository.LoginAttemptRepository;
-import com.ebanking.admintool.repository.RefreshTokenRepository;
+import com.ebanking.adminTool.repository.LoginAttemptRepository;
+import com.ebanking.adminTool.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;

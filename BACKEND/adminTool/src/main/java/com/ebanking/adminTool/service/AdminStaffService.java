@@ -1,14 +1,14 @@
-package com.ebanking.admintool.service;
+package com.ebanking.adminTool.service;
 
-import com.ebanking.admintool.dto.request.CreateAdminRequest;
-import com.ebanking.admintool.dto.request.UpdateAdminRequest;
-import com.ebanking.admintool.dto.response.AdminDto;
-import com.ebanking.admintool.entity.Admin;
-import com.ebanking.admintool.exception.BusinessException;
-import com.ebanking.admintool.exception.ResourceNotFoundException;
-import com.ebanking.admintool.repository.AdminRepository;
-import com.ebanking.admintool.utils.AuditLogger;
-import com.ebanking.admintool.validator.PasswordValidator;
+import com.ebanking.adminTool.dto.request.CreateAdminRequest;
+import com.ebanking.adminTool.dto.request.UpdateAdminRequest;
+import com.ebanking.adminTool.dto.response.AdminDto;
+import com.ebanking.adminTool.entity.Admin;
+import com.ebanking.adminTool.exception.BusinessException;
+import com.ebanking.adminTool.exception.ResourceNotFoundException;
+import com.ebanking.adminTool.repository.AdminRepository;
+import com.ebanking.adminTool.utils.AuditLogger;
+import com.ebanking.adminTool.validator.PasswordValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;

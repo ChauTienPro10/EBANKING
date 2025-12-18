@@ -1,4 +1,4 @@
-package com.ebanking.admintool.config;
+package com.ebanking.adminTool.config;
 
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
@@ -68,7 +68,7 @@ public class EnvironmentConfiguration {
     private Integer rateLimiterLockMinutes;
 
     // Logging Configuration
-    @Value("${logging.level.com.ebanking.admintool:DEBUG}")
+    @Value("${logging.level.com.ebanking.adminTool:DEBUG}")
     private String logLevel;
 
     // Actuator Configuration

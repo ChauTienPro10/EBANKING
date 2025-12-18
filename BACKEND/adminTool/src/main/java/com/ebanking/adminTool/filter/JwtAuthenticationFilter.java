@@ -1,7 +1,7 @@
 // java
-package com.ebanking.admintool.filter;
+package com.ebanking.adminTool.filter;
 
-import com.ebanking.admintool.utils.JWTUtils;
+import com.ebanking.adminTool.utils.JWTUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

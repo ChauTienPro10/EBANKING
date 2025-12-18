@@ -1,8 +1,8 @@
-package com.ebanking.admintool.service;
+package com.ebanking.adminTool.service;
 
-import com.ebanking.admintool.dto.response.DashboardStatsResponse;
-import com.ebanking.admintool.service.grpc.TransactionGrpcClient;
-import com.ebanking.admintool.utils.AuditLogger;
+import com.ebanking.adminTool.dto.response.DashboardStatsResponse;
+import com.ebanking.adminTool.service.grpc.TransactionGrpcClient;
+import com.ebanking.adminTool.utils.AuditLogger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -57,7 +57,7 @@ public class AdminDashboardService {
                     null,
                     "Failed: " + e.getMessage(),
                     null);
-            throw new com.ebanking.admintool.exception.BusinessException(
+            throw new com.ebanking.adminTool.exception.BusinessException(
                     "DASHBOARD_ERROR",
                     "Failed to get dashboard statistics: " + e.getMessage(),
                     org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR);

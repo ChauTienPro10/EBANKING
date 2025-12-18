@@ -1,4 +1,4 @@
-package com.ebanking.admintool.config;
+package com.ebanking.adminTool.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;

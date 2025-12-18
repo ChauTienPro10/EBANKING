@@ -1,8 +1,8 @@
-package com.ebanking.admintool.controller;
+package com.ebanking.adminTool.controller;
 
-import com.ebanking.admintool.entity.Admin;
-import com.ebanking.admintool.exception.BusinessException;
-import com.ebanking.admintool.repository.AdminRepository;
+import com.ebanking.adminTool.entity.Admin;
+import com.ebanking.adminTool.exception.BusinessException;
+import com.ebanking.adminTool.repository.AdminRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

@@ -1,9 +1,9 @@
-package com.ebanking.admintool.config;
+package com.ebanking.adminTool.config;
 
-import com.ebanking.admintool.entity.Admin;
-import com.ebanking.admintool.entity.AuditLog;
-import com.ebanking.admintool.repository.AdminRepository;
-import com.ebanking.admintool.repository.AuditLogRepository;
+import com.ebanking.adminTool.entity.Admin;
+import com.ebanking.adminTool.entity.AuditLog;
+import com.ebanking.adminTool.repository.AdminRepository;
+import com.ebanking.adminTool.repository.AuditLogRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;

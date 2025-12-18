@@ -1,4 +1,4 @@
-package com.ebanking.admintool.service;
+package com.ebanking.adminTool.service;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

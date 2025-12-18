@@ -1,6 +1,6 @@
-package com.ebanking.admintool.repository;
+package com.ebanking.adminTool.repository;
 
-import com.ebanking.admintool.entity.RefreshToken;
+import com.ebanking.adminTool.entity.RefreshToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

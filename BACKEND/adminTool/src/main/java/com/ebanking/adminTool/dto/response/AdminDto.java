@@ -1,6 +1,6 @@
-package com.ebanking.admintool.dto.response;
+package com.ebanking.adminTool.dto.response;
 
-import com.ebanking.admintool.entity.Admin;
+import com.ebanking.adminTool.entity.Admin;
 import lombok.Builder;
 import lombok.Data;
 

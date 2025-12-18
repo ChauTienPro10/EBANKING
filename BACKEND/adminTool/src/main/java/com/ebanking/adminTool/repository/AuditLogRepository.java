@@ -1,6 +1,6 @@
-package com.ebanking.admintool.repository;
+package com.ebanking.adminTool.repository;
 
-import com.ebanking.admintool.entity.AuditLog;
+import com.ebanking.adminTool.entity.AuditLog;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

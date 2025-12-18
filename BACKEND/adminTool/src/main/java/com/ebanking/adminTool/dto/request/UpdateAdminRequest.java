@@ -1,4 +1,4 @@
-package com.ebanking.admintool.dto.request;
+package com.ebanking.adminTool.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

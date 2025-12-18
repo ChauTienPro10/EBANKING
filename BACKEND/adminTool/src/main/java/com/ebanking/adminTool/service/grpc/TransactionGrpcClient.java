@@ -1,6 +1,6 @@
-package com.ebanking.admintool.service.grpc;
+package com.ebanking.adminTool.service.grpc;
 
-import com.ebanking.admintool.config.GrpcConfig;
+import com.ebanking.adminTool.config.GrpcConfig;
 import com.ebanking.transactionService.grpc.AccountProto;
 import com.ebanking.transactionService.grpc.AccountServiceGrpc;
 import com.ebanking.transactionService.grpc.TransactionProto;

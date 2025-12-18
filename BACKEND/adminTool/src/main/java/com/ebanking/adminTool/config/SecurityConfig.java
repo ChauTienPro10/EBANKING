@@ -1,6 +1,6 @@
-package com.ebanking.admintool.config;
+package com.ebanking.adminTool.config;
 
-import com.ebanking.admintool.filter.JwtAuthenticationFilter;
+import com.ebanking.adminTool.filter.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -98,8 +98,7 @@ public class SecurityConfig {
 
         @Bean
         public PasswordEncoder passwordEncoder() {
-                return new BCryptPasswordEncoder(
-                                org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder.BCryptVersion.$2A);
+            return new BCryptPasswordEncoder();
         }
 
 }

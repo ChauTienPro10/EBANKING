@@ -1,7 +1,7 @@
-package com.ebanking.admintool.service;
+package com.ebanking.adminTool.service;
 
-import com.ebanking.admintool.entity.RefreshToken;
-import com.ebanking.admintool.repository.RefreshTokenRepository;
+import com.ebanking.adminTool.entity.RefreshToken;
+import com.ebanking.adminTool.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

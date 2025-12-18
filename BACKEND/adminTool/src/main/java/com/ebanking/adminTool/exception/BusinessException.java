@@ -1,4 +1,4 @@
-package com.ebanking.admintool.exception;
+package com.ebanking.adminTool.exception;
 
 import org.springframework.http.HttpStatus;
 

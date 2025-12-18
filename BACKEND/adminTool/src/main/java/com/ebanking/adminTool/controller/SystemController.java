@@ -1,9 +1,9 @@
-package com.ebanking.admintool.controller;
+package com.ebanking.adminTool.controller;
 
-import com.ebanking.admintool.config.ApplicationInfo;
-import com.ebanking.admintool.dto.response.SystemInfoResponse;
-import com.ebanking.admintool.repository.AdminRepository;
-import com.ebanking.admintool.repository.AuditLogRepository;
+import com.ebanking.adminTool.config.ApplicationInfo;
+import com.ebanking.adminTool.dto.response.SystemInfoResponse;
+import com.ebanking.adminTool.repository.AdminRepository;
+import com.ebanking.adminTool.repository.AuditLogRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

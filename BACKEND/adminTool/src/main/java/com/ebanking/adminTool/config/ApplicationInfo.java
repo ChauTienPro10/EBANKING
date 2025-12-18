@@ -1,4 +1,4 @@
-package com.ebanking.admintool.config;
+package com.ebanking.adminTool.config;
 
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;

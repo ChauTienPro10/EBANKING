@@ -1,4 +1,4 @@
-package com.ebanking.admintool.utils;
+package com.ebanking.adminTool.utils;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

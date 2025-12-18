@@ -1,4 +1,4 @@
-package com.ebanking.admintool.exception;
+package com.ebanking.adminTool.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;

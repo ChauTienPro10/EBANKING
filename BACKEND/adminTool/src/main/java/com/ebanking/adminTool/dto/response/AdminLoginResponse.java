@@ -1,4 +1,4 @@
-package com.ebanking.admintool.dto.response;
+package com.ebanking.adminTool.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,4 +1,4 @@
-package com.ebanking.admintool.service.grpc;
+package com.ebanking.adminTool.service.grpc;
 
 import io.grpc.StatusRuntimeException;
 import lombok.extern.slf4j.Slf4j;

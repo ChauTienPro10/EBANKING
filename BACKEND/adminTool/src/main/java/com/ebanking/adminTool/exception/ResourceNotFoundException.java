@@ -1,4 +1,4 @@
-package com.ebanking.admintool.exception;
+package com.ebanking.adminTool.exception;
 
 /**
  * Exception thrown when a requested resource is not found

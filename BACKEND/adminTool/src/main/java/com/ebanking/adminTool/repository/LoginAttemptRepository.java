@@ -1,4 +1,4 @@
-package com.ebanking.admintool.repository;
+package com.ebanking.adminTool.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
  * Repository for Login Attempt tracking
  */
 @Repository
-public interface LoginAttemptRepository extends JpaRepository<com.ebanking.admintool.entity.LoginAttempt, Long> {
+public interface LoginAttemptRepository extends JpaRepository<com.ebanking.adminTool.entity.LoginAttempt, Long> {
     
     @Modifying
     @Query("DELETE FROM LoginAttempt l WHERE l.lastAttempt < :threshold")
