@@ -3,11 +3,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Edit, Eye, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 
 export interface Column<T> {
   key: string;
   header: string;
-  render?: (item: T) => React.ReactNode;
+  render?: (item: T, index?: number) => React.ReactNode;
   sortable?: boolean;
 }
 
@@ -30,8 +31,9 @@ export function DataTable<T extends object>({
   rowKey,
   onView,
   onDelete,
-  emptyMessage = "No data available",
+  emptyMessage,
 }: DataTableProps<T>) {
+  const { t } = useTranslation();
   const rows = Array.isArray(data) ? data : [];
   if (loading) {
     return (
@@ -50,8 +52,12 @@ export function DataTable<T extends object>({
   if (rows.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-center">
-        <div className="text-muted-foreground mb-2">No data found</div>
-        <p className="text-sm text-muted-foreground">{emptyMessage}</p>
+        <div className="text-muted-foreground mb-2">
+          {t("common.table.noData")}
+        </div>
+        <p className="text-sm text-muted-foreground">
+          {emptyMessage || t("common.table.noDataDescription")}
+        </p>
       </div>
     );
   }
@@ -65,7 +71,7 @@ export function DataTable<T extends object>({
               <TH key={column.key}>{column.header}</TH>
             ))}
             {(onEdit || onView || onDelete) && (
-              <TH className="w-[120px]">Actions</TH>
+              <TH className="w-[120px]">{t("common.table.actions")}</TH>
             )}
           </TR>
         </THead>
@@ -80,7 +86,7 @@ export function DataTable<T extends object>({
               {columns.map((column) => (
                 <TD key={column.key}>
                   {column.render
-                    ? column.render(item)
+                    ? column.render(item, index)
                     : String(
                         (item as Record<string, unknown>)[column.key] || ""
                       )}
@@ -95,6 +101,7 @@ export function DataTable<T extends object>({
                         size="icon"
                         onClick={() => onView(item)}
                         className="h-8 w-8"
+                        aria-label={t("common.table.view")}
                       >
                         <Eye className="h-4 w-4" />
                       </Button>
@@ -105,6 +112,7 @@ export function DataTable<T extends object>({
                         size="icon"
                         onClick={() => onEdit(item)}
                         className="h-8 w-8"
+                        aria-label={t("common.table.edit")}
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
@@ -115,6 +123,7 @@ export function DataTable<T extends object>({
                         size="icon"
                         onClick={() => onDelete(item)}
                         className="h-8 w-8 text-destructive hover:text-destructive"
+                        aria-label={t("common.table.delete")}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>

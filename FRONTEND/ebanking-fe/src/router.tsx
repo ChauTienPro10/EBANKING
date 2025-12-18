@@ -7,6 +7,8 @@ import { StaffPage } from "./sections/pages/StaffPage";
 import { AuditPage } from "./sections/pages/AuditPage";
 import { LoginPage } from "./sections/pages/LoginPage";
 import { NotFoundPage } from "./sections/pages/NotFoundPage";
+import { NotificationsPage } from "./sections/pages/NotificationsPage";
+import { AccountsPage } from "./sections/pages/AccountsPage";
 
 export const router = createBrowserRouter([
   {
@@ -22,6 +24,8 @@ export const router = createBrowserRouter([
           { path: "transactions", element: <TransactionsPage /> },
           { path: "staff", element: <StaffPage /> },
           { path: "audit", element: <AuditPage /> },
+          { path: "accounts", element: <AccountsPage /> },
+          { path: "notifications", element: <NotificationsPage /> },
         ],
       },
       { path: "*", element: <NotFoundPage /> },
