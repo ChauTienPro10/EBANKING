@@ -144,6 +144,28 @@
   },
   "accounts": {
     "list": "Accounts list",
+    "searchPlaceholder": "Search by account or owner",
+    "filter": {
+      "allStatuses": "All Status"
+    },
+    "status": {
+      "active": "Active",
+      "locked": "Locked"
+    },
+    "empty": "No accounts found",
+    "detailsTitle": "Account details",
+    "lock": {
+      "reasonLabel": "Reason",
+      "untilLabel": "Lock until",
+      "indefinite": "Indefinite",
+      "confirm": "Confirm",
+      "reasons": {
+        "fraud": "Suspected fraud",
+        "byRequest": "Customer request",
+        "kyc": "KYC review",
+        "other": "Other"
+      }
+    },
     "table": {
       "no": "Account No.",
       "type": "Type",
@@ -418,6 +440,15 @@
     "cancel": "Cancel",
     "create": "Create",
     "update": "Update",
-    "saving": "Saving..."
+    "saving": "Saving...",
+    "table": {
+      "index": "No.",
+      "noData": "No data available",
+      "noDataDescription": "Try adjusting your filters",
+      "actions": "Actions",
+      "view": "View",
+      "edit": "Edit",
+      "delete": "Delete"
+    }
   }
 }

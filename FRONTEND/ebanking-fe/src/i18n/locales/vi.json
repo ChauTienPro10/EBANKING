@@ -144,6 +144,28 @@
   },
   "accounts": {
     "list": "Danh sách tài khoản",
+    "searchPlaceholder": "Tìm theo số tài khoản hoặc chủ sở hữu",
+    "filter": {
+      "allStatuses": "Tất cả trạng thái"
+    },
+    "status": {
+      "active": "Hoạt động",
+      "locked": "Đã khóa"
+    },
+    "empty": "Không có tài khoản nào",
+    "detailsTitle": "Chi tiết tài khoản",
+    "lock": {
+      "reasonLabel": "Lý do",
+      "untilLabel": "Khóa đến",
+      "indefinite": "Vô thời hạn",
+      "confirm": "Xác nhận",
+      "reasons": {
+        "fraud": "Nghi ngờ gian lận",
+        "byRequest": "Theo yêu cầu khách hàng",
+        "kyc": "Rà soát KYC",
+        "other": "Khác"
+      }
+    },
     "table": {
       "no": "Số tài khoản",
       "type": "Loại",
@@ -418,6 +440,15 @@
     "cancel": "Hủy",
     "create": "Tạo",
     "update": "Cập nhật",
-    "saving": "Đang lưu..."
+    "saving": "Đang lưu...",
+    "table": {
+      "index": "STT",
+      "noData": "Không có dữ liệu",
+      "noDataDescription": "Thử điều chỉnh bộ lọc của bạn",
+      "actions": "Thao tác",
+      "view": "Xem",
+      "edit": "Sửa",
+      "delete": "Xóa"
+    }
   }
 }
