@@ -1,36 +1,41 @@
 #!/bin/bash
+set -e
 
-# Thư mục đích
+# Output directory path
 OUTPUT_DIR="../docker-build-services"
 
-# Tạo thư mục đích nếu chưa tồn tại
+# Create output directory if it doesn't exist
 if [ ! -d "$OUTPUT_DIR" ]; then
     mkdir -p "$OUTPUT_DIR"
 fi
 
-# Xóa các file .jar cũ
+# Clean up existing jar files in output directory
 echo "Cleaning up $OUTPUT_DIR..."
 rm -f "$OUTPUT_DIR"/*.jar
 
-# Hàm copy file
-copy_jar() {
-    local jar_name=$1
-    echo "Copying $jar_name.jar..."
-    docker cp jenkins:/var/jenkins_home/workspace/EBANKING/output_jar_file/$jar_name.jar "$OUTPUT_DIR/$jar_name.jar"
-}
+# Copy jar files from Docker container to host output directory
+echo "Copying authService.jar..."
+docker cp jenkins:/var/jenkins_home/workspace/EBANKING/output_jar_file/authService.jar "$OUTPUT_DIR/authService.jar"
 
-# Copy từng file jar
-copy_jar "authService"
-copy_jar "userService"
-copy_jar "emailService"
-copy_jar "transactionService"
-copy_jar "firebaseService"
-# copy_jar "AIService"  # Nếu cần, mở comment dòng này
+echo "Copying userService.jar..."
+docker cp jenkins:/var/jenkins_home/workspace/EBANKING/output_jar_file/userService.jar "$OUTPUT_DIR/userService.jar"
 
-# Kiểm tra kết quả
-if [ $? -ne 0 ]; then
+echo "Copying emailService.jar..."
+docker cp jenkins:/var/jenkins_home/workspace/EBANKING/output_jar_file/emailService.jar "$OUTPUT_DIR/emailService.jar"
+
+echo "Copying transactionService.jar..."
+docker cp jenkins:/var/jenkins_home/workspace/EBANKING/output_jar_file/transactionService.jar "$OUTPUT_DIR/transactionService.jar"
+
+echo "Copying firebaseService.jar..."
+docker cp jenkins:/var/jenkins_home/workspace/EBANKING/output_jar_file/firebaseService.jar "$OUTPUT_DIR/firebaseService.jar"
+
+# Uncomment if needed
+# echo "Copying AIService.jar..."
+# docker cp jenkins:/var/jenkins_home/workspace/EBANKING/output_jar_file/AIService.jar "$OUTPUT_DIR/AIService.jar"
+
+if [ $? -eq 0 ]; then
+    echo "All files copied successfully."
+else
     echo "Failed to copy one or more files from Docker container."
     exit 1
-else
-    echo "All files copied successfully."
 fi

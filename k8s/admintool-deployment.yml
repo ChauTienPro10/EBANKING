@@ -1,0 +1,168 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admintool-service
+  labels:
+    app: admintool-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: admintool-service
+  template:
+    metadata:
+      labels:
+        app: admintool-service
+    spec:
+      containers:
+        - name: admintool-service
+          image: tien22012003/admintool:1.1
+          imagePullPolicy: Always
+          ports:
+            # HTTP Port
+            - containerPort: 8081
+          env:
+            # ------------------------------------------------------------------
+            # Profile & Port Configuration
+            # ------------------------------------------------------------------
+            - name: SPRING_PROFILES_ACTIVE
+              value: "k8s"
+              
+            - name: SERVER_PORT
+              value: "8081"
+            
+            # ------------------------------------------------------------------
+            # Machine Host Configuration
+            # ------------------------------------------------------------------
+            - name: MACHINE_HOST
+              value: "34.124.233.161"  # Replace with your actual database host
+            
+            # ------------------------------------------------------------------
+            # Main Database Configuration (DB_ADMIN)
+            # ------------------------------------------------------------------
+            - name: DB_URL
+              value: "jdbc:mysql://34.124.233.161:3306/DB_ADMIN?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true"
+              
+            - name: DB_USER
+              value: "root"
+              
+            - name: DB_PASSWORD
+              value: "Root@123"  # 🚨 Replace with Secret reference in production
+
+            # ------------------------------------------------------------------
+            # JWT Configuration
+            # ------------------------------------------------------------------
+            - name: JWT_SECRET_KEY
+              # 🚨 Replace with Secret reference in production
+              value: "chauduongphattien2201gmailcomsupersecretchauduongphattien2201gmailcomsupersecretchauduongphattien2201gmailcomsupersecretchauduongphattien2201gmailcomsupersecretchauduongphattien2201gmailcomsupersecretchauduongphattien2201gmailcomsupersecret1234567890123456"
+              
+            - name: JWT_EXPIRATION_MINUTES
+              value: "30"
+              
+            - name: JWT_REFRESH_DAYS
+              value: "7"
+
+            # ------------------------------------------------------------------
+            # gRPC Service Configuration
+            # ------------------------------------------------------------------
+            - name: USER_SERVICE
+              value: "user-service"
+              
+            - name: USER_SERVICE_PORT
+              value: "9001"
+              
+            - name: TRANSACTION_SERVICE
+              value: "transaction-service"
+              
+            - name: TRANSACTION_SERVICE_PORT
+              value: "9003"
+
+            # ------------------------------------------------------------------
+            # Firebase Service Configuration
+            # ------------------------------------------------------------------
+            - name: FIREBASE_SERVICE_URL
+              value: "http://firebase-service:8004/"
+
+            # ------------------------------------------------------------------
+            # Rate Limiting Configuration
+            # ------------------------------------------------------------------
+            - name: RATE_LIMITER_MAX_ATTEMPTS
+              value: "5"
+              
+            - name: RATE_LIMITER_WINDOW_MINUTES
+              value: "10"
+              
+            - name: RATE_LIMITER_LOCK_MINUTES
+              value: "10"
+
+            # ------------------------------------------------------------------
+            # External Database Configuration
+            # ------------------------------------------------------------------
+            # User Service DB
+            - name: EXTERNAL_DBS_DB_USER_SERVICE_URL
+              value: "jdbc:mysql://34.124.233.161:3306/DB_USER_SERVICE"
+              
+            - name: EXTERNAL_DBS_DB_USER_SERVICE_USERNAME
+              value: "root"
+              
+            - name: EXTERNAL_DBS_DB_USER_SERVICE_PASSWORD
+              value: "Root@123"  # 🚨 Replace with Secret reference
+
+            # Transaction Service DB
+            - name: EXTERNAL_DBS_DB_TRANSACTION_SERVICE_URL
+              value: "jdbc:mysql://34.124.233.161:3306/DB_TRANSACTION_SERVICE"
+              
+            - name: EXTERNAL_DBS_DB_TRANSACTION_SERVICE_USERNAME
+              value: "root"
+              
+            - name: EXTERNAL_DBS_DB_TRANSACTION_SERVICE_PASSWORD
+              value: "Root@123"  # 🚨 Replace with Secret reference
+
+            # FCM Service DB
+            - name: EXTERNAL_DBS_DB_FCM_SERVICE_URL
+              value: "jdbc:mysql://34.124.233.161:3306/DB_FCM_SERVICE"
+              
+            - name: EXTERNAL_DBS_DB_FCM_SERVICE_USERNAME
+              value: "root"
+              
+            - name: EXTERNAL_DBS_DB_FCM_SERVICE_PASSWORD
+              value: "Root@123"  # 🚨 Replace with Secret reference
+
+            # Connection Pool Configuration
+            - name: EXTERNAL_DBS_HIKARI_MAXIMUM_POOL_SIZE
+              value: "2"
+              
+            - name: EXTERNAL_DBS_HIKARI_CONNECTION_TIMEOUT
+              value: "3000"
+
+          # ------------------------------------------------------------------
+          # Health Check Configuration
+          # ------------------------------------------------------------------
+          livenessProbe:
+            httpGet:
+              path: /api/actuator/health
+              port: 8081
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+            
+          readinessProbe:
+            httpGet:
+              path: /api/actuator/health
+              port: 8081
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+          # ------------------------------------------------------------------
+          # Resource Configuration
+          # ------------------------------------------------------------------
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "500m"

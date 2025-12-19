@@ -17,7 +17,8 @@ pipeline {
                      'BACKEND/firebaseService',
                      'BACKEND/chatbotService',
                      'BACKENND/ekycService',
-                     'BACKEND/socket'
+                     'BACKEND/socket',
+                     'BACKEND/adminTool'
                     ]
                     for (module in modules) {
                         dir(module) {
@@ -40,7 +41,8 @@ pipeline {
                     'firebaseService',
                     'chatbotService',
                     'ekycService',
-                    'socket']
+                    'socket',
+                    'adminTool']
                     for (module in modules) {
                         def srcPath = "BACKEND/${module}/target/*.jar"
                         def destPath = "output_jar_file/${module}.jar"

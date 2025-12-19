@@ -1,5 +1,5 @@
 FROM eclipse-temurin:17-jdk-alpine
 WORKDIR /app
-COPY userService.jar app.jar
-EXPOSE 8001 9001
+COPY ekycService.jar app.jar
+EXPOSE 8008 9008
 ENTRYPOINT ["java", "-jar", "app.jar"]
