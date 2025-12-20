@@ -18,7 +18,7 @@ import java.util.Map;
  * WARNING: These endpoints should be disabled in production or protected by IP whitelist
  */
 @RestController
-@RequestMapping("/admin/setup")
+@RequestMapping("/setup")
 @RequiredArgsConstructor
 @Slf4j
 public class AdminSetupController {

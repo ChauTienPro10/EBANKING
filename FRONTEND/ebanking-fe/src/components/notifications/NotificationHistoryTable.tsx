@@ -1,11 +1,18 @@
 import { useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TBody, TD, TH, THead, TR } from "@/components/ui/table";
 import { useNotificationStore } from "@/stores/useNotificationStore";
+import { formatNotificationForDisplay, getNotificationTypeText } from "@/services/notificationService";
 import { useTranslation } from "react-i18next";
 
 export function NotificationHistoryTable() {
@@ -36,160 +43,182 @@ export function NotificationHistoryTable() {
         <CardTitle>{t("notifications.history.title")}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="grid gap-4 lg:grid-cols-5">
+        {/* Search and Filter Controls */}
+        <div className="grid gap-4 lg:grid-cols-4">
+          <Input
+            placeholder="Tìm theo tiêu đề..."
+            value={filters.title ?? ""}
+            onChange={(e) => setFilters({ title: e.target.value })}
+          />
+          
+          <Input
+            placeholder="Tìm theo username..."
+            value={filters.username ?? ""}
+            onChange={(e) => setFilters({ username: e.target.value })}
+          />
+          
           <Select
-            value={filters.staff ?? "all"}
-            onChange={(e) => setFilters({ staff: e.target.value })}
-            options={[
-              {
-                value: "all",
-                label: t("notifications.history.filters.staffAll"),
-              },
-              { value: "Pham Tuan", label: "Pham Tuan" },
-              { value: "Tran My", label: "Tran My" },
-              { value: "System", label: "System" },
-            ]}
-          />
-          <Select
-            value={filters.status ?? "all"}
-            onChange={(e) => setFilters({ status: e.target.value })}
-            options={[
-              {
-                value: "all",
-                label: t("notifications.history.filters.statusAll"),
-              },
-              {
-                value: "success",
-                label: t("notifications.history.status.success"),
-              },
-              {
-                value: "failed",
-                label: t("notifications.history.status.failed"),
-              },
-              {
-                value: "scheduled",
-                label: t("notifications.history.status.scheduled"),
-              },
-            ]}
-          />
-          <Input
-            type="date"
-            value={filters.dateFrom ?? ""}
-            onChange={(e) => setFilters({ dateFrom: e.target.value })}
-          />
-          <Input
-            type="date"
-            value={filters.dateTo ?? ""}
-            onChange={(e) => setFilters({ dateTo: e.target.value })}
-          />
-          <Input
-            placeholder={t("notifications.history.filters.keyword")}
-            value={filters.keyword ?? ""}
-            onChange={(e) => setFilters({ keyword: e.target.value })}
-          />
+            value={filters.type || "ALL"}
+            onValueChange={(value) => setFilters({ type: value as any })}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Chọn loại thông báo" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">Tất cả loại</SelectItem>
+              <SelectItem value="SYSTEM">Hệ thống</SelectItem>
+              <SelectItem value="PERSONAL">Cá nhân</SelectItem>
+              <SelectItem value="TRANSACTION">Giao dịch</SelectItem>
+            </SelectContent>
+          </Select>
+          
+          <button
+            onClick={() => {
+              setFilters({ 
+                title: undefined, 
+                username: undefined, 
+                type: "ALL",
+                fromDate: undefined,
+                toDate: undefined 
+              });
+            }}
+            className="px-4 py-2 text-sm border rounded-md hover:bg-gray-50"
+          >
+            Xóa bộ lọc
+          </button>
+        </div>
+        
+        <div className="grid gap-4 lg:grid-cols-2">
+          <div>
+            <label className="text-sm font-medium mb-1 block">Từ ngày</label>
+            <Input
+              type="date"
+              value={filters.fromDate ?? ""}
+              onChange={(e) => setFilters({ fromDate: e.target.value })}
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium mb-1 block">Đến ngày</label>
+            <Input
+              type="date"
+              value={filters.toDate ?? ""}
+              onChange={(e) => setFilters({ toDate: e.target.value })}
+            />
+          </div>
         </div>
         <div className="overflow-x-auto">
           <Table>
             <THead>
               <TR>
-                <TH>{t("notifications.history.table.time")}</TH>
-                <TH>{t("notifications.history.table.staff")}</TH>
-                <TH>{t("notifications.history.table.title")}</TH>
-                <TH>{t("notifications.history.table.receivers")}</TH>
-                <TH>{t("notifications.form.fields.priority")}</TH>
-                <TH>{t("notifications.history.table.status")}</TH>
-                <TH>{t("notifications.history.table.action")}</TH>
+                <TH>ID</TH>
+                <TH>Thời gian</TH>
+                <TH>Loại</TH>
+                <TH>Tiêu đề</TH>
+                <TH>Nội dung</TH>
+                <TH>Người nhận</TH>
+                <TH>Số tiền</TH>
+                <TH>Trạng thái</TH>
+                <TH>Thao tác</TH>
               </TR>
             </THead>
             <TBody>
               {loadingHistory ? (
                 <TR>
-                  <TD colSpan={6} className="text-center text-muted-foreground">
-                    {t("notifications.history.loading")}
+                  <TD colSpan={9} className="text-center text-muted-foreground">
+                    Đang tải...
                   </TD>
                 </TR>
               ) : history.length === 0 ? (
                 <TR>
-                  <TD colSpan={6} className="text-center text-muted-foreground">
-                    {t("notifications.history.empty")}
+                  <TD colSpan={9} className="text-center text-muted-foreground">
+                    Không có thông báo nào
                   </TD>
                 </TR>
               ) : (
-                history.map((item) => (
-                  <TR key={item.id}>
-                    <TD>{new Date(item.time).toLocaleString()}</TD>
-                    <TD>{item.staff}</TD>
-                    <TD className="font-medium">{item.title}</TD>
-                    <TD>{item.receiverCount.toLocaleString()}</TD>
-                    <TD>
-                      <Badge
-                        variant={
-                          item.priority === "high"
-                            ? "destructive"
-                            : item.priority === "low"
-                            ? "secondary"
-                            : "outline"
-                        }
-                      >
-                        {t(
-                          `notifications.form.priority.${
-                            item.priority || "normal"
-                          }`
+                history.map((notification) => {
+                  const formatted = formatNotificationForDisplay(notification);
+                  return (
+                    <TR key={notification.id}>
+                      <TD className="font-mono text-sm">{notification.id}</TD>
+                      <TD className="text-sm">{formatted.time}</TD>
+                      <TD>
+                        <Badge variant="outline">
+                          {getNotificationTypeText(notification.type)}
+                        </Badge>
+                      </TD>
+                      <TD className="font-medium max-w-xs truncate" title={notification.title}>
+                        {notification.title}
+                      </TD>
+                      <TD className="max-w-sm truncate text-sm text-muted-foreground" title={notification.content}>
+                        {notification.content}
+                      </TD>
+                      <TD className="text-sm">
+                        {notification.username ? (
+                          <span className="font-mono">{notification.username}</span>
+                        ) : (
+                          <span className="text-muted-foreground">-</span>
                         )}
-                      </Badge>
-                    </TD>
-                    <TD>
-                      <Badge
-                        variant={
-                          item.status === "success"
-                            ? "success"
-                            : item.status === "failed"
-                            ? "destructive"
-                            : "warning"
-                        }
-                      >
-                        {t(`notifications.history.status.${item.status}`)}
-                      </Badge>
-                    </TD>
-                    <TD>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => selectNotification(item.id)}
-                      >
-                        {t("notifications.history.table.view")}
-                      </Button>
-                    </TD>
-                  </TR>
-                ))
+                      </TD>
+                      <TD className="text-sm">
+                        {notification.amount ? (
+                          <span className="font-medium text-green-600">
+                            {notification.amount}
+                          </span>
+                        ) : (
+                          <span className="text-muted-foreground">-</span>
+                        )}
+                      </TD>
+                      <TD>
+                        {notification.status ? (
+                          <Badge 
+                            variant={
+                              notification.status === "SUCCESS" ? "default" : 
+                              notification.status === "FAILED" ? "destructive" : 
+                              "secondary"
+                            }
+                          >
+                            {notification.status}
+                          </Badge>
+                        ) : (
+                          <span className="text-muted-foreground">-</span>
+                        )}
+                      </TD>
+                      <TD>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => selectNotification(notification.id.toString())}
+                        >
+                          Xem
+                        </Button>
+                      </TD>
+                    </TR>
+                  );
+                })
               )}
             </TBody>
           </Table>
         </div>
         <div className="flex items-center justify-between text-sm">
           <span>
-            {t("notifications.history.pagination.info", {
-              page,
-              totalPages,
-              total: totalHistory,
-            })}
+            Trang {page} / {totalPages} - Tổng {totalHistory} thông báo
           </span>
           <div className="flex gap-2">
             <Button
               variant="outline"
               size="sm"
               onClick={() => setPage(Math.max(1, page - 1))}
-              disabled={page === 1}
+              disabled={page === 1 || loadingHistory}
             >
-              {t("notifications.history.pagination.prev")}
+              Trước
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={() => setPage(Math.min(totalPages, page + 1))}
-              disabled={page === totalPages}
+              disabled={page === totalPages || loadingHistory}
             >
-              {t("notifications.history.pagination.next")}
+              Sau
             </Button>
           </div>
         </div>

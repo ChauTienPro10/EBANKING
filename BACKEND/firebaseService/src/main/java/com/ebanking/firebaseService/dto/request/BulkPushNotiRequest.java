@@ -1,0 +1,18 @@
+package com.ebanking.firebaseService.dto.request;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class BulkPushNotiRequest {
+    private List<String> usernames;
+    private String title;
+    private String content;
+}

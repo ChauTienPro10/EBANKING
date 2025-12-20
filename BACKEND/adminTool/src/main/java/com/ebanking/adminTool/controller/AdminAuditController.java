@@ -19,7 +19,7 @@ import java.time.format.DateTimeFormatter;
  * Admin Audit Log Controller
  */
 @RestController
-@RequestMapping("/admin/audit-logs")
+@RequestMapping("/audit-logs")
 @RequiredArgsConstructor
 @Slf4j
 public class AdminAuditController {

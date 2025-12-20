@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @RestController
-@RequestMapping("/admin/system")
+@RequestMapping("/system")
 @RequiredArgsConstructor
 public class SystemController {
 

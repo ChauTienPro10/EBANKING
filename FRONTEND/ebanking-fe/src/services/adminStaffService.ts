@@ -1,4 +1,5 @@
 import apiClient from "./api";
+import { ENDPOINTS } from './URL';
 
 export type Role = "ROLE_ADMIN" | "ROLE_STAFF";
 
@@ -49,29 +50,29 @@ export const listAdmins = async (params: ListParams) => {
   if (params.search) query.append("search", params.search);
   if (params.role) query.append("role", params.role);
   if (typeof params.active === "boolean") query.append("active", String(params.active));
-  const res = await apiClient.get<PaginatedResponse<AdminDto>>(`/admins?${query.toString()}`);
+  const res = await apiClient.get<PaginatedResponse<AdminDto>>(`${ENDPOINTS.ADMINS}?${query.toString()}`);
   return res.data;
 };
 
 export const createAdmin = async (payload: CreateAdminRequest) => {
-  const res = await apiClient.post<AdminDto>("/admins", payload);
+  const res = await apiClient.post<AdminDto>(ENDPOINTS.ADMINS, payload);
   return res.data;
 };
 
 export const updateAdmin = async (id: number, payload: UpdateAdminRequest) => {
-  const res = await apiClient.put<AdminDto>(`/admins/${id}`, payload);
+  const res = await apiClient.put<AdminDto>(ENDPOINTS.ADMIN_BY_ID(id.toString()), payload);
   return res.data;
 };
 
 export const deactivateAdmin = async (id: number) => {
-  await apiClient.delete(`/admins/${id}`);
+  await apiClient.delete(ENDPOINTS.ADMIN_BY_ID(id.toString()));
 };
 
 export const resetPassword = async (id: number, newPassword: string) => {
-  await apiClient.post(`/admins/${id}/reset-password`, { newPassword });
+  await apiClient.post(ENDPOINTS.ADMIN_RESET_PASSWORD(id.toString()), { newPassword });
 };
 
 export const changeOwnPassword = async (oldPassword: string, newPassword: string) => {
-  await apiClient.post(`/admins/change-password`, { oldPassword, newPassword });
+  await apiClient.post(ENDPOINTS.ADMIN_CHANGE_PASSWORD, { oldPassword, newPassword });
 };
 

@@ -1,7 +1,8 @@
 import axios, { type AxiosError, type AxiosRequestConfig } from 'axios';
+import { BASE_URLS, ENDPOINTS } from './URL';
 
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  baseURL: import.meta.env.VITE_API_BASE_URL || BASE_URLS.DEFAULT_API,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -9,7 +10,7 @@ const apiClient = axios.create({
 
 // Separate instance for refresh to avoid interceptor loops
 const refreshClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  baseURL: import.meta.env.VITE_API_BASE_URL || BASE_URLS.DEFAULT_API,
   headers: { 'Content-Type': 'application/json' },
 });
 
@@ -39,7 +40,7 @@ apiClient.interceptors.request.use(
 async function doRefresh() {
   const refreshToken = localStorage.getItem('refreshToken');
   if (!refreshToken) throw new Error('No refresh token');
-  const res = await refreshClient.post('/auth/refresh', { refreshToken });
+  const res = await refreshClient.post(ENDPOINTS.AUTH_REFRESH, { refreshToken });
   const { jwt, refreshToken: newRefresh } = res.data;
   if (!jwt || !newRefresh) throw new Error('Invalid refresh response');
   localStorage.setItem('authToken', jwt);

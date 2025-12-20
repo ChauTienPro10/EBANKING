@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
  * Provides dashboard statistics and overview
  */
 @RestController
-@RequestMapping("/admin/dashboard")
+@RequestMapping("/dashboard")
 @RequiredArgsConstructor
 @Slf4j
 public class AdminDashboardController {

@@ -1,11 +1,12 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useCallback, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useNotificationStore } from "@/stores/useNotificationStore";
+import { useUserStore } from "@/stores/useUserStore";
 import { useTranslation } from "react-i18next";
-import type { ReceiverMode } from "@/services/mock/notificationService";
+import type { ReceiverMode } from "@/services/notificationService";
 
 interface ReceiverSelectorProps {
   role: "Admin" | "Manager" | "Staff";
@@ -13,32 +14,58 @@ interface ReceiverSelectorProps {
 
 export function ReceiverSelector({ role }: ReceiverSelectorProps) {
   const { t } = useTranslation();
-  const users = useNotificationStore((state) => state.users);
-  const userSearch = useNotificationStore((state) => state.userSearch);
-  const setUserSearch = useNotificationStore((state) => state.setUserSearch);
+  
+  // Local state for input value to prevent focus loss
+  const [localSearchQuery, setLocalSearchQuery] = useState("");
+  
+  // Use the new user store
+  const { 
+    filteredUsers, 
+    loading: usersLoading, 
+    error: usersError,
+    searchQuery,
+    loadUsers,
+    setSearchQuery,
+    searchUsers,
+    clearError
+  } = useUserStore();
+  
+  // Notification store for form state
   const form = useNotificationStore((state) => state.form);
   const setMode = useNotificationStore((state) => state.setMode);
   const toggleUserSelection = useNotificationStore(
     (state) => state.toggleUserSelection
   );
   const removeUser = useNotificationStore((state) => state.removeUser);
-  const loadUsers = useNotificationStore((state) => state.loadUsers);
 
   useEffect(() => {
+    console.log('ReceiverSelector: Component mounted, loading users...');
     void loadUsers();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loadUsers]);
+
+  // Debounced search effect
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (localSearchQuery !== searchQuery) {
+        setSearchQuery(localSearchQuery);
+        searchUsers(localSearchQuery);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [localSearchQuery, searchQuery, setSearchQuery, searchUsers]);
+
+  // Handle search input change
+  const handleSearchChange = useCallback((value: string) => {
+    setLocalSearchQuery(value);
   }, []);
 
-  const filteredUsers = useMemo(() => {
-    if (!userSearch) return users;
-    const term = userSearch.toLowerCase();
-    return users.filter(
-      (user) =>
-        user.name.toLowerCase().includes(term) ||
-        user.phone.includes(term) ||
-        user.email.toLowerCase().includes(term)
-    );
-  }, [userSearch, users]);
+  // Clear error when component unmounts or when user interacts
+  useEffect(() => {
+    if (usersError) {
+      console.error('ReceiverSelector: User loading error:', usersError);
+    }
+  }, [usersError]);
 
   return (
     <Card>
@@ -84,15 +111,44 @@ export function ReceiverSelector({ role }: ReceiverSelectorProps) {
           <div className="space-y-3">
             <Input
               placeholder={t("notifications.receiver.searchPlaceholder")}
-              value={userSearch}
-              onChange={(e) => {
-                setUserSearch(e.target.value);
-              }}
+              value={localSearchQuery}
+              onChange={(e) => handleSearchChange(e.target.value)}
+              disabled={usersLoading}
             />
+            
+            {usersError && (
+              <div className="p-3 text-sm text-red-600 bg-red-50 rounded-md border border-red-200">
+                <div className="flex items-center justify-between">
+                  <span>Lỗi: {usersError}</span>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => {
+                      clearError();
+                      if (localSearchQuery.trim()) {
+                        searchUsers(localSearchQuery);
+                      } else {
+                        loadUsers();
+                      }
+                    }}
+                  >
+                    Thử lại
+                  </Button>
+                </div>
+              </div>
+            )}
+            
             <div className="max-h-40 overflow-auto rounded-md border">
-              {filteredUsers.length === 0 ? (
+              {usersLoading ? (
                 <div className="p-4 text-sm text-muted-foreground">
-                  {t("notifications.receiver.noResults")}
+                  Đang tải danh sách người dùng...
+                </div>
+              ) : filteredUsers.length === 0 ? (
+                <div className="p-4 text-sm text-muted-foreground">
+                  {localSearchQuery ? 
+                    `Không tìm thấy người dùng với từ khóa "${localSearchQuery}"` : 
+                    "Không có người dùng nào"
+                  }
                 </div>
               ) : (
                 filteredUsers.map((user) => {
@@ -102,7 +158,7 @@ export function ReceiverSelector({ role }: ReceiverSelectorProps) {
                       type="button"
                       key={user.id}
                       onClick={() => toggleUserSelection(user)}
-                      className={`flex w-full items-center justify-between border-b px-4 py-2 text-left text-sm last:border-none ${
+                      className={`flex w-full items-center justify-between border-b px-4 py-2 text-left text-sm last:border-none hover:bg-gray-50 ${
                         selected ? "bg-muted" : ""
                       }`}
                     >

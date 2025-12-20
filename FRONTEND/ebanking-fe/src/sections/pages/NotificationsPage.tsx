@@ -101,12 +101,7 @@ export function NotificationsPage() {
               </span>{" "}
               {form.title}
             </p>
-            <p>
-              <span className="font-medium">
-                {t("notifications.confirmation.priority")}:
-              </span>{" "}
-              {t(`notifications.form.priority.${form.priority}`)}
-            </p>
+          
             <p>
               <span className="font-medium">
                 {t("notifications.confirmation.receivers")}:

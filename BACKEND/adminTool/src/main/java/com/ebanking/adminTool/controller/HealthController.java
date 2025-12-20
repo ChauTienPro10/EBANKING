@@ -16,7 +16,7 @@ import java.util.Map;
  * Provides application health status and system information
  */
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("")
 @Slf4j
 @RequiredArgsConstructor
 public class HealthController {

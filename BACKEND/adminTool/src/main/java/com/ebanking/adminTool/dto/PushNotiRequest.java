@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PushNotiRequest {
     private String title;
-    private String body;
+    private String content;
     private String username; // For personal notification
 }

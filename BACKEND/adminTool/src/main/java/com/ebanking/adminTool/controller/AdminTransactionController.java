@@ -1,5 +1,6 @@
 package com.ebanking.adminTool.controller;
 
+import com.ebanking.adminTool.dto.TransactionHistoryResponse;
 import com.ebanking.adminTool.service.AdminTransactionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
  * Admin Transaction Management Controller
  */
 @RestController
-@RequestMapping("/admin/transactions")
+@RequestMapping("/transactions")
 @RequiredArgsConstructor
 @Slf4j
 public class AdminTransactionController {
@@ -32,14 +33,33 @@ public class AdminTransactionController {
             @RequestParam(required = false) String fromDate,
             @RequestParam(required = false) String toDate,
             Authentication authentication) {
-        String adminUsername = authentication.getName();
-        log.info("Admin {} fetching transactions with filters", adminUsername);
 
-        // Note: The service layer will handle the conversion of string dates to objects
-        var response = adminTransactionService.getTransactionHistory(
-                page, size, search, type, status, fromDate, toDate);
+        try {
+            log.info("Admin {} requesting transaction history - page: {}, size: {}, search: {}, type: {}, status: {}, fromDate: {}, toDate: {}", 
+                    authentication.getName(), page, size, search, type, status, fromDate, toDate);
 
-        return ResponseEntity.ok(response);
+            // Validate pagination parameters
+            if (page < 0) {
+                return ResponseEntity.badRequest().body("Page number cannot be negative");
+            }
+            if (size <= 0 || size > 100) {
+                return ResponseEntity.badRequest().body("Page size must be between 1 and 100");
+            }
+
+            TransactionHistoryResponse response = adminTransactionService.getTransactionHistory(
+                    page, size, search, type, status, fromDate, toDate);
+
+            log.info("Successfully retrieved {} transactions for admin {}", 
+                    response.getTransactions().size(), authentication.getName());
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            log.error("Error retrieving transaction history for admin {}: {}", 
+                    authentication.getName(), e.getMessage(), e);
+            return ResponseEntity.internalServerError()
+                    .body("Failed to retrieve transaction history: " + e.getMessage());
+        }
     }
 
 }

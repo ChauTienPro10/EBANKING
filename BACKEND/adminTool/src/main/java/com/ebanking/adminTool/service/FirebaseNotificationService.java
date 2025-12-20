@@ -66,7 +66,7 @@ public class FirebaseNotificationService {
      */
     public void pushNotificationToAll(PushNotiRequest request) {
         try {
-            String url = firebaseServiceUrl + "/push-all";
+            String url = firebaseServiceUrl + "/notify/push-all";
             httpUltils.post(url, request, Void.class);
             log.info("Push notification to all users - Title: {}", request.getTitle());
         } catch (Exception e) {
@@ -81,7 +81,7 @@ public class FirebaseNotificationService {
      */
     public void pushNotificationToUser(PushNotiRequest request) {
         try {
-            String url = firebaseServiceUrl + "/push-noti-persional";
+            String url = firebaseServiceUrl + "/notify/push-noti-persional";
             httpUltils.post(url, request, Void.class);
             log.info("Push notification to user: {} - Title: {}", request.getUsername(), request.getTitle());
         } catch (Exception e) {
@@ -169,6 +169,36 @@ public class FirebaseNotificationService {
         } catch (Exception e) {
             log.error("Error pushing test notification: {}", e.getMessage(), e);
             return false;
+        }
+    }
+
+    /**
+     * Push bulk notification to multiple users
+     * POST /notify/push-noti-bulk
+     */
+    public java.util.Map<String, Object> pushBulkNotificationToUsers(com.ebanking.adminTool.dto.BulkPushNotiRequest request) {
+        try {
+            String url = firebaseServiceUrl + "/notify/push-noti-bulk";
+            
+            // Create request body matching firebaseService DTO structure
+            java.util.Map<String, Object> requestBody = new java.util.HashMap<>();
+            requestBody.put("usernames", request.getUsernames());
+            requestBody.put("title", request.getTitle());
+            requestBody.put("content", request.getContent());
+            
+            @SuppressWarnings("unchecked")
+            java.util.Map<String, Object> result = httpUltils.post(url, requestBody, java.util.Map.class);
+            
+            log.info("Push bulk notification - Title: {}, Users count: {}, Result: {}", 
+                    request.getTitle(), request.getUsernames().size(), result);
+            return result;
+        } catch (Exception e) {
+            log.error("Error pushing bulk notification: {}", e.getMessage(), e);
+            // Return error response
+            java.util.Map<String, Object> errorResult = new java.util.HashMap<>();
+            errorResult.put("success", false);
+            errorResult.put("message", "Failed to send bulk notification: " + e.getMessage());
+            return errorResult;
         }
     }
 }

@@ -2,9 +2,11 @@ package com.ebanking.adminTool.controller;
 
 import com.ebanking.adminTool.dto.NotiSystemDTO;
 import com.ebanking.adminTool.dto.NotiTransactionDTO;
+import com.ebanking.adminTool.dto.NotificationHistoryDto;
 import com.ebanking.adminTool.dto.PushNotiRequest;
 import com.ebanking.adminTool.dto.SaveTokenDTO;
 import com.ebanking.adminTool.service.FirebaseNotificationService;
+import com.ebanking.adminTool.service.NotificationHistoryService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,6 +24,9 @@ public class NotiManagerment {
 
     @Autowired
     private FirebaseNotificationService firebaseNotificationService;
+
+    @Autowired
+    private NotificationHistoryService notificationHistoryService;
 
     /**
      * cai này không cần quan tâm, gen trong app người dùng
@@ -107,6 +112,42 @@ public class NotiManagerment {
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             log.error("Error in pushNotificationToUser endpoint: {}", e.getMessage(), e);
+            response.put("success", false);
+            response.put("message", "Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    /**
+     * Push notification to multiple users
+     * POST /notification/push-to-users
+     */
+    @PostMapping("/push-to-users")
+    public ResponseEntity<Map<String, Object>> pushNotificationToUsers(@RequestBody com.ebanking.adminTool.dto.BulkPushNotiRequest request) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            if (request.getUsernames() == null || request.getUsernames().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Usernames list is required");
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            if (request.getTitle() == null || request.getTitle().trim().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Title is required");
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            if (request.getContent() == null || request.getContent().trim().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Content is required");
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            Map<String, Object> result = firebaseNotificationService.pushBulkNotificationToUsers(request);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            log.error("Error in pushNotificationToUsers endpoint: {}", e.getMessage(), e);
             response.put("success", false);
             response.put("message", "Error: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
@@ -206,6 +247,219 @@ public class NotiManagerment {
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             log.error("Error in pushTestNotification endpoint: {}", e.getMessage(), e);
+            response.put("success", false);
+            response.put("message", "Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    /**
+     * Get all notification history with pagination
+     * GET /notification/history?index={index}&limit={limit}
+     */
+    @GetMapping("/history")
+    public ResponseEntity<Map<String, Object>> getAllNotificationHistory(
+            @RequestParam(defaultValue = "0") int index,
+            @RequestParam(defaultValue = "10") int limit) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            List<NotificationHistoryDto> notifications = notificationHistoryService.getAllNotificationHistory(index * limit, limit);
+            long totalCount = notificationHistoryService.getTotalNotificationCount();
+            
+            response.put("success", true);
+            response.put("data", notifications);
+            response.put("index", index);
+            response.put("limit", limit);
+            response.put("count", notifications.size());
+            response.put("totalCount", totalCount);
+            response.put("totalPages", (totalCount + limit - 1) / limit);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("Error in getAllNotificationHistory endpoint: {}", e.getMessage(), e);
+            response.put("success", false);
+            response.put("message", "Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    /**
+     * Get system notification history with pagination
+     * GET /notification/history/system?index={index}&limit={limit}
+     */
+    @GetMapping("/history/system")
+    public ResponseEntity<Map<String, Object>> getSystemNotificationHistory(
+            @RequestParam(defaultValue = "0") int index,
+            @RequestParam(defaultValue = "10") int limit) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            List<NotificationHistoryDto> notifications = notificationHistoryService.getSystemNotificationHistory(index * limit, limit);
+            
+            response.put("success", true);
+            response.put("data", notifications);
+            response.put("index", index);
+            response.put("limit", limit);
+            response.put("count", notifications.size());
+            response.put("type", "SYSTEM");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("Error in getSystemNotificationHistory endpoint: {}", e.getMessage(), e);
+            response.put("success", false);
+            response.put("message", "Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    /**
+     * Get personal notification history with pagination and optional username filter
+     * GET /notification/history/personal?index={index}&limit={limit}&username={username}
+     */
+    @GetMapping("/history/personal")
+    public ResponseEntity<Map<String, Object>> getPersonalNotificationHistory(
+            @RequestParam(defaultValue = "0") int index,
+            @RequestParam(defaultValue = "10") int limit,
+            @RequestParam(required = false) String username) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            List<NotificationHistoryDto> notifications = notificationHistoryService.getPersonalNotificationHistory(index * limit, limit, username);
+            
+            response.put("success", true);
+            response.put("data", notifications);
+            response.put("index", index);
+            response.put("limit", limit);
+            response.put("count", notifications.size());
+            response.put("type", "PERSONAL");
+            if (username != null) {
+                response.put("username", username);
+            }
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("Error in getPersonalNotificationHistory endpoint: {}", e.getMessage(), e);
+            response.put("success", false);
+            response.put("message", "Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    /**
+     * Get transaction notification history with pagination and optional username filter
+     * GET /notification/history/transaction?index={index}&limit={limit}&username={username}
+     */
+    @GetMapping("/history/transaction")
+    public ResponseEntity<Map<String, Object>> getTransactionNotificationHistory(
+            @RequestParam(defaultValue = "0") int index,
+            @RequestParam(defaultValue = "10") int limit,
+            @RequestParam(required = false) String username) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            List<NotificationHistoryDto> notifications = notificationHistoryService.getTransactionNotificationHistory(index * limit, limit, username);
+            
+            response.put("success", true);
+            response.put("data", notifications);
+            response.put("index", index);
+            response.put("limit", limit);
+            response.put("count", notifications.size());
+            response.put("type", "TRANSACTION");
+            if (username != null) {
+                response.put("username", username);
+            }
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("Error in getTransactionNotificationHistory endpoint: {}", e.getMessage(), e);
+            response.put("success", false);
+            response.put("message", "Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    /**
+     * Get notification history by date range and type
+     * GET /notification/history/filter?fromDate={fromDate}&toDate={toDate}&type={type}
+     */
+    @GetMapping("/history/filter")
+    public ResponseEntity<Map<String, Object>> getNotificationHistoryByDateRange(
+            @RequestParam Long fromDate,
+            @RequestParam Long toDate,
+            @RequestParam(required = false, defaultValue = "ALL") String type) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            List<NotificationHistoryDto> notifications = notificationHistoryService.getNotificationHistoryByDateRange(fromDate, toDate, type);
+            
+            response.put("success", true);
+            response.put("data", notifications);
+            response.put("count", notifications.size());
+            response.put("fromDate", fromDate);
+            response.put("toDate", toDate);
+            response.put("type", type);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("Error in getNotificationHistoryByDateRange endpoint: {}", e.getMessage(), e);
+            response.put("success", false);
+            response.put("message", "Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    /**
+     * Search notifications with advanced filters
+     * GET /notification/search?title={title}&fromDate={fromDate}&toDate={toDate}&type={type}&username={username}&index={index}&limit={limit}
+     */
+    @GetMapping("/search")
+    public ResponseEntity<Map<String, Object>> searchNotifications(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) Long fromDate,
+            @RequestParam(required = false) Long toDate,
+            @RequestParam(required = false, defaultValue = "ALL") String type,
+            @RequestParam(required = false) String username,
+            @RequestParam(defaultValue = "0") int index,
+            @RequestParam(defaultValue = "10") int limit) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            // Validate that at least one search criteria is provided
+            if ((title == null || title.trim().isEmpty()) && 
+                fromDate == null && toDate == null && 
+                (username == null || username.trim().isEmpty()) &&
+                (type == null || type.equalsIgnoreCase("ALL"))) {
+                response.put("success", false);
+                response.put("message", "At least one search criteria must be provided (title, date range, username, or specific type)");
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            List<NotificationHistoryDto> notifications = notificationHistoryService.searchNotifications(
+                title, fromDate, toDate, type, username, index * limit, limit);
+            
+            long totalCount = notificationHistoryService.getSearchNotificationCount(
+                title, fromDate, toDate, type, username);
+            
+            response.put("success", true);
+            response.put("data", notifications);
+            response.put("index", index);
+            response.put("limit", limit);
+            response.put("count", notifications.size());
+            response.put("totalCount", totalCount);
+            response.put("totalPages", (totalCount + limit - 1) / limit);
+            
+            // Add search criteria to response for reference
+            Map<String, Object> searchCriteria = new HashMap<>();
+            if (title != null && !title.trim().isEmpty()) {
+                searchCriteria.put("title", title);
+            }
+            if (fromDate != null) {
+                searchCriteria.put("fromDate", fromDate);
+            }
+            if (toDate != null) {
+                searchCriteria.put("toDate", toDate);
+            }
+            if (type != null && !type.equalsIgnoreCase("ALL")) {
+                searchCriteria.put("type", type);
+            }
+            if (username != null && !username.trim().isEmpty()) {
+                searchCriteria.put("username", username);
+            }
+            response.put("searchCriteria", searchCriteria);
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("Error in searchNotifications endpoint: {}", e.getMessage(), e);
             response.put("success", false);
             response.put("message", "Error: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);

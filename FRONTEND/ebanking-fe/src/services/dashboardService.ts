@@ -1,4 +1,5 @@
 import apiClient from './api';
+import { ENDPOINTS } from './URL';
 
 // Corresponds to actual DashboardStatsResponse from backend
 export interface DashboardStats {
@@ -17,6 +18,6 @@ export interface DashboardStats {
 }
 
 export const getDashboardStats = () => {
-  return apiClient.get<DashboardStats>('/dashboard/stats');
+  return apiClient.get<DashboardStats>(ENDPOINTS.DASHBOARD_STATS);
 };
 

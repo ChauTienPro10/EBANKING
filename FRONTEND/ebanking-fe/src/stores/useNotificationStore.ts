@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import * as svc from "@/services/mock/notificationService";
+import * as svc from "@/services/notificationService";
 
 export type ReceiverMode = svc.ReceiverMode;
 export type Priority = svc.Priority;
@@ -25,11 +25,11 @@ interface ErrorsState {
 }
 
 interface FiltersState {
-  staff?: string;
-  status?: HistoryStatus | "all";
-  keyword?: string;
-  dateFrom?: string;
-  dateTo?: string;
+  title?: string;
+  fromDate?: string; // ISO date string for input
+  toDate?: string; // ISO date string for input
+  type?: svc.NotificationType | "ALL";
+  username?: string;
 }
 
 interface NotificationStore {
@@ -48,7 +48,7 @@ interface NotificationStore {
   toastMessage: string | null; // i18n key
 
   // History
-  history: Array<Pick<svc.HistoryItem, "id" | "time" | "staff" | "title" | "receiverCount" | "priority" | "status">>;
+  history: svc.NotificationHistoryDto[];
   totalHistory: number;
   page: number;
   pageSize: number;
@@ -111,7 +111,7 @@ export const useNotificationStore = create<NotificationStore>((set, get) => ({
   page: 1,
   pageSize: 10,
   loadingHistory: false,
-  filters: { staff: "all", status: "all" },
+  filters: { type: "ALL" },
 
   detailOpen: false,
   detail: null,
@@ -143,8 +143,15 @@ export const useNotificationStore = create<NotificationStore>((set, get) => ({
   dismissToast: () => set({ toastMessage: null }),
 
   loadUsers: async () => {
-    const users = await svc.listUsers();
-    set({ users });
+    try {
+      console.log('Loading users...');
+      const users = await svc.listUsers();
+      console.log('Users loaded:', users.length, users);
+      set({ users });
+    } catch (error) {
+      console.error('Failed to load users in store:', error);
+      set({ users: [] });
+    }
   },
 
   validate: () => {
@@ -192,19 +199,67 @@ export const useNotificationStore = create<NotificationStore>((set, get) => ({
     }
   },
 
-  setFilters: (f) => set((s) => ({ filters: { ...s.filters, ...f }, page: 1 })),
-  setPage: (page) => set({ page }),
+  setFilters: (f) => {
+    set((s) => ({ filters: { ...s.filters, ...f }, page: 1 }));
+    // Auto-reload when filters change
+    get().loadHistory();
+  },
+  setPage: (page) => {
+    set({ page });
+    // Auto-reload when page changes
+    get().loadHistory();
+  },
 
   loadHistory: async () => {
     set({ loadingHistory: true });
-    const { page, pageSize, filters } = get();
-    const res = await svc.listHistory({ page, size: pageSize, staff: filters.staff, status: filters.status, keyword: filters.keyword, dateFrom: filters.dateFrom, dateTo: filters.dateTo });
-    set({ history: res.content, totalHistory: res.total, loadingHistory: false });
+    try {
+      const { page, pageSize, filters } = get();
+      // Convert page (1-based) to index (0-based) for backend
+      const index = Math.max(0, page - 1);
+      
+      // Check if we have any search filters
+      const hasFilters = filters.title || filters.fromDate || filters.toDate || 
+                        (filters.type && filters.type !== "ALL") || filters.username;
+      
+      let res;
+      if (hasFilters) {
+        // Use search endpoint
+        const searchParams: svc.SearchNotificationParams = {
+          index,
+          limit: pageSize,
+        };
+        
+        if (filters.title) searchParams.title = filters.title;
+        if (filters.fromDate) searchParams.fromDate = new Date(filters.fromDate).getTime();
+        if (filters.toDate) searchParams.toDate = new Date(filters.toDate).getTime();
+        if (filters.type && filters.type !== "ALL") searchParams.type = filters.type;
+        if (filters.username) searchParams.username = filters.username;
+        
+        res = await svc.searchNotifications(searchParams);
+      } else {
+        // Use regular history endpoint
+        res = await svc.listHistory({ index, limit: pageSize });
+      }
+      
+      set({ 
+        history: res.content, 
+        totalHistory: res.total, 
+        loadingHistory: false 
+      });
+    } catch (error) {
+      console.error('Failed to load history:', error);
+      set({ 
+        history: [], 
+        totalHistory: 0, 
+        loadingHistory: false 
+      });
+    }
   },
 
   selectNotification: async (id) => {
-    const detail = await svc.getDetail(id);
-    set({ detailOpen: !!detail, detail });
+    // For now, just set the detail to the ID since we don't have a separate detail endpoint yet
+    // The modal will find the notification from the history list
+    set({ detailOpen: true, detail: { id } as any });
   },
   closeDetail: () => set({ detailOpen: false, detail: null }),
 }));
