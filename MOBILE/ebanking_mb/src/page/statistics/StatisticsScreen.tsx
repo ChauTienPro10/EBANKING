@@ -47,11 +47,11 @@ const StatisticsScreen: React.FC = () => {
 
   // Default currency based on language, but allow toggle
   const [displayCurrency, setDisplayCurrency] = useState<'VND' | 'USD'>(
-    i18n.language === 'en' ? 'USD' : 'VND'
+    i18n.language === 'en' ? 'USD' : 'VND',
   );
 
   const toggleCurrency = () => {
-    setDisplayCurrency(prev => prev === 'VND' ? 'USD' : 'VND');
+    setDisplayCurrency(prev => (prev === 'VND' ? 'USD' : 'VND'));
   };
 
   // Get data from Redux
@@ -62,7 +62,7 @@ const StatisticsScreen: React.FC = () => {
     analysisPreviousWeek,
     analysisWeeklyStats,
     isLoggedIn,
-    loginResponse
+    loginResponse,
   } = useSelector((state: RootState) => state.app);
 
   const currentAccountNumber = useSelector(
@@ -105,10 +105,14 @@ const StatisticsScreen: React.FC = () => {
       // Map analysisWeeklyStats to chart data
       const labels = analysisWeeklyStats.map(stat => {
         // Assume we have a date field or we compute from index (Mon-Sun)
-        const d = (stat as any).date ? new Date((stat as any).date) : new Date();
+        const d = (stat as any).date
+          ? new Date((stat as any).date)
+          : new Date();
         return `${d.getDate()}/${d.getMonth() + 1}`;
       });
-      const data = analysisWeeklyStats.map(stat => stat.totalAmountInPeriodByUsername);
+      const data = analysisWeeklyStats.map(
+        stat => stat.totalAmountInPeriodByUsername,
+      );
       return { labels, data };
     }
 
@@ -135,18 +139,27 @@ const StatisticsScreen: React.FC = () => {
   const previousTotal = periodData.previous?.totalAmountInPeriodByUsername || 0;
   const totalIncoming = periodData.current?.totalIncomingAmount || 0;
 
-  const currentTransactionCount = periodData.current?.transactionCountInPeriodByUsername || 0;
+  const currentTransactionCount =
+    periodData.current?.transactionCountInPeriodByUsername || 0;
 
   // Map AnalysisData to TopInsights props
-  const largestTransaction = periodData.current?.transactionLargestInPeriodByUsername || null;
+  const largestTransaction =
+    periodData.current?.transactionLargestInPeriodByUsername || null;
 
-  const mostFrequentRecipient = periodData.current?.mostAccountInfoTransferManyTimeInPeriod ? {
-    accountNumber: periodData.current.mostAccountInfoTransferManyTimeInPeriod.accountNumber,
-    count: periodData.current.mostAccountInfoTransferManyTimeInPeriodCount,
-    totalAmount: periodData.current.mostAccountInfoTransferManyTimeInPeriodTotalAmount
-  } : null;
+  const mostFrequentRecipient = periodData.current
+    ?.mostAccountInfoTransferManyTimeInPeriod
+    ? {
+        accountNumber:
+          periodData.current.mostAccountInfoTransferManyTimeInPeriod
+            .accountNumber,
+        count: periodData.current.mostAccountInfoTransferManyTimeInPeriodCount,
+        totalAmount:
+          periodData.current.mostAccountInfoTransferManyTimeInPeriodTotalAmount,
+      }
+    : null;
 
-  const averageTransaction = currentTransactionCount > 0 ? currentTotal / currentTransactionCount : 0;
+  const averageTransaction =
+    currentTransactionCount > 0 ? currentTotal / currentTransactionCount : 0;
 
   return (
     <View style={styles.container}>
@@ -168,7 +181,10 @@ const StatisticsScreen: React.FC = () => {
         </View>
         <View style={styles.headerRight}>
           <View style={styles.headerControls}>
-            <TouchableOpacity onPress={toggleCurrency} style={styles.currencyToggle}>
+            <TouchableOpacity
+              onPress={toggleCurrency}
+              style={styles.currencyToggle}
+            >
               <Text style={styles.currencyToggleText}>{displayCurrency}</Text>
             </TouchableOpacity>
             <PeriodDropdown
@@ -303,18 +319,18 @@ const styles = StyleSheet.create({
   headerControls: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8
+    gap: 8,
   },
   currencyToggle: {
     backgroundColor: 'rgba(255,255,255,0.2)',
     paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 4
+    paddingVertical: 5,
+    borderRadius: 6,
   },
   currencyToggleText: {
     color: 'white',
     fontWeight: 'bold',
-    fontSize: 12
+    fontSize: 12,
   },
   backButton: {
     alignItems: 'center',

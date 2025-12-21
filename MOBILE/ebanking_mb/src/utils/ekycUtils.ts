@@ -4,22 +4,27 @@
 
 /**
  * Check if eKYC is expired
- * @param verifiedAt - Unix timestamp in milliseconds
+ * @param verifiedAt - Unix timestamp in milliseconds (string or number)
  * @returns true if expired, false otherwise
  */
 export const isEkycExpired = (
-  verifiedAt: number | null | undefined,
+  verifiedAt: string | number | null | undefined,
 ): boolean => {
   if (!verifiedAt) return false;
 
   try {
-    // Demo: Check if older than 5 minutes
-    // Production: Change to 365 * 24 * 60 * 60 * 1000 for 1 year
-    const expirationTime = 5 * 60 * 1000; // 5 minutes in milliseconds
+    // Convert string to number if needed
+    const timestamp =
+      typeof verifiedAt === 'string' ? parseInt(verifiedAt, 10) : verifiedAt;
+
+    if (isNaN(timestamp)) return false;
+
+    // Demo
+    const expirationTime = 24 * 60 * 60 * 1000;
     // const expirationTime = 365 * 24 * 60 * 60 * 1000; // 1 year in milliseconds
 
     const now = Date.now();
-    return now - verifiedAt > expirationTime;
+    return now - timestamp > expirationTime;
   } catch (error) {
     console.error('Error checking eKYC expiration:', error);
     return false;

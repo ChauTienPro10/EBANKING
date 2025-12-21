@@ -94,10 +94,12 @@ export const useTransferSubmit = () => {
         const amountNum = parseFloat(formData.amount.replace(/,/g, ''));
         if (amountNum > 10000000) {
           // ✅ Use shared validation hook
-          const ekycValidation = validateEkyc(() => {
-            setIsLoading(false);
-            setShowEKYCModal(true);
-          });
+          const ekycValidation = validateEkyc(
+            (reason: 'NOT_VERIFIED' | 'EXPIRED') => {
+              setIsLoading(false);
+              setShowEKYCModal(true);
+            },
+          );
 
           if (!ekycValidation.isValid) {
             setIsLoading(false);

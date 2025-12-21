@@ -25,11 +25,13 @@ export const useHomeNavigation = (
     switch (action.id) {
       case 'transfer':
         // Validate eKYC before allowing Transfer navigation
-        const ekycValidation = validateEkyc(reason => {
-          // Show modal on validation failure
-          setEkycExpiredReason(reason);
-          setShowEkycExpiredModal(true);
-        });
+        const ekycValidation = validateEkyc(
+          (reason: 'NOT_VERIFIED' | 'EXPIRED') => {
+            // Show modal on validation failure
+            setEkycExpiredReason(reason);
+            setShowEkycExpiredModal(true);
+          },
+        );
 
         if (!ekycValidation.isValid) {
           return;

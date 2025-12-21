@@ -18,6 +18,7 @@ import type { RootState, AppDispatch } from '../../../store';
 import { fetchUserInfo } from '../../../store/fetchAPI/UserInfoFetch';
 import { ekycApi } from '../../../services/ekycApi';
 import { EkycDetailModel } from '../../../store/UserInfoModel';
+import { isEkycExpired } from '../../../utils/ekycUtils';
 import Colors from '../../../constants/color';
 import Toast from 'react-native-toast-message';
 
@@ -41,39 +42,14 @@ const EKYCDetailScreen: React.FC = () => {
     }, [userInfo?.ekycSessionId]),
   );
 
-  const checkIfExpired = (verifiedAt: number | null | undefined): boolean => {
-    if (!verifiedAt) return false;
-
-    try {
-      // Demo: Check if older than 5 minutes
-      const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
-
-      console.log('⏰ Verified timestamp:', verifiedAt);
-      console.log('⏰ Verified date:', new Date(verifiedAt).toISOString());
-      console.log(
-        '⏰ Five minutes ago:',
-        new Date(fiveMinutesAgo).toISOString(),
-      );
-      console.log('⏰ Difference (ms):', Date.now() - verifiedAt);
-      console.log('⏰ Difference (min):', (Date.now() - verifiedAt) / 60000);
-
-      return verifiedAt < fiveMinutesAgo;
-    } catch (error) {
-      console.error('Error checking expiration:', error);
-      return false;
-    }
-  };
-
   const loadEkycDetails = async () => {
     try {
       // ✅ Refresh userInfo first to get latest ekycSessionId
       let freshUserInfo = userInfo;
 
       if (loginResponse?.id) {
-        console.log('🔄 Refreshing userInfo to get latest eKYC session...');
         const result = await dispatch(fetchUserInfo(loginResponse.id)).unwrap();
         freshUserInfo = result; // Use fresh data from API
-        console.log('✅ Got fresh userInfo, sessionId:', result?.ekycSessionId);
       }
 
       if (!freshUserInfo?.ekycSessionId) {
@@ -85,20 +61,11 @@ const EKYCDetailScreen: React.FC = () => {
         return;
       }
 
-      console.log(
-        '📡 Fetching eKYC details with sessionId:',
-        freshUserInfo.ekycSessionId,
-      );
       const details = await ekycApi.getDetails(freshUserInfo.ekycSessionId);
       setEkycDetails(details);
 
-      // Debug: Log the verifiedAt data
-      console.log('🕐 verifiedAt data:', details.verifiedAt);
-      console.log('🕐 Current time:', new Date().toISOString());
-
-      // Check if eKYC is expired
-      const expired = checkIfExpired(details.verifiedAt);
-      console.log('⏰ Is expired?', expired);
+      // Check if eKYC is expired using utility function
+      const expired = isEkycExpired(details.verifiedAt);
       setIsExpired(expired);
 
       if (expired) {
