@@ -7,11 +7,11 @@ import {
   TouchableOpacity,
   Image,
   ActivityIndicator,
-  Alert,
   SafeAreaView,
 } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import ReactNativeBiometrics from 'react-native-biometrics';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import type { RootState, AppDispatch } from '../../../store';
@@ -19,10 +19,12 @@ import { fetchUserInfo } from '../../../store/fetchAPI/UserInfoFetch';
 import { ekycApi } from '../../../services/ekycApi';
 import { EkycDetailModel } from '../../../store/UserInfoModel';
 import { isEkycExpired } from '../../../utils/ekycUtils';
+import ConfirmModal from '../../../components/ConfirmModal';
 import Colors from '../../../constants/color';
 import Toast from 'react-native-toast-message';
 
 const EKYCDetailScreen: React.FC = () => {
+  const { t } = useTranslation();
   const navigation = useNavigation();
   const dispatch = useDispatch<AppDispatch>();
   const userInfo = useSelector((state: RootState) => state.app.userInfoData);
@@ -34,6 +36,10 @@ const EKYCDetailScreen: React.FC = () => {
   const [ekycDetails, setEkycDetails] = useState<EkycDetailModel | null>(null);
   const [showImages, setShowImages] = useState(false);
   const [isExpired, setIsExpired] = useState(false);
+
+  // Modal states
+  const [showNotAllowedModal, setShowNotAllowedModal] = useState(false);
+  const [showConfirmRetryModal, setShowConfirmRetryModal] = useState(false);
 
   // Refresh data when screen is focused (e.g., after completing eKYC retry)
   useFocusEffect(
@@ -121,64 +127,49 @@ const EKYCDetailScreen: React.FC = () => {
   };
 
   const handleRetryEkyc = () => {
-    Alert.alert(
-      'Làm lại eKYC',
-      'Bạn sẽ phải chụp lại CCCD và quay video xác thực. Tiếp tục?',
-      [
-        { text: 'Hủy', style: 'cancel' },
-        {
-          text: 'Tiếp tục',
-          onPress: async () => {
-            try {
-              const userId = loginResponse?.id || userInfo?.id;
-              if (!userId) {
-                Toast.show({
-                  type: 'error',
-                  text1: 'Không tìm thấy thông tin người dùng',
-                });
-                return;
-              }
+    // Check if eKYC is actually expired before allowing retry
+    if (!isExpired) {
+      setShowNotAllowedModal(true);
+      return;
+    }
 
-              console.log('🔄 Retrying eKYC for userId:', userId);
-              await ekycApi.retryEkyc(userId);
+    setShowConfirmRetryModal(true);
+  };
 
-              Toast.show({
-                type: 'success',
-                text1: 'Có thể làm lại eKYC',
-                text2:
-                  'Thông tin cũ sẽ được giữ cho đến khi hoàn tất xác thực mới',
-                visibilityTime: 4000,
-              });
+  const handleConfirmRetry = async () => {
+    setShowConfirmRetryModal(false);
 
-              // Navigate to eKYC flow
-              navigation.navigate('EKYC' as never);
-            } catch (error: any) {
-              console.error('❌ Retry eKYC error:', error);
+    try {
+      const userId = loginResponse?.id || userInfo?.id;
+      if (!userId) {
+        Toast.show({
+          type: 'error',
+          text1: t('ekyc.retry_error_no_user'),
+        });
+        return;
+      }
 
-              // Extract meaningful error message
-              let errorMessage = 'Vui lòng thử lại sau';
+      await ekycApi.retryEkyc(userId);
 
-              if (error?.message) {
-                // Check if it's the "already verified" error
-                if (error.message.includes('already verified')) {
-                  errorMessage =
-                    'eKYC vẫn còn hiệu lực. Vui lòng đợi hết hạn (5 phút) để làm lại.';
-                } else {
-                  errorMessage = error.message;
-                }
-              }
+      Toast.show({
+        type: 'success',
+        text1: t('ekyc.retry_success_title'),
+        text2: t('ekyc.retry_success_message'),
+        visibilityTime: 4000,
+      });
 
-              Toast.show({
-                type: 'error',
-                text1: 'Không thể làm lại eKYC',
-                text2: errorMessage,
-                visibilityTime: 6000,
-              });
-            }
-          },
-        },
-      ],
-    );
+      // Navigate to eKYC flow
+      navigation.navigate('EKYC' as never);
+    } catch (error: any) {
+      console.error('❌ Retry eKYC error:', error);
+
+      Toast.show({
+        type: 'error',
+        text1: t('ekyc.retry_error_title'),
+        text2: error?.message || 'Vui lòng thử lại sau',
+        visibilityTime: 6000,
+      });
+    }
   };
 
   const formatDate = (dateValue: any): string => {
@@ -271,7 +262,7 @@ const EKYCDetailScreen: React.FC = () => {
   if (!ekycDetails) {
     return (
       <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>Không thể tải thông tin eKYC</Text>
+        <Text style={styles.errorText}>{t('ekyc.detail_loading_error')}</Text>
       </View>
     );
   }
@@ -283,7 +274,7 @@ const EKYCDetailScreen: React.FC = () => {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color={Colors.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Thông tin định danh</Text>
+        <Text style={styles.headerTitle}>{t('ekyc.detail_title')}</Text>
         <View style={{ width: 24 }} />
       </View>
 
@@ -306,9 +297,12 @@ const EKYCDetailScreen: React.FC = () => {
                   isExpired && { color: Colors.warning },
                 ]}
               >
-                {isExpired ? 'Đã hết hạn' : 'Đã xác thực'}
+                {isExpired
+                  ? t('ekyc.detail_status_expired')
+                  : t('ekyc.detail_status_verified')}
               </Text>
               <Text style={styles.statusDate}>
+                {t('ekyc.detail_verified_date')}:{' '}
                 {formatDate(ekycDetails.verifiedAt)}
               </Text>
             </View>
@@ -317,7 +311,9 @@ const EKYCDetailScreen: React.FC = () => {
           {/* Verification Scores */}
           <View style={styles.scoreContainer}>
             <View style={styles.scoreItem}>
-              <Text style={styles.scoreLabel}>Độ khớp khuôn mặt</Text>
+              <Text style={styles.scoreLabel}>
+                {t('ekyc.detail_face_match_score')}
+              </Text>
               <Text style={styles.scoreValue}>
                 {ekycDetails.faceMatchScore
                   ? `${ekycDetails.faceMatchScore.toFixed(1)}%`
@@ -327,7 +323,9 @@ const EKYCDetailScreen: React.FC = () => {
 
             {ekycDetails.livenessConfidence && (
               <View style={styles.scoreItem}>
-                <Text style={styles.scoreLabel}>Độ tin cậy liveness</Text>
+                <Text style={styles.scoreLabel}>
+                  {t('ekyc.detail_liveness_confidence')}
+                </Text>
                 <Text style={styles.scoreValue}>
                   {(ekycDetails.livenessConfidence * 100).toFixed(1)}%
                 </Text>
@@ -338,33 +336,43 @@ const EKYCDetailScreen: React.FC = () => {
 
         {/* Personal Information */}
         <View style={styles.infoCard}>
-          <Text style={styles.cardTitle}>Thông tin cá nhân</Text>
-          <InfoRow label="Họ và tên" value={ekycDetails.fullName} />
-          <InfoRow label="Số CCCD" value={ekycDetails.idNumber} />
+          <Text style={styles.cardTitle}>{t('ekyc.detail_personal_info')}</Text>
           <InfoRow
-            label="Ngày sinh"
+            label={t('ekyc.detail_full_name')}
+            value={ekycDetails.fullName}
+          />
+          <InfoRow
+            label={t('ekyc.detail_id_number')}
+            value={ekycDetails.idNumber}
+          />
+          <InfoRow
+            label={t('ekyc.detail_birth_date')}
             value={formatDateOnly(ekycDetails.dateOfBirth)}
           />
-          <InfoRow label="Giới tính" value={ekycDetails.gender} />
-          <InfoRow label="Địa chỉ" value={ekycDetails.address} multiline />
+          <InfoRow label={t('ekyc.detail_gender')} value={ekycDetails.gender} />
+          <InfoRow
+            label={t('ekyc.detail_address')}
+            value={ekycDetails.address}
+            multiline
+          />
         </View>
 
         {/* Document Information */}
         <View style={styles.infoCard}>
-          <Text style={styles.cardTitle}>Thông tin giấy tờ</Text>
+          <Text style={styles.cardTitle}>{t('ekyc.detail_document_info')}</Text>
           <InfoRow
-            label="Ngày cấp"
+            label={t('ekyc.detail_issue_date')}
             value={formatDateOnly(ekycDetails.issueDate)}
           />
           <InfoRow
-            label="Ngày hết hạn"
+            label={t('ekyc.detail_expiry_date')}
             value={formatDateOnly(ekycDetails.expiryDate)}
           />
         </View>
 
         {/* Images Section */}
         <View style={styles.infoCard}>
-          <Text style={styles.cardTitle}>Hình ảnh xác thực</Text>
+          <Text style={styles.cardTitle}>{t('ekyc.detail_images_title')}</Text>
 
           {!showImages ? (
             <TouchableOpacity
@@ -373,14 +381,16 @@ const EKYCDetailScreen: React.FC = () => {
             >
               <Ionicons name="eye" size={20} color={Colors.main_bule} />
               <Text style={styles.viewImagesButtonText}>
-                Xem ảnh CCCD (yêu cầu xác thực)
+                {t('ekyc.detail_view_images_button')}
               </Text>
             </TouchableOpacity>
           ) : (
             <View style={styles.imagesContainer}>
               <View style={styles.imageRow}>
                 <View style={styles.imageWrapper}>
-                  <Text style={styles.imageLabel}>Mặt trước</Text>
+                  <Text style={styles.imageLabel}>
+                    {t('ekyc.detail_front_image')}
+                  </Text>
                   <Image
                     source={{ uri: ekycDetails.frontImageUrl }}
                     style={styles.idImage}
@@ -389,7 +399,9 @@ const EKYCDetailScreen: React.FC = () => {
                 </View>
 
                 <View style={styles.imageWrapper}>
-                  <Text style={styles.imageLabel}>Mặt sau</Text>
+                  <Text style={styles.imageLabel}>
+                    {t('ekyc.detail_back_image')}
+                  </Text>
                   <Image
                     source={{ uri: ekycDetails.backImageUrl }}
                     style={styles.idImage}
@@ -404,20 +416,39 @@ const EKYCDetailScreen: React.FC = () => {
         {/* Note */}
         <View style={styles.noteCard}>
           <Ionicons name="information-circle" size={20} color={Colors.info} />
-          <Text style={styles.noteText}>
-            Thông tin này được lưu trữ bảo mật và chỉ dùng cho mục đích xác thực
-            danh tính.
-          </Text>
+          <Text style={styles.noteText}>{t('ekyc.detail_security_note')}</Text>
         </View>
 
         {/* Retry Button */}
         <TouchableOpacity style={styles.retryButton} onPress={handleRetryEkyc}>
           <Ionicons name="refresh" size={20} color={Colors.white} />
-          <Text style={styles.retryButtonText}>Làm lại eKYC</Text>
+          <Text style={styles.retryButtonText}>
+            {t('ekyc.detail_retry_button')}
+          </Text>
         </TouchableOpacity>
 
         <View style={{ height: 40 }} />
       </ScrollView>
+
+      {/* Modals */}
+      <ConfirmModal
+        visible={showNotAllowedModal}
+        title={t('ekyc.retry_not_allowed_title')}
+        message={t('ekyc.retry_not_allowed_message')}
+        confirmText={t('ekyc.retry_understood')}
+        onConfirm={() => setShowNotAllowedModal(false)}
+        onCancel={() => setShowNotAllowedModal(false)}
+      />
+
+      <ConfirmModal
+        visible={showConfirmRetryModal}
+        title={t('ekyc.retry_confirm_title')}
+        message={t('ekyc.retry_confirm_message')}
+        confirmText={t('ekyc.retry_continue')}
+        cancelText={t('ekyc.retry_cancel')}
+        onConfirm={handleConfirmRetry}
+        onCancel={() => setShowConfirmRetryModal(false)}
+      />
     </SafeAreaView>
   );
 };
@@ -578,7 +609,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: Colors.infoLight,
-    paddingVertical: 14,
+    padding: 16,
     borderRadius: 8,
     marginTop: 8,
   },
@@ -613,6 +644,7 @@ const styles = StyleSheet.create({
   },
   noteCard: {
     flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: Colors.infoLight,
     marginHorizontal: 20,
     marginBottom: 12,
