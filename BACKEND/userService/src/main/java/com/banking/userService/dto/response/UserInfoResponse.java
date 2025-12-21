@@ -2,7 +2,6 @@ package com.banking.userService.dto.response;
 
 import lombok.*;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
@@ -26,7 +25,7 @@ public class UserInfoResponse {
     // eKYC Integration
     private UUID ekycSessionId;
     private String ekycStatus;
-    private LocalDateTime ekycVerifiedAt;
+    private Long ekycVerifiedAt; // Unix timestamp in milliseconds
 
     // Avatar
     private String avatarUrl;

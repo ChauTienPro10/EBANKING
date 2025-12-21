@@ -30,7 +30,7 @@ export interface EkycDetailModel {
   // Session info
   sessionId: string;
   status: string;
-  verifiedAt: number[] | string; // LocalDateTime serialized as [year, month, day, hour, minute, second, nano] or string
+  verifiedAt: number; // Unix timestamp in milliseconds
 
   // OCR data
   idNumber: string;

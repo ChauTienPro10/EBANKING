@@ -1,6 +1,10 @@
 import fetch from '../utils/fetch';
 import { EkycStatusResponse, EkycDetailModel } from '../store/UserInfoModel';
-import { BASE_URL, USER_SERVICE_DIRECT } from '../constants/api';
+import {
+  BASE_URL,
+  USER_SERVICE_DIRECT,
+  EKYC_SERVICE_DIRECT,
+} from '../constants/api';
 
 export const ekycApi = {
   /**
@@ -19,7 +23,7 @@ export const ekycApi = {
    * Get full eKYC session details
    */
   getDetails: async (sessionId: string): Promise<EkycDetailModel> => {
-    const url = `${BASE_URL}authService/ekyc/sessions/${sessionId}/details`;
+    const url = `${EKYC_SERVICE_DIRECT}/api/ekyc/sessions/${sessionId}/details`;
 
     try {
       const response = await fetch.get(url, {}, true);

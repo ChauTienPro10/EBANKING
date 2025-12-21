@@ -6,6 +6,8 @@ export const AUTH_SERVICE = BASE_URL + 'authService';
 export const ANALYSIS_URL = AUTH_SERVICE + '/analytics';
 // Call UserService directly (port 8001) to get full UserInfo with eKYC data
 export const USER_SERVICE_DIRECT = `http://${HOST_SERVER}:8001`;
+// Call ekycService directly (port 8008) for eKYC session details
+export const EKYC_SERVICE_DIRECT = `http://${HOST_SERVER}:8008`;
 export const FCM_CONTROLLER_URL = `${BASE_URL}authService/fcm`;
 export const API = {
   LOGIN: `${AUTH_SERVICE}/auth/login`,
