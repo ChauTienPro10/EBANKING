@@ -476,6 +476,16 @@
       "load_error": "eKYC information not found",
       "error_message": "Unable to load eKYC information"
     },
+    "validation": {
+      "citizenid_mismatch_title": "Citizen ID Mismatch",
+      "citizenid_mismatch_message": "Registered ID: {{currentId}}\nScanned ID: {{ocrId}}\n\nDo you want to update to the new Citizen ID?",
+      "citizenid_mismatch_cancel": "Cancel",
+      "citizenid_mismatch_confirm": "Update",
+      "citizenid_duplicate_title": "Citizen ID Already Exists",
+      "citizenid_duplicate_message": "This Citizen ID is already used by another account. Please check again or contact support.",
+      "citizenid_duplicate_close": "Close",
+      "citizenid_duplicate_support": "Contact Support"
+    },
     "errors": {
       "ocr_failed_title": "ID Card Not Recognized",
       "ocr_failed_message": "Unable to read information from your ID card photo.\\n\\nPlease:\\n• Take clear, non-blurry photos\\n• Ensure adequate lighting\\n• Keep ID card within frame\\n• Avoid glare or obstructions",
