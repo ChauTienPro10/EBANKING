@@ -92,4 +92,23 @@ export type RootStackParamList = {
     amount: string;
     onSuccess: (sessionId: string) => void;
   };
+  
+  // Savings Account Screens
+  SavingsHome: undefined;
+  CreateSavingsAccount: undefined;
+  SavingsAccountDetail: {
+    accountNumber: string;
+  };
+  SavingsTransfer: {
+    accountNumber: string;
+    type: 'TO_SAVINGS' | 'FROM_SAVINGS';
+  };
+  CreateSavingsRequest: {
+    accountNumber: string;
+    type: 'DEPOSIT' | 'WITHDRAW';
+  };
+  SavingsRequestList: undefined;
+  SavingsRequestDetail: {
+    requestId: string;
+  };
 };

@@ -31,7 +31,7 @@ public class AccountController {
     @GetMapping("/{accountNumber}/user-id")
     public ResponseEntity<?> getUserIdByAccountNumber(@PathVariable String accountNumber) {
         try {
-            Account account = accountRepository.findByAccountNumber(accountNumber);
+            Account account = accountRepository.findByAccountNumber(accountNumber).get();
             
             if (account == null) {
                 Map<String, String> error = new HashMap<>();
@@ -58,7 +58,7 @@ public class AccountController {
     @GetMapping("/{accountNumber}")
     public ResponseEntity<?> getAccountInfo(@PathVariable String accountNumber) {
         try {
-            Account account = accountRepository.findByAccountNumber(accountNumber);
+            Account account = accountRepository.findByAccountNumber(accountNumber).get();
             
             if (account == null) {
                 Map<String, String> error = new HashMap<>();
@@ -81,7 +81,7 @@ public class AccountController {
     @GetMapping("/dto/{accountNumber}")
     public ResponseEntity<?> getAccountInfoDto(@PathVariable String accountNumber) {
         try {
-            Account account = accountRepository.findByAccountNumber(accountNumber);
+            Account account = accountRepository.findByAccountNumber(accountNumber).get();
 
             if (account == null) {
                 Map<String, String> error = new HashMap<>();
@@ -105,7 +105,7 @@ public class AccountController {
     @GetMapping("/{accountNumber}/exists")
     public ResponseEntity<?> accountExists(@PathVariable String accountNumber) {
         try {
-            Account account = accountRepository.findByAccountNumber(accountNumber);
+            Account account = accountRepository.findByAccountNumber(accountNumber).get();
             
             Map<String, Object> response = new HashMap<>();
             response.put("accountNumber", accountNumber);

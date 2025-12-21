@@ -26,4 +26,10 @@ public interface IURL {
     
     // eKYC URLs
     String EKYC_URL = HOST_PREFIX + "/ekyc";
+    
+    // New endpoints for missing functionality
+    String SAVINGS_ACCOUNTS = HOST_PREFIX + "/savings-accounts";
+    String SAVINGS_TRANSFERS = HOST_PREFIX + "/savings-transfers";
+    String TRANSACTION_REQUESTS = HOST_PREFIX + "/transaction-requests";
+    String INTEREST_RATES = HOST_PREFIX + "/interest-rates";
 }

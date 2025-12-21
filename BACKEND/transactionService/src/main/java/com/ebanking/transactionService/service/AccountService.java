@@ -96,7 +96,7 @@ public class AccountService {
     }
 
     public AccountProto.CheckAccountExistResponse isAccountExist(AccountProto.CheckAccountExistRequest rq) {
-        Account account = accountRepository.findByAccountNumber(rq.getAccountNumber());
+        Account account = accountRepository.findByAccountNumber(rq.getAccountNumber()).get();
         if (account == null) {
             return AccountProto.CheckAccountExistResponse.newBuilder()
                     .setUserId(-1)
