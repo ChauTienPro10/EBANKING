@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
   View,
   StyleSheet,
@@ -9,6 +15,7 @@ import {
   Platform,
   ScrollView,
   SafeAreaView,
+  Keyboard,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -45,15 +52,37 @@ const ChatScreen: React.FC = () => {
 
   const flatListRef = useRef<FlatList<Message>>(null);
   const botReplyTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const loginResponse = useSelector((state: RootState) => state.app.loginResponse);
+  const loginResponse = useSelector(
+    (state: RootState) => state.app.loginResponse,
+  );
 
   const quickReplies = useMemo(
     () => [
-      { id: 'transfer', label: t('chatbot.suggestions.transfer'), payload: t('chatbot.prompts.transfer') },
-      { id: 'card', label: t('chatbot.suggestions.card'), payload: t('chatbot.prompts.card') },
-      { id: 'promotion', label: t('chatbot.suggestions.promotion'), payload: t('chatbot.prompts.promotion') },
-      { id: 'limit', label: t('chatbot.suggestions.limit'), payload: t('chatbot.prompts.limit') },
-      { id: 'qr', label: t('chatbot.suggestions.qr'), payload: t('chatbot.prompts.qr') },
+      {
+        id: 'transfer',
+        label: t('chatbot.suggestions.transfer'),
+        payload: t('chatbot.prompts.transfer'),
+      },
+      {
+        id: 'card',
+        label: t('chatbot.suggestions.card'),
+        payload: t('chatbot.prompts.card'),
+      },
+      {
+        id: 'promotion',
+        label: t('chatbot.suggestions.promotion'),
+        payload: t('chatbot.prompts.promotion'),
+      },
+      {
+        id: 'limit',
+        label: t('chatbot.suggestions.limit'),
+        payload: t('chatbot.prompts.limit'),
+      },
+      {
+        id: 'qr',
+        label: t('chatbot.suggestions.qr'),
+        payload: t('chatbot.prompts.qr'),
+      },
     ],
     [t],
   );
@@ -83,12 +112,25 @@ const ChatScreen: React.FC = () => {
     }
   }, [messages, scrollToBottom]);
 
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      () => {
+        scrollToBottom();
+      },
+    );
+
+    return () => {
+      keyboardDidShowListener.remove();
+    };
+  }, [scrollToBottom]);
+
   const getBotResponse = useCallback(
     async (text: string) => {
       const normalized = text.toLowerCase();
 
-      const matcher =  (keywords: string[]) =>
-        keywords.some((keyword) => normalized.includes(keyword));
+      const matcher = (keywords: string[]) =>
+        keywords.some(keyword => normalized.includes(keyword));
 
       if (matcher(['transfer', 'chuyển', 'gửi tiền'])) {
         return t('chatbot.responses.transfer');
@@ -113,10 +155,14 @@ const ChatScreen: React.FC = () => {
       // return t('chatbot.responses.default');
       const url = API.ASK;
       try {
-        const res = await fetch.post(url, {
-          username: loginResponse?.username,
-          text,
-        }, false);
+        const res = await fetch.post(
+          url,
+          {
+            username: loginResponse?.username,
+            text,
+          },
+          false,
+        );
 
         if (res && res.answer) {
           return res.answer;
@@ -138,7 +184,7 @@ const ChatScreen: React.FC = () => {
       }
 
       const userMessage = createMessage(trimmed, 'user');
-      setMessages((prev) => [...prev, userMessage]);
+      setMessages(prev => [...prev, userMessage]);
       setInputValue('');
       setIsBotTyping(true);
 
@@ -148,7 +194,7 @@ const ChatScreen: React.FC = () => {
 
       botReplyTimeout.current = setTimeout(async () => {
         const response = await getBotResponse(trimmed);
-        setMessages((prev) => [...prev, createMessage(response, 'bot')]);
+        setMessages(prev => [...prev, createMessage(response, 'bot')]);
         setIsBotTyping(false);
       }, 0);
     },
@@ -169,8 +215,18 @@ const ChatScreen: React.FC = () => {
     const isUser = item.sender === 'user';
 
     return (
-      <View style={[styles.messageRow, isUser ? styles.messageRowUser : styles.messageRowBot]}>
-        <View style={[styles.messageBubble, isUser ? styles.userBubble : styles.botBubble]}>
+      <View
+        style={[
+          styles.messageRow,
+          isUser ? styles.messageRowUser : styles.messageRowBot,
+        ]}
+      >
+        <View
+          style={[
+            styles.messageBubble,
+            isUser ? styles.userBubble : styles.botBubble,
+          ]}
+        >
           <GText
             type="systemLight_14"
             color={isUser ? Colors.white : Colors.textPrimary}
@@ -264,7 +320,11 @@ const ChatScreen: React.FC = () => {
             <GText type="systemBold_20" color={Colors.white}>
               {t('chatbot.title')}
             </GText>
-            <GText type="systemLight_12" color="rgba(255,255,255,0.8)" style={styles.headerSubtitle}>
+            <GText
+              type="systemLight_12"
+              color="rgba(255,255,255,0.8)"
+              style={styles.headerSubtitle}
+            >
               {t('chatbot.subtitle')}
             </GText>
           </View>
@@ -280,7 +340,7 @@ const ChatScreen: React.FC = () => {
               ref={flatListRef}
               data={messages}
               renderItem={renderMessage}
-              keyExtractor={(item) => item.id}
+              keyExtractor={item => item.id}
               contentContainerStyle={styles.messageList}
               ListHeaderComponent={renderAssistantCard}
               ListFooterComponent={renderTypingIndicator}
@@ -309,7 +369,7 @@ const ChatScreen: React.FC = () => {
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={styles.quickRepliesContainer}
             >
-              {quickReplies.map((reply) => (
+              {quickReplies.map(reply => (
                 <TouchableOpacity
                   key={reply.id}
                   style={styles.quickReplyChip}
