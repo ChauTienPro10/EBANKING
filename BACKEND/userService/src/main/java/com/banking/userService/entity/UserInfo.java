@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -62,10 +61,11 @@ public class UserInfo {
     private String ekycStatus; // Default: "NOT_VERIFIED"
 
     /**
-     * Timestamp when eKYC was verified
+     * Timestamp when eKYC was verified (Unix timestamp in milliseconds)
+     * Stored as BIGINT to avoid timezone issues
      */
     @Column(name = "ekyc_verified_at")
-    private LocalDateTime ekycVerifiedAt;
+    private Long ekycVerifiedAt;
 
     /**
      * Avatar image path

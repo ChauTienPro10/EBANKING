@@ -566,7 +566,8 @@ public class EkycService {
         return EkycDetailResponse.builder()
                 .sessionId(session.getId().toString())
                 .status(session.getStatus().toString())
-                .verifiedAt(session.getUpdatedAt())
+                .verifiedAt(session.getUpdatedAt() != null ? 
+                    java.sql.Timestamp.valueOf(session.getUpdatedAt()).getTime() : null)
                 // OCR data
                 .idNumber(doc.getIdNumber())
                 .fullName(doc.getFullName())

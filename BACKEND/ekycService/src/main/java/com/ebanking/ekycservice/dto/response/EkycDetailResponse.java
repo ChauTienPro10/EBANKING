@@ -3,7 +3,6 @@ package com.ebanking.ekycservice.dto.response;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -13,7 +12,7 @@ public class EkycDetailResponse {
     // Session info
     private String sessionId;
     private String status;
-    private LocalDateTime verifiedAt;
+    private Long verifiedAt; // Unix timestamp in milliseconds
 
     // OCR data
     private String idNumber;

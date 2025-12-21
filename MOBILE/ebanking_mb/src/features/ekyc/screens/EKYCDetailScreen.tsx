@@ -41,39 +41,23 @@ const EKYCDetailScreen: React.FC = () => {
     }, [userInfo?.ekycSessionId]),
   );
 
-  const checkIfExpired = (verifiedAt: any): boolean => {
+  const checkIfExpired = (verifiedAt: number | null | undefined): boolean => {
     if (!verifiedAt) return false;
 
     try {
-      let verifiedDate: Date;
-
-      // Handle LocalDateTime array: [year, month, day, hour, minute, second, nano]
-      if (Array.isArray(verifiedAt) && verifiedAt.length >= 6) {
-        const [year, month, day, hour, minute, second] = verifiedAt;
-        verifiedDate = new Date(year, month - 1, day, hour, minute, second);
-        console.log('📅 Parsed date from array:', verifiedDate.toISOString());
-      }
-      // Handle ISO string dates (e.g., "2025-12-21T12:17:27.794399")
-      else if (typeof verifiedAt === 'string') {
-        // Parse as UTC and keep as-is (don't convert to local)
-        verifiedDate = new Date(verifiedAt);
-        console.log('📅 Parsed date from string:', verifiedDate.toISOString());
-        console.log('📅 Original string:', verifiedAt);
-      } else {
-        return false;
-      }
-
       // Demo: Check if older than 5 minutes
-      const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
-      const diffMs = Date.now() - verifiedDate.getTime();
-      const diffMin = diffMs / 60000;
+      const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
 
-      console.log('⏰ Five minutes ago:', fiveMinutesAgo.toISOString());
-      console.log('⏰ Verified date:', verifiedDate.toISOString());
-      console.log('⏰ Difference (ms):', diffMs);
-      console.log('⏰ Difference (min):', diffMin);
+      console.log('⏰ Verified timestamp:', verifiedAt);
+      console.log('⏰ Verified date:', new Date(verifiedAt).toISOString());
+      console.log(
+        '⏰ Five minutes ago:',
+        new Date(fiveMinutesAgo).toISOString(),
+      );
+      console.log('⏰ Difference (ms):', Date.now() - verifiedAt);
+      console.log('⏰ Difference (min):', (Date.now() - verifiedAt) / 60000);
 
-      return verifiedDate < fiveMinutesAgo;
+      return verifiedAt < fiveMinutesAgo;
     } catch (error) {
       console.error('Error checking expiration:', error);
       return false;
@@ -236,8 +220,12 @@ const EKYCDetailScreen: React.FC = () => {
     try {
       let date: Date;
 
+      // Handle Unix timestamp (number) - NEW FORMAT ✅
+      if (typeof dateValue === 'number') {
+        date = new Date(dateValue);
+      }
       // Handle LocalDateTime array: [year, month, day, hour, minute, second, nano]
-      if (Array.isArray(dateValue) && dateValue.length >= 6) {
+      else if (Array.isArray(dateValue) && dateValue.length >= 6) {
         const [year, month, day, hour, minute, second] = dateValue;
         // Create Date object - month is 0-indexed in JavaScript
         date = new Date(year, month - 1, day, hour, minute, second);

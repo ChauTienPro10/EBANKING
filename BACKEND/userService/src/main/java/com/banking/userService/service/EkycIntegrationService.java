@@ -9,8 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -54,14 +52,10 @@ public class EkycIntegrationService {
             userInfo.setAddress(request.getAddress());
         }
 
-        // Update eKYC status with Vietnam timezone
+        // Update eKYC status with Unix timestamp (milliseconds)
         userInfo.setEkycSessionId(request.getSessionId());
         userInfo.setEkycStatus("VERIFIED");
-        // Use Asia/Ho_Chi_Minh timezone explicitly to avoid timezone issues
-        userInfo.setEkycVerifiedAt(
-            java.time.ZonedDateTime.now(java.time.ZoneId.of("Asia/Ho_Chi_Minh"))
-                .toLocalDateTime()
-        );
+        userInfo.setEkycVerifiedAt(System.currentTimeMillis()); // ✅ Unix timestamp - no timezone issues!
         userInfo.setUpdatedAt(System.currentTimeMillis());
 
         userInfoRepository.save(userInfo);
@@ -96,14 +90,11 @@ public class EkycIntegrationService {
 
         // Only allow reset if current status is not VERIFIED or is expired
         if ("VERIFIED".equals(userInfo.getEkycStatus())) {
-            // Demo: Check if verification is older than 5 minute (for testing)
-            // Production: Change to .minusYears(1) for 1 year expiration
-            LocalDateTime fiveMinuteAgo = java.time.ZonedDateTime
-                .now(java.time.ZoneId.of("Asia/Ho_Chi_Minh"))
-                .toLocalDateTime()
-                .minusMinutes(5);
+            // Demo: Check if verification is older than 5 minutes (for testing)
+            // Production: Change to 365 * 24 * 60 * 60 * 1000L for 1 year
+            long fiveMinutesAgo = System.currentTimeMillis() - (5 * 60 * 1000);
             if (userInfo.getEkycVerifiedAt() != null &&
-                    userInfo.getEkycVerifiedAt().isAfter(fiveMinuteAgo)) {
+                    userInfo.getEkycVerifiedAt() > fiveMinutesAgo) {
                 throw new RuntimeException("Cannot retry eKYC - already verified");
             }
         }
