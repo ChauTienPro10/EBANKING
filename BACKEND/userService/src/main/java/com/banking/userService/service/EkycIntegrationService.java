@@ -90,9 +90,9 @@ public class EkycIntegrationService {
 
         // Only allow reset if current status is not VERIFIED or is expired
         if ("VERIFIED".equals(userInfo.getEkycStatus())) {
-            // Demo: Check if verification is older than 5 minutes (for testing)
-            // Production: Change to 365 * 24 * 60 * 60 * 1000L for 1 year
-            long fiveMinutesAgo = System.currentTimeMillis() - (5 * 60 * 1000);
+            // Demo
+            // Production: Change to 365 * 24 * 60 * 60 * 1000 for 1 year
+            long fiveMinutesAgo = System.currentTimeMillis() - (24 * 60 * 60 * 1000L);
             if (userInfo.getEkycVerifiedAt() != null &&
                     userInfo.getEkycVerifiedAt() > fiveMinutesAgo) {
                 throw new RuntimeException("Cannot retry eKYC - already verified");
