@@ -1,6 +1,6 @@
 import fetch from '../utils/fetch';
 import { EkycStatusResponse, EkycDetailModel } from '../store/UserInfoModel';
-import { BASE_URL } from '../constants/api';
+import { BASE_URL, USER_SERVICE_DIRECT } from '../constants/api';
 
 export const ekycApi = {
   /**
@@ -39,8 +39,13 @@ export const ekycApi = {
 
   /**
    * Retry eKYC (reset status)
+   * Calls userService directly on port 8001
    */
   retryEkyc: async (userId: number): Promise<void> => {
-    await fetch.post(`${BASE_URL}api/users/${userId}/ekyc/retry`, {}, true);
+    await fetch.post(
+      `${USER_SERVICE_DIRECT}/api/users/${userId}/ekyc/retry`,
+      {},
+      true,
+    );
   },
 };

@@ -54,10 +54,14 @@ public class EkycIntegrationService {
             userInfo.setAddress(request.getAddress());
         }
 
-        // Update eKYC status
+        // Update eKYC status with Vietnam timezone
         userInfo.setEkycSessionId(request.getSessionId());
         userInfo.setEkycStatus("VERIFIED");
-        userInfo.setEkycVerifiedAt(LocalDateTime.now());
+        // Use Asia/Ho_Chi_Minh timezone explicitly to avoid timezone issues
+        userInfo.setEkycVerifiedAt(
+            java.time.ZonedDateTime.now(java.time.ZoneId.of("Asia/Ho_Chi_Minh"))
+                .toLocalDateTime()
+        );
         userInfo.setUpdatedAt(System.currentTimeMillis());
 
         userInfoRepository.save(userInfo);
@@ -81,7 +85,9 @@ public class EkycIntegrationService {
     }
 
     /**
-     * Reset eKYC status to allow user to retry
+     * Check if user can retry eKYC (without deleting data)
+     * Only validates that eKYC is expired or not verified
+     * Data will be replaced when new eKYC is completed
      */
     @Transactional
     public void resetEkycStatus(Long userId) {
@@ -90,20 +96,23 @@ public class EkycIntegrationService {
 
         // Only allow reset if current status is not VERIFIED or is expired
         if ("VERIFIED".equals(userInfo.getEkycStatus())) {
-            // Optional: Check if verification is older than 1 year (expired)
-            LocalDateTime oneYearAgo = LocalDateTime.now().minusYears(1);
+            // Demo: Check if verification is older than 5 minute (for testing)
+            // Production: Change to .minusYears(1) for 1 year expiration
+            LocalDateTime fiveMinuteAgo = java.time.ZonedDateTime
+                .now(java.time.ZoneId.of("Asia/Ho_Chi_Minh"))
+                .toLocalDateTime()
+                .minusMinutes(5);
             if (userInfo.getEkycVerifiedAt() != null &&
-                    userInfo.getEkycVerifiedAt().isAfter(oneYearAgo)) {
+                    userInfo.getEkycVerifiedAt().isAfter(fiveMinuteAgo)) {
                 throw new RuntimeException("Cannot retry eKYC - already verified");
             }
         }
 
-        userInfo.setEkycStatus("NOT_VERIFIED");
-        userInfo.setEkycSessionId(null);
-        userInfo.setEkycVerifiedAt(null);
-
-        userInfoRepository.save(userInfo);
-
-        log.info("eKYC status reset for user: {}", userId);
+        // ✅ CRITICAL FIX: Do NOT delete data here!
+        // Old data will be preserved until new eKYC is completed
+        // This prevents data loss if user exits eKYC flow mid-way
+        
+        // The data will be replaced in verifyEkyc() when new verification completes
+        log.info("eKYC retry permission granted for user: {} (old data preserved)", userId);
     }
 }

@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../../navigation/types';
 import { ActionItemType, ServiceItemType } from '../types';
+import { useEkycValidation } from '../../../utils/useEkycValidation';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
@@ -12,13 +14,24 @@ export const useHomeNavigation = (
   onShowOnboarding?: () => void,
 ) => {
   const navigation = useNavigation<NavigationProp>();
+  const { validateEkyc } = useEkycValidation();
+
+  const [showEkycExpiredModal, setShowEkycExpiredModal] = useState(false);
+  const [ekycExpiredReason, setEkycExpiredReason] = useState<
+    'NOT_VERIFIED' | 'EXPIRED'
+  >('NOT_VERIFIED');
 
   const handleActionPress = (action: ActionItemType) => {
     switch (action.id) {
       case 'transfer':
-        // Check eKYC status before allowing Transfer navigation
-        if (userInfo?.ekycStatus !== 'VERIFIED') {
-          onShowOnboarding?.();
+        // Validate eKYC before allowing Transfer navigation
+        const ekycValidation = validateEkyc(reason => {
+          // Show modal on validation failure
+          setEkycExpiredReason(reason);
+          setShowEkycExpiredModal(true);
+        });
+
+        if (!ekycValidation.isValid) {
           return;
         }
 
@@ -93,5 +106,8 @@ export const useHomeNavigation = (
     handleQRPress,
     handleOpenCard,
     navigation,
+    showEkycExpiredModal,
+    setShowEkycExpiredModal,
+    ekycExpiredReason,
   };
 };

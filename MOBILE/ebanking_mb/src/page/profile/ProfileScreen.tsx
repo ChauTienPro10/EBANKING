@@ -35,6 +35,8 @@ import Toast from 'react-native-toast-message';
 
 const { width: screenWidth } = Dimensions.get('window');
 
+import { isEkycExpired } from '../../utils/ekycUtils';
+
 const ProfileScreen: React.FC = () => {
   const navigation = useNavigation();
   const { t, i18n } = useTranslation();
@@ -44,6 +46,11 @@ const ProfileScreen: React.FC = () => {
     (State: RootState) => State.app.loginResponse,
   );
   const dispatch: AppDispatch = store.dispatch;
+
+  // Check if eKYC is expired
+  const ekycExpired =
+    userInfo?.ekycStatus === 'VERIFIED' &&
+    isEkycExpired(userInfo?.ekycVerifiedAt);
 
   // Refresh user info when screen is focused (e.g., after completing eKYC)
   useFocusEffect(
@@ -319,23 +326,31 @@ const ProfileScreen: React.FC = () => {
           <View style={styles.ekycSection}>
             <View style={styles.ekycHeader}>
               <Ionicons
-                name="shield-checkmark"
+                name={ekycExpired ? 'warning' : 'shield-checkmark'}
                 size={24}
-                color={Colors.success}
+                color={ekycExpired ? Colors.warning : Colors.success}
               />
               <Text style={styles.ekycTitle}>
                 {t('profile.ekyc_section_title')}
               </Text>
             </View>
 
-            <View style={styles.ekycBadge}>
+            <View
+              style={ekycExpired ? styles.ekycBadgeWarning : styles.ekycBadge}
+            >
               <Ionicons
-                name="checkmark-circle"
+                name={ekycExpired ? 'alert-circle' : 'checkmark-circle'}
                 size={20}
-                color={Colors.success}
+                color={ekycExpired ? Colors.warning : Colors.success}
               />
-              <Text style={styles.ekycVerifiedText}>
-                {t('profile.ekyc_verified')}
+              <Text
+                style={
+                  ekycExpired
+                    ? styles.ekycNotVerifiedText
+                    : styles.ekycVerifiedText
+                }
+              >
+                {ekycExpired ? 'Đã hết hạn' : t('profile.ekyc_verified')}
               </Text>
             </View>
 
