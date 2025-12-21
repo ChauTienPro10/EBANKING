@@ -7,6 +7,7 @@ import {
   MobileIcon,
   PersonIcon,
   BarChartIcon,
+  DollarSignIcon,
   AlertIcon,
   CardIcon,
   TrendingUpIcon,
@@ -48,6 +49,8 @@ const QuickActions: React.FC<QuickActionsProps> = ({
         return <PersonIcon {...iconProps} />;
       case 'bar-chart':
         return <BarChartIcon {...iconProps} />;
+      case 'dollar-sign':
+        return <DollarSignIcon {...iconProps} />;
       case 'alert-circle':
         return <AlertIcon {...iconProps} />;
       case 'card':

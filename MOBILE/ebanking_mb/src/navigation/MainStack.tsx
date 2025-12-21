@@ -38,6 +38,15 @@ import ChangePasswordScreen from '../page/settings/ChangePasswordScreen';
 import AboutScreen from '../page/settings/AboutScreen';
 import FAQScreen from '../page/support/FAQScreen';
 
+// Savings screens
+import SavingsHomeScreen from '../page/savings/SavingsHomeScreen';
+import CreateSavingsAccountScreen from '../page/savings/CreateSavingsAccountScreen';
+import SavingsAccountDetailScreen from '../page/savings/SavingsAccountDetailScreen';
+import SavingsTransferScreen from '../page/savings/SavingsTransferScreen';
+import CreateSavingsRequestScreen from '../page/savings/CreateSavingsRequestScreen';
+import SavingsRequestListScreen from '../page/savings/SavingsRequestListScreen';
+import SavingsRequestDetailScreen from '../page/savings/SavingsRequestDetailScreen';
+
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function MainStack() {
@@ -107,6 +116,15 @@ export default function MainStack() {
 
       {/* Face Authentication for High-Value Transactions */}
       <Stack.Screen name="FaceAuthScreen" component={FaceAuthScreen} />
+
+      {/* Savings Account Screens */}
+      <Stack.Screen name="SavingsHome" component={SavingsHomeScreen} />
+      <Stack.Screen name="CreateSavingsAccount" component={CreateSavingsAccountScreen} />
+      <Stack.Screen name="SavingsAccountDetail" component={SavingsAccountDetailScreen} />
+      <Stack.Screen name="SavingsTransfer" component={SavingsTransferScreen} />
+      <Stack.Screen name="CreateSavingsRequest" component={CreateSavingsRequestScreen} />
+      <Stack.Screen name="SavingsRequestList" component={SavingsRequestListScreen} />
+      <Stack.Screen name="SavingsRequestDetail" component={SavingsRequestDetailScreen} />
     </Stack.Navigator>
   );
 }

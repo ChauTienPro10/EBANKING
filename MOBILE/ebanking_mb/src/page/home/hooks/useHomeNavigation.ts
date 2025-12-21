@@ -63,6 +63,9 @@ export const useHomeNavigation = (
       case 'statistics':
         navigation.navigate('Statistics' as never);
         break;
+      case 'savings':
+        navigation.navigate('SavingsHome' as never);
+        break;
       case 'loan':
         onShowComingSoon?.();
         break;

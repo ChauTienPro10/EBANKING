@@ -147,7 +147,7 @@ public class TransactionService {
         if (data.getSenderAccountNumber().equals(data.getReceiverAccountNumber())) {
             throw new TransactionException("error_dont_send_yourself");
         }
-        Account sender = accountRepository.findByAccountNumber(data.getSenderAccountNumber());
+        Account sender = accountRepository.findByAccountNumber(data.getSenderAccountNumber()).get();
         if (sender == null)
             throw new TransactionException("Tài khoản không hợp lệ");
         BigDecimal amount = new BigDecimal(data.getAmount());
@@ -224,8 +224,8 @@ public class TransactionService {
             kafkaTemplate.send(KafkaTopic.TRANSACTION_NOTIFY.getTopicName(), transaction);
             throw new TransactionException("error_dont_send_yourself");
         }
-        Account sender = accountRepository.findByAccountNumber(transaction.getSenderAccountNumber());
-        Account receiver = accountRepository.findByAccountNumber(transaction.getReceiverAccountNumber());
+        Account sender = accountRepository.findByAccountNumber(transaction.getSenderAccountNumber()).get();
+        Account receiver = accountRepository.findByAccountNumber(transaction.getReceiverAccountNumber()).get();
         if (sender == null || receiver == null) {
             transaction.setStatus(TransactionStatus.FAILED.name());
             transaction.setFailureReason("Thông tin không hợp lệ");
@@ -289,6 +289,6 @@ public class TransactionService {
     }
 
     public Account getAccountInfoFromAccountNumber(String accountNumber) {
-        return accountRepository.findByAccountNumber(accountNumber);
+        return accountRepository.findByAccountNumber(accountNumber).get();
     }
 }

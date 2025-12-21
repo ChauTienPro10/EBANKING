@@ -77,11 +77,23 @@ public class MiddleWare extends OncePerRequestFilter {
         boolean isHistoryEndpoint = uri.contains("/transaction/history") && "GET".equals(method);
         boolean isNewAccountEndpoint = uri.contains("/trans/account/new") && "POST".equals(method);
         
+        // Check for new savings and transaction request endpoints
+        boolean isSavingsTransferEndpoint = uri.contains("/savings-transfers") && "POST".equals(method);
+        boolean isSavingsAccountEndpoint = uri.contains("/savings-accounts") && "POST".equals(method);
+        boolean isTransactionRequestEndpoint = uri.contains("/transaction-requests") && "POST".equals(method);
+        boolean isFaceAuthEndpoint = uri.contains("/check-face-auth") && "POST".equals(method);
+        
         // Also check for any POST/PUT/PATCH on transaction paths
-        boolean isTransactionPath = (uri.contains("/transaction") || uri.contains("/trans/account")) &&
+        boolean isTransactionPath = (uri.contains("/transaction") || 
+                                   uri.contains("/trans/account") ||
+                                   uri.contains("/savings-transfers") ||
+                                   uri.contains("/savings-accounts") ||
+                                   uri.contains("/transaction-requests")) &&
                                    ("POST".equals(method) || "PUT".equals(method) || "PATCH".equals(method));
         
-        return isTransferEndpoint || isHistoryEndpoint || isNewAccountEndpoint || isTransactionPath;
+        return isTransferEndpoint || isHistoryEndpoint || isNewAccountEndpoint || 
+               isSavingsTransferEndpoint || isSavingsAccountEndpoint || 
+               isTransactionRequestEndpoint || isFaceAuthEndpoint || isTransactionPath;
     }
 
     /**

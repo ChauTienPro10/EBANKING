@@ -86,4 +86,16 @@ export const API = {
   SELF_UNLOCK_ACCOUNT: `${AUTH_SERVICE}/self-unlock`,
   CAN_SELF_UNLOCK: `${AUTH_SERVICE}/can-self-unlock/{username}`,
   GET_LOCK_TYPE: `${AUTH_SERVICE}/lock-type/{username}`,
+
+  // Savings Account APIs
+  GET_INTEREST_RATES: `${AUTH_SERVICE}/interest-rates/active`,
+  CREATE_SAVINGS_ACCOUNT: `${AUTH_SERVICE}/savings-accounts`,
+  GET_SAVINGS_ACCOUNTS: `${AUTH_SERVICE}/savings-accounts/user/{userId}`,
+  GET_SAVINGS_ACCOUNT_DETAIL: `${AUTH_SERVICE}/savings-accounts/account/{accountNumber}`,
+  TRANSFER_TO_SAVINGS: `${AUTH_SERVICE}/savings-transfers/payment-to-savings`,
+  TRANSFER_FROM_SAVINGS: `${AUTH_SERVICE}/savings-transfers/savings-to-payment`,
+  CREATE_SAVINGS_REQUEST: `${AUTH_SERVICE}/transaction-requests/cash`,
+  GET_SAVINGS_REQUESTS: `${AUTH_SERVICE}/transaction-requests/user/{userId}`,
+  GET_SAVINGS_REQUEST_DETAIL: `${AUTH_SERVICE}/savings/request/{requestId}`,
+  CANCEL_SAVINGS_REQUEST: `${AUTH_SERVICE}/savings/request/{requestId}/cancel`,
 };
