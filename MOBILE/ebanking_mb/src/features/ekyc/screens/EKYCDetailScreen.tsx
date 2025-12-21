@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -10,11 +10,12 @@ import {
   Alert,
   SafeAreaView,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { useSelector } from 'react-redux';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { useSelector, useDispatch } from 'react-redux';
 import ReactNativeBiometrics from 'react-native-biometrics';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import type { RootState } from '../../../store';
+import type { RootState, AppDispatch } from '../../../store';
+import { fetchUserInfo } from '../../../store/fetchAPI/UserInfoFetch';
 import { ekycApi } from '../../../services/ekycApi';
 import { EkycDetailModel } from '../../../store/UserInfoModel';
 import Colors from '../../../constants/color';
@@ -22,19 +23,76 @@ import Toast from 'react-native-toast-message';
 
 const EKYCDetailScreen: React.FC = () => {
   const navigation = useNavigation();
+  const dispatch = useDispatch<AppDispatch>();
   const userInfo = useSelector((state: RootState) => state.app.userInfoData);
+  const loginResponse = useSelector(
+    (state: RootState) => state.app.loginResponse,
+  );
 
   const [loading, setLoading] = useState(true);
   const [ekycDetails, setEkycDetails] = useState<EkycDetailModel | null>(null);
   const [showImages, setShowImages] = useState(false);
+  const [isExpired, setIsExpired] = useState(false);
 
-  useEffect(() => {
-    loadEkycDetails();
-  }, []);
+  // Refresh data when screen is focused (e.g., after completing eKYC retry)
+  useFocusEffect(
+    useCallback(() => {
+      loadEkycDetails();
+    }, [userInfo?.ekycSessionId]),
+  );
+
+  const checkIfExpired = (verifiedAt: any): boolean => {
+    if (!verifiedAt) return false;
+
+    try {
+      let verifiedDate: Date;
+
+      // Handle LocalDateTime array: [year, month, day, hour, minute, second, nano]
+      if (Array.isArray(verifiedAt) && verifiedAt.length >= 6) {
+        const [year, month, day, hour, minute, second] = verifiedAt;
+        verifiedDate = new Date(year, month - 1, day, hour, minute, second);
+        console.log('📅 Parsed date from array:', verifiedDate.toISOString());
+      }
+      // Handle ISO string dates (e.g., "2025-12-21T12:17:27.794399")
+      else if (typeof verifiedAt === 'string') {
+        // Parse as UTC and keep as-is (don't convert to local)
+        verifiedDate = new Date(verifiedAt);
+        console.log('📅 Parsed date from string:', verifiedDate.toISOString());
+        console.log('📅 Original string:', verifiedAt);
+      } else {
+        return false;
+      }
+
+      // Demo: Check if older than 5 minutes
+      const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+      const diffMs = Date.now() - verifiedDate.getTime();
+      const diffMin = diffMs / 60000;
+
+      console.log('⏰ Five minutes ago:', fiveMinutesAgo.toISOString());
+      console.log('⏰ Verified date:', verifiedDate.toISOString());
+      console.log('⏰ Difference (ms):', diffMs);
+      console.log('⏰ Difference (min):', diffMin);
+
+      return verifiedDate < fiveMinutesAgo;
+    } catch (error) {
+      console.error('Error checking expiration:', error);
+      return false;
+    }
+  };
 
   const loadEkycDetails = async () => {
     try {
-      if (!userInfo?.ekycSessionId) {
+      // ✅ Refresh userInfo first to get latest ekycSessionId
+      let freshUserInfo = userInfo;
+
+      if (loginResponse?.id) {
+        console.log('🔄 Refreshing userInfo to get latest eKYC session...');
+        const result = await dispatch(fetchUserInfo(loginResponse.id)).unwrap();
+        freshUserInfo = result; // Use fresh data from API
+        console.log('✅ Got fresh userInfo, sessionId:', result?.ekycSessionId);
+      }
+
+      if (!freshUserInfo?.ekycSessionId) {
         Toast.show({
           type: 'error',
           text1: 'Không tìm thấy thông tin eKYC',
@@ -43,8 +101,30 @@ const EKYCDetailScreen: React.FC = () => {
         return;
       }
 
-      const details = await ekycApi.getDetails(userInfo.ekycSessionId);
+      console.log(
+        '📡 Fetching eKYC details with sessionId:',
+        freshUserInfo.ekycSessionId,
+      );
+      const details = await ekycApi.getDetails(freshUserInfo.ekycSessionId);
       setEkycDetails(details);
+
+      // Debug: Log the verifiedAt data
+      console.log('🕐 verifiedAt data:', details.verifiedAt);
+      console.log('🕐 Current time:', new Date().toISOString());
+
+      // Check if eKYC is expired
+      const expired = checkIfExpired(details.verifiedAt);
+      console.log('⏰ Is expired?', expired);
+      setIsExpired(expired);
+
+      if (expired) {
+        Toast.show({
+          type: 'warning',
+          text1: 'eKYC đã hết hạn',
+          text2: 'Vui lòng làm lại eKYC để tiếp tục sử dụng dịch vụ',
+          visibilityTime: 5000,
+        });
+      }
     } catch (error: any) {
       console.error('Failed to load eKYC details:', error);
       Toast.show({
@@ -99,18 +179,49 @@ const EKYCDetailScreen: React.FC = () => {
           text: 'Tiếp tục',
           onPress: async () => {
             try {
-              if (userInfo?.id) {
-                await ekycApi.retryEkyc(userInfo.id);
+              const userId = loginResponse?.id || userInfo?.id;
+              if (!userId) {
                 Toast.show({
-                  type: 'success',
-                  text1: 'Đã reset trạng thái eKYC',
+                  type: 'error',
+                  text1: 'Không tìm thấy thông tin người dùng',
                 });
-                navigation.navigate('EKYC' as never);
+                return;
               }
-            } catch (error) {
+
+              console.log('🔄 Retrying eKYC for userId:', userId);
+              await ekycApi.retryEkyc(userId);
+
+              Toast.show({
+                type: 'success',
+                text1: 'Có thể làm lại eKYC',
+                text2:
+                  'Thông tin cũ sẽ được giữ cho đến khi hoàn tất xác thực mới',
+                visibilityTime: 4000,
+              });
+
+              // Navigate to eKYC flow
+              navigation.navigate('EKYC' as never);
+            } catch (error: any) {
+              console.error('❌ Retry eKYC error:', error);
+
+              // Extract meaningful error message
+              let errorMessage = 'Vui lòng thử lại sau';
+
+              if (error?.message) {
+                // Check if it's the "already verified" error
+                if (error.message.includes('already verified')) {
+                  errorMessage =
+                    'eKYC vẫn còn hiệu lực. Vui lòng đợi hết hạn (5 phút) để làm lại.';
+                } else {
+                  errorMessage = error.message;
+                }
+              }
+
               Toast.show({
                 type: 'error',
                 text1: 'Không thể làm lại eKYC',
+                text2: errorMessage,
+                visibilityTime: 6000,
               });
             }
           },
@@ -122,46 +233,44 @@ const EKYCDetailScreen: React.FC = () => {
   const formatDate = (dateValue: any): string => {
     if (!dateValue) return 'N/A';
 
-    // Handle LocalDateTime array: [year, month, day, hour, minute, second, nano]
-    if (Array.isArray(dateValue) && dateValue.length >= 6) {
-      const [year, month, day, hour, minute] = dateValue;
-      return `${String(day).padStart(2, '0')}-${String(month).padStart(
-        2,
-        '0',
-      )}-${year} ${String(hour).padStart(2, '0')}:${String(minute).padStart(
-        2,
-        '0',
-      )}`;
-    }
+    try {
+      let date: Date;
 
-    // Handle LocalDate array: [year, month, day]
-    if (Array.isArray(dateValue) && dateValue.length === 3) {
-      const [year, month, day] = dateValue;
-      return `${String(day).padStart(2, '0')}/${String(month).padStart(
-        2,
-        '0',
-      )}/${year}`;
-    }
-
-    // Handle string dates (ISO format)
-    if (typeof dateValue === 'string') {
-      try {
-        const date = new Date(dateValue);
-        if (!isNaN(date.getTime())) {
-          const day = String(date.getDate()).padStart(2, '0');
-          const month = String(date.getMonth() + 1).padStart(2, '0');
-          const year = date.getFullYear();
-          const hour = String(date.getHours()).padStart(2, '0');
-          const minute = String(date.getMinutes()).padStart(2, '0');
-          return `${day}-${month}-${year} ${hour}:${minute}`;
-        }
-      } catch (e) {
-        return dateValue;
+      // Handle LocalDateTime array: [year, month, day, hour, minute, second, nano]
+      if (Array.isArray(dateValue) && dateValue.length >= 6) {
+        const [year, month, day, hour, minute, second] = dateValue;
+        // Create Date object - month is 0-indexed in JavaScript
+        date = new Date(year, month - 1, day, hour, minute, second);
       }
-      return dateValue;
-    }
+      // Handle LocalDate array: [year, month, day]
+      else if (Array.isArray(dateValue) && dateValue.length === 3) {
+        const [year, month, day] = dateValue;
+        date = new Date(year, month - 1, day);
+      }
+      // Handle string dates
+      else if (typeof dateValue === 'string') {
+        date = new Date(dateValue);
+      } else {
+        return 'N/A';
+      }
 
-    return 'N/A';
+      // Check if date is valid
+      if (isNaN(date.getTime())) {
+        return 'N/A';
+      }
+
+      // Format to Vietnamese locale with timezone
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+      const hour = String(date.getHours()).padStart(2, '0');
+      const minute = String(date.getMinutes()).padStart(2, '0');
+
+      return `${day}-${month}-${year} ${hour}:${minute}`;
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return 'N/A';
+    }
   };
 
   // Format date without time (for birth dates, issue dates, expiry dates)
@@ -231,12 +340,19 @@ const EKYCDetailScreen: React.FC = () => {
         <View style={styles.statusCard}>
           <View style={styles.statusHeader}>
             <Ionicons
-              name="shield-checkmark"
+              name={isExpired ? 'warning' : 'shield-checkmark'}
               size={32}
-              color={Colors.success}
+              color={isExpired ? Colors.warning : Colors.success}
             />
             <View style={styles.statusTextContainer}>
-              <Text style={styles.statusTitle}>Đã xác thực</Text>
+              <Text
+                style={[
+                  styles.statusTitle,
+                  isExpired && { color: Colors.warning },
+                ]}
+              >
+                {isExpired ? 'Đã hết hạn' : 'Đã xác thực'}
+              </Text>
               <Text style={styles.statusDate}>
                 {formatDate(ekycDetails.verifiedAt)}
               </Text>

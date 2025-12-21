@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Platform,
   KeyboardAvoidingView,
+  Text,
 } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
@@ -240,7 +241,61 @@ const RootApp: React.FC = () => {
           {isLoggedIn ? <MainStack /> : <AuthNavigator />}
         </NavigationContainer>
       </View>
-      <Toast />
+      <Toast
+        config={{
+          warning: ({ text1, text2, ...rest }) => (
+            <View
+              style={{
+                height: 60,
+                width: '90%',
+                backgroundColor: '#FFF3E0',
+                borderLeftColor: '#FF9800',
+                borderLeftWidth: 5,
+                borderRadius: 8,
+                flexDirection: 'row',
+                alignItems: 'center',
+                paddingHorizontal: 15,
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.25,
+                shadowRadius: 3.84,
+                elevation: 5,
+              }}
+            >
+              <View style={{ marginRight: 10 }}>
+                <View
+                  style={{
+                    width: 30,
+                    height: 30,
+                    borderRadius: 15,
+                    backgroundColor: '#FF9800',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Text
+                    style={{ color: '#FFF', fontSize: 18, fontWeight: 'bold' }}
+                  >
+                    !
+                  </Text>
+                </View>
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text
+                  style={{ fontSize: 14, fontWeight: 'bold', color: '#333' }}
+                >
+                  {text1}
+                </Text>
+                {text2 && (
+                  <Text style={{ fontSize: 12, color: '#666', marginTop: 2 }}>
+                    {text2}
+                  </Text>
+                )}
+              </View>
+            </View>
+          ),
+        }}
+      />
     </KeyboardAvoidingView>
   );
 };

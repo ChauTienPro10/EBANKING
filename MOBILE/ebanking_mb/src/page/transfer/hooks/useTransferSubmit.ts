@@ -12,6 +12,7 @@ import Toast from 'react-native-toast-message';
 import { TransferFormData } from '../types/transfer.types';
 import { RootStackParamList } from '../../../navigation/types';
 import { sanitizeTransferContent } from '../utils/transfer.utils';
+import { useEkycValidation } from '../../../utils/useEkycValidation';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Transfer'>;
 
@@ -23,9 +24,8 @@ export const useTransferSubmit = () => {
   const account = useSelector(
     (state: RootState) => state.app.accountTransResponse,
   );
-  // Use userInfoData for accurate eKYC status (updated after eKYC completion)
-  const userInfo = useSelector((state: RootState) => state.app.userInfoData);
   const dispatch: AppDispatch = store.dispatch;
+  const { validateEkyc } = useEkycValidation();
 
   const [isLoading, setIsLoading] = useState(false);
   const [requiresFaceAuth, setRequiresFaceAuth] = useState(false);
@@ -90,13 +90,16 @@ export const useTransferSubmit = () => {
       );
 
       if (faceAuthCheck.required) {
-        // Check eKYC status before allowing face auth
+        // Check eKYC for high-value transactions (> 10M)
         const amountNum = parseFloat(formData.amount.replace(/,/g, ''));
         if (amountNum > 10000000) {
-          // Check if user has completed eKYC - use userInfo for most up-to-date status
-          const ekycStatus = userInfo?.ekycStatus;
+          // ✅ Use shared validation hook
+          const ekycValidation = validateEkyc(() => {
+            setIsLoading(false);
+            setShowEKYCModal(true);
+          });
 
-          if (!ekycStatus || ekycStatus !== 'VERIFIED') {
+          if (!ekycValidation.isValid) {
             setIsLoading(false);
             setShowEKYCModal(true);
             return;

@@ -74,7 +74,9 @@ async function post(url: string, body: any, authRequire: boolean = true) {
         return rawText;
       }
     } else {
-      throw new Error('Phản hồi từ máy chủ trống');
+      // Empty response is OK for some endpoints (e.g., 204 No Content or void responses)
+      console.log('Empty response received (OK)');
+      return null;
     }
   } catch (error: any) {
     const message =
@@ -219,7 +221,6 @@ async function getHTMLText(
   }
 }
 
-
 async function put(url: string, body: any, authRequire: boolean = true) {
   console.log('PUT request to:', url);
   console.log('Request body:', body);
@@ -278,7 +279,9 @@ async function put(url: string, body: any, authRequire: boolean = true) {
         return rawText;
       }
     } else {
-      throw new Error('Phản hồi từ máy chủ trống');
+      // Empty response is OK for some endpoints
+      console.log('Empty PUT response received (OK)');
+      return null;
     }
   } catch (error: any) {
     const message =
@@ -303,5 +306,5 @@ export default {
   post,
   get,
   put,
-  getHTMLText
+  getHTMLText,
 };

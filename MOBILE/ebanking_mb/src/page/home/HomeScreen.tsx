@@ -18,6 +18,7 @@ import {
   useBalanceCardAnimation,
   useHomeNavigation,
 } from './hooks';
+import EkycExpiredModal from '../../components/EkycExpiredModal';
 
 const HomeScreen: React.FC = () => {
   // Redux state
@@ -60,6 +61,9 @@ const HomeScreen: React.FC = () => {
     handleQRPress,
     handleOpenCard,
     navigation,
+    showEkycExpiredModal,
+    setShowEkycExpiredModal,
+    ekycExpiredReason,
   } = useHomeNavigation(
     account,
     userInfo,
@@ -218,6 +222,16 @@ const HomeScreen: React.FC = () => {
       <ComingSoonModal
         visible={showComingSoonModal}
         onClose={() => setShowComingSoonModal(false)}
+      />
+
+      <EkycExpiredModal
+        visible={showEkycExpiredModal}
+        onClose={() => setShowEkycExpiredModal(false)}
+        onNavigateToEkyc={() => {
+          setShowEkycExpiredModal(false);
+          navigation.navigate('EKYC' as never);
+        }}
+        reason={ekycExpiredReason}
       />
     </View>
   );
