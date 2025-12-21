@@ -44,7 +44,7 @@ public class UserManagementService {
                 ui.address,
                 ui.create_at,
                 ui.updated_at,
-                ui.ekyc_session_id,
+                NULL as ekyc_session_id,
                 ui.ekyc_status,
                 ui.ekyc_verified_at,
                 ui.avatar_path,

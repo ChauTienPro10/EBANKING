@@ -1,7 +1,7 @@
 #spring.application.name=ekycService
 # Redis Configuration for Face Auth Sessions
 redis:
-  host: localhost
+  host: ${machine.host}
   port: 6379
 
 spring:
@@ -47,11 +47,11 @@ fpt:
 
 # CORS
 cors:
-  allowed-origins: http://localhost:3000,http://localhost:19006,http://192.168.0.185:19006
+  allowed-origins: http://${machine.host}:3000,http://${machine.host}:19006,http://192.168.0.185:19006
 
 # File Upload & Storage Configuration
 app:
-  base-url: http://localhost:8081 # Base URL cho webhook callback (thay đổi khi deploy)
+  base-url: http://${machine.host}:8081 # Base URL cho webhook callback (thay đổi khi deploy)
   upload:
     base-dir: ./uploads # Thư mục lưu file (relative hoặc absolute path)
     max-file-size-mb: 50 # Giới hạn kích thước file (MB) - increased for camera images
@@ -75,6 +75,6 @@ app:
 # UserService Configuration for inter-service communication
 services:
   user-service:
-    url: http://localhost:8001 # Change to actual URL in production
+    url: http://${machine.host}:8001 # Change to actual URL in production
     api-key: EKYC_SERVICE_SECRET_KEY # Use environment variable in production
 

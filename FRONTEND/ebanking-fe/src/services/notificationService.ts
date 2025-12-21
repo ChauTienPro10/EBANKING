@@ -491,4 +491,27 @@ export async function retryNotification(id: string): Promise<{ success: boolean 
   }
 }
 
+/**
+ * Get recent notifications for dashboard
+ */
+export async function getRecentNotifications(limit: number = 10) {
+  try {
+    const result = await listHistory({ index: 0, limit });
+    
+    return result.content.map(notification => ({
+      id: notification.id,
+      title: notification.title,
+      content: notification.content,
+      type: getNotificationTypeText(notification.type),
+      time: formatNotificationForDisplay(notification).time,
+      isTransaction: notification.type === 'TRANSACTION',
+      amount: notification.amount,
+      username: notification.username,
+    }));
+  } catch (error) {
+    console.error('Failed to get recent notifications:', error);
+    throw new Error('Không thể tải thông báo gần đây');
+  }
+}
+
 // Export all types and functions
