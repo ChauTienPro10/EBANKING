@@ -12,4 +12,10 @@ public interface IUserRepository extends JpaRepository<User, Long> {
     boolean existsByUsername(String username);
 
     User findByUserInfo(UserInfo userInfo);
+    
+    /**
+     * Find user by citizenId
+     * Used for eKYC duplicate validation
+     */
+    User findByUserInfo_CitizenId(String citizenId);
 }

@@ -14,7 +14,9 @@ import {
   Alert,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
+import type { RootState } from '../../../store';
 import Colors from '../../../constants/color';
 import {
   processOCR,
@@ -31,10 +33,37 @@ const ReviewScreen: React.FC = () => {
   const route = useRoute();
   const { t } = useTranslation();
   const { frontImage, backImage, videoPath } = (route.params as any) || {};
+  const userInfo = useSelector((state: RootState) => state.app.userInfoData);
 
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(t('ekyc_flow.review.step_ocr'));
   const [sessionId, setSessionId] = useState<string | null>(null);
+
+  const showCitizenIdMismatchDialog = (
+    currentId: string,
+    ocrId: string,
+  ): Promise<boolean> => {
+    return new Promise(resolve => {
+      Alert.alert(
+        t('ekyc_flow.validation.citizenid_mismatch_title'),
+        t('ekyc_flow.validation.citizenid_mismatch_message', {
+          currentId,
+          ocrId,
+        }),
+        [
+          {
+            text: t('ekyc_flow.validation.citizenid_mismatch_cancel'),
+            style: 'cancel',
+            onPress: () => resolve(false),
+          },
+          {
+            text: t('ekyc_flow.validation.citizenid_mismatch_confirm'),
+            onPress: () => resolve(true),
+          },
+        ],
+      );
+    });
+  };
 
   const handleSubmit = async () => {
     try {
@@ -53,6 +82,29 @@ const ReviewScreen: React.FC = () => {
         frontImage,
         backImage,
       );
+
+      // ✅ NEW: Validate citizenId
+      const currentCitizenId = userInfo?.citizenId;
+      const ocrCitizenId = ocrResult?.idNumber;
+
+      if (
+        currentCitizenId &&
+        ocrCitizenId &&
+        currentCitizenId !== ocrCitizenId
+      ) {
+        // Show confirmation dialog
+        const confirmed = await showCitizenIdMismatchDialog(
+          currentCitizenId,
+          ocrCitizenId,
+        );
+
+        if (!confirmed) {
+          // User cancelled - go back to capture
+          setLoading(false);
+          navigation.goBack();
+          return;
+        }
+      }
 
       // Step 2: Process Liveness
       setStep(t('ekyc_flow.review.step_liveness'));
@@ -77,6 +129,30 @@ const ReviewScreen: React.FC = () => {
       });
     } catch (error: any) {
       setLoading(false);
+
+      // ✅ NEW: Handle duplicate citizenId error from backend
+      if (
+        error.message?.includes('đã được sử dụng') ||
+        error.message?.includes('duplicate') ||
+        error.message?.includes('already exists') ||
+        error.status === 409
+      ) {
+        Alert.alert(
+          t('ekyc_flow.validation.citizenid_duplicate_title'),
+          t('ekyc_flow.validation.citizenid_duplicate_message'),
+          [
+            {
+              text: t('ekyc_flow.validation.citizenid_duplicate_close'),
+              style: 'cancel',
+            },
+            {
+              text: t('ekyc_flow.validation.citizenid_duplicate_support'),
+              onPress: () => navigation.navigate('Support' as never),
+            },
+          ],
+        );
+        return;
+      }
 
       // Parse error and provide user-friendly messages
       let title = 'Xác thực không thành công';

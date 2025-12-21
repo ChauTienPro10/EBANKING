@@ -430,6 +430,31 @@ public class EkycService {
             bioData.setFaceMatchScore(similarity);
             biometricDataRepository.save(bioData);
 
+            // Validate citizenId before completing eKYC
+            if (isMatched) {
+                String citizenId = docInfo.getIdNumber();
+                Long userId = session.getUserId();
+                
+                log.info("Validating citizenId before completing eKYC: citizenId={}, userId={}", citizenId, userId);
+                
+                // Check if citizenId belongs to another user
+                boolean isDuplicate = userServiceClient.checkCitizenIdDuplicate(citizenId, userId);
+                
+                if (isDuplicate) {
+                    log.error("CitizenId {} already belongs to another user. Rejecting eKYC for user {}", citizenId, userId);
+                    
+                    // Mark as failed due to duplicate citizenId
+                    session.setStatus(EkycStatus.FAILED);
+                    session.setCurrentStep(EkycStep.FACE_MATCH);
+                    sessionRepository.save(session);
+                    
+                    // Throw exception with user-friendly message
+                    throw new EkycException("Số căn cước công dân này đã được sử dụng bởi tài khoản khác. Vui lòng kiểm tra lại hoặc liên hệ hỗ trợ.");
+                }
+                
+                log.info("CitizenId validation passed. Proceeding with eKYC completion.");
+            }
+
             // Update session
             if (isMatched) {
                 session.setStatus(EkycStatus.COMPLETED);

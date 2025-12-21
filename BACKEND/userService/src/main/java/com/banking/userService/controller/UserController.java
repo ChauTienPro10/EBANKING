@@ -150,4 +150,33 @@ public class UserController {
         }
     }
 
+    /**
+     * Check if citizenId belongs to another user
+     * Used by ekycService to validate duplicate citizenId
+     * 
+     * @param citizenId The citizenId to check
+     * @param currentUserId The current user's ID (to exclude from check)
+     * @return true if citizenId belongs to another user, false otherwise
+     */
+    @GetMapping("/check-citizenid")
+    public ResponseEntity<Boolean> checkCitizenIdExists(
+            @RequestParam String citizenId,
+            @RequestParam Long currentUserId) {
+        
+        User existingUser = userRepository.findByUserInfo_CitizenId(citizenId);
+        
+        // If no user found with this citizenId, it's available
+        if (existingUser == null) {
+            return ResponseEntity.ok(false);
+        }
+        
+        // If found user is the current user, it's their own citizenId (allowed)
+        if (existingUser.getId().equals(currentUserId)) {
+            return ResponseEntity.ok(false);
+        }
+        
+        // CitizenId belongs to another user (duplicate)
+        return ResponseEntity.ok(true);
+    }
+
 }

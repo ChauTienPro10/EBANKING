@@ -482,6 +482,16 @@
       "load_error": "Không tìm thấy thông tin eKYC",
       "error_message": "Không thể tải thông tin eKYC"
     },
+    "validation": {
+      "citizenid_mismatch_title": "Số CCCD không khớp",
+      "citizenid_mismatch_message": "Số CCCD đã đăng ký: {{currentId}}\nSố CCCD quét được: {{ocrId}}\n\nBạn có muốn cập nhật số CCCD mới?",
+      "citizenid_mismatch_cancel": "Hủy",
+      "citizenid_mismatch_confirm": "Cập nhật",
+      "citizenid_duplicate_title": "Số CCCD đã tồn tại",
+      "citizenid_duplicate_message": "Số căn cước công dân này đã được sử dụng bởi tài khoản khác. Vui lòng kiểm tra lại hoặc liên hệ hỗ trợ.",
+      "citizenid_duplicate_close": "Đóng",
+      "citizenid_duplicate_support": "Liên hệ hỗ trợ"
+    },
     "errors": {
       "ocr_failed_title": "Không nhận diện được CCCD",
       "ocr_failed_message": "Không thể đọc thông tin từ ảnh CCCD của bạn.\\n\\nVui lòng:\\n• Chụp ảnh rõ nét, không bị mờ\\n• Đảm bảo đủ ánh sáng\\n• CCCD nằm gọn trong khung\\n• Không bị che khuất hoặc lóa sáng",

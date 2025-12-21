@@ -60,7 +60,6 @@ export const API = {
   GET_XOSO_MIENTRUNG: `${AUTH_SERVICE}/xoso/mt`,
   GET_XOSO_MIENNAM: `${AUTH_SERVICE}/xoso/mn`,
 
-
   // analysis
 
   ANALYSIS_GET_30DAYS: `${ANALYSIS_URL}/info`,
@@ -69,7 +68,6 @@ export const API = {
   ANALYSIS_GET_CURRENT_WEEK: `${ANALYSIS_URL}/current-week/{username}`,
   ANALYSIS_GET_PREVIOUS_WEEK: `${ANALYSIS_URL}/previous-week/{username}`,
   ANALYSIS_GET_CUSTOM: `${ANALYSIS_URL}/custom/{username}`,
-
 
   // Lock account
   // LOCK_ACCOUNT: `${AUTH_SERVICE}/lock-account`,
