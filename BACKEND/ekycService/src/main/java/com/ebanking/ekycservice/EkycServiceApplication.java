@@ -14,10 +14,6 @@ import java.util.TimeZone;
 public class EkycServiceApplication {
 
     public static void main(String[] args) {
-        // Set timezone to UTC to avoid PostgreSQL timezone issues
-        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-        System.setProperty("user.timezone", "UTC");
-
         SpringApplication.run(EkycServiceApplication.class, args);
         System.out.println("eKYC Service is up and running!");
     }

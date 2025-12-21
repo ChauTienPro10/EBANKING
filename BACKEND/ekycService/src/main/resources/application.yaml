@@ -1,4 +1,5 @@
 #spring.application.name=ekycService
+machine.host: localhost
 # Redis Configuration for Face Auth Sessions
 redis:
   host: ${machine.host}

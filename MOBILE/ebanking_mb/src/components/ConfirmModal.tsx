@@ -42,7 +42,7 @@ export default function ConfirmModal({
         <View style={styles.modal}>
           <Text style={styles.title}>{title}</Text>
           <Text style={styles.message}>{message}</Text>
-          
+
           <View style={styles.buttonContainer}>
             <TouchableOpacity
               style={[styles.button, styles.cancelButton, cancelButtonStyle]}
@@ -50,7 +50,7 @@ export default function ConfirmModal({
             >
               <Text style={styles.cancelText}>{cancelText}</Text>
             </TouchableOpacity>
-            
+
             <TouchableOpacity
               style={[styles.button, styles.confirmButton, confirmButtonStyle]}
               onPress={onConfirm}
@@ -72,24 +72,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modal: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 20,
+    backgroundColor: Colors.white,
+    borderRadius: 16,
+    padding: 24,
     margin: 20,
     minWidth: 280,
     maxWidth: 340,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 8,
   },
   title: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
-    color: '#333333',
+    color: Colors.textPrimary,
     marginBottom: 12,
     textAlign: 'center',
   },
   message: {
-    fontSize: 16,
-    color: '#666666',
-    marginBottom: 20,
+    fontSize: 15,
+    color: Colors.textSecondary,
+    marginBottom: 24,
     textAlign: 'center',
     lineHeight: 22,
   },
@@ -100,27 +105,32 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 1,
-    paddingVertical: 12,
+    paddingVertical: 14,
     paddingHorizontal: 16,
-    borderRadius: 8,
+    borderRadius: 10,
     alignItems: 'center',
   },
   cancelButton: {
-    backgroundColor: '#F5F5F5',
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
+    backgroundColor: Colors.backgroundLight,
+    borderWidth: 1.5,
+    borderColor: Colors.border,
   },
   confirmButton: {
-    backgroundColor: '#1976D2',
+    backgroundColor: Colors.main_bule,
+    shadowColor: Colors.main_bule,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 3,
   },
   cancelText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#666666',
+    color: Colors.textSecondary,
   },
   confirmText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: Colors.white,
   },
 });
