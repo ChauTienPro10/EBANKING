@@ -35,7 +35,7 @@ const Header: React.FC<HeaderProps> = ({
     if (onBackPress) {
       onBackPress();
     } else {
-      navigation.goBack();
+      navigation.navigate('Home' as never);
     }
   };
 
