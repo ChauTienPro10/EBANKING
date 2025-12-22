@@ -21,17 +21,22 @@ public class ConversationService {
     
     /**
      * Get or create conversation between two users
+     * Ensures user1_id < user2_id to match database constraint
      */
     @Transactional
     public Conversation getOrCreateConversation(String user1Id, String user2Id) {
         log.info("Getting or creating conversation between {} and {}", user1Id, user2Id);
         
-        return conversationRepository.findByUsers(user1Id, user2Id)
+        // Sort user IDs to ensure user1 < user2 (matches database CHECK constraint)
+        String smaller = user1Id.compareTo(user2Id) < 0 ? user1Id : user2Id;
+        String larger = user1Id.compareTo(user2Id) < 0 ? user2Id : user1Id;
+        
+        return conversationRepository.findByUsers(smaller, larger)
             .orElseGet(() -> {
-                log.info("Creating new conversation between {} and {}", user1Id, user2Id);
+                log.info("Creating new conversation between {} and {}", smaller, larger);
                 Conversation conversation = Conversation.builder()
-                    .user1Id(user1Id)
-                    .user2Id(user2Id)
+                    .user1Id(smaller)
+                    .user2Id(larger)
                     .build();
                 return conversationRepository.save(conversation);
             });
