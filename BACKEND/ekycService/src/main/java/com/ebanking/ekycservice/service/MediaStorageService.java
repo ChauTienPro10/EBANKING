@@ -140,6 +140,12 @@ public class MediaStorageService {
 
     /**
      * Xóa file (dùng khi session expire hoặc user xóa)
+     * 
+     * NOTE: Method này hiện chưa được sử dụng nhưng được giữ lại cho:
+     * - Future cleanup scheduler (xóa expired sessions)
+     * - User account deletion flow
+     * - Manual cleanup operations
+     * 
      * @param relativePath Đường dẫn tương đối
      */
     public void deleteFile(String relativePath) {
@@ -156,6 +162,12 @@ public class MediaStorageService {
 
     /**
      * Xóa toàn bộ folder của session (cleanup)
+     * 
+     * NOTE: Method này hiện chưa được sử dụng nhưng được giữ lại cho:
+     * - Scheduled cleanup job (xóa expired eKYC sessions)
+     * - User account deletion
+     * - Storage management operations
+     * 
      * @param sessionId Session ID
      */
     public void deleteSessionFiles(String sessionId) {
