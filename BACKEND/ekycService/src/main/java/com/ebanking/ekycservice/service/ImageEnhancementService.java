@@ -25,42 +25,8 @@ import java.util.Base64;
 public class ImageEnhancementService {
 
     /**
-     * Enhance image quality với các techniques:
-     * 1. Sharpening (làm nét ảnh)
-     * 2. Brightness/Contrast adjustment
-     * 3. Noise reduction
-     *
-     * @param imageBase64 Image dạng base64
-     * @return Enhanced image dạng base64
-     */
-    public String enhanceImageQuality(String imageBase64) {
-        try {
-            log.info("🎨 Starting image enhancement...");
-
-            // Decode base64 to bytes
-            String cleanBase64 = cleanBase64String(imageBase64);
-            byte[] imageBytes = Base64.getDecoder().decode(cleanBase64);
-
-            // Enhance
-            byte[] enhancedBytes = enhanceImageBytes(imageBytes);
-
-            // Encode back to base64
-            String enhancedBase64 = Base64.getEncoder().encodeToString(enhancedBytes);
-
-            log.info("✅ Image enhancement completed. Size: {} → {} bytes",
-                    imageBytes.length, enhancedBytes.length);
-
-            return enhancedBase64;
-
-        } catch (Exception e) {
-            log.error("❌ Image enhancement failed: {}", e.getMessage(), e);
-            // Fallback: return original image if enhancement fails
-            return imageBase64;
-        }
-    }
-
-    /**
      * Enhance image bytes
+     * Used internally by enhanceImageAuto()
      */
     private byte[] enhanceImageBytes(byte[] imageBytes) throws Exception {
         // 1. Read image

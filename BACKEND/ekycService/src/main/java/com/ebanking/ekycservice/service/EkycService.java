@@ -42,9 +42,7 @@ public class EkycService {
     private final MediaStorageService mediaStorageService;
     private final VideoFrameExtractorHumble videoFrameExtractor;
     private final UserServiceClient userServiceClient;
-
-    @Autowired
-    private RedisTemplate<String, String> redisTemplateForString;
+    private final RedisTemplate<String, String> redisTemplateForString;
 
     @Transactional
     public SessionResponse createSession(Long userId) {
