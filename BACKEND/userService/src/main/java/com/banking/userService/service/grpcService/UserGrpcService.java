@@ -6,6 +6,7 @@ import com.banking.userService.entity.Role;
 import com.banking.userService.grpc.UserProto;
 import com.banking.userService.grpc.UserServiceGrpc;
 import com.banking.userService.service.UserService;
+import com.google.protobuf.Empty;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import jakarta.annotation.PostConstruct;
@@ -13,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -210,6 +212,25 @@ public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
         try {
             UserProto.VerifyPasswordResponse rs = userService.verifyPassword(request);
             responseObserver.onNext(rs);
+            responseObserver.onCompleted();
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            responseObserver.onError(
+                    Status.INTERNAL
+                            .withDescription(e.getMessage())
+                            .asRuntimeException()
+            );
+        }
+    }
+
+    @Override
+    public void getAllUsers(Empty request, StreamObserver<UserProto.UserList> responseObserver) {
+        try {
+            List<UserProto.User> users = userService.getAllUsers();
+            UserProto.UserList response = UserProto.UserList.newBuilder()
+                    .addAllUsers(users)
+                    .build();
+            responseObserver.onNext(response);
             responseObserver.onCompleted();
         } catch (Exception e) {
             log.error(e.getMessage());

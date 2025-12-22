@@ -1,6 +1,18 @@
 import { Button } from "@/components/ui/button";
-import { Select } from "@/components/ui/select";
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+} from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface PaginationProps {
   page: number;
@@ -11,29 +23,46 @@ interface PaginationProps {
 }
 
 export function Pagination({ page, limit, total, onPageChange, onLimitChange }: PaginationProps) {
-  const totalPages = Math.ceil(total / limit);
-  const start = (page - 1) * limit + 1;
-  const end = Math.min(page * limit, total);
+  const { t } = useTranslation();
+  const safeTotal = Number.isFinite(total) && total > 0 ? total : 0;
+  const safeLimit = Number.isFinite(limit) && limit > 0 ? limit : 10;
+  const totalPages = Math.max(1, Math.ceil(safeTotal / safeLimit || 1));
+  const start = safeTotal === 0 ? 0 : (page - 1) * safeLimit + 1;
+  const end = safeTotal === 0 ? 0 : Math.min(page * safeLimit, safeTotal);
+  const label =
+    t("common.pagination.showing", {
+      start,
+      end,
+      total: safeTotal,
+      page,
+      totalPages,
+      defaultValue: `Hiển thị ${start}–${end} trên ${safeTotal} • Trang ${page} / ${totalPages}`,
+    }) ||
+    `Hiển thị ${start}–${end} trên ${safeTotal} • Trang ${page} / ${totalPages}`;
 
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
-        <span>
-          Showing {start} to {end} of {total} entries
-        </span>
+        <span>{label}</span>
       </div>
       <div className="flex items-center gap-2">
         <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">Rows per page:</span>
+          <span className="text-sm text-muted-foreground">
+            {t("common.pagination.rowsPerPage")}
+          </span>
           <Select
-            value={limit.toString()}
-            onChange={(e) => onLimitChange(Number(e.target.value))}
-            className="h-9 w-20"
+            value={safeLimit.toString()}
+            onValueChange={(value) => onLimitChange(Number(value))}
           >
-            <option value="10">10</option>
-            <option value="20">20</option>
-            <option value="50">50</option>
-            <option value="100">100</option>
+            <SelectTrigger className="h-9 w-24">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="10">10</SelectItem>
+              <SelectItem value="20">20</SelectItem>
+              <SelectItem value="50">50</SelectItem>
+              <SelectItem value="100">100</SelectItem>
+            </SelectContent>
           </Select>
         </div>
         <div className="flex items-center gap-1">

@@ -15,13 +15,19 @@ interface AuditLogStore {
     username?: string;
     startDate?: string;
     endDate?: string;
+    status?: string;
+    action?: string;
+    ip?: string;
+    role?: string;
   };
+  selectedLog: AuditLog | null;
 
   fetchLogs: () => Promise<void>;
   setPage: (page: number) => void;
   setLimit: (limit: number) => void;
   setFilter: (filter: Partial<AuditLogStore['filters']>) => void;
   resetFilters: () => void;
+  selectLog: (log: AuditLog | null) => void;
 }
 
 export const useAuditLogStore = create<AuditLogStore>((set, get) => ({
@@ -34,6 +40,7 @@ export const useAuditLogStore = create<AuditLogStore>((set, get) => ({
     total: 0,
   },
   filters: {},
+  selectedLog: null,
 
   fetchLogs: async () => {
     set({ loading: true, error: null });
@@ -45,6 +52,10 @@ export const useAuditLogStore = create<AuditLogStore>((set, get) => ({
         username: filters.username,
         startDate: filters.startDate,
         endDate: filters.endDate,
+        status: filters.status,
+        action: filters.action,
+        ip: filters.ip,
+        role: filters.role,
       };
       console.log('Calling API with params:', params);
       const response = await logService.getAuditLogs(params);
@@ -79,5 +90,7 @@ export const useAuditLogStore = create<AuditLogStore>((set, get) => ({
   resetFilters: () => {
     set({ filters: {}, pagination: { page: 1, limit: 10, total: 0 } });
   },
+
+  selectLog: (log) => set({ selectedLog: log }),
 }));
 

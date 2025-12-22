@@ -7,10 +7,13 @@ import com.ebanking.adminTool.dto.PushNotiRequest;
 import com.ebanking.adminTool.dto.SaveTokenDTO;
 import com.ebanking.adminTool.service.FirebaseNotificationService;
 import com.ebanking.adminTool.service.NotificationHistoryService;
+import com.ebanking.adminTool.utils.AuditAction;
+import com.ebanking.adminTool.utils.AuditLogger;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -27,6 +30,9 @@ public class NotiManagerment {
 
     @Autowired
     private NotificationHistoryService notificationHistoryService;
+
+    @Autowired
+    private AuditLogger auditLogger;
 
     /**
      * cai này không cần quan tâm, gen trong app người dùng
@@ -76,17 +82,37 @@ public class NotiManagerment {
      * POST /notification/push-all
      */
     @PostMapping("/push-all")
-    public ResponseEntity<Map<String, Object>> pushNotificationToAll(@RequestBody PushNotiRequest request) {
+    public ResponseEntity<Map<String, Object>> pushNotificationToAll(
+            @RequestBody PushNotiRequest request,
+            Authentication authentication) {
         Map<String, Object> response = new HashMap<>();
         try {
             firebaseNotificationService.pushNotificationToAll(request);
             response.put("success", true);
             response.put("message", "Notification sent to all users successfully");
+
+            String admin = authentication != null ? authentication.getName() : "SYSTEM";
+            auditLogger.logSuccess(
+                    admin,
+                    AuditAction.PUSH_NOTIFICATION,
+                    "NOTIFICATION",
+                    null,
+                    "PUSH_ALL title=" + request.getTitle(),
+                    null);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             log.error("Error in pushNotificationToAll endpoint: {}", e.getMessage(), e);
             response.put("success", false);
             response.put("message", "Error: " + e.getMessage());
+
+            String admin = authentication != null ? authentication.getName() : "SYSTEM";
+            auditLogger.logFailure(
+                    admin,
+                    AuditAction.PUSH_NOTIFICATION,
+                    "NOTIFICATION",
+                    null,
+                    "PUSH_ALL failed: " + e.getMessage(),
+                    null);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
@@ -97,7 +123,9 @@ public class NotiManagerment {
      * POST /notification/push-to-user
      */
     @PostMapping("/push-to-user")
-    public ResponseEntity<Map<String, Object>> pushNotificationToUser(@RequestBody PushNotiRequest request) {
+    public ResponseEntity<Map<String, Object>> pushNotificationToUser(
+            @RequestBody PushNotiRequest request,
+            Authentication authentication) {
         Map<String, Object> response = new HashMap<>();
         try {
             if (request.getUsername() == null || request.getUsername().isEmpty()) {
@@ -109,11 +137,29 @@ public class NotiManagerment {
             firebaseNotificationService.pushNotificationToUser(request);
             response.put("success", true);
             response.put("message", "Notification sent to user successfully");
+
+            String admin = authentication != null ? authentication.getName() : "SYSTEM";
+            auditLogger.logSuccess(
+                    admin,
+                    AuditAction.PUSH_NOTIFICATION,
+                    "NOTIFICATION",
+                    request.getUsername(),
+                    "PUSH_USER title=" + request.getTitle(),
+                    null);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             log.error("Error in pushNotificationToUser endpoint: {}", e.getMessage(), e);
             response.put("success", false);
             response.put("message", "Error: " + e.getMessage());
+
+            String admin = authentication != null ? authentication.getName() : "SYSTEM";
+            auditLogger.logFailure(
+                    admin,
+                    AuditAction.PUSH_NOTIFICATION,
+                    "NOTIFICATION",
+                    request.getUsername(),
+                    "PUSH_USER failed: " + e.getMessage(),
+                    null);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
@@ -123,7 +169,9 @@ public class NotiManagerment {
      * POST /notification/push-to-users
      */
     @PostMapping("/push-to-users")
-    public ResponseEntity<Map<String, Object>> pushNotificationToUsers(@RequestBody com.ebanking.adminTool.dto.BulkPushNotiRequest request) {
+    public ResponseEntity<Map<String, Object>> pushNotificationToUsers(
+            @RequestBody com.ebanking.adminTool.dto.BulkPushNotiRequest request,
+            Authentication authentication) {
         Map<String, Object> response = new HashMap<>();
         try {
             if (request.getUsernames() == null || request.getUsernames().isEmpty()) {
@@ -145,11 +193,40 @@ public class NotiManagerment {
             }
 
             Map<String, Object> result = firebaseNotificationService.pushBulkNotificationToUsers(request);
+
+            String admin = authentication != null ? authentication.getName() : "SYSTEM";
+            boolean success = Boolean.TRUE.equals(result.get("success"));
+            if (success) {
+                auditLogger.logSuccess(
+                        admin,
+                        AuditAction.PUSH_NOTIFICATION_BULK,
+                        "NOTIFICATION",
+                        null,
+                        "PUSH_BULK title=" + request.getTitle() + ", users=" + request.getUsernames().size(),
+                        null);
+            } else {
+                auditLogger.logFailure(
+                        admin,
+                        AuditAction.PUSH_NOTIFICATION_BULK,
+                        "NOTIFICATION",
+                        null,
+                        "PUSH_BULK failed: " + result.get("message"),
+                        null);
+            }
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             log.error("Error in pushNotificationToUsers endpoint: {}", e.getMessage(), e);
             response.put("success", false);
             response.put("message", "Error: " + e.getMessage());
+
+            String admin = authentication != null ? authentication.getName() : "SYSTEM";
+            auditLogger.logFailure(
+                    admin,
+                    AuditAction.PUSH_NOTIFICATION_BULK,
+                    "NOTIFICATION",
+                    null,
+                    "PUSH_BULK failed: " + e.getMessage(),
+                    null);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }

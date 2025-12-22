@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class UserMapper {
+
     @Autowired
     IUserRepository userRepository;
 

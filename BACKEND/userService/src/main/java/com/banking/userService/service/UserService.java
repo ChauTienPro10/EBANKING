@@ -33,6 +33,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -383,6 +384,12 @@ public class UserService {
         return UserProto.VerifyPasswordResponse.newBuilder()
                 .setStatus(passwordEncoder.matches(request.getPassword(), us.getPassword()))
                 .build();
+    }
+
+    public List<UserProto.User> getAllUsers() {
+        return userInfoRepository.findAll().stream()
+                .map(userMapper::toUserProto)
+                .collect(Collectors.toList());
     }
 
 }

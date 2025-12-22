@@ -9,15 +9,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-/**
- * Admin Audit Log Controller
- */
 @RestController
 @RequestMapping("/audit-logs")
 @RequiredArgsConstructor
@@ -26,30 +24,42 @@ public class AdminAuditController {
 
     private final AuditLogRepository auditLogRepository;
 
-    /**
-     * Get recent audit logs
-     * GET /api/admin/audit-logs
-     */
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<AuditLog>> getRecentLogs(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "50") int size,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String action,
+            @RequestParam(required = false) String ip,
+            @RequestParam(required = false) String role,
             Authentication authentication) {
         String adminUsername = authentication.getName();
-        log.info("Admin {} fetching audit logs - page: {}, size: {}",
-                adminUsername, page, size);
+        log.info("Admin {} fetching audit logs - page: {}, size: {}, status: {}, action: {}, ip: {}, role: {}",
+                adminUsername, page, size, status, action, ip, role);
+
+        Boolean successFilter = null;
+        if (status != null && !status.isBlank()) {
+            if ("SUCCESS".equalsIgnoreCase(status)) {
+                successFilter = Boolean.TRUE;
+            } else if ("FAILURE".equalsIgnoreCase(status) || "FAILED".equalsIgnoreCase(status)) {
+                successFilter = Boolean.FALSE;
+            }
+        }
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("timestamp").descending());
-        Page<AuditLog> logs = auditLogRepository.findRecentLogs(pageable);
+        Page<AuditLog> logs = auditLogRepository.searchWithFilters(
+                successFilter,
+                (action == null || action.isBlank()) ? null : action,
+                (ip == null || ip.isBlank()) ? null : ip,
+                (role == null || role.isBlank()) ? null : role,
+                pageable);
 
         return ResponseEntity.ok(logs);
     }
 
-    /**
-     * Get audit logs by staff username
-     * GET /api/admin/audit-logs/staff/{username}
-     */
     @GetMapping("/staff/{username}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<AuditLog>> getLogsByStaff(
             @PathVariable String username,
             @RequestParam(defaultValue = "0") int page,
@@ -64,11 +74,8 @@ public class AdminAuditController {
         return ResponseEntity.ok(logs);
     }
 
-    /**
-     * Get audit logs by date range
-     * GET /api/admin/audit-logs/date-range
-     */
     @GetMapping("/date-range")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<AuditLog>> getLogsByDateRange(
             @RequestParam String startDate,
             @RequestParam String endDate,

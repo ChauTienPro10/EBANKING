@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+// Button removed (unused)
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -26,6 +26,8 @@ import { useTransactionStore } from "@/stores/useTransactionStore";
 import { toast } from "@/components/ui/toast";
 import { useTranslation } from "react-i18next";
 import type { Transaction } from "@/services/transactionService";
+import { Badge } from "@/components/ui/badge";
+import { Clock } from "lucide-react";
 
 const formatCurrency = (amount: number, currency: string) => {
   return new Intl.NumberFormat("vi-VN", {
@@ -63,6 +65,17 @@ export function TransactionsPage() {
   useEffect(() => {
     fetchTransactions();
   }, [pagination.page, pagination.limit, filters, fetchTransactions]);
+
+  const searchHint =
+    (filters.fromDate && filters.toDate
+      ? t("transactions.filters.searchHintWithRange", {
+          from: filters.fromDate,
+          to: filters.toDate,
+        })
+      : t("transactions.filters.searchPlaceholder")) ||
+    (filters.fromDate && filters.toDate
+      ? `Tìm theo mã GD/tài khoản (từ ${filters.fromDate} đến ${filters.toDate})`
+      : "Tìm theo mã GD, tài khoản...");
 
   const handleExportCSV = () => {
     const headers = [
@@ -129,7 +142,16 @@ export function TransactionsPage() {
     {
       key: "transactionAt",
       header: t("transactions.table.time") || "Time",
-      render: (item) => new Date(item.transactionAt).toLocaleString("vi-VN"),
+      render: (item) =>
+        new Date(item.transactionAt).toLocaleString("vi-VN", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: false,
+        }),
     },
   ];
 
@@ -142,11 +164,24 @@ export function TransactionsPage() {
           </CardTitle>
         </CardHeader>
         <CardContent className="grid grid-cols-1 gap-3 md:grid-cols-4">
-          <SearchInput
-            value={filters.search}
-            onChange={setSearch}
-            placeholder={t("transactions.filters.searchPlaceholder")}
-          />
+          <div className="space-y-2">
+            <SearchInput
+              value={filters.search}
+              onChange={setSearch}
+              placeholder={searchHint}
+            />
+            <p className="text-xs text-muted-foreground">
+              {(filters.fromDate && filters.toDate
+                ? t("transactions.filters.dateRangeHint", {
+                    from: filters.fromDate,
+                    to: filters.toDate,
+                  })
+                : t("transactions.filters.noDateHint")) ||
+                (filters.fromDate && filters.toDate
+                  ? `Khoảng thời gian: ${filters.fromDate} → ${filters.toDate}`
+                  : "Nhập khoảng ngày để thu hẹp kết quả tìm kiếm")}
+            </p>
+          </div>
           <Select
             value={filters.type || "all"}
             onValueChange={(value) =>
@@ -257,55 +292,59 @@ export function TransactionsPage() {
           open={!!selectedTransaction}
           onOpenChange={() => selectTransaction(null)}
         >
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-4xl">
             <DialogClose />
             <DialogHeader>
-              <DialogTitle>
-                {t("transactions.details") || "Transaction Details"} -{" "}
-                {selectedTransaction.transactionId}
+              <DialogTitle className="flex items-center gap-2 text-xl">
+                {t("transactions.details") || "Transaction Details"} ·{" "}
+                <Badge variant="outline">
+                  #{selectedTransaction.transactionId}
+                </Badge>
               </DialogTitle>
             </DialogHeader>
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm text-muted-foreground">
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div className="rounded-lg border p-4">
+                  <div className="text-sm text-muted-foreground">
                     {t("transactions.fromAccount") || "From Account"}
-                  </label>
-                  <p className="font-medium">
+                  </div>
+                  <div className="text-base font-semibold">
                     {selectedTransaction.senderAccountNumber}
-                  </p>
+                  </div>
                 </div>
-                <div>
-                  <label className="text-sm text-muted-foreground">
+                <div className="rounded-lg border p-4">
+                  <div className="text-sm text-muted-foreground">
                     {t("transactions.toAccount") || "To Account"}
-                  </label>
-                  <p className="font-medium">
+                  </div>
+                  <div className="text-base font-semibold">
                     {selectedTransaction.receiverAccountNumber || "-"}
-                  </p>
+                  </div>
                 </div>
-                <div>
-                  <label className="text-sm text-muted-foreground">
+
+                <div className="rounded-lg border p-4">
+                  <div className="text-sm text-muted-foreground">
                     {t("transactions.amount") || "Amount"}
-                  </label>
-                  <p className="font-medium">
+                  </div>
+                  <div className="text-lg font-bold text-emerald-600">
                     {formatCurrency(
                       selectedTransaction.amount,
                       selectedTransaction.currency
                     )}
-                  </p>
+                  </div>
                 </div>
-                <div>
-                  <label className="text-sm text-muted-foreground">
+                <div className="rounded-lg border p-4">
+                  <div className="text-sm text-muted-foreground">
                     {t("transactions.type") || "Type"}
-                  </label>
-                  <p className="font-medium">
+                  </div>
+                  <div className="text-base font-semibold">
                     {selectedTransaction.transactionType}
-                  </p>
+                  </div>
                 </div>
-                <div>
-                  <label className="text-sm text-muted-foreground">
+
+                <div className="rounded-lg border p-4">
+                  <div className="text-sm text-muted-foreground">
                     {t("transactions.status") || "Status"}
-                  </label>
+                  </div>
                   <StatusBadge
                     status={
                       transactionStatusMap[selectedTransaction.status]?.color ||
@@ -319,23 +358,34 @@ export function TransactionsPage() {
                     }
                   />
                 </div>
-                <div>
-                  <label className="text-sm text-muted-foreground">
+                <div className="rounded-lg border p-4 space-y-2">
+                  <div className="text-sm text-muted-foreground">
                     {t("transactions.timestamp") || "Timestamp"}
-                  </label>
-                  <p className="font-medium">
+                  </div>
+                  <div className="flex items-center gap-2 text-base font-medium">
+                    <Clock className="h-4 w-4 text-muted-foreground" />
                     {new Date(selectedTransaction.transactionAt).toLocaleString(
-                      "vi-VN"
+                      "vi-VN",
+                      {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        second: "2-digit",
+                        hour12: false,
+                      }
                     )}
-                  </p>
+                  </div>
                 </div>
               </div>
+
               {selectedTransaction.description && (
-                <div>
-                  <label className="text-sm text-muted-foreground">
+                <div className="rounded-lg border p-4">
+                  <div className="text-sm text-muted-foreground">
                     {t("transactions.description") || "Description"}
-                  </label>
-                  <p className="font-medium">
+                  </div>
+                  <p className="text-base font-medium leading-relaxed">
                     {selectedTransaction.description}
                   </p>
                 </div>

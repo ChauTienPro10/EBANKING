@@ -1,6 +1,7 @@
 package com.ebanking.adminTool.service;
 
 import com.ebanking.adminTool.dto.UserInfoDto;
+import com.ebanking.adminTool.service.grpc.UserGrpcClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -19,45 +20,17 @@ import java.util.UUID;
 public class UserManagementService {
 
     private final Map<String, JdbcTemplate> externalJdbcTemplates;
+    private final UserGrpcClient userGrpcClient;
 
     @Autowired
-    public UserManagementService(Map<String, JdbcTemplate> externalJdbcTemplates) {
+    public UserManagementService(Map<String, JdbcTemplate> externalJdbcTemplates,
+                                 UserGrpcClient userGrpcClient) {
         this.externalJdbcTemplates = externalJdbcTemplates;
+        this.userGrpcClient = userGrpcClient;
     }
 
     public List<UserInfoDto> getAllUsers() {
-        JdbcTemplate userServiceJdbc = externalJdbcTemplates.get("DB_USER_SERVICE");
-        
-        if (userServiceJdbc == null) {
-            throw new RuntimeException("DB_USER_SERVICE connection not found");
-        }
-
-        String sql = """
-            SELECT 
-                ui.id,
-                ui.full_name,
-                ui.citizen_id,
-                ui.birthday,
-                ui.email,
-                ui.phone,
-                ui.is_male,
-                ui.address,
-                ui.create_at,
-                ui.updated_at,
-                NULL as ekyc_session_id,
-                ui.ekyc_status,
-                ui.ekyc_verified_at,
-                ui.avatar_path,
-                ui.face_auth_enabled,
-                ui.daily_transaction_limit,
-                u.id as user_id,
-                u.username
-            FROM user_info ui
-            LEFT JOIN user u ON ui.user_id = u.id
-            ORDER BY ui.create_at DESC
-            """;
-
-        return userServiceJdbc.query(sql, new UserInfoRowMapper());
+        return userGrpcClient.getAllUsers();
     }
 
     public UserInfoDto getUserById(Long id) {
