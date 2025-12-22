@@ -178,10 +178,13 @@ public class UserManagementService {
             
             dto.setEkycStatus(rs.getString("ekyc_status"));
             
-            // Handle LocalDateTime
-            Timestamp ekycVerifiedAtTs = rs.getTimestamp("ekyc_verified_at");
-            if (ekycVerifiedAtTs != null) {
-                dto.setEkycVerifiedAt(ekycVerifiedAtTs.toLocalDateTime());
+            // Handle LocalDateTime - ekyc_verified_at is stored as BIGINT (Unix timestamp in milliseconds)
+            Long ekycVerifiedAtLong = rs.getLong("ekyc_verified_at");
+            if (ekycVerifiedAtLong != null && ekycVerifiedAtLong > 0) {
+                dto.setEkycVerifiedAt(java.time.LocalDateTime.ofInstant(
+                    java.time.Instant.ofEpochMilli(ekycVerifiedAtLong),
+                    java.time.ZoneId.systemDefault()
+                ));
             }
             
             dto.setAvatarPath(rs.getString("avatar_path"));
