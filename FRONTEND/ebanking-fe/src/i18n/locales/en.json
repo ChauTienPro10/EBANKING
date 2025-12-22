@@ -88,8 +88,19 @@
   },
   "transactions": {
     "search": "Search History",
+    "details": "Transaction Details",
+    "fromAccount": "From Account",
+    "toAccount": "To Account",
+    "amount": "Amount",
+    "type": "Type",
+    "status": "Status",
+    "timestamp": "Timestamp",
+    "description": "Description",
     "filters": {
       "searchPlaceholder": "Search by Transaction ID, account...",
+      "searchHintWithRange": "Search by ID or account (from {{from}} to {{to}})",
+      "dateRangeHint": "Date range: {{from}} → {{to}}",
+      "noDateHint": "Add a date range to narrow results",
       "allTypes": "All Types",
       "allStatuses": "All Statuses",
       "from": "From date",
@@ -201,12 +212,35 @@
   },
   "audit": {
     "title": "Activity log",
+    "filters": {
+      "username": "Staff username (exact)",
+      "status": "Status",
+      "action": "Action",
+      "ip": "IP Address",
+      "role": "Role",
+      "statusAll": "All",
+      "roleAll": "All Roles",
+      "actionAll": "All Actions"
+    },
     "table": {
       "time": "Time",
-      "user": "User",
+      "staff": "Staff",
       "ip": "IP",
-      "device": "Device",
-      "action": "Action"
+      "action": "Action",
+      "details": "Details",
+      "status": "Status"
+    },
+    "empty": "No audit logs found",
+    "detailsTitle": "Audit log details",
+    "fields": {
+      "staff": "Staff",
+      "time": "Time",
+      "ip": "IP Address",
+      "action": "Action",
+      "targetType": "Target Type",
+      "targetId": "Target ID",
+      "status": "Status",
+      "details": "Details"
     }
   },
   "loans": {
@@ -441,6 +475,10 @@
     "create": "Create",
     "update": "Update",
     "saving": "Saving...",
+    "pagination": {
+      "rowsPerPage": "Rows per page:",
+      "showing": "Showing {{start}}–{{end}} of {{total}} • Page {{page}} of {{totalPages}}"
+    },
     "table": {
       "index": "No.",
       "noData": "No data available",

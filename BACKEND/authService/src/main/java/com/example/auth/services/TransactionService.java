@@ -4,17 +4,14 @@ import com.example.auth.consts.grpcPath;
 import com.example.auth.dto.request.TransferRequest;
 import com.example.auth.dto.response.TransferResponse;
 import com.example.auth.mapper.TransactionMapper;
-import com.example.auth.protopkg.AccountServiceGrpc;
-import com.example.auth.protopkg.TransactionProto;
 import com.example.auth.protopkg.TransactionServiceGrpc;
+import com.example.auth.protopkg.TransactionProto;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import lombok.extern.slf4j.Slf4j;
-import lombok.extern.slf4j.XSlf4j;
 import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service

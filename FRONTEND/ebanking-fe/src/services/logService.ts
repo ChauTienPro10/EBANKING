@@ -19,6 +19,10 @@ export interface PaginationParams {
   username?: string;
   startDate?: string;
   endDate?: string;
+  status?: string;
+  action?: string;
+  ip?: string;
+  role?: string;
 }
 
 export interface PaginatedResponse<T> {
@@ -43,6 +47,10 @@ export const getAuditLogs = (params: PaginationParams) => {
     queryParams.append('endDate', params.endDate);
     url = `/audit-logs/date-range?${queryParams.toString()}`;
   } else {
+    if (params.status) queryParams.append('status', params.status);
+    if (params.action) queryParams.append('action', params.action);
+    if (params.ip) queryParams.append('ip', params.ip);
+    if (params.role) queryParams.append('role', params.role);
     url = `/audit-logs?${queryParams.toString()}`;
   }
 

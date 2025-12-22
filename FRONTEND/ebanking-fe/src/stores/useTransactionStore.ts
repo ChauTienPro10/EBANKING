@@ -67,7 +67,9 @@ export const useTransactionStore = create<TransactionStore>((set, get) => ({
         data: response.content,
         pagination: {
           ...pagination,
-          total: response.totalElements,
+          total: Number.isFinite(response.totalElements)
+            ? response.totalElements
+            : response.content.length,
         },
         loading: false,
       });

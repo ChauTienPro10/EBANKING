@@ -8,9 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-/**
- * Admin Transaction Management Controller
- */
 @RestController
 @RequestMapping("/transactions")
 @RequiredArgsConstructor
@@ -19,10 +16,7 @@ public class AdminTransactionController {
 
     private final AdminTransactionService adminTransactionService;
 
-    /**
-     * Get transaction history with filters
-     * GET /api/admin/transactions
-     */
+
     @GetMapping
     public ResponseEntity<?> getTransactionHistory(
             @RequestParam(defaultValue = "0") int page,
@@ -38,7 +32,6 @@ public class AdminTransactionController {
             log.info("Admin {} requesting transaction history - page: {}, size: {}, search: {}, type: {}, status: {}, fromDate: {}, toDate: {}", 
                     authentication.getName(), page, size, search, type, status, fromDate, toDate);
 
-            // Validate pagination parameters
             if (page < 0) {
                 return ResponseEntity.badRequest().body("Page number cannot be negative");
             }
