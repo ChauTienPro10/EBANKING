@@ -19,6 +19,16 @@ export type RootStackParamList = {
   };
   Withdraw: undefined;
   MobilePrepaid: undefined;
+  MobilePrepaidConfirm: {
+    phoneNumber: string;
+    operator: any;
+    package: any;
+  };
+  MobilePrepaidResult: {
+    transaction: any;
+    operator: any;
+    package: any;
+  };
   PayBill: undefined;
   SaveOnline: undefined;
   CreditCard: undefined;

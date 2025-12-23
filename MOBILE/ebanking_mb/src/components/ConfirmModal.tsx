@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ViewStyle,
 } from 'react-native';
+import Colors from '../constants/color';
 
 interface ConfirmModalProps {
   visible: boolean;

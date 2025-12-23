@@ -38,6 +38,11 @@ import ChangePasswordScreen from '../page/settings/ChangePasswordScreen';
 import AboutScreen from '../page/settings/AboutScreen';
 import FAQScreen from '../page/support/FAQScreen';
 
+// Mobile Prepaid screens
+import MobilePrepaidScreen from '../page/mobile-prepaid/MobilePrepaidScreen';
+import MobilePrepaidConfirmScreen from '../page/mobile-prepaid/MobilePrepaidConfirmScreen';
+import MobilePrepaidResultScreen from '../page/mobile-prepaid/MobilePrepaidResultScreen';
+
 // Chat screens
 import ChatListScreen from '../page/chat/ChatListScreen';
 import ChatConversationScreen from '../page/chat/ChatConversationScreen';
@@ -71,6 +76,9 @@ export default function MainStack() {
       <Stack.Screen name="Support" component={SupportScreen} />
       <Stack.Screen name="Chatbot" component={ChatScreen} />
       <Stack.Screen name="Transfer" component={TransferScreen} />
+      <Stack.Screen name="MobilePrepaid" component={MobilePrepaidScreen} />
+      <Stack.Screen name="MobilePrepaidConfirm" component={MobilePrepaidConfirmScreen} />
+      <Stack.Screen name="MobilePrepaidResult" component={MobilePrepaidResultScreen} />
       <Stack.Screen name="Lottery" component={LotteryScreen} />
       <Stack.Screen name="Statistics" component={StatisticsScreen} />
       <Stack.Screen name="OpenCard" component={OpenAccountScreen} />

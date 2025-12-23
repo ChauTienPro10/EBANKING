@@ -55,7 +55,23 @@ export const useHomeNavigation = (
         navigation.navigate('TransactionHistoryScreen' as never);
         break;
       case 'mobile_prepaid':
-        onShowComingSoon?.();
+        // Validate eKYC before allowing Mobile Prepaid navigation
+        const mobilePrepaidEkycValidation = validateEkyc(
+          (reason: 'NOT_VERIFIED' | 'EXPIRED') => {
+            setEkycExpiredReason(reason);
+            setShowEkycExpiredModal(true);
+          },
+        );
+
+        if (!mobilePrepaidEkycValidation.isValid) {
+          return;
+        }
+
+        if (account) {
+          navigation.navigate('MobilePrepaid');
+        } else {
+          navigation.navigate('OpenCard', { userInfo });
+        }
         break;
       case 'profile':
         navigation.navigate('Profile' as never);
