@@ -12,7 +12,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../store';
 import { setConversations, updateUnreadCount } from '../../store/chatSlice';
 import ChatAPI from '../../services/ChatAPI';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import EmptyChatState from '../../components/chat/EmptyChatState';
 
 const ChatListScreen = () => {
@@ -29,10 +29,12 @@ const ChatListScreen = () => {
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    loadConversations();
-    loadUnreadCount();
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      loadConversations();
+      loadUnreadCount();
+    }, []),
+  );
 
   const loadConversations = async () => {
     const accountNumber = accountTransResponse?.accountNumber;
@@ -116,11 +118,18 @@ const ChatListScreen = () => {
           <Text
             style={[
               styles.lastMessage,
-              item.unreadCount > 0 && styles.unreadMessage,
+              item.unreadCount > 0 &&
+                item.lastMessageSenderId !==
+                  accountTransResponse?.accountNumber &&
+                styles.unreadMessage,
             ]}
             numberOfLines={1}
           >
-            {item.lastMessage || 'Chưa có tin nhắn'}
+            {item.lastMessage
+              ? item.lastMessageSenderId === accountTransResponse?.accountNumber
+                ? `Bạn: ${item.lastMessage}`
+                : item.lastMessage
+              : 'Chưa có tin nhắn'}
           </Text>
 
           {item.unreadCount > 0 && (

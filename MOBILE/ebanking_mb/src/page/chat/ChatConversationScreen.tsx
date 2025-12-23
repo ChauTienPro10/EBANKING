@@ -10,7 +10,9 @@ import {
   Platform,
   ActivityIndicator,
   Dimensions,
+  Keyboard,
 } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../store';
 import {
@@ -48,16 +50,23 @@ const ChatConversationScreen = () => {
   const [deliveredMessageIds, setDeliveredMessageIds] = useState<
     Set<string | number>
   >(new Set());
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
 
   useEffect(() => {
     dispatch(setCurrentConversation(conversationId));
     loadMessages();
     markConversationAsRead();
-
     // Set custom header
     navigation.setOptions({
-      headerTitle: () => (
+      headerTitle: '',
+      headerLeft: () => (
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={{ padding: 8, marginRight: 4 }}
+          >
+            <Ionicons name="arrow-back" size={24} color="#212121" />
+          </TouchableOpacity>
           <View
             style={{
               width: 40,
@@ -102,6 +111,31 @@ const ChatConversationScreen = () => {
       }, 100);
     }
   }, [messages.length]);
+
+  // Scroll to bottom when keyboard shows
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      () => {
+        setKeyboardVisible(true);
+        setTimeout(() => {
+          flatListRef.current?.scrollToEnd({ animated: true });
+        }, 100);
+      },
+    );
+
+    const keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      () => {
+        setKeyboardVisible(false);
+      },
+    );
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
 
   const loadMessages = async () => {
     const accountNumber = accountTransResponse?.accountNumber;
@@ -370,6 +404,9 @@ const ChatConversationScreen = () => {
             <Text style={styles.emptySubtext}>Bắt đầu cuộc trò chuyện!</Text>
           </View>
         }
+        ListFooterComponent={
+          <View style={{ height: keyboardVisible ? 10 : 80 }} />
+        }
       />
 
       <View style={styles.inputContainer}>
@@ -470,6 +507,12 @@ const TransactionMessageBubble = ({
               { backgroundColor: isReceive ? '#4CAF50' : '#F44336' },
             ]}
           >
+            <Ionicons
+              name={isReceive ? 'arrow-down' : 'arrow-up'}
+              size={14}
+              color="#FFFFFF"
+              style={{ marginRight: 4 }}
+            />
             <Text style={styles.badgeText}>
               {isReceive ? 'Đã nhận' : 'Đã gửi'}
             </Text>
@@ -511,9 +554,7 @@ const TransactionMessageBubble = ({
 
       {/* Directional arrow indicator */}
       <View style={styles.seenIndicator}>
-        <Text style={[styles.sentCheckmark, { fontSize: 16 }]}>
-          {isReceive ? '↓' : '↑'}
-        </Text>
+        <Text style={[styles.sentCheckmark, { fontSize: 16 }]}></Text>
       </View>
     </View>
   );
@@ -663,6 +704,8 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   transactionBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 12,
     paddingVertical: 5,
     borderRadius: 12,

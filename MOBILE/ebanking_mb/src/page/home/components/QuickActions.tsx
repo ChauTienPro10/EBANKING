@@ -11,6 +11,7 @@ import {
   AlertIcon,
   CardIcon,
   TrendingUpIcon,
+  ChatbubbleIcon,
 } from '../../../components/icon';
 import Colors from '../../../constants/color';
 
@@ -57,6 +58,9 @@ const QuickActions: React.FC<QuickActionsProps> = ({
         return <CardIcon {...iconProps} />;
       case 'trending-up':
         return <TrendingUpIcon {...iconProps} />;
+      case 'chatbubbles':
+      case 'chatbox':
+        return <ChatbubbleIcon {...iconProps} />;
       default:
         return <TransferIcon {...iconProps} />;
     }
@@ -111,16 +115,22 @@ const styles = StyleSheet.create({
   },
   actionTag: {
     position: 'absolute',
-    top: -8,
-    right: -8,
+    top: 0,
+    right: 8,
+    minWidth: 20,
+    height: 20,
     paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 8,
+    borderRadius: 10,
+    backgroundColor: Colors.main_bule,
+    justifyContent: 'center',
+    alignItems: 'center',
     zIndex: 1,
+    borderWidth: 2,
+    borderColor: Colors.white,
   },
   actionTagText: {
     color: Colors.white,
-    fontSize: 8,
+    fontSize: 12,
     fontWeight: 'bold',
   },
   actionIconContainer: {

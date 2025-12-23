@@ -76,11 +76,11 @@ public class TransactionConsumer {
             receiverId
         );
         
+        // Create message for SENDER (you sent money) - create LAST so it's the last message
+        createSenderMessage(conversation, transaction, senderId, receiverId);
+        
         // Create message for RECEIVER (you received money)
         createReceiverMessage(conversation, transaction, senderId, receiverId);
-        
-        // Create message for SENDER (you sent money)
-        createSenderMessage(conversation, transaction, senderId, receiverId);
     }
     
     private void createReceiverMessage(Conversation conversation, TransactionEvent transaction, 
@@ -122,7 +122,7 @@ public class TransactionConsumer {
             chatMessage = messageRepository.save(chatMessage);
             log.info("✅ Created receiver message with ID: {} for user: {}", chatMessage.getId(), receiverId);
             
-            // Update conversation
+            // Update conversation with receiver's message
             conversation.setLastMessageId(chatMessage.getId());
             conversation.setLastMessageTime(chatMessage.getCreatedAt());
             conversationRepository.save(conversation);

@@ -65,13 +65,6 @@ export const useHomeData = (unreadCount: number = 0) => {
         tag: null,
       },
       {
-        id: 'bnpl',
-        title: t('action_grid.bnpl'),
-        icon: 'card',
-        color: Colors.main_bule,
-        tag: null,
-      },
-      {
         id: 'chat',
         title: t('action_grid.chat'),
         icon: 'chatbubbles',
@@ -79,7 +72,7 @@ export const useHomeData = (unreadCount: number = 0) => {
         tag: unreadCount > 0 ? unreadCount.toString() : null,
       },
     ],
-    [t],
+    [t, unreadCount],
   );
 
   const services: ServiceItemType[] = useMemo(

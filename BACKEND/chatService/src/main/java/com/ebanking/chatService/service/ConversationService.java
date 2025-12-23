@@ -1,7 +1,9 @@
 package com.ebanking.chatService.service;
 
 import com.ebanking.chatService.dto.ConversationDto;
+import com.ebanking.chatService.entity.ChatMessage;
 import com.ebanking.chatService.entity.Conversation;
+import com.ebanking.chatService.repository.ChatMessageRepository;
 import com.ebanking.chatService.repository.ConversationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +20,7 @@ import java.util.stream.Collectors;
 public class ConversationService {
     
     private final ConversationRepository conversationRepository;
+    private final ChatMessageRepository chatMessageRepository;
     
     /**
      * Get or create conversation between two users
@@ -51,14 +54,38 @@ public class ConversationService {
         List<Conversation> conversations = conversationRepository.findByUserId(userId);
         
         return conversations.stream()
-            .map(conv -> ConversationDto.builder()
-                .id(conv.getId())
-                .otherUserId(conv.getOtherUserId(userId))
-                .otherUserName(conv.getOtherUserId(userId)) // TODO: Fetch from User Service
-                .lastMessage("") // TODO: Fetch last message
-                .lastMessageTime(conv.getLastMessageTime())
-                .unreadCount(0) // TODO: Calculate unread count
-                .build())
+            .map(conv -> {
+                // Fetch latest message for THIS USER (not from lastMessageId)
+                // This ensures each user sees their own transaction message
+                String lastMessage = "";
+                String lastMessageSenderId = null;
+                
+                ChatMessage latestMsg = chatMessageRepository.findLatestMessageForUser(
+                    conv.getId(),
+                    userId
+                );
+                
+                if (latestMsg != null) {
+                    lastMessage = latestMsg.getContent();
+                    lastMessageSenderId = latestMsg.getSenderId();
+                }
+                
+                // Calculate unread count for this conversation
+                long unreadCount = chatMessageRepository.countUnreadMessagesByConversation(
+                    conv.getId(), 
+                    userId
+                );
+                
+                return ConversationDto.builder()
+                    .id(conv.getId())
+                    .otherUserId(conv.getOtherUserId(userId))
+                    .otherUserName(conv.getOtherUserId(userId)) // TODO: Fetch from User Service
+                    .lastMessage(lastMessage)
+                    .lastMessageSenderId(lastMessageSenderId)
+                    .lastMessageTime(conv.getLastMessageTime())
+                    .unreadCount((int) unreadCount)
+                    .build();
+            })
             .collect(Collectors.toList());
     }
 }
