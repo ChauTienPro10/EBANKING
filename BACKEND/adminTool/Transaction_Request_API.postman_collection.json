@@ -1,0 +1,523 @@
+{
+  "info": {
+    "name": "Transaction Request API",
+    "description": "API collection for Transaction Request management in AdminTool",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:7999",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('token', response.token);",
+                  "    console.log('Token saved:', response.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin@123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "auth", "login"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Transaction Requests",
+      "item": [
+        {
+          "name": "Get All Transactions (Basic)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/transaction-requests",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transaction-requests"]
+            }
+          }
+        },
+        {
+          "name": "Get Transactions with Pagination",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/transaction-requests?page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transaction-requests"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Filter by Date Range",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/transaction-requests?fromDate=2024-12-01&toDate=2024-12-31&page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transaction-requests"],
+              "query": [
+                {
+                  "key": "fromDate",
+                  "value": "2024-12-01"
+                },
+                {
+                  "key": "toDate",
+                  "value": "2024-12-31"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Filter by Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/transaction-requests?status=COMPLETED&page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transaction-requests"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "COMPLETED"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Filter by Amount Range",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/transaction-requests?minAmount=100000&maxAmount=5000000&page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transaction-requests"],
+              "query": [
+                {
+                  "key": "minAmount",
+                  "value": "100000"
+                },
+                {
+                  "key": "maxAmount",
+                  "value": "5000000"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Filter by Reference Number",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/transaction-requests?referenceNumber=TXN&page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transaction-requests"],
+              "query": [
+                {
+                  "key": "referenceNumber",
+                  "value": "TXN"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Combined Filters",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/transaction-requests?status=COMPLETED&fromDate=2024-12-01&minAmount=100000&sortBy=amount&sortDirection=ASC&page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transaction-requests"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "COMPLETED"
+                },
+                {
+                  "key": "fromDate",
+                  "value": "2024-12-01"
+                },
+                {
+                  "key": "minAmount",
+                  "value": "100000"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "amount"
+                },
+                {
+                  "key": "sortDirection",
+                  "value": "ASC"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Transaction Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/transaction-requests/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transaction-requests", "stats"]
+            }
+          }
+        },
+        {
+          "name": "Get Transaction by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/transaction-requests/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transaction-requests", "1"]
+            }
+          }
+        },
+        {
+          "name": "Sort by Amount (Ascending)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/transaction-requests?sortBy=amount&sortDirection=ASC&page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transaction-requests"],
+              "query": [
+                {
+                  "key": "sortBy",
+                  "value": "amount"
+                },
+                {
+                  "key": "sortDirection",
+                  "value": "ASC"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Filter by Transaction Type",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/transaction-requests?transactionType=TRANSFER&page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transaction-requests"],
+              "query": [
+                {
+                  "key": "transactionType",
+                  "value": "TRANSFER"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Legacy Endpoints",
+      "item": [
+        {
+          "name": "Get Transactions (Legacy Format)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/transaction-requests/legacy?size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transaction-requests", "legacy"],
+              "query": [
+                {
+                  "key": "size",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        }
+        {
+          "name": "Approve Transaction Request",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/transaction-requests/1/approve?adminUsername=admin",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transaction-requests", "1", "approve"],
+              "query": [
+                {
+                  "key": "adminUsername",
+                  "value": "admin"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Reject Transaction Request",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/transaction-requests/1/reject?adminUsername=admin&rejectionReason=Insufficient documentation",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transaction-requests", "1", "reject"],
+              "query": [
+                {
+                  "key": "adminUsername",
+                  "value": "admin"
+                },
+                {
+                  "key": "rejectionReason",
+                  "value": "Insufficient documentation"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

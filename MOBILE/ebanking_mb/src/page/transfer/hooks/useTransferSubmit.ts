@@ -11,7 +11,7 @@ import { API } from '../../../constants/api';
 import Toast from 'react-native-toast-message';
 import { TransferFormData } from '../types/transfer.types';
 import { RootStackParamList } from '../../../navigation/types';
-import { sanitizeTransferContent } from '../utils/transfer.utils';
+import { sanitizeTransferContent, buildTransferContent } from '../utils/transfer.utils';
 import { useEkycValidation } from '../../../utils/useEkycValidation';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Transfer'>;
@@ -150,8 +150,8 @@ export const useTransferSubmit = () => {
     ) => void,
   ) => {
     try {
-      // Sanitize content before sending to API
-      const sanitizedContent = sanitizeTransferContent(formData.content);
+      // Build content with purpose prefix if selected
+      const finalContent = buildTransferContent(formData.content, formData.purpose);
 
       const payload = {
         pin: pin,
@@ -161,7 +161,7 @@ export const useTransferSubmit = () => {
         amount: formData.amount.replace(/,/g, ''),
         currency: 'VND',
         transactionType: 'TRANSFER',
-        description: sanitizedContent, // Use sanitized content
+        description: finalContent, // Use content with purpose prefix
         requiresFaceAuth: requiresFaceAuth,
         faceAuthSessionId: faceAuthSessionId,
       };
@@ -188,7 +188,7 @@ export const useTransferSubmit = () => {
 
         navigation.navigate('PendingTransactionScreen', {
           amount: '₫' + formData.amount,
-          content: sanitizedContent, // Use sanitized content
+          content: sanitizeTransferContent(formData.content), // Display clean content without prefix
           date: new Date().toISOString(),
           receiverName: receiverName,
           transactionId: transferResponse.transactionId, // Real transaction ID from API

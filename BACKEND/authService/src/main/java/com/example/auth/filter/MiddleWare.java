@@ -83,17 +83,23 @@ public class MiddleWare extends OncePerRequestFilter {
         boolean isTransactionRequestEndpoint = uri.contains("/transaction-requests") && "POST".equals(method);
         boolean isFaceAuthEndpoint = uri.contains("/check-face-auth") && "POST".equals(method);
         
+        // Check for phone top-up endpoints
+        boolean isPhoneTopUpEndpoint = uri.contains("/phone-topup") && "POST".equals(method);
+        boolean isPhoneTopUpVerifyEndpoint = uri.contains("/phone-topup/verify-face-auth") && "POST".equals(method);
+        
         // Also check for any POST/PUT/PATCH on transaction paths
         boolean isTransactionPath = (uri.contains("/transaction") || 
                                    uri.contains("/trans/account") ||
                                    uri.contains("/savings-transfers") ||
                                    uri.contains("/savings-accounts") ||
-                                   uri.contains("/transaction-requests")) &&
+                                   uri.contains("/transaction-requests") ||
+                                   uri.contains("/phone-topup")) &&
                                    ("POST".equals(method) || "PUT".equals(method) || "PATCH".equals(method));
         
         return isTransferEndpoint || isHistoryEndpoint || isNewAccountEndpoint || 
                isSavingsTransferEndpoint || isSavingsAccountEndpoint || 
-               isTransactionRequestEndpoint || isFaceAuthEndpoint || isTransactionPath;
+               isTransactionRequestEndpoint || isFaceAuthEndpoint || 
+               isPhoneTopUpEndpoint || isPhoneTopUpVerifyEndpoint || isTransactionPath;
     }
 
     /**

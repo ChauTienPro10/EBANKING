@@ -25,7 +25,7 @@ public class AdminAuditController {
     private final AuditLogRepository auditLogRepository;
 
     @GetMapping
-    @PreAuthorize("hasAuthority('ROLE_SUPER_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Page<AuditLog>> getRecentLogs(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "50") int size,
@@ -59,7 +59,7 @@ public class AdminAuditController {
     }
 
     @GetMapping("/staff/{username}")
-    @PreAuthorize("hasAuthority('ROLE_SUPER_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Page<AuditLog>> getLogsByStaff(
             @PathVariable String username,
             @RequestParam(defaultValue = "0") int page,
@@ -75,7 +75,7 @@ public class AdminAuditController {
     }
 
     @GetMapping("/date-range")
-    @PreAuthorize("hasAuthority('ROLE_SUPER_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Page<AuditLog>> getLogsByDateRange(
             @RequestParam String startDate,
             @RequestParam String endDate,

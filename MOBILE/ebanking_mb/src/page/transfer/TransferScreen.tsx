@@ -27,6 +27,7 @@ import { useTransferForm } from './hooks/useTransferForm';
 import { useTransferValidation } from './hooks/useTransferValidation';
 import { useSavedAccounts } from './hooks/useSavedAccounts';
 import { useTransferSubmit } from './hooks/useTransferSubmit';
+import { useTransferPurposes } from './hooks/useTransferPurposes';
 
 // Import components
 import TransferTypeSelector from './components/TransferTypeSelector';
@@ -34,8 +35,10 @@ import BankSelector from './components/BankSelector';
 import RecipientAccountInput from './components/RecipientAccountInput';
 import AmountInput from './components/AmountInput';
 import ContentInput from './components/ContentInput';
+import PurposeSelector from './components/PurposeSelector';
 import BankSelectionModal from './components/BankSelectionModal';
 import SavedAccountsModal from './components/SavedAccountsModal';
+import PurposeSelectionModal from './components/PurposeSelectionModal';
 import PinRequiredModal from '../../components/PinRequiredModal';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -74,11 +77,13 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({
     handleInputChange,
     handleAmountChange,
     handleBankSelect,
+    handlePurposeSelect,
     setFormErrors,
   } = useTransferForm(route.params);
   const { validateForm } = useTransferValidation();
   const { savedAccounts, saveRecipientAccountToStorage, deleteSavedAccount } =
     useSavedAccounts();
+  const { purposes, loading: purposesLoading } = useTransferPurposes();
   const {
     isLoading,
     receiverName,
@@ -93,6 +98,7 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({
   // Local UI state
   const [showBankModal, setShowBankModal] = useState(false);
   const [showSavedAccountsModal, setShowSavedAccountsModal] = useState(false);
+  const [showPurposeModal, setShowPurposeModal] = useState(false);
   const [saveRecipientAccount, setSaveRecipientAccount] = useState(false);
   const [faceAuthSessionId, setFaceAuthSessionId] = useState<string | null>(
     null,
@@ -175,6 +181,11 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({
           error={errors.content}
         />
 
+        <PurposeSelector
+          selectedPurpose={formData.purpose}
+          onPress={() => setShowPurposeModal(true)}
+        />
+
         <View style={styles.buttonContainer}>
           <CustomButton
             title={t('transfer.transfer_button')}
@@ -201,6 +212,15 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({
         savedAccounts={savedAccounts}
         onSelectAccount={handleSelectSavedAccount}
         onDeleteAccount={deleteSavedAccount}
+      />
+
+      <PurposeSelectionModal
+        visible={showPurposeModal}
+        onClose={() => setShowPurposeModal(false)}
+        purposes={purposes}
+        selectedPurpose={formData.purpose}
+        onSelectPurpose={handlePurposeSelect}
+        loading={purposesLoading}
       />
 
       <ConfirmTransferModal

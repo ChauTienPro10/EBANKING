@@ -14,12 +14,20 @@ export interface TransferParams {
   bankCode: string;
 }
 
+export interface TransferPurpose {
+  id: string;
+  name: string;
+  code: string;
+  icon?: string;
+}
+
 export interface TransferFormData {
   recipientAccount: string;
   amount: string;
   content: string;
   transferType: 'internal' | 'external';
   selectedBank?: Bank;
+  purpose?: TransferPurpose;
 }
 
 export interface FormErrors {

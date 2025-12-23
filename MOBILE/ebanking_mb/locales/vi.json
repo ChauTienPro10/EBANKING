@@ -643,6 +643,8 @@
     "amount_placeholder": "Nhập số tiền",
     "content": "Nội dung chuyển tiền",
     "content_placeholder": "Nhập nội dung chuyển tiền",
+    "purpose_label": "Mục đích giao dịch",
+    "select_purpose": "Chọn mục đích giao dịch",
     "quick_amount": "Số tiền nhanh",
     "save_recipient_account": "Lưu số tài khoản người nhận",
     "saved_accounts": "Tài khoản đã lưu",
@@ -671,6 +673,7 @@
       "recipient_account_label": "Tài khoản nhận",
       "recipient_name_label": "Tên người nhận",
       "content_label": "Nội dung",
+      "purpose_label": "Mục đích",
       "cancel_button": "Hủy",
       "confirm_button": "Xác nhận",
       "enter_pin_title": "Nhập mã PIN 4 số"
@@ -956,6 +959,8 @@
     "select_operator": "Chọn nhà mạng",
     "auto_detect": "Tự động nhận diện",
     "select_package": "Chọn gói nạp",
+    "select_amount": "Chọn số tiền",
+    "amount_required": "Vui lòng chọn số tiền",
     "package_type_call": "Gói thoại",
     "package_type_data": "Gói data",
     "package_type_combo": "Gói combo",
@@ -986,6 +991,7 @@
       "phone_invalid": "Số điện thoại không hợp lệ",
       "operator_required": "Vui lòng chọn nhà mạng",
       "package_required": "Vui lòng chọn gói nạp",
+      "amount_required": "Vui lòng chọn số tiền",
       "pin_required": "Vui lòng nhập mã PIN"
     },
     "confirm": {
@@ -1002,6 +1008,74 @@
       "enter_pin_title": "Nhập mã PIN để xác nhận"
     },
     "quick_amounts": ["10.000", "20.000", "50.000", "100.000", "200.000", "500.000"]
+  },
+  "data_4g": {
+    "title": "Nạp Data 4G",
+    "subtitle": "Nạp data 4G nhanh chóng cho thuê bao di động",
+    "phone_number": "Số điện thoại",
+    "phone_number_placeholder": "Nhập số điện thoại cần nạp data",
+    "select_provider": "Chọn nhà mạng",
+    "auto_detect": "Tự động nhận diện",
+    "select_package": "Chọn gói data",
+    "filter": "Lọc",
+    "sort_by": "Sắp xếp theo",
+    "price": "Giá",
+    "data_amount": "Dung lượng",
+    "validity": "Thời hạn",
+    "apply_filter": "Áp dụng",
+    "reset_filter": "Đặt lại",
+    "price_range": "Khoảng giá",
+    "from": "Từ",
+    "to": "Đến",
+    "confirm_topup": "Xác nhận nạp data",
+    "processing": "Đang xử lý...",
+    "success_title": "Nạp data thành công",
+    "success_message": "Đã nạp thành công gói {dataAmount} cho số {phone}",
+    "failed_title": "Nạp data thất bại",
+    "failed_message": "Không thể nạp data. Vui lòng thử lại.",
+    "transaction_id": "Mã giao dịch",
+    "completed_at": "Hoàn thành lúc",
+    "history_title": "Lịch sử nạp data",
+    "no_history": "Chưa có giao dịch nạp data nào",
+    "recent_numbers": "Số gần đây",
+    "providers": {
+      "viettel": "Viettel",
+      "vinaphone": "VinaPhone", 
+      "mobifone": "MobiFone",
+      "vietnamobile": "Vietnamobile"
+    },
+    "validation": {
+      "phone_required": "Vui lòng nhập số điện thoại",
+      "phone_invalid": "Số điện thoại không hợp lệ",
+      "provider_required": "Vui lòng chọn nhà mạng",
+      "package_required": "Vui lòng chọn gói data",
+      "pin_required": "Vui lòng nhập mã PIN"
+    },
+    "confirm": {
+      "title": "Xác nhận nạp data",
+      "phone_label": "Số điện thoại",
+      "provider_label": "Nhà mạng",
+      "package_label": "Gói data",
+      "price_label": "Giá gói",
+      "fee_label": "Phí giao dịch",
+      "total_label": "Tổng thanh toán",
+      "free_fee": "Miễn phí",
+      "cancel_button": "Hủy",
+      "confirm_button": "Xác nhận nạp data",
+      "enter_pin_title": "Nhập mã PIN để xác nhận"
+    },
+    "benefits": {
+      "data_amount": "Dung lượng data",
+      "validity_period": "Thời hạn sử dụng",
+      "speed": "Tốc độ",
+      "high_speed": "Tốc độ 4G cao, không giới hạn băng thông"
+    },
+    "usage_tips": {
+      "title": "Cách sử dụng data hiệu quả",
+      "tip1": "Tắt tự động cập nhật ứng dụng khi không dùng WiFi",
+      "tip2": "Theo dõi lưu lượng data trong Cài đặt điện thoại",
+      "tip3": "Sử dụng WiFi khi có thể để tiết kiệm data 4G"
+    }
   },
   "faq": {
     "title": "Câu hỏi thường gặp",

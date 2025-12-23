@@ -74,8 +74,8 @@ public class GeminiService {
               → Khi người dùng hỏi:
                 "Tính lãi suất",
                 "Lãi suất theo số tiền và loại kỳ hạn"
-              -> amount: Số tiền (Bigdecimal)
-              -> termMonths: kỳ hạn (Integer)
+              → amount: Số tiền (Bigdecimal)
+              → termMonths: kỳ hạn (Integer)
             
             - getApplicableInterestRateAsString [termMonths] [amount]
               → Khi người dùng cung cấp:
@@ -84,12 +84,39 @@ public class GeminiService {
               → termMonths: số tháng (Integer)
               → amount: số tiền (BigDecimal, KHÔNG dấu phẩy, KHÔNG chữ)
             
+            - getTotalInterestEarnedAsString
+              → Khi người dùng hỏi:
+                "tổng lãi đã nhận",
+                "lãi đã kiếm được",
+                "tổng lãi từ tiết kiệm"
+            
+            - getCurrentMonthInterestRatesAsString
+              → Khi người dùng hỏi:
+                "lãi suất tháng này",
+                "lãi suất hiện tại",
+                "lãi suất mới nhất"
+            
+            - getUserSavingsAndInterestSummary
+              → Khi người dùng hỏi:
+                "tóm tắt tiết kiệm",
+                "thông tin tiết kiệm của tôi",
+                "tài khoản tiết kiệm"
+            
             VÍ DỤ:
             - "Gửi 100 triệu kỳ hạn 6 tháng lãi bao nhiêu"
               → getApplicableInterestRateAsString 6 100000000
             
             - "Lãi suất tiết kiệm hiện nay"
               → getActiveInterestRatesAsString
+              
+            - "Tổng lãi tôi đã nhận được"
+              → getTotalInterestEarnedAsString
+              
+            - "Lãi suất tháng này như thế nào"
+              → getCurrentMonthInterestRatesAsString
+              
+            - "Tài khoản tiết kiệm của tôi"
+              → getUserSavingsAndInterestSummary
             """;
 
         try {
@@ -147,6 +174,12 @@ public class GeminiService {
                     return  "ID của bạn là: " + userService.getUserId(username);
                 case "getActiveInterestRatesAsString":
                     return savingAccountService.getActiveInterestRatesAsString();
+                case "getTotalInterestEarnedAsString":
+                    return savingAccountService.getTotalInterestEarnedAsString(userId);
+                case "getCurrentMonthInterestRatesAsString":
+                    return savingAccountService.getCurrentMonthInterestRatesAsString();
+                case "getUserSavingsAndInterestSummary":
+                    return savingAccountService.getUserSavingsAndInterestSummary(userId);
                 default:
                     return text;
             }

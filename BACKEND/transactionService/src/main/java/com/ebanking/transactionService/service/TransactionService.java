@@ -70,6 +70,12 @@ public class TransactionService {
     @Autowired
     private RedisTemplate<String, String> redisTemplateForString;
 
+    @Autowired
+    private TransferContentParserService contentParserService;
+
+    @Autowired
+    private TransferPurposeService transferPurposeService;
+
     private static final BigDecimal SINGLE_LIMIT = new BigDecimal("10000000");
     private static final BigDecimal DAILY_LIMIT = new BigDecimal("50000000");
 
@@ -190,6 +196,16 @@ public class TransactionService {
             faceAuthAt = LocalDateTime.now();
         }
 
+        // Parse purpose from description
+        com.ebanking.transactionService.dto.TransferContentParseResult parseResult = 
+            contentParserService.parseTransferContent(data.getDescription());
+        
+        // Validate purpose code if exists
+        if (parseResult.isHasPurpose() && !transferPurposeService.isValidPurposeCode(parseResult.getPurposeCode())) {
+            log.warn("Invalid purpose code: {}", parseResult.getPurposeCode());
+            throw new TransactionException("INVALID_PURPOSE_CODE");
+        }
+
         Transaction transaction = transactionRepository.save(Transaction.builder()
                 .senderAccountNumber(data.getSenderAccountNumber())
                 .receiverAccountNumber(data.getReceiverAccountNumber())
@@ -197,7 +213,8 @@ public class TransactionService {
                 .currency(data.getCurrency())
                 .transactionType(TransactionType.fromName(data.getTransactionType()).name())
                 .status(TransactionStatus.PENDING.name())
-                .description(data.getDescription())
+                .description(parseResult.getContent()) // Store clean content without prefix
+                .purposeCode(parseResult.getPurposeCode()) // Store purpose code separately
                 .transactionAt(LocalDateTime.now())
                 .username(data.getUsername())
                 .requiresFaceAuth(requiresFaceAuth)
