@@ -23,7 +23,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   return (
     <View style={styles.headerContainer}>
       <TouchableOpacity onPress={onBackPress} style={styles.backButton}>
-        <Ionicons name="arrow-back" size={24} color="#212121" />
+        <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
       </TouchableOpacity>
       <View
         style={[
@@ -72,11 +72,11 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#212121',
+    color: '#FFFFFF',
   },
   status: {
     fontSize: 12,
-    color: '#757575',
+    color: '#E0F7F8',
   },
 });
 

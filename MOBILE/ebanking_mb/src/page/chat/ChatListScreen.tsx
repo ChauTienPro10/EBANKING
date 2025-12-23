@@ -236,27 +236,27 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 16,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#09a0a5',
     borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
+    borderBottomColor: '#078a8f',
   },
   headerTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#333333',
+    color: '#FFFFFF',
   },
   connectionStatus: {
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 12,
-    backgroundColor: '#FFEBEE',
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
   },
   connected: {
-    backgroundColor: '#E8F5E9',
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
   },
   connectionText: {
     fontSize: 12,
-    color: '#666666',
+    color: '#FFFFFF',
     fontWeight: '600',
   },
   conversationItem: {
