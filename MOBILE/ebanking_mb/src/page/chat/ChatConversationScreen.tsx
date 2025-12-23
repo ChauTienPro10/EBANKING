@@ -45,6 +45,9 @@ const ChatConversationScreen = () => {
   const [selectedMessageId, setSelectedMessageId] = useState<string | null>(
     null,
   );
+  const [deliveredMessageIds, setDeliveredMessageIds] = useState<
+    Set<string | number>
+  >(new Set());
 
   useEffect(() => {
     dispatch(setCurrentConversation(conversationId));
@@ -156,6 +159,13 @@ const ChatConversationScreen = () => {
           isRead: false,
         };
         dispatch(addMessage(optimisticMessage));
+
+        // Simulate delivery after 500ms for visual feedback
+        setTimeout(() => {
+          setDeliveredMessageIds(prev =>
+            new Set(prev).add(optimisticMessage.id),
+          );
+        }, 500);
       } else {
         // Fallback to HTTP
         const message = await ChatAPI.sendMessage(
@@ -163,6 +173,8 @@ const ChatConversationScreen = () => {
           accountNumber,
         );
         dispatch(addMessage(message));
+        // Mark as delivered immediately for HTTP
+        setDeliveredMessageIds(prev => new Set(prev).add(message.id));
       }
     } catch (error) {
       console.error('Error sending message:', error);
@@ -203,7 +215,9 @@ const ChatConversationScreen = () => {
     }
 
     // Check if this is last message in group (show seen status)
-    const prevMessageForSeen = index > 0 ? messages[index - 1] : null;
+    // Messages are sorted DESC, so check PREVIOUS message (index+1) which appears BELOW on screen
+    const prevMessageForSeen =
+      index < messages.length - 1 ? messages[index + 1] : null;
     const isLastInGroup =
       !prevMessageForSeen || prevMessageForSeen.senderId !== item.senderId;
 
@@ -213,7 +227,7 @@ const ChatConversationScreen = () => {
       prevMessageForSeen &&
       prevMessageForSeen.senderId !== accountNumber;
 
-    // Get avatar text for other user
+    // Get avatar text for other user (left side avatar)
     const getAvatarText = () => {
       if (item.senderId === otherUserId) {
         return otherUserName
@@ -221,6 +235,13 @@ const ChatConversationScreen = () => {
           : otherUserId.charAt(0).toUpperCase();
       }
       return '?';
+    };
+
+    // Get avatar text for recipient (seen indicator)
+    const getRecipientAvatarText = () => {
+      return otherUserName
+        ? otherUserName.charAt(0).toUpperCase()
+        : otherUserId.charAt(0).toUpperCase();
     };
 
     return (
@@ -241,35 +262,64 @@ const ChatConversationScreen = () => {
           ))}
 
         {/* Message bubble with tap to show timestamp */}
-        <View
-          style={
-            isMyMessage
-              ? { alignSelf: 'flex-end' }
-              : { alignSelf: 'flex-start' }
-          }
-        >
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={() =>
-              setSelectedMessageId(
-                selectedMessageId === item.id ? null : item.id,
-              )
-            }
-            style={[
-              styles.messageBubble,
-              { maxWidth: Dimensions.get('window').width * 0.75 },
-              isMyMessage ? styles.myMessage : styles.otherMessage,
-              isSystemMessage && styles.systemMessage,
-            ]}
-          >
-            <Text
-              style={[styles.messageText, isMyMessage && styles.myMessageText]}
+        <View>
+          {/* Bubble and indicator in flex row - indicator aligns with bubble bottom */}
+          <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={() =>
+                setSelectedMessageId(
+                  selectedMessageId === item.id ? null : item.id,
+                )
+              }
+              style={[
+                styles.messageBubble,
+                { maxWidth: Dimensions.get('window').width * 0.75 },
+                isMyMessage ? styles.myMessage : styles.otherMessage,
+                isSystemMessage && styles.systemMessage,
+              ]}
             >
-              {item.content}
-            </Text>
-          </TouchableOpacity>
+              <Text
+                style={[
+                  styles.messageText,
+                  isMyMessage && styles.myMessageText,
+                ]}
+              >
+                {item.content}
+              </Text>
+            </TouchableOpacity>
 
-          {/* Timestamp - show below message when selected */}
+            {/* Seen status indicator for my messages - aligned with bubble bottom */}
+            {isMyMessage && isLastInGroup && !hasReplied && (
+              <View style={styles.seenIndicator}>
+                {item.isRead ? (
+                  // STATE 3: SEEN - Show recipient avatar
+                  <View style={styles.seenAvatar}>
+                    <Text style={styles.seenAvatarText}>
+                      {getRecipientAvatarText()}
+                    </Text>
+                  </View>
+                ) : deliveredMessageIds.has(item.id) ? (
+                  // STATE 2: DELIVERED - Filled circle with white checkmark
+                  <View style={styles.deliveredIndicator}>
+                    <Text style={styles.deliveredCheckmark}>✓</Text>
+                  </View>
+                ) : (
+                  // STATE 1: SENT - White circle with colored checkmark
+                  <View style={styles.sentIndicator}>
+                    <Text style={styles.sentCheckmark}>✓</Text>
+                  </View>
+                )}
+              </View>
+            )}
+
+            {/* Invisible spacer for alignment when indicator is not shown */}
+            {isMyMessage && (!isLastInGroup || hasReplied) && (
+              <View style={{ width: 20 }} />
+            )}
+          </View>
+
+          {/* Timestamp - show below bubble when selected */}
           {selectedMessageId === item.id && (
             <Text
               style={[
@@ -281,21 +331,6 @@ const ChatConversationScreen = () => {
             </Text>
           )}
         </View>
-
-        {/* Seen status indicator for my messages */}
-        {isMyMessage && isLastInGroup && !hasReplied && (
-          <View style={styles.seenIndicator}>
-            {item.isRead ? (
-              // Show small avatar when seen
-              <View style={styles.seenAvatar}>
-                <Text style={styles.seenAvatarText}>{getAvatarText()}</Text>
-              </View>
-            ) : (
-              // Show checkmark when sent
-              <Text style={styles.sentCheckmark}>\u2713</Text>
-            )}
-          </View>
-        )}
       </View>
     );
   };
@@ -436,10 +471,15 @@ const TransactionMessageBubble = ({
             ]}
           >
             <Text style={styles.badgeText}>
-              {isReceive ? '✓ Đã nhận' : '✓ Đã chuyển'}
+              {isReceive ? 'Đã nhận' : 'Đã gửi'}
             </Text>
           </View>
           <Text style={styles.transactionTime}>
+            {new Date(message.createdAt).toLocaleDateString('vi-VN', {
+              day: '2-digit',
+              month: '2-digit',
+              year: 'numeric',
+            })}{' '}
             {new Date(message.createdAt).toLocaleTimeString('vi-VN', {
               hour: '2-digit',
               minute: '2-digit',
@@ -452,36 +492,29 @@ const TransactionMessageBubble = ({
           {metadata.amount?.toLocaleString('vi-VN')}đ
         </Text>
 
-        {/* Message content or default text */}
-        <Text style={styles.transactionDescription}>
-          {metadata.message || (isReceive ? 'Nhận tiền' : 'Chuyển tiền')}
-        </Text>
+        {/* Message content */}
+        {metadata.message && (
+          <Text style={styles.transactionDescription}>{metadata.message}</Text>
+        )}
 
         {/* From/To user info */}
         {(isReceive ? metadata.senderName : metadata.receiverName) && (
           <Text style={styles.transactionUser}>
             {isReceive
-              ? `Từ ${metadata.senderName || metadata.senderAccountNumber}`
-              : `Đến ${
+              ? `Từ: ${metadata.senderName || metadata.senderAccountNumber}`
+              : `Đến: ${
                   metadata.receiverName || metadata.receiverAccountNumber
                 }`}
           </Text>
         )}
-
-        {/* Balance */}
-        {metadata.newBalance !== undefined && (
-          <Text style={styles.transactionBalance}>
-            Số dư: {metadata.newBalance?.toLocaleString('vi-VN')}đ
-          </Text>
-        )}
       </View>
 
-      {/* Checkmark for sent transactions */}
-      {!isReceive && (
-        <View style={styles.seenIndicator}>
-          <Text style={styles.sentCheckmark}>✓</Text>
-        </View>
-      )}
+      {/* Directional arrow indicator */}
+      <View style={styles.seenIndicator}>
+        <Text style={[styles.sentCheckmark, { fontSize: 16 }]}>
+          {isReceive ? '↓' : '↑'}
+        </Text>
+      </View>
     </View>
   );
 };
@@ -497,7 +530,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   messageList: {
-    padding: 16,
+    padding: 8,
     flexGrow: 1,
   },
   messageRow: {
@@ -530,9 +563,8 @@ const styles = StyleSheet.create({
   },
   messageBubble: {
     maxWidth: '75%',
-    padding: 12,
-    borderRadius: 16,
-    marginVertical: 4,
+    padding: 8,
+    borderRadius: 10,
   },
   myMessage: {
     alignSelf: 'flex-end',
@@ -557,11 +589,9 @@ const styles = StyleSheet.create({
   messageTime: {
     fontSize: 11,
     color: '#999999',
-    marginTop: 4,
-    paddingHorizontal: 12,
   },
   myMessageTime: {
-    textAlign: 'right',
+    textAlign: 'left',
   },
   otherMessageTime: {
     textAlign: 'left',
@@ -571,28 +601,54 @@ const styles = StyleSheet.create({
     marginBottom: 4,
     alignSelf: 'flex-end',
   },
+  // STATE 1: SENT - White circle with colored checkmark
+  sentIndicator: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1.5,
+    borderColor: '#09a0a5',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   sentCheckmark: {
-    fontSize: 14,
+    fontSize: 6,
     color: '#09a0a5',
     fontWeight: 'bold',
   },
+  // STATE 2: DELIVERED - Filled circle with white checkmark
+  deliveredIndicator: {
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    backgroundColor: '#09a0a5',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  deliveredCheckmark: {
+    fontSize: 6,
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+  },
+  // STATE 3: SEEN - Recipient avatar
   seenAvatar: {
-    width: 16,
-    height: 16,
-    borderRadius: 8,
+    width: 14,
+    height: 14,
+    borderRadius: 7,
     backgroundColor: '#00BCD4',
     justifyContent: 'center',
     alignItems: 'center',
   },
   seenAvatarText: {
     color: '#FFFFFF',
-    fontSize: 8,
+    fontSize: 6,
     fontWeight: 'bold',
   },
 
   transactionBubble: {
-    maxWidth: '75%',
-    padding: 16,
+    width: 260,
+    padding: 10,
     borderRadius: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
@@ -613,8 +669,20 @@ const styles = StyleSheet.create({
   },
   badgeText: {
     color: '#FFFFFF',
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: '700',
+  },
+  badgeTextReceive: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '700',
+    textAlign: 'center',
+  },
+  badgeTextSend: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '700',
+    textAlign: 'center',
   },
   transactionAmount: {
     fontSize: 30,
@@ -660,9 +728,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   sendButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
     backgroundColor: '#09a0a5',
     justifyContent: 'center',
     alignItems: 'center',
@@ -672,7 +740,7 @@ const styles = StyleSheet.create({
   },
   sendButtonText: {
     color: '#FFFFFF',
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: 'bold',
   },
   emptyState: {

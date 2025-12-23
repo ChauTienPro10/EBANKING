@@ -6,6 +6,7 @@ import com.ebanking.transactionService.grpc.TransactionServiceGrpc;
 import com.ebanking.transactionService.service.TransactionService;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
+import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,6 +18,7 @@ import java.time.format.DateTimeParseException;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @GrpcService
 public class TransactionGrpcService extends TransactionServiceGrpc.TransactionServiceImplBase {
 
@@ -40,18 +42,30 @@ public class TransactionGrpcService extends TransactionServiceGrpc.TransactionSe
     @Override
     public void history(TransactionProto.TransHistoryRequest request, StreamObserver<TransactionProto.TransactionList> responseObserver) {
         try {
+            log.info("🔍 gRPC history called - sender: '{}', page: {}, limit: {}", 
+                     request.getSender(), request.getPage(), request.getLimit());
+            
             LocalDateTime fromDate = parseDateOrNull(request.getFromDate(), true);
             LocalDateTime toDate = parseDateOrNull(request.getToDate(), false);
-            int pageIndex = Math.max(0, request.getPage());
+            // Frontend sends 1-based page numbers, but Spring Data JPA uses 0-based indexing
+            // So we need to subtract 1 to get the correct page
+            int pageIndex = Math.max(0, request.getPage() - 1);
             String search = request.getSender().isBlank() ? null : request.getSender();
             int pageSize = request.getLimit() > 0 ? request.getLimit() : 10;
+            
+            log.info("🔍 Calling transactionService.getTransactionHistory with pageIndex: {}", pageIndex);
+            
             Page<Transaction> page = transactionService.getTransactionHistory(
                     search,
                     fromDate,
                     toDate,
                     pageIndex,
                     pageSize);
+            
             List<Transaction> transactions = page.getContent();
+            log.info("✅ Got {} transactions from service, total elements: {}", 
+                     transactions.size(), page.getTotalElements());
+            
             TransactionProto.TransactionList.Builder listBuilder = TransactionProto.TransactionList.newBuilder();
             for (Transaction tx : transactions) {
                 TransactionProto.TransferResponse protoTx = TransactionProto.TransferResponse.newBuilder()
@@ -68,9 +82,14 @@ public class TransactionGrpcService extends TransactionServiceGrpc.TransactionSe
 
                 listBuilder.addTransactions(protoTx);
             }
-            responseObserver.onNext(listBuilder.build());
+            
+            TransactionProto.TransactionList response = listBuilder.build();
+            log.info("✅ Built gRPC response with {} transactions", response.getTransactionsCount());
+            
+            responseObserver.onNext(response);
             responseObserver.onCompleted();
         } catch (Exception e) {
+            log.error("❌ Error in gRPC history: {}", e.getMessage(), e);
             responseObserver.onError(
                     Status.INTERNAL
                             .withDescription(e.getMessage())

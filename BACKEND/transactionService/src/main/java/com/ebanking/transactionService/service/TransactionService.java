@@ -280,27 +280,44 @@ public class TransactionService {
             int page,
             int size) {
 
+        log.info("🔍 getTransactionHistory called - search: '{}', fromDate: {}, toDate: {}, page: {}, size: {}", 
+                 search, fromDate, toDate, page, size);
+
         Pageable pageable = PageRequest.of(page, size, Sort.by("transactionAt").descending());
 
-        // If search is numeric, try lookup by transactionId directly
-        if (search != null && search.matches("\\d+")) {
-            Long txId = Long.parseLong(search);
-            var opt = transactionRepository.findById(txId);
-            if (opt.isPresent()) {
-                Transaction tx = opt.get();
-                boolean inRange = (fromDate == null || !tx.getTransactionAt().isBefore(fromDate))
-                        && (toDate == null || !tx.getTransactionAt().isAfter(toDate));
-                var content = inRange ? List.of(tx) : List.<Transaction>of();
-                return new PageImpl<>(content, pageable, content.size());
+        // Account numbers are typically 10-12 digits, transaction IDs are 1-9 digits
+        if (search != null && search.matches("\\d+") && search.length() < 10) {
+            log.info("🔍 Search '{}' is numeric and < 10 digits, trying transaction ID lookup", search);
+            try {
+                Long txId = Long.parseLong(search);
+                var opt = transactionRepository.findById(txId);
+                if (opt.isPresent()) {
+                    log.info("✅ Found transaction by ID: {}", txId);
+                    Transaction tx = opt.get();
+                    boolean inRange = (fromDate == null || !tx.getTransactionAt().isBefore(fromDate))
+                            && (toDate == null || !tx.getTransactionAt().isAfter(toDate));
+                    var content = inRange ? List.of(tx) : List.<Transaction>of();
+                    log.info("✅ Returning {} transaction(s) by ID", content.size());
+                    return new PageImpl<>(content, pageable, content.size());
+                } else {
+                    log.info("⚠️ Transaction ID {} not found, falling through to account number search", txId);
+                }
+            } catch (NumberFormatException e) {
+                log.warn("⚠️ Failed to parse '{}' as Long, falling through to account number search", search);
             }
-            return Page.empty(pageable);
+        } else {
+            log.info("🔍 Search '{}' is {} digits, using account number search", 
+                     search, search != null ? search.length() : 0);
         }
 
-        return transactionRepository.findByAccountNumberAndDateRange(
+        log.info("🔍 Searching by account number: '{}'", search);
+        Page<Transaction> result = transactionRepository.findByAccountNumberAndDateRange(
                 search,
                 fromDate,
                 toDate,
                 pageable);
+        log.info("✅ Account number search returned {} transaction(s)", result.getTotalElements());
+        return result;
     }
 
     public Account getAccountInfoFromAccountNumber(String accountNumber) {
