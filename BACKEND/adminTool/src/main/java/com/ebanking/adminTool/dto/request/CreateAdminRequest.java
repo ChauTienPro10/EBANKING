@@ -19,8 +19,8 @@ public class CreateAdminRequest {
     private String username;
 
     @NotBlank(message = "Password is required")
-    @Size(min = 8, message = "Password must be at least 8 characters")
-    @Pattern(regexp = "^(?=.*[A-Z])(?=.*[0-9])(?=.*[@#$%^&+=]).*$", message = "Password must contain at least one uppercase letter, one digit, and one special character (@#$%^&+=)")
+    @Size(min = 12, max = 128, message = "Password must be between 12 and 128 characters")
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{12,}$", message = "Password must contain uppercase, lowercase, digit, and special character (@$!%*?&)")
     private String password;
 
     @NotBlank(message = "Full name is required")

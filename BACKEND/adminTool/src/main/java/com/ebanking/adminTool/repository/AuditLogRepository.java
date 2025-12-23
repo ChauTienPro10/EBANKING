@@ -23,11 +23,11 @@ public interface AuditLogRepository extends JpaRepository<AuditLog, Long> {
 
     @Query("""
             SELECT a FROM AuditLog a
-            JOIN com.ebanking.adminTool.entity.Admin ad ON a.staffUsername = ad.username
+            LEFT JOIN com.ebanking.adminTool.entity.Admin ad ON a.staffUsername = ad.username
             WHERE (:success IS NULL OR a.success = :success)
               AND (:action IS NULL OR a.action = :action)
               AND (:ip IS NULL OR a.ipAddress LIKE CONCAT('%', :ip, '%'))
-              AND (:role IS NULL OR ad.role = :role)
+              AND (:role IS NULL OR ad.role = :role OR :role IS NULL)
             ORDER BY a.timestamp DESC
             """)
     Page<AuditLog> searchWithFilters(@Param("success") Boolean success,

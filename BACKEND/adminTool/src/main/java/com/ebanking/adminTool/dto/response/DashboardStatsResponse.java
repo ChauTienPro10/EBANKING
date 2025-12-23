@@ -25,6 +25,8 @@ public class DashboardStatsResponse {
     private Long lockedAccounts;
     private Long failedTransactions;
     private Long pendingTransactions;
+    private Long successfulTransactions;
+    private Long suspiciousTransactions;
 
     // Safeguard arrays for charts (never null)
     @Builder.Default
