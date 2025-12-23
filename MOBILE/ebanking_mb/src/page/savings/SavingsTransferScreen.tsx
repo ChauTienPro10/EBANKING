@@ -39,6 +39,7 @@ export default function SavingsTransferScreen() {
   const [transferring, setTransferring] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showPinModal, setShowPinModal] = useState(false);
+  const [showFullWithdrawalWarning, setShowFullWithdrawalWarning] = useState(false);
 
   useEffect(() => {
     loadAccountDetail();
@@ -104,6 +105,18 @@ export default function SavingsTransferScreen() {
 
   const handleTransfer = () => {
     if (!validateTransfer() || !account || !accountTransResponse?.accountNumber) return;
+    
+    // Check if this is a full withdrawal from savings
+    const transferAmount = parseCurrency(amount);
+    if (type === 'FROM_SAVINGS' && account && transferAmount === account.balance) {
+      setShowFullWithdrawalWarning(true);
+    } else {
+      setShowConfirmModal(true);
+    }
+  };
+
+  const handleConfirmFullWithdrawal = () => {
+    setShowFullWithdrawalWarning(false);
     setShowConfirmModal(true);
   };
 
@@ -232,10 +245,18 @@ export default function SavingsTransferScreen() {
             keyboardType="numeric"
           />
           
-          {type === 'FROM_SAVINGS' && (
-            <Text style={styles.maxAmountText}>
-              Số dư khả dụng: {formatCurrency(account.balance)}
-            </Text>
+          {type === 'FROM_SAVINGS' && account && (
+            <>
+              <Text style={styles.maxAmountText}>
+                Số dư khả dụng: {formatCurrency(account.balance)}
+              </Text>
+              <TouchableOpacity
+                style={styles.withdrawAllButton}
+                onPress={() => setAmount(account.balance.toString())}
+              >
+                <Text style={styles.withdrawAllText}>Rút tất cả</Text>
+              </TouchableOpacity>
+            </>
           )}
         </View>
 
@@ -313,6 +334,18 @@ export default function SavingsTransferScreen() {
         }}
         onCancel={() => setShowPinModal(false)}
         loading={transferring}
+      />
+
+      {/* Full Withdrawal Warning Modal */}
+      <ConfirmModal
+        visible={showFullWithdrawalWarning}
+        title="⚠️ Cảnh báo tất toán"
+        message={`Bạn đang rút toàn bộ số dư ${formatCurrency(account?.balance || 0)} từ tài khoản tiết kiệm.\n\nViệc này sẽ dẫn đến TẤT TOÁN tài khoản tiết kiệm và tài khoản sẽ bị HỦY vĩnh viễn.\n\nBạn có chắc chắn muốn tiếp tục?`}
+        confirmText="Tất toán"
+        cancelText="Hủy bỏ"
+        onConfirm={handleConfirmFullWithdrawal}
+        onCancel={() => setShowFullWithdrawalWarning(false)}
+        confirmButtonStyle={{ backgroundColor: '#F44336' }} // Red color for warning
       />
     </View>
   );
@@ -493,6 +526,19 @@ const styles = StyleSheet.create({
   transferButtonText: {
     color: '#FFFFFF',
     fontSize: 16,
+    fontWeight: '600',
+  },
+  withdrawAllButton: {
+    backgroundColor: '#FF9800',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 6,
+    alignSelf: 'center',
+    marginTop: 8,
+  },
+  withdrawAllText: {
+    color: '#FFFFFF',
+    fontSize: 14,
     fontWeight: '600',
   },
 });

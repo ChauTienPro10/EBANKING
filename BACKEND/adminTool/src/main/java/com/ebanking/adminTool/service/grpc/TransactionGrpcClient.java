@@ -13,11 +13,6 @@ import org.springframework.stereotype.Service;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 
-/**
- * gRPC Client for Transaction Service
- * Handles both Account and Transaction operations
- * Uses ResilientGrpcClient for retry logic and error handling
- */
 @Service
 @Slf4j
 public class TransactionGrpcClient {
@@ -55,11 +50,6 @@ public class TransactionGrpcClient {
         }
     }
 
-    // ==================== Account Operations ====================
-
-    /**
-     * Get account info by user ID
-     */
     public AccountProto.AccountResponse getAccountInfo(Long userId) {
         return resilientClient.executeWithRetry(() -> {
             AccountProto.GetAccountInfo request = AccountProto.GetAccountInfo.newBuilder()
@@ -69,9 +59,6 @@ public class TransactionGrpcClient {
         }, "getAccountInfo");
     }
 
-    /**
-     * Check if account exists
-     */
     public AccountProto.CheckAccountExistResponse checkAccountExist(String accountNumber) {
         return resilientClient.executeWithRetry(() -> {
             AccountProto.CheckAccountExistRequest request = AccountProto.CheckAccountExistRequest.newBuilder()
@@ -81,9 +68,6 @@ public class TransactionGrpcClient {
         }, "checkAccountExist");
     }
 
-    /**
-     * Create new account
-     */
     public AccountProto.NewAccountResponse newAccount(String accountNumber, String accountType, Long userId) {
         return resilientClient.executeWithRetry(() -> {
             AccountProto.NewAccountRequest request = AccountProto.NewAccountRequest.newBuilder()
@@ -95,11 +79,6 @@ public class TransactionGrpcClient {
         }, "newAccount");
     }
 
-    // ==================== Transaction Operations ====================
-
-    /**
-     * Get transaction history
-     */
     public TransactionProto.TransactionList getTransactionHistory(
             int page, int size, String search, String type, String status, String fromDate, String toDate) {
         return resilientClient.executeWithRetry(() -> {
@@ -107,14 +86,10 @@ public class TransactionGrpcClient {
                     .setPage(page)
                     .setLimit(size);
 
-            // The gRPC service only supports username and sender for searching.
-            // We will map the generic 'search' from FE to both fields for now.
             if (search != null && !search.isEmpty()) {
                 requestBuilder.setUsername(search);
                 requestBuilder.setSender(search);
             }
-
-            // Type and Status are not supported by the gRPC service, so we ignore them.
 
             if (fromDate != null && !fromDate.isEmpty()) {
                 requestBuilder.setFromDate(fromDate);
@@ -127,9 +102,6 @@ public class TransactionGrpcClient {
         }, "getTransactionHistory");
     }
 
-    /**
-     * Transfer money
-     */
     public TransactionProto.TransferResponse transfer(
             String senderAccountNumber,
             String receiverAccountNumber,

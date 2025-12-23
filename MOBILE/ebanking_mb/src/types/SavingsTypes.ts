@@ -36,6 +36,7 @@ export interface SavingsAccount {
   currency?: string;
   totalInterestEarned?: number;
   closedDate?: string;
+  updatedAt?: string; // For showing closure time when status is CLOSED
 }
 
 export interface SavingsTermType {

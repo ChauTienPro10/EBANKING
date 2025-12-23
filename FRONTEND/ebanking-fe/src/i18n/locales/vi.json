@@ -88,8 +88,19 @@
   },
   "transactions": {
     "search": "Tra cứu lịch sử",
+    "details": "Chi tiết giao dịch",
+    "fromAccount": "Tài khoản nguồn",
+    "toAccount": "Tài khoản nhận",
+    "amount": "Số tiền",
+    "type": "Loại giao dịch",
+    "status": "Trạng thái",
+    "timestamp": "Thời gian",
+    "description": "Nội dung",
     "filters": {
       "searchPlaceholder": "Tìm theo Mã GD, tài khoản...",
+      "searchHintWithRange": "Tìm theo Mã GD / tài khoản (từ {{from}} đến {{to}})",
+      "dateRangeHint": "Khoảng thời gian: {{from}} → {{to}}",
+      "noDateHint": "Thêm khoảng ngày để thu hẹp kết quả",
       "allTypes": "Tất cả loại GD",
       "allStatuses": "Tất cả trạng thái",
       "from": "Từ ngày",
@@ -201,12 +212,35 @@
   },
   "audit": {
     "title": "Nhật ký hoạt động",
+    "filters": {
+      "username": "Tìm theo username",
+      "status": "Trạng thái",
+      "action": "Hành động",
+      "ip": "Địa chỉ IP",
+      "role": "Vai trò",
+      "statusAll": "Tất cả",
+      "roleAll": "Tất cả vai trò",
+      "actionAll": "Tất cả hành động"
+    },
     "table": {
       "time": "Thời gian",
-      "user": "Nhân viên",
+      "staff": "Nhân viên",
       "ip": "IP",
-      "device": "Thiết bị",
-      "action": "Hành động"
+      "action": "Hành động",
+      "details": "Chi tiết",
+      "status": "Trạng thái"
+    },
+    "empty": "Không có bản ghi audit nào",
+    "detailsTitle": "Chi tiết bản ghi audit",
+    "fields": {
+      "staff": "Nhân viên",
+      "time": "Thời gian",
+      "ip": "Địa chỉ IP",
+      "action": "Hành động",
+      "targetType": "Loại đối tượng",
+      "targetId": "Mã đối tượng",
+      "status": "Trạng thái",
+      "details": "Chi tiết"
     }
   },
   "loans": {
@@ -441,6 +475,10 @@
     "create": "Tạo",
     "update": "Cập nhật",
     "saving": "Đang lưu...",
+    "pagination": {
+      "rowsPerPage": "Số dòng mỗi trang:",
+      "showing": "Hiển thị {{start}}–{{end}} trên {{total}} • Trang {{page}} / {{totalPages}}"
+    },
     "table": {
       "index": "STT",
       "noData": "Không có dữ liệu",

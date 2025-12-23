@@ -72,4 +72,14 @@ public class AuditLogger {
         logAction(staffUsername, action, targetType, targetId, details, false, ipAddress);
     }
 
+    public void logSuccess(String staffUsername, AuditAction action, String targetType,
+            String targetId, String details, String ipAddress) {
+        logSuccess(staffUsername, action.code(), targetType, targetId, details, ipAddress);
+    }
+
+    public void logFailure(String staffUsername, AuditAction action, String targetType,
+            String targetId, String details, String ipAddress) {
+        logFailure(staffUsername, action.code(), targetType, targetId, details, ipAddress);
+    }
+
 }

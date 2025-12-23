@@ -20,6 +20,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -273,7 +274,7 @@ public class TransactionService {
      * @param size
      * @return
      */
-    public Page<Transaction> getTransactionHistory(String accountNumber,
+    public Page<Transaction> getTransactionHistory(String search,
             LocalDateTime fromDate,
             LocalDateTime toDate,
             int page,
@@ -281,8 +282,22 @@ public class TransactionService {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("transactionAt").descending());
 
+        // If search is numeric, try lookup by transactionId directly
+        if (search != null && search.matches("\\d+")) {
+            Long txId = Long.parseLong(search);
+            var opt = transactionRepository.findById(txId);
+            if (opt.isPresent()) {
+                Transaction tx = opt.get();
+                boolean inRange = (fromDate == null || !tx.getTransactionAt().isBefore(fromDate))
+                        && (toDate == null || !tx.getTransactionAt().isAfter(toDate));
+                var content = inRange ? List.of(tx) : List.<Transaction>of();
+                return new PageImpl<>(content, pageable, content.size());
+            }
+            return Page.empty(pageable);
+        }
+
         return transactionRepository.findByAccountNumberAndDateRange(
-                accountNumber,
+                search,
                 fromDate,
                 toDate,
                 pageable);

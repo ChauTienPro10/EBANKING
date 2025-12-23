@@ -96,17 +96,15 @@ public class AccountService {
     }
 
     public AccountProto.CheckAccountExistResponse isAccountExist(AccountProto.CheckAccountExistRequest rq) {
-        Account account = accountRepository.findByAccountNumber(rq.getAccountNumber()).get();
-        if (account == null) {
-            return AccountProto.CheckAccountExistResponse.newBuilder()
-                    .setUserId(-1)
-                    .setExist(false)
-                    .build();
-        }
-        return AccountProto.CheckAccountExistResponse.newBuilder()
-                .setExist(true)
-                .setUserId(account.getUserId())
-                .build();
+        return accountRepository.findByAccountNumber(rq.getAccountNumber())
+                .map(account -> AccountProto.CheckAccountExistResponse.newBuilder()
+                        .setExist(true)
+                        .setUserId(account.getUserId())
+                        .build())
+                .orElseGet(() -> AccountProto.CheckAccountExistResponse.newBuilder()
+                        .setExist(false)
+                        .setUserId(-1)
+                        .build());
     }
 
 

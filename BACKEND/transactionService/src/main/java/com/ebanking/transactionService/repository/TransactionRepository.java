@@ -17,9 +17,9 @@ import java.math.BigDecimal;
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
 
         @Query("SELECT t FROM Transaction t WHERE " +
-                        "(:accountNumber IS NULL OR t.senderAccountNumber = :accountNumber OR t.receiverAccountNumber = :accountNumber) AND "
-                        +
-                        "t.transactionAt BETWEEN :fromDate AND :toDate")
+                        "(:accountNumber IS NULL OR t.senderAccountNumber = :accountNumber OR t.receiverAccountNumber = :accountNumber) AND " +
+                        "(:fromDate IS NULL OR t.transactionAt >= :fromDate) AND " +
+                        "(:toDate IS NULL OR t.transactionAt <= :toDate)")
         Page<Transaction> findByAccountNumberAndDateRange(
                         @Param("accountNumber") String accountNumber,
                         @Param("fromDate") LocalDateTime fromDate,

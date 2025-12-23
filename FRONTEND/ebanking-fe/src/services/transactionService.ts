@@ -51,7 +51,20 @@ export interface PaginatedResponse<T> {
 }
 
 // Convert backend response to normalized format
-function convertTransactionListResponse(response: TransactionListResponse): PaginatedResponse<Transaction> {
+function convertTransactionListResponse(
+  response: TransactionListResponse
+): PaginatedResponse<Transaction> {
+  const rawTotal =
+    (response as any).totalCount ??
+    (response as any).totalElements ??
+    0;
+  const total = Number.isFinite(rawTotal) ? Number(rawTotal) : 0;
+  const rawLimit = (response as any).limit ?? (response as any).size ?? 10;
+  const limit = Number.isFinite(rawLimit) && rawLimit > 0 ? Number(rawLimit) : 10;
+  const rawPage = (response as any).page ?? (response as any).number ?? 0; // backend may be 0-based
+  const pageNumber = Number.isFinite(rawPage) ? Number(rawPage) : 0;
+  const totalPages = Math.max(1, Math.ceil(total / limit || 1));
+
   return {
     content: response.transactions.map(tx => ({
       transactionId: String(tx.transactionId),
@@ -64,10 +77,10 @@ function convertTransactionListResponse(response: TransactionListResponse): Pagi
       status: tx.status,
       transactionAt: tx.transactionAt,
     })),
-    totalElements: response.totalCount,
-    totalPages: Math.ceil(response.totalCount / response.limit),
-    number: response.page,
-    size: response.limit,
+    totalElements: total,
+    totalPages,
+    number: pageNumber + 1, // convert to 1-based for UI
+    size: limit,
   };
 }
 

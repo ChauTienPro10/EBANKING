@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+import "google/protobuf/empty.proto";
+
 option java_package = "com.banking.userService.grpc";
 option java_outer_classname = "UserProto";
 
@@ -23,6 +25,11 @@ message GetUserRequestById {
 
 message UserResponse {
   User user = 1;
+}
+
+// List of users for admin queries
+message UserList {
+  repeated User users = 1;
 }
 
 message NewUserRequest {
@@ -136,4 +143,5 @@ service UserService {
   rpc getUserIdByUsername(GetUserIdByUsernameRequest) returns (GetUserIdByUsernameResponse);
   rpc updateUserInfo(User) returns (User);
   rpc verifyPassword(VerifyPasswordRequest) returns (VerifyPasswordResponse);
+  rpc getAllUsers(google.protobuf.Empty) returns (UserList);
 }
