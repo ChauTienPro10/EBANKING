@@ -58,27 +58,40 @@ public class TransactionConsumer {
     private void createTransactionMessages(TransactionEvent transaction) {
         log.info("Creating transaction messages for transaction: {}", transaction.getTransactionNumber());
         
+        // Use account numbers as user IDs if senderId/receiverId are null
+        // This is a workaround since Transaction Service sends account numbers instead of user IDs
+        String senderId = transaction.getSenderId() != null ? 
+            transaction.getSenderId() : transaction.getSenderAccountNumber();
+        String receiverId = transaction.getReceiverId() != null ? 
+            transaction.getReceiverId() : transaction.getReceiverAccountNumber();
+        
+        if (senderId == null || receiverId == null) {
+            log.error("Cannot create transaction messages: missing sender or receiver information");
+            return;
+        }
+        
         // Get or create conversation between sender and receiver
         Conversation conversation = conversationService.getOrCreateConversation(
-            transaction.getSenderId(),
-            transaction.getReceiverId()
+            senderId,
+            receiverId
         );
         
         // Create message for RECEIVER (you received money)
-        createReceiverMessage(conversation, transaction);
+        createReceiverMessage(conversation, transaction, senderId, receiverId);
         
         // Create message for SENDER (you sent money)
-        createSenderMessage(conversation, transaction);
+        createSenderMessage(conversation, transaction, senderId, receiverId);
     }
     
-    private void createReceiverMessage(Conversation conversation, TransactionEvent transaction) {
+    private void createReceiverMessage(Conversation conversation, TransactionEvent transaction, 
+                                       String senderId, String receiverId) {
         try {
             // Format message content (Momo-style)
             String content = String.format(
                 "💰 Bạn nhận được %,dđ\nTừ %s\nSố dư: %,dđ",
                 transaction.getAmount(),
-                transaction.getSenderName(),
-                transaction.getReceiverNewBalance()
+                transaction.getSenderName() != null ? transaction.getSenderName() : transaction.getSenderAccountNumber(),
+                transaction.getReceiverNewBalance() != null ? transaction.getReceiverNewBalance() : 0L
             );
             
             // Create metadata
@@ -94,11 +107,11 @@ public class TransactionConsumer {
             metadata.put("message", transaction.getMessage());
             metadata.put("timestamp", transaction.getTimestamp());
             
-            // Create chat message
+            // Create chat message - IMPORTANT: This message is FOR THE RECEIVER
             ChatMessage chatMessage = ChatMessage.builder()
                 .conversationId(conversation.getId())
                 .senderId("SYSTEM")
-                .receiverId(transaction.getReceiverId())
+                .receiverId(receiverId)  // ← RECEIVER gets this message
                 .messageType(MessageType.TRANSACTION_NOTIFICATION)
                 .content(content)
                 .transactionId(transaction.getId())
@@ -107,30 +120,31 @@ public class TransactionConsumer {
                 .build();
             
             chatMessage = messageRepository.save(chatMessage);
-            log.info("✅ Created receiver message with ID: {}", chatMessage.getId());
+            log.info("✅ Created receiver message with ID: {} for user: {}", chatMessage.getId(), receiverId);
             
             // Update conversation
             conversation.setLastMessageId(chatMessage.getId());
             conversation.setLastMessageTime(chatMessage.getCreatedAt());
             conversationRepository.save(conversation);
             
-            // Send via WebSocket
+            // Send via WebSocket to RECEIVER only
             ChatMessageDto dto = toDto(chatMessage);
-            webSocketService.sendMessageToUser(transaction.getReceiverId(), dto);
+            webSocketService.sendMessageToUser(receiverId, dto);
             
         } catch (Exception e) {
             log.error("Error creating receiver message", e);
         }
     }
     
-    private void createSenderMessage(Conversation conversation, TransactionEvent transaction) {
+    private void createSenderMessage(Conversation conversation, TransactionEvent transaction,
+                                     String senderId, String receiverId) {
         try {
             // Format message content (Momo-style)
             String content = String.format(
                 "💸 Bạn đã chuyển %,dđ\nĐến %s\nSố dư: %,dđ",
                 transaction.getAmount(),
-                transaction.getReceiverName(),
-                transaction.getSenderNewBalance()
+                transaction.getReceiverName() != null ? transaction.getReceiverName() : transaction.getReceiverAccountNumber(),
+                transaction.getSenderNewBalance() != null ? transaction.getSenderNewBalance() : 0L
             );
             
             // Create metadata
@@ -146,11 +160,11 @@ public class TransactionConsumer {
             metadata.put("message", transaction.getMessage());
             metadata.put("timestamp", transaction.getTimestamp());
             
-            // Create chat message
+            // Create chat message - IMPORTANT: This message is FOR THE SENDER
             ChatMessage chatMessage = ChatMessage.builder()
                 .conversationId(conversation.getId())
                 .senderId("SYSTEM")
-                .receiverId(transaction.getSenderId())
+                .receiverId(senderId)  // ← SENDER gets this message
                 .messageType(MessageType.TRANSACTION_NOTIFICATION)
                 .content(content)
                 .transactionId(transaction.getId())
@@ -159,11 +173,11 @@ public class TransactionConsumer {
                 .build();
             
             chatMessage = messageRepository.save(chatMessage);
-            log.info("✅ Created sender message with ID: {}", chatMessage.getId());
+            log.info("✅ Created sender message with ID: {} for user: {}", chatMessage.getId(), senderId);
             
-            // Send via WebSocket
+            // Send via WebSocket to SENDER only
             ChatMessageDto dto = toDto(chatMessage);
-            webSocketService.sendMessageToUser(transaction.getSenderId(), dto);
+            webSocketService.sendMessageToUser(senderId, dto);
             
         } catch (Exception e) {
             log.error("Error creating sender message", e);

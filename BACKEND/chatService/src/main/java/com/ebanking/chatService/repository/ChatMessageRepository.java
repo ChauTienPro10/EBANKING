@@ -21,6 +21,19 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
     );
     
     /**
+     * Find messages in a conversation where user is sender or receiver
+     */
+    @Query("SELECT m FROM ChatMessage m WHERE " +
+           "m.conversationId = :conversationId AND " +
+           "(m.senderId = :userId OR m.receiverId = :userId) " +
+           "ORDER BY m.createdAt DESC")
+    Page<ChatMessage> findByConversationIdAndUserIdOrderByCreatedAtDesc(
+        @Param("conversationId") Long conversationId,
+        @Param("userId") String userId,
+        Pageable pageable
+    );
+    
+    /**
      * Count unread messages for a user
      */
     @Query("SELECT COUNT(m) FROM ChatMessage m WHERE " +
