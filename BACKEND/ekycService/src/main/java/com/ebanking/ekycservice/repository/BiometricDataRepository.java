@@ -7,5 +7,4 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface BiometricDataRepository extends JpaRepository<BiometricData, String> {
-    Optional<BiometricData> findBySessionId(UUID sessionId);
 }

@@ -92,6 +92,7 @@ public class EkycIntegrationService {
         if ("VERIFIED".equals(userInfo.getEkycStatus())) {
             // Demo
             // Production: Change to 365 * 24 * 60 * 60 * 1000 for 1 year
+            // long fiveMinutesAgo = System.currentTimeMillis() - (24 * 60 * 60 * 1000L);
             long fiveMinutesAgo = System.currentTimeMillis() - (24 * 60 * 60 * 1000L);
             if (userInfo.getEkycVerifiedAt() != null &&
                     userInfo.getEkycVerifiedAt() > fiveMinutesAgo) {

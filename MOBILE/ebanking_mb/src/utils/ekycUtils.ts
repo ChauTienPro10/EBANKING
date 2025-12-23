@@ -20,8 +20,8 @@ export const isEkycExpired = (
     if (isNaN(timestamp)) return false;
 
     // Demo
+    // const expirationTime = 5 * 60 * 1000;
     const expirationTime = 24 * 60 * 60 * 1000;
-    // const expirationTime = 365 * 24 * 60 * 60 * 1000; // 1 year in milliseconds
 
     const now = Date.now();
     return now - timestamp > expirationTime;
