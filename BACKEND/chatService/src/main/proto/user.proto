@@ -1,0 +1,151 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+option java_package = "com.banking.userService.grpc";
+option java_outer_classname = "UserProto";
+
+message User {
+  int64 id = 1;
+  string fullName = 2;
+  string username = 3;
+  string address = 4;
+  string citizenId = 5;
+  string birthday = 6;
+  bool isMale = 7;
+  string createAt = 8;
+  repeated string roles = 9;
+  string email = 10;
+  string phone = 11;
+}
+
+// Response wrapper for single user
+message GetUserRequestById {
+  int64 userId = 1;
+}
+
+message UserResponse {
+  User user = 1;
+}
+
+// Response wrapper for multiple users
+message UserList {
+  repeated User users = 1;
+}
+
+message NewUserRequest {
+  string username = 1;
+  string password = 2;
+  string citizenId = 3;
+  string typeVerify = 4;
+}
+
+message NewUserResponse {
+  User user = 1;
+}
+
+message LoginRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message LoginResponse {
+  User user = 1;
+  string jwt = 2;
+}
+
+message UpdateUserRequest {
+  string fullName = 1;
+  string email = 2;
+  string phone = 3;
+  bool isMale = 4;
+  string address = 5;
+  string birthday = 6;
+}
+
+message CheckUserExistRequest {
+  string username = 1;
+}
+
+message CheckUserExistResponse {
+  bool isExist = 1;
+}
+
+message NewUserGenOtpResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message verifyOtpRegisterRequest {
+  string username = 1;
+  string otpValue = 2;
+}
+
+message ChangePasswordRequest {
+  string username = 1;
+  string oldPass = 2;
+  string password = 3;
+}
+
+message ChangePasswordResponse {
+  bool status = 1;
+  string description = 2;
+}
+
+message ForgotPasswordOTPRequest {
+  string username = 1;
+  string typeVerify = 2;
+}
+
+message ForgotPasswordOTPResponse {
+  bool status = 1;
+}
+
+message VerifyOtpForgotPasswordRequest {
+  string otp = 1;
+  string username = 2;
+  string password = 3;
+}
+
+message VerifyOtpForgotPasswordResponse {
+  bool status = 1;
+  string error = 2;
+}
+
+message GetUserIdByUsernameRequest {
+  string username = 1;
+}
+
+message GetUserIdByUsernameResponse {
+  float userId = 1;
+}
+
+
+message VerifyPasswordRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message VerifyPasswordResponse {
+  bool status = 1;
+}
+
+service UserService {
+  // Existing RPCs
+  rpc getUserById(GetUserRequestById) returns (UserResponse);
+  rpc newUser(NewUserRequest) returns (NewUserResponse);
+  rpc newUserGenOtp(NewUserRequest) returns (NewUserGenOtpResponse);
+  rpc login(LoginRequest) returns (LoginResponse);
+  rpc update(UpdateUserRequest) returns (User);
+  rpc CheckUserExist(CheckUserExistRequest) returns (CheckUserExistResponse);
+  rpc verifyOtpRegister(verifyOtpRegisterRequest) returns (NewUserResponse);
+  rpc changePassword(ChangePasswordRequest) returns (ChangePasswordResponse);
+  rpc forgotPasswordRequestOtp(ForgotPasswordOTPRequest) returns (ForgotPasswordOTPResponse);
+  rpc verifyOTPForgotPassword(VerifyOtpForgotPasswordRequest) returns (VerifyOtpForgotPasswordResponse);
+  rpc getUserIdByUsername(GetUserIdByUsernameRequest) returns (GetUserIdByUsernameResponse);
+  rpc updateUserInfo(User) returns (User);
+  rpc verifyPassword(VerifyPasswordRequest) returns (VerifyPasswordResponse);
+
+  // New RPC to fetch all users (for admin tool)
+  rpc getAllUsers(google.protobuf.Empty) returns (UserList);
+}
