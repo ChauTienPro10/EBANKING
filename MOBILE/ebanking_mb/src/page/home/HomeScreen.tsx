@@ -32,6 +32,9 @@ const HomeScreen: React.FC = () => {
   const notificationCount = useSelector(
     (state: RootState) => state.app.notificationCount,
   );
+  const chatUnreadCount = useSelector(
+    (state: RootState) => state.chat.unreadCount,
+  );
   const pinStatus = useSelector((state: RootState) => state.app.pinStatus);
   const modalSession = useSelector(
     (state: RootState) => state.app.modalDismissalSession,
@@ -46,7 +49,7 @@ const HomeScreen: React.FC = () => {
   const [showComingSoonModal, setShowComingSoonModal] = React.useState(false);
 
   // Custom hooks
-  const { quickActions, services, bottomTabs } = useHomeData();
+  const { quickActions, services, bottomTabs } = useHomeData(chatUnreadCount);
   const {
     balanceCardScale,
     balanceCardOpacity,

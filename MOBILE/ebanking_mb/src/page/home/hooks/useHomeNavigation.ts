@@ -72,6 +72,9 @@ export const useHomeNavigation = (
       case 'suspicious':
         navigation.navigate('SuspiciousTransactions' as never);
         break;
+      case 'chat':
+        navigation.navigate('ChatList' as never);
+        break;
       case 'bnpl':
       case 'loan':
         onShowComingSoon?.();

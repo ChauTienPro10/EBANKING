@@ -51,6 +51,9 @@ import { Stomp } from '@stomp/stompjs';
 import { useListenNotiFromFirebase } from './hooks/useListenNotiFromFirebase';
 import { setPinStatus, resetModalSession } from './store/slices/appSlice';
 import { API } from './constants/api';
+import WebSocketService from './services/WebSocketService';
+import ChatAPI from './services/ChatAPI';
+import { updateUnreadCount } from './store/chatSlice';
 
 const SOCKET_URL = `http://${HOST_SERVER}:8006/ws`;
 
@@ -59,6 +62,9 @@ const RootApp: React.FC = () => {
   const isLoggedIn = useSelector((state: RootState) => state.app.isLoggedIn);
   const loginResponse = useSelector(
     (state: RootState) => state.app.loginResponse,
+  );
+  const accountTransResponse = useSelector(
+    (state: RootState) => state.app.accountTransResponse,
   );
   const dispatch = useDispatch<AppDispatch>();
   const [deviceId, setDeviceId] = useState<string>('');
@@ -193,6 +199,38 @@ const RootApp: React.FC = () => {
 
     fetchPinStatus();
   }, [loginResponse]);
+
+  // Initialize Chat WebSocket connection
+  useEffect(() => {
+    const accountNumber = accountTransResponse?.accountNumber;
+
+    if (accountNumber) {
+      // Connect to chat WebSocket with account number
+      WebSocketService.connect(accountNumber)
+        .then(() => {
+          console.log(
+            '✅ Chat WebSocket connected with account:',
+            accountNumber,
+          );
+        })
+        .catch(error => {
+          console.error('❌ Chat WebSocket connection failed:', error);
+        });
+
+      // Load initial unread count
+      ChatAPI.getUnreadCount(accountNumber)
+        .then(count => {
+          dispatch(updateUnreadCount(count));
+        })
+        .catch(error => {
+          console.error('Error loading unread count:', error);
+        });
+
+      return () => {
+        WebSocketService.disconnect();
+      };
+    }
+  }, [accountTransResponse, dispatch]);
 
   useEffect(() => {
     if (isLoggedIn && loginResponse?.id) {

@@ -41,7 +41,7 @@ server:
 # FPT.AI Configuration
 fpt:
   ai:
-    api-key: dBB7fzYXczMXyzmgqpyP8JKsUAzwJI2w
+    api-key: fgwDYyVbshIqazKQgAhVmKEG3O5TqgPH
     ocr-url: https://api.fpt.ai/vision/idr/vnm/
     liveness-url: https://api.fpt.ai/dmp/liveness/v3
     face-match-url: https://api.fpt.ai/dmp/checkface/v1

@@ -38,6 +38,10 @@ import ChangePasswordScreen from '../page/settings/ChangePasswordScreen';
 import AboutScreen from '../page/settings/AboutScreen';
 import FAQScreen from '../page/support/FAQScreen';
 
+// Chat screens
+import ChatListScreen from '../page/chat/ChatListScreen';
+import ChatConversationScreen from '../page/chat/ChatConversationScreen';
+
 // Savings screens
 import SavingsHomeScreen from '../page/savings/SavingsHomeScreen';
 import CreateSavingsAccountScreen from '../page/savings/CreateSavingsAccountScreen';
@@ -106,6 +110,16 @@ export default function MainStack() {
       <Stack.Screen name="ScannerScreen" component={ScannerScreen} />
       <Stack.Screen name="Notifications" component={NotiScreen} />
 
+      {/* Chat Screens */}
+      <Stack.Screen name="ChatList" component={ChatListScreen} />
+      <Stack.Screen
+        name="ChatConversation"
+        component={ChatConversationScreen}
+        options={{
+          headerShown: true,
+        }}
+      />
+
       {/* eKYC Flow - Native Camera Implementation */}
       <Stack.Screen name="EKYC" component={EKYCScreen} />
       <Stack.Screen name="OCRCamera" component={OCRCameraScreen} />
@@ -119,12 +133,27 @@ export default function MainStack() {
 
       {/* Savings Account Screens */}
       <Stack.Screen name="SavingsHome" component={SavingsHomeScreen} />
-      <Stack.Screen name="CreateSavingsAccount" component={CreateSavingsAccountScreen} />
-      <Stack.Screen name="SavingsAccountDetail" component={SavingsAccountDetailScreen} />
+      <Stack.Screen
+        name="CreateSavingsAccount"
+        component={CreateSavingsAccountScreen}
+      />
+      <Stack.Screen
+        name="SavingsAccountDetail"
+        component={SavingsAccountDetailScreen}
+      />
       <Stack.Screen name="SavingsTransfer" component={SavingsTransferScreen} />
-      <Stack.Screen name="CreateSavingsRequest" component={CreateSavingsRequestScreen} />
-      <Stack.Screen name="SavingsRequestList" component={SavingsRequestListScreen} />
-      <Stack.Screen name="SavingsRequestDetail" component={SavingsRequestDetailScreen} />
+      <Stack.Screen
+        name="CreateSavingsRequest"
+        component={CreateSavingsRequestScreen}
+      />
+      <Stack.Screen
+        name="SavingsRequestList"
+        component={SavingsRequestListScreen}
+      />
+      <Stack.Screen
+        name="SavingsRequestDetail"
+        component={SavingsRequestDetailScreen}
+      />
     </Stack.Navigator>
   );
 }

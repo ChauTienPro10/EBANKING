@@ -40,10 +40,11 @@ public class ChatController {
     public ResponseEntity<Page<ChatMessageDto>> getMessages(
             @PathVariable Long conversationId,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
-        log.info("GET /api/chat/conversations/{}/messages - page: {}, size: {}", 
-                conversationId, page, size);
-        return ResponseEntity.ok(chatService.getMessages(conversationId, page, size));
+            @RequestParam(defaultValue = "20") int size,
+            @RequestHeader("X-User-Id") String userId) {
+        log.info("GET /api/chat/conversations/{}/messages - userId: {}, page: {}, size: {}", 
+                conversationId, userId, page, size);
+        return ResponseEntity.ok(chatService.getMessages(conversationId, userId, page, size));
     }
     
     /**

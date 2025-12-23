@@ -65,12 +65,15 @@ public class ChatService {
     
     /**
      * Get messages in a conversation with pagination
+     * Only returns messages that the user is involved in (as sender or receiver)
      */
-    public Page<ChatMessageDto> getMessages(Long conversationId, int page, int size) {
-        log.info("Getting messages for conversation: {}, page: {}, size: {}", conversationId, page, size);
+    public Page<ChatMessageDto> getMessages(Long conversationId, String userId, int page, int size) {
+        log.info("Getting messages for conversation: {}, userId: {}, page: {}, size: {}", 
+                conversationId, userId, page, size);
         
         Pageable pageable = PageRequest.of(page, size);
-        return messageRepository.findByConversationIdOrderByCreatedAtDesc(conversationId, pageable)
+        return messageRepository.findByConversationIdAndUserIdOrderByCreatedAtDesc(
+                conversationId, userId, pageable)
             .map(this::toDto);
     }
     

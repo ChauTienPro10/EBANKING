@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import Colors from '../../../constants/color';
 import { ActionItemType, ServiceItemType, NavigationTab } from '../types';
 
-export const useHomeData = () => {
+export const useHomeData = (unreadCount: number = 0) => {
   const { t } = useTranslation();
 
   const quickActions: ActionItemType[] = useMemo(
@@ -72,11 +72,11 @@ export const useHomeData = () => {
         tag: null,
       },
       {
-        id: 'loan',
-        title: t('action_grid.loan'),
-        icon: 'trending-up',
+        id: 'chat',
+        title: t('action_grid.chat'),
+        icon: 'chatbubbles',
         color: Colors.main_bule,
-        tag: null,
+        tag: unreadCount > 0 ? unreadCount.toString() : null,
       },
     ],
     [t],
