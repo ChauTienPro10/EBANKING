@@ -29,6 +29,39 @@ const ChatListScreen = () => {
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
+  // Generate consistent color based on string
+  const getAvatarColor = (text: string): string => {
+    const colors = [
+      '#FF6B6B',
+      '#4ECDC4',
+      '#45B7D1',
+      '#FFA07A',
+      '#98D8C8',
+      '#F7DC6F',
+      '#BB8FCE',
+      '#85C1E2',
+      '#F8B739',
+      '#52B788',
+      '#FF8C94',
+      '#A8DADC',
+      '#E76F51',
+      '#2A9D8F',
+      '#E9C46A',
+      '#F4A582',
+      '#8E7CC3',
+      '#6C5B7B',
+      '#C06C84',
+      '#F67280',
+    ];
+
+    let hash = 0;
+    for (let i = 0; i < text.length; i++) {
+      hash = text.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const index = Math.abs(hash) % colors.length;
+    return colors[index];
+  };
+
   useFocusEffect(
     React.useCallback(() => {
       loadConversations();
@@ -100,7 +133,16 @@ const ChatListScreen = () => {
       style={styles.conversationItem}
       onPress={() => handleConversationPress(item)}
     >
-      <View style={styles.avatar}>
+      <View
+        style={[
+          styles.avatar,
+          {
+            backgroundColor: getAvatarColor(
+              item.otherUserId || item.otherUserName || '?',
+            ),
+          },
+        ]}
+      >
         <Text style={styles.avatarText}>
           {item.otherUserName?.charAt(0).toUpperCase() || '?'}
         </Text>
@@ -228,7 +270,6 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: '#4CAF50',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
