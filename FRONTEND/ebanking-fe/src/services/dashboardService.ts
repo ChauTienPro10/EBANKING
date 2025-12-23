@@ -3,7 +3,7 @@ import type { ApiResponse } from './fetch';
 import { ENDPOINTS } from './URL';
 import { getRecentNotifications } from './notificationService';
 
-// Corresponds to actual DashboardStatsResponse from backend
+
 export interface DashboardStats {
   totalUsers: number;
   totalAccounts: number;
@@ -15,12 +15,13 @@ export interface DashboardStats {
   lockedAccounts: number;
   failedTransactions: number;
   pendingTransactions: number;
-  suspiciousTransactions: number; // Add this field
+  successfulTransactions: number;
+  suspiciousTransactions: number;
   dailyTransactionCounts: { date: string; count: number }[];
   accountTypeDistribution: { type: string; count: number }[];
 }
 
-// Enhanced dashboard data with notifications
+//  notifications
 export interface EnhancedDashboardData {
   stats: DashboardStats;
   recentNotifications: Array<{
@@ -40,7 +41,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     const response: ApiResponse<DashboardStats> = await fetchClient.get(
       ENDPOINTS.DASHBOARD_STATS
     );
-    
+
     return response.data;
   } catch (error) {
     console.error('Failed to fetch dashboard stats:', error);
@@ -55,7 +56,7 @@ export async function getEnhancedDashboardData(): Promise<EnhancedDashboardData>
       getDashboardStats(),
       getRecentNotifications(5)
     ]);
-    
+
     return {
       stats,
       recentNotifications

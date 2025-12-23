@@ -57,12 +57,14 @@ export function StaffPage() {
         password: String(formData.password || ""),
       });
       toast({ type: "success", title: "Created successfully" });
+      setCreateModalOpen(false);  // Close modal on success
     } catch (error) {
       toast({
         type: "error",
         title: "Failed to create staff",
         description: (error as Error).message,
       });
+      // Modal stays open on error so user can retry
     }
   };
 
@@ -255,7 +257,13 @@ export function StaffPage() {
         fields={[
           { name: "username", label: "Username", required: true },
           { name: "fullName", label: "Full Name", required: true },
-          { name: "password", label: "Password", required: true },
+          {
+            name: "password",
+            label: "Password",
+            type: "password",
+            required: true,
+            helperText: "12-128 chars: lowercase, uppercase, digit, special (@$!%*?&)"
+          },
           {
             name: "role",
             label: "Role",
