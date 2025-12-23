@@ -22,9 +22,10 @@ public interface ConversationRepository extends JpaRepository<Conversation, Long
     
     /**
      * Find all conversations for a user, ordered by last message time
+     * Use createdAt as fallback when lastMessageTime is null
      */
     @Query("SELECT c FROM Conversation c WHERE " +
            "c.user1Id = :userId OR c.user2Id = :userId " +
-           "ORDER BY c.lastMessageTime DESC")
+           "ORDER BY COALESCE(c.lastMessageTime, c.createdAt) DESC")
     List<Conversation> findByUserId(@Param("userId") String userId);
 }

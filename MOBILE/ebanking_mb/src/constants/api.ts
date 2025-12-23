@@ -1,4 +1,4 @@
-export const HOST_SERVER = '192.168.1.2';
+export const HOST_SERVER = '192.168.0.185';
 
 export const BASE_URL = `http://${HOST_SERVER}:8000/`;
 export const FCM_SERVICE = `http://${HOST_SERVER}:8004/`;
@@ -94,7 +94,7 @@ export const API = {
   TRANSFER_FROM_SAVINGS: `${AUTH_SERVICE}/savings-transfers/savings-to-payment`,
   CREATE_SAVINGS_REQUEST: `${AUTH_SERVICE}/transaction-requests/cash`,
   GET_SAVINGS_REQUESTS: `${AUTH_SERVICE}/transaction-requests/user/{userId}`,
-  GET_SAVINGS_REQUEST_DETAIL: `${AUTH_SERVICE}/savings/request/{requestId}`,  
+  GET_SAVINGS_REQUEST_DETAIL: `${AUTH_SERVICE}/savings/request/{requestId}`,
   CANCEL_SAVINGS_REQUEST: `${AUTH_SERVICE}/savings/request/{requestId}/cancel`,
 
   // Phone Top-up APIs
