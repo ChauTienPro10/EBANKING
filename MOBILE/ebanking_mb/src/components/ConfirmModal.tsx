@@ -5,6 +5,7 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
+  ViewStyle,
 } from 'react-native';
 
 interface ConfirmModalProps {
@@ -15,6 +16,8 @@ interface ConfirmModalProps {
   cancelText?: string;
   onConfirm: () => void;
   onCancel: () => void;
+  confirmButtonStyle?: ViewStyle;
+  cancelButtonStyle?: ViewStyle;
 }
 
 export default function ConfirmModal({
@@ -25,6 +28,8 @@ export default function ConfirmModal({
   cancelText = 'Hủy',
   onConfirm,
   onCancel,
+  confirmButtonStyle,
+  cancelButtonStyle,
 }: ConfirmModalProps) {
   return (
     <Modal
@@ -40,14 +45,14 @@ export default function ConfirmModal({
           
           <View style={styles.buttonContainer}>
             <TouchableOpacity
-              style={[styles.button, styles.cancelButton]}
+              style={[styles.button, styles.cancelButton, cancelButtonStyle]}
               onPress={onCancel}
             >
               <Text style={styles.cancelText}>{cancelText}</Text>
             </TouchableOpacity>
             
             <TouchableOpacity
-              style={[styles.button, styles.confirmButton]}
+              style={[styles.button, styles.confirmButton, confirmButtonStyle]}
               onPress={onConfirm}
             >
               <Text style={styles.confirmText}>{confirmText}</Text>

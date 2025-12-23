@@ -110,7 +110,6 @@ public class SavingsTransferService {
         // Perform transfer
         savingsAccount.setBalance(savingsAccount.getBalance().subtract(request.getAmount()));
         savingsAccountRepository.save(savingsAccount);
-
         paymentAccount.setBalance(paymentAccount.getBalance().add(request.getAmount()));
         paymentAccount.setLastTransactionAt(LocalDateTime.now());
         accountRepository.save(paymentAccount);
@@ -129,6 +128,11 @@ public class SavingsTransferService {
                 .build();
 
         transactionRepository.save(transaction);
+        if (savingsAccount.getBalance().subtract(request.getAmount()).compareTo(BigDecimal.ZERO) == 0) {
+            savingsAccount.setStatus("CLOSE");
+            savingsAccount.setUpdatedAt(LocalDateTime.now());
+            savingsAccountRepository.save(savingsAccount);
+        }
         log.info("Transfer completed successfully");
     }
 }

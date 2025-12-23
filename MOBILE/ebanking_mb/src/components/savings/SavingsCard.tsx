@@ -24,6 +24,16 @@ export default function SavingsCard({ account, onPress }: SavingsCardProps) {
     return new Date(dateString).toLocaleDateString('vi-VN');
   };
 
+  const formatDateTime = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('vi-VN', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'ACTIVE':
@@ -50,9 +60,13 @@ export default function SavingsCard({ account, onPress }: SavingsCardProps) {
     }
   };
 
+  // Use gray color scheme for closed accounts
+  const isClosedAccount = account.status === 'CLOSED';
+  const cardBackgroundColor = isClosedAccount ? '#9E9E9E' : '#1976D2';
+
   return (
     <TouchableOpacity onPress={onPress} style={styles.container}>
-      <View style={styles.cardContent}>
+      <View style={[styles.cardContent, { backgroundColor: cardBackgroundColor }]}>
         <View style={styles.header}>
           <Text style={styles.accountName}>
             {account.accountName || `Tài khoản tiết kiệm ${account.termMonths} tháng`}
@@ -72,8 +86,19 @@ export default function SavingsCard({ account, onPress }: SavingsCardProps) {
         </Text>
 
         <View style={styles.balanceContainer}>
-          <Text style={styles.balanceLabel}>Số dư hiện tại</Text>
-          <Text style={styles.balance}>{formatCurrency(account.balance)}</Text>
+          {isClosedAccount ? (
+            <>
+              <Text style={styles.balanceLabel}>Thời gian tất toán</Text>
+              <Text style={styles.closureTime}>
+                {account.updatedAt ? formatDateTime(account.updatedAt) : 'Không xác định'}
+              </Text>
+            </>
+          ) : (
+            <>
+              <Text style={styles.balanceLabel}>Số dư hiện tại</Text>
+              <Text style={styles.balance}>{formatCurrency(account.balance)}</Text>
+            </>
+          )}
         </View>
 
         <View style={styles.detailsContainer}>
@@ -118,7 +143,6 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
   },
   cardContent: {
-    backgroundColor: '#1976D2',
     padding: 20,
     borderRadius: 16,
   },
@@ -160,6 +184,11 @@ const styles = StyleSheet.create({
   balance: {
     fontSize: 24,
     fontWeight: 'bold',
+    color: '#FFFFFF',
+  },
+  closureTime: {
+    fontSize: 18,
+    fontWeight: '600',
     color: '#FFFFFF',
   },
   detailsContainer: {

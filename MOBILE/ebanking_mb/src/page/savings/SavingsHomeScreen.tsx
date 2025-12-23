@@ -71,7 +71,15 @@ export default function SavingsHomeScreen() {
   };
 
   const calculateTotalBalance = () => {
-    return savingsAccounts.reduce((total, account) => total + account.balance, 0);
+    // Only include active and matured accounts in total balance calculation
+    // Exclude CLOSED accounts since they show closure time instead of balance
+    return savingsAccounts
+      .filter(account => account.status !== 'CLOSED')
+      .reduce((total, account) => total + account.balance, 0);
+  };
+
+  const getActiveAccountsCount = () => {
+    return savingsAccounts.filter(account => account.status !== 'CLOSED').length;
   };
 
   const formatCurrency = (amount: number) => {
@@ -98,7 +106,10 @@ export default function SavingsHomeScreen() {
             {formatCurrency(calculateTotalBalance())}
           </Text>
           <Text style={styles.accountCount}>
-            {savingsAccounts.length} tài khoản
+            {getActiveAccountsCount()} tài khoản đang hoạt động
+            {savingsAccounts.filter(acc => acc.status === 'CLOSED').length > 0 && 
+              ` • ${savingsAccounts.filter(acc => acc.status === 'CLOSED').length} đã đóng`
+            }
           </Text>
         </View>
 
@@ -139,13 +150,38 @@ export default function SavingsHomeScreen() {
               </Text>
             </View>
           ) : (
-            savingsAccounts.map((account) => (
-              <SavingsCard
-                key={account.id}
-                account={account}
-                onPress={() => handleAccountPress(account.accountNumber)}
-              />
-            ))
+            <>
+              {/* Active and Matured Accounts */}
+              {savingsAccounts
+                .filter(account => account.status !== 'CLOSED')
+                .map((account) => (
+                  <SavingsCard
+                    key={account.id}
+                    account={account}
+                    onPress={() => handleAccountPress(account.accountNumber)}
+                  />
+                ))}
+              
+              {/* Closed Accounts Section */}
+              {savingsAccounts.filter(account => account.status === 'CLOSED').length > 0 && (
+                <>
+                  <View style={styles.closedAccountsHeader}>
+                    <Text style={styles.closedAccountsTitle}>
+                      Tài khoản đã đóng ({savingsAccounts.filter(acc => acc.status === 'CLOSED').length})
+                    </Text>
+                  </View>
+                  {savingsAccounts
+                    .filter(account => account.status === 'CLOSED')
+                    .map((account) => (
+                      <SavingsCard
+                        key={account.id}
+                        account={account}
+                        onPress={() => handleAccountPress(account.accountNumber)}
+                      />
+                    ))}
+                </>
+              )}
+            </>
           )}
         </View>
       </ScrollView>
@@ -246,5 +282,18 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#999999',
     textAlign: 'center',
+  },
+  closedAccountsHeader: {
+    marginHorizontal: 16,
+    marginTop: 24,
+    marginBottom: 12,
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#E0E0E0',
+  },
+  closedAccountsTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#666666',
   },
 });

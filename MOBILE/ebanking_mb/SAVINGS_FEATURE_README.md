@@ -67,9 +67,14 @@ Backend (SavingsAccountDto) → Frontend (SavingsAccount)
 - closedDate → closedDate (optional)
 - totalInterestEarned → totalInterestEarned (optional)
 - createdAt → (not mapped to frontend)
-- updatedAt → (not mapped to frontend)
+- updatedAt → updatedAt (for showing closure time when CLOSED)
 - [generated] → accountName (e.g., "Tài khoản tiết kiệm 12 tháng")
 ```
+
+#### Special Display Logic:
+- **CLOSED Accounts**: Instead of showing balance, displays closure time from `updatedAt` field
+- **Active/Matured Accounts**: Shows current balance as normal
+- **Closure Time Format**: Displays date and time in Vietnamese locale (dd/mm/yyyy hh:mm)
 
 ### Create Savings Account Request
 Frontend đã được cập nhật để gửi đúng cấu trúc request theo backend:
@@ -219,6 +224,19 @@ Hệ thống đã được tăng cường bảo mật với PIN verification ho�
 
 ### UI/UX Improvements
 Hệ thống đã được cập nhật để cải thiện trải nghiệm người dùng:
+
+#### Full Withdrawal Warning
+- **Cảnh báo tất toán**: Khi người dùng rút toàn bộ số dư từ tài khoản tiết kiệm, hệ thống hiển thị popup cảnh báo
+- **Thông báo rõ ràng**: Giải thích rằng việc rút hết sẽ dẫn đến tất toán và hủy tài khoản vĩnh viễn
+- **Nút "Rút tất cả"**: Thêm nút tiện ích để người dùng nhanh chóng chọn rút toàn bộ số dư
+- **Màu cảnh báo**: Nút xác nhận tất toán có màu đỏ để nhấn mạnh tính nghiêm trọng
+
+#### Closed Account Handling
+- **Separate Display**: CLOSED accounts are grouped separately from active accounts
+- **Excluded from Total**: Closed accounts don't contribute to total balance calculation
+- **Clear Labeling**: Shows count of active vs closed accounts
+- **Visual Separation**: Border line separates active and closed account sections
+- **Gray Color Scheme**: Closed accounts use gray background instead of blue to indicate inactive status
 
 #### Toast Notifications
 - **Thay thế Alert**: Tất cả `Alert.alert()` đã được thay thế bằng `Toast` notifications
@@ -497,6 +515,17 @@ Backend cần implement các API endpoints đã liệt kê ở trên với:
 - [x] **COMPLETED: Added proper error handling for incorrect PIN**
 - [x] **COMPLETED: Added loading states during PIN verification**
 - [x] **COMPLETED: Updated all screens to use new PIN validation flow**
+- [x] **COMPLETED: Added full withdrawal warning for account closure**
+- [x] **COMPLETED: Enhanced ConfirmModal with custom button styles**
+- [x] **COMPLETED: Added "Rút tất cả" convenience button for full withdrawals**
+- [x] **COMPLETED: Added closure time display for CLOSED savings accounts**
+- [x] **COMPLETED: Updated SavingsCard to show updatedAt instead of balance for closed accounts**
+- [x] **COMPLETED: Enhanced date formatting with time display for closure information**
+- [x] **COMPLETED: Updated SavingsHomeScreen to properly handle closed accounts**
+- [x] **COMPLETED: Excluded closed accounts from total balance calculation**
+- [x] **COMPLETED: Added visual separation between active and closed accounts**
+- [x] **COMPLETED: Added gray color scheme for closed savings account cards**
+- [x] **COMPLETED: Visual distinction between active (blue) and closed (gray) accounts**
 - [x] All TypeScript errors resolved
 - [x] All runtime errors resolved
 

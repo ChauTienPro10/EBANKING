@@ -34,6 +34,7 @@ export const transformSavingsAccountDto = (dto: SavingsAccountDto): SavingsAccou
     currency: dto.currency,
     totalInterestEarned: dto.totalInterestEarned,
     closedDate: dto.closedDate,
+    updatedAt: dto.updatedAt, // Include updatedAt for closure time
   };
 };
 
