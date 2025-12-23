@@ -462,6 +462,32 @@ public class EkycService {
             }
             sessionRepository.save(session);
 
+            // Clean up old COMPLETED sessions if successful
+            if (isMatched) {
+                try {
+                    // Find all old COMPLETED sessions for this user (excluding current session)
+                    java.util.List<EkycSession> oldSessions = sessionRepository
+                            .findByUserIdAndStatusAndIdNot(
+                                    session.getUserId(),
+                                    EkycStatus.COMPLETED,
+                                    session.getId()
+                            );
+                    
+                    if (!oldSessions.isEmpty()) {
+                        log.info("Cleaning up {} old COMPLETED eKYC sessions for user {}", 
+                                oldSessions.size(), session.getUserId());
+                        
+                        // Delete old sessions (cascade will delete BiometricData and DocumentInfo)
+                        sessionRepository.deleteAll(oldSessions);
+                        
+                        log.info("Successfully cleaned up old eKYC sessions");
+                    }
+                } catch (Exception e) {
+                    log.error("Failed to cleanup old eKYC sessions: {}", e.getMessage());
+                    // Don't fail the entire eKYC process if cleanup fails
+                }
+            }
+
             // Notify UserService if successful
             if (isMatched) {
                 try {

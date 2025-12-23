@@ -12,4 +12,7 @@ import java.util.UUID;
 public interface EkycSessionRepository extends JpaRepository<EkycSession, UUID> {
 
     Optional<EkycSession> findByUserIdAndStatus(Long userId, com.ebanking.ekycservice.constant.EkycStatus status);
+    
+    // Find all COMPLETED sessions for a user except the specified session (for cleanup)
+    java.util.List<EkycSession> findByUserIdAndStatusAndIdNot(Long userId, com.ebanking.ekycservice.constant.EkycStatus status, UUID excludeSessionId);
 }
