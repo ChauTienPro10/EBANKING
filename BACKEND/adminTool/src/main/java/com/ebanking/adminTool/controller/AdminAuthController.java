@@ -39,16 +39,11 @@ public class AdminAuthController {
     private final AuditLogger auditLogger;
     private final LoginRateLimiterService rateLimiter;
 
-    /**
-     * Admin login endpoint
-     * POST /api/admin/auth/login
-     * FIXED: Now passes IP address to audit logger
-     */
     @PostMapping("/login")
     @PermitAll
     public ResponseEntity<AdminLoginResponse> login(@RequestBody AdminLoginRequest request,
             HttpServletRequest httpRequest) {
-        String ip = httpRequest.getRemoteAddr();
+        String ip = getClientIp(httpRequest);
         rateLimiter.checkAllowed(ip);
         log.info("Admin login request: {} from {}", request.getUsername(), ip);
 
@@ -58,8 +53,23 @@ public class AdminAuthController {
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             rateLimiter.onFailure(ip);
-            throw e; // Let GlobalExceptionHandler handle it
+            throw e;
         }
+    }
+
+    private String getClientIp(HttpServletRequest request) {
+        String header = request.getHeader("X-Forwarded-For");
+        if (header != null && !header.isEmpty() && !"unknown".equalsIgnoreCase(header)) {
+            int commaIndex = header.indexOf(',');
+            return (commaIndex != -1 ? header.substring(0, commaIndex) : header).trim();
+        }
+
+        header = request.getHeader("X-Real-IP");
+        if (header != null && !header.isEmpty() && !"unknown".equalsIgnoreCase(header)) {
+            return header.trim();
+        }
+
+        return request.getRemoteAddr();
     }
 
     @PostMapping("/refresh")

@@ -2,6 +2,8 @@ package com.ebanking.adminTool.controller;
 
 import com.ebanking.adminTool.dto.AccountDto;
 import com.ebanking.adminTool.service.AccountManagementService;
+import com.ebanking.adminTool.utils.AuditAction;
+import com.ebanking.adminTool.utils.AuditLogger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +23,7 @@ import java.util.Optional;
 public class AccountManagementController {
 
     private final AccountManagementService accountManagementService;
+    private final AuditLogger auditLogger;
 
     @GetMapping
     public ResponseEntity<List<AccountDto>> getAllAccounts() {
@@ -193,6 +196,26 @@ public class AccountManagementController {
         Map<String, Object> response = new HashMap<>();
         response.put("success", locked);
         response.put("message", locked ? "Account locked successfully" : "Failed to lock account");
+
+        String targetId = String.valueOf(accountId);
+        String details = "reason=" + reason + (notes != null ? ", notes=" + notes : "");
+        if (locked) {
+            auditLogger.logSuccess(
+                    lockedBy,
+                    AuditAction.LOCK_ACCOUNT,
+                    "ACCOUNT",
+                    targetId,
+                    details,
+                    null);
+        } else {
+            auditLogger.logFailure(
+                    lockedBy,
+                    AuditAction.LOCK_ACCOUNT,
+                    "ACCOUNT",
+                    targetId,
+                    "Failed to lock account. " + details,
+                    null);
+        }
         
         return locked ? ResponseEntity.ok(response) : ResponseEntity.badRequest().body(response);
     }
@@ -220,6 +243,25 @@ public class AccountManagementController {
         Map<String, Object> response = new HashMap<>();
         response.put("success", unlocked);
         response.put("message", unlocked ? "Account unlocked successfully" : "Failed to unlock account");
+
+        String targetId = String.valueOf(accountId);
+        if (unlocked) {
+            auditLogger.logSuccess(
+                    unlockedBy,
+                    AuditAction.UNLOCK_ACCOUNT,
+                    "ACCOUNT",
+                    targetId,
+                    "Account unlocked",
+                    null);
+        } else {
+            auditLogger.logFailure(
+                    unlockedBy,
+                    AuditAction.UNLOCK_ACCOUNT,
+                    "ACCOUNT",
+                    targetId,
+                    "Failed to unlock account",
+                    null);
+        }
         
         return unlocked ? ResponseEntity.ok(response) : ResponseEntity.badRequest().body(response);
     }

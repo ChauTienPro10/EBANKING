@@ -10,27 +10,31 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 
-/**
- * Repository for Audit Log
- */
 @Repository
 public interface AuditLogRepository extends JpaRepository<AuditLog, Long> {
 
-    /**
-     * Find audit logs by staff username
-     */
-    Page<AuditLog> findByStaffUsername(String staffUsername, Pageable pageable);
+    @Query("SELECT a FROM AuditLog a WHERE LOWER(a.staffUsername) LIKE LOWER(CONCAT('%', :staffUsername, '%')) ORDER BY a.timestamp DESC")
+    Page<AuditLog> findByStaffUsername(@Param("staffUsername") String staffUsername, Pageable pageable);
 
-    /**
-     * Find audit logs by timestamp range
-     */
     Page<AuditLog> findByTimestampBetween(LocalDateTime start, LocalDateTime end, Pageable pageable);
 
-    /**
-     * Find recent audit logs
-     */
     @Query("SELECT a FROM AuditLog a ORDER BY a.timestamp DESC")
     Page<AuditLog> findRecentLogs(Pageable pageable);
+
+    @Query("""
+            SELECT a FROM AuditLog a
+            JOIN com.ebanking.adminTool.entity.Admin ad ON a.staffUsername = ad.username
+            WHERE (:success IS NULL OR a.success = :success)
+              AND (:action IS NULL OR a.action = :action)
+              AND (:ip IS NULL OR a.ipAddress LIKE CONCAT('%', :ip, '%'))
+              AND (:role IS NULL OR ad.role = :role)
+            ORDER BY a.timestamp DESC
+            """)
+    Page<AuditLog> searchWithFilters(@Param("success") Boolean success,
+                                     @Param("action") String action,
+                                     @Param("ip") String ip,
+                                     @Param("role") String role,
+                                     Pageable pageable);
 
     /**
      * Count login attempts by action, success status and timestamp range

@@ -85,8 +85,8 @@ public class FirebaseNotificationService {
             httpUltils.post(url, request, Void.class);
             log.info("Push notification to user: {} - Title: {}", request.getUsername(), request.getTitle());
         } catch (Exception e) {
-            log.error("Error pushing notification to user: {}", e.getMessage(), e);
-            throw new RuntimeException("Failed to push notification to user", e);
+            log.warn("Failed to push notification to user {}: {}. This does not affect main flow.",
+                    request.getUsername(), e.getMessage());
         }
     }
 

@@ -3,6 +3,8 @@ package com.ebanking.adminTool.controller;
 import com.ebanking.adminTool.entity.Admin;
 import com.ebanking.adminTool.exception.BusinessException;
 import com.ebanking.adminTool.repository.AdminRepository;
+import com.ebanking.adminTool.utils.AuditAction;
+import com.ebanking.adminTool.utils.AuditLogger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -25,6 +27,7 @@ public class AdminSetupController {
 
     private final AdminRepository adminRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuditLogger auditLogger;
 
     /**
      * Create a new admin account
@@ -54,6 +57,13 @@ public class AdminSetupController {
 
         adminRepository.save(admin);
         log.info("Admin created: {}", username);
+        auditLogger.logSuccess(
+                "SYSTEM_SETUP",
+                AuditAction.CREATE_ADMIN,
+                "ADMIN",
+                username,
+                "Initial admin created via setup API",
+                null);
         return ResponseEntity.ok("Admin created successfully");
     }
 }
