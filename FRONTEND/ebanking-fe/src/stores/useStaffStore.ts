@@ -77,6 +77,7 @@ export const useStaffStore = create<StaffStore>((set, get) => ({
         password: payload.password,
       });
       await get().fetchStaff();
+      set({ loading: false });  // Reset loading on success
     } catch (error) {
       set({ error: (error as Error).message, loading: false });
       throw error;

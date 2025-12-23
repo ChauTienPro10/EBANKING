@@ -21,9 +21,10 @@ import { useTranslation } from "react-i18next";
 interface FieldConfig {
   name: string;
   label: string;
-  type?: "text" | "email" | "tel" | "number" | "select";
+  type?: "text" | "email" | "tel" | "number" | "select" | "password";
   options?: Array<{ value: string; label: string }>;
   required?: boolean;
+  helperText?: string;
 }
 
 interface CRUDModalProps {
@@ -56,15 +57,11 @@ export function CRUDModal({
     }
   }, [open, initialData]);
 
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      await onSubmit(formData);
-      onOpenChange(false);
-      setFormData({});
-    } catch {
-      // Error handling is done in the parent component
-    }
+    await onSubmit(formData);
+    // Parent component handles modal closing and state management
   };
 
   const handleChange = (name: string, value: unknown) => {
@@ -105,13 +102,20 @@ export function CRUDModal({
                   </SelectContent>
                 </Select>
               ) : (
-                <Input
-                  id={field.name}
-                  type={field.type || "text"}
-                  value={String(formData[field.name] || "")}
-                  onChange={(e) => handleChange(field.name, e.target.value)}
-                  required={field.required}
-                />
+                <>
+                  <Input
+                    id={field.name}
+                    type={field.type || "text"}
+                    value={String(formData[field.name] || "")}
+                    onChange={(e) => handleChange(field.name, e.target.value)}
+                    required={field.required}
+                  />
+                  {field.helperText && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {field.helperText}
+                    </p>
+                  )}
+                </>
               )}
             </div>
           ))}
@@ -128,8 +132,8 @@ export function CRUDModal({
               {loading
                 ? t("common.saving")
                 : initialData
-                ? t("common.update")
-                : t("common.create")}
+                  ? t("common.update")
+                  : t("common.create")}
             </Button>
           </div>
         </form>
