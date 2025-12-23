@@ -25,6 +25,9 @@ import TransactionMessageBubble from './components/TransactionMessageBubble';
 import ChatHeader from './components/ChatHeader';
 import ChatInputBar from './components/ChatInputBar';
 import EmptyState from './components/EmptyState';
+import QuickActionsBar from './components/QuickActionsBar';
+import PaymentReminderModal from './components/PaymentReminderModal';
+import QuickGiftModal from './components/QuickGiftModal';
 
 // Import utilities
 import {
@@ -62,6 +65,9 @@ const ChatConversationScreen = () => {
     Set<string | number>
   >(new Set());
   const [keyboardVisible, setKeyboardVisible] = useState(false);
+  const [showPaymentReminderModal, setShowPaymentReminderModal] =
+    useState(false);
+  const [showQuickGiftModal, setShowQuickGiftModal] = useState(false);
 
   useEffect(() => {
     dispatch(setCurrentConversation(conversationId));
@@ -71,6 +77,10 @@ const ChatConversationScreen = () => {
     // Set custom header
     navigation.setOptions({
       headerTitle: '',
+      headerStyle: {
+        backgroundColor: '#09a0a5',
+      },
+      headerTintColor: '#FFFFFF',
       headerLeft: () => (
         <ChatHeader
           otherUserName={otherUserName}
@@ -147,6 +157,99 @@ const ChatConversationScreen = () => {
       dispatch(markAsRead(conversationId));
     } catch (error) {
       console.error('Error marking as read:', error);
+    }
+  };
+
+  const handleTransferAction = () => {
+    // Navigate to Transfer screen with pre-filled recipient info
+    (navigation as any).navigate('Transfer', {
+      receiver: otherUserId,
+      recipientAccount: otherUserId,
+      recipientName: otherUserName,
+    });
+  };
+
+  const handlePaymentReminderSend = async (amount: string, message: string) => {
+    const accountNumber = accountTransResponse?.accountNumber;
+    if (!accountNumber) return;
+
+    const reminderMessage = `💰 Nhắc trả tiền: ${amount}đ\n${message}`;
+
+    try {
+      setSending(true);
+      if (isConnected) {
+        WebSocketService.sendMessage(otherUserId, reminderMessage);
+        const optimisticMessage = {
+          id: `temp-${Date.now()}`,
+          senderId: accountNumber,
+          receiverId: otherUserId,
+          content: reminderMessage,
+          createdAt: new Date().toISOString(),
+          conversationId: conversationId,
+          messageType: 'TEXT' as const,
+          isRead: false,
+        };
+        dispatch(addMessage(optimisticMessage));
+        setTimeout(() => {
+          setDeliveredMessageIds(prev =>
+            new Set(prev).add(optimisticMessage.id),
+          );
+        }, 500);
+      } else {
+        const message = await ChatAPI.sendMessage(
+          { receiverId: otherUserId, content: reminderMessage },
+          accountNumber,
+        );
+        dispatch(addMessage(message));
+        setDeliveredMessageIds(prev => new Set(prev).add(message.id));
+      }
+    } catch (error) {
+      console.error('Error sending payment reminder:', error);
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const handleQuickGiftSend = async (gift: any) => {
+    const accountNumber = accountTransResponse?.accountNumber;
+    if (!accountNumber) return;
+
+    const giftMessage = `🎁 Tặng quà: ${gift.emoji} ${
+      gift.name
+    } - ${gift.price.toLocaleString('vi-VN')}đ`;
+
+    try {
+      setSending(true);
+      if (isConnected) {
+        WebSocketService.sendMessage(otherUserId, giftMessage);
+        const optimisticMessage = {
+          id: `temp-${Date.now()}`,
+          senderId: accountNumber,
+          receiverId: otherUserId,
+          content: giftMessage,
+          createdAt: new Date().toISOString(),
+          conversationId: conversationId,
+          messageType: 'TEXT' as const,
+          isRead: false,
+        };
+        dispatch(addMessage(optimisticMessage));
+        setTimeout(() => {
+          setDeliveredMessageIds(prev =>
+            new Set(prev).add(optimisticMessage.id),
+          );
+        }, 500);
+      } else {
+        const message = await ChatAPI.sendMessage(
+          { receiverId: otherUserId, content: giftMessage },
+          accountNumber,
+        );
+        dispatch(addMessage(message));
+        setDeliveredMessageIds(prev => new Set(prev).add(message.id));
+      }
+    } catch (error) {
+      console.error('Error sending gift:', error);
+    } finally {
+      setSending(false);
     }
   };
 
@@ -273,11 +376,29 @@ const ChatConversationScreen = () => {
         }
       />
 
+      <QuickActionsBar
+        onTransferPress={handleTransferAction}
+        onPaymentReminderPress={() => setShowPaymentReminderModal(true)}
+        onQuickGiftPress={() => setShowQuickGiftModal(true)}
+      />
+
       <ChatInputBar
         inputText={inputText}
         onChangeText={setInputText}
         onSend={handleSend}
         sending={sending}
+      />
+
+      <PaymentReminderModal
+        visible={showPaymentReminderModal}
+        onClose={() => setShowPaymentReminderModal(false)}
+        onSend={handlePaymentReminderSend}
+      />
+
+      <QuickGiftModal
+        visible={showQuickGiftModal}
+        onClose={() => setShowQuickGiftModal(false)}
+        onSend={handleQuickGiftSend}
       />
     </KeyboardAvoidingView>
   );
