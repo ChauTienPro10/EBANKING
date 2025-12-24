@@ -229,12 +229,29 @@ export const calculateTrendData = (
   period: TimePeriod,
   currentAccountNumber: string,
 ): { labels: string[]; data: number[] } => {
-  const { start, end } = getDateRange(period, 0);
+  // Don't use getDateRange here - transactions are already filtered by period
+  // We just need to group them by the appropriate time unit
+
+  if (transactions.length === 0) {
+    return { labels: [], data: [] };
+  }
+
+  // Get date range from the transactions themselves
+  const dates = transactions.map(t => new Date(t.transactionAt));
+  const minDate = new Date(Math.min(...dates.map(d => d.getTime())));
+  const maxDate = new Date(Math.max(...dates.map(d => d.getTime())));
 
   if (period === 'week') {
     // Daily breakdown for week
     const labels: string[] = [];
     const data: number[] = [];
+
+    // Find the start of the week (Monday)
+    const start = new Date(minDate);
+    const dayOfWeek = start.getDay();
+    const diff = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+    start.setDate(start.getDate() - diff);
+    start.setHours(0, 0, 0, 0);
 
     for (let i = 0; i < 7; i++) {
       const day = new Date(start);
@@ -257,7 +274,11 @@ export const calculateTrendData = (
 
       const total = dayTransactions.reduce((sum, t) => {
         const amount = parseFloat(t.amount.toString());
-        return sum + amount;
+        // Only count outgoing transactions
+        if (t.senderAccountNumber === currentAccountNumber) {
+          return sum + amount;
+        }
+        return sum;
       }, 0);
 
       data.push(total);
@@ -268,6 +289,15 @@ export const calculateTrendData = (
     // Weekly breakdown for month
     const labels: string[] = [];
     const data: number[] = [];
+
+    // Use the month from transactions
+    const start = new Date(minDate);
+    start.setDate(1);
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(start);
+    end.setMonth(end.getMonth() + 1);
+    end.setDate(0);
+    end.setHours(23, 59, 59, 999);
 
     const weeksInMonth = Math.ceil((end.getDate() - start.getDate() + 1) / 7);
 
@@ -288,7 +318,11 @@ export const calculateTrendData = (
 
       const total = weekTransactions.reduce((sum, t) => {
         const amount = parseFloat(t.amount.toString());
-        return sum + amount;
+        // Only count outgoing transactions
+        if (t.senderAccountNumber === currentAccountNumber) {
+          return sum + amount;
+        }
+        return sum;
       }, 0);
 
       data.push(total);
@@ -300,9 +334,12 @@ export const calculateTrendData = (
     const labels: string[] = [];
     const data: number[] = [];
 
+    // Use the year from transactions
+    const year = minDate.getFullYear();
+
     for (let i = 0; i < 12; i++) {
-      const monthStart = new Date(start.getFullYear(), i, 1);
-      const monthEnd = new Date(start.getFullYear(), i + 1, 0, 23, 59, 59, 999);
+      const monthStart = new Date(year, i, 1);
+      const monthEnd = new Date(year, i + 1, 0, 23, 59, 59, 999);
 
       // Label: T1, T2, ..., T12
       labels.push(`T${i + 1}`);
@@ -314,7 +351,11 @@ export const calculateTrendData = (
 
       const total = monthTransactions.reduce((sum, t) => {
         const amount = parseFloat(t.amount.toString());
-        return sum + amount;
+        // Only count outgoing transactions
+        if (t.senderAccountNumber === currentAccountNumber) {
+          return sum + amount;
+        }
+        return sum;
       }, 0);
 
       data.push(total);
