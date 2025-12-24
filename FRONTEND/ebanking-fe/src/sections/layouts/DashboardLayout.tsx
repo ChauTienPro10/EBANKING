@@ -11,6 +11,7 @@ import {
   Moon,
   Wallet,
   Bell,
+  FileText,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -44,6 +45,13 @@ const NAV_ITEMS = [
     label: "Notifications",
     translationKey: "notifications",
     icon: Bell,
+    roles: ["Admin", "Staff"] as Role[],
+  },
+  {
+    to: "/app/transaction-requests",
+    label: "Transaction Requests",
+    translationKey: "transactionRequests",
+    icon: FileText,
     roles: ["Admin", "Staff"] as Role[],
   },
   {

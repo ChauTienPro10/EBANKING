@@ -1,4 +1,4 @@
-import { TransferFormData } from '../types/transfer.types';
+import { TransferFormData, TransferPurpose } from '../types/transfer.types';
 
 export const STORAGE_KEY = 'saved_recipient_accounts';
 
@@ -21,6 +21,46 @@ export const genFormData = (
     [t('transfer.confirm.content_label')]: sanitizeTransferContent(
       formData.content,
     ), // Sanitize for display
+    ...(formData.purpose && {
+      [t('transfer.confirm.purpose_label')]: formData.purpose.name,
+    }),
+  };
+};
+
+/*
+ * Build transfer content with purpose prefix
+ */
+export const buildTransferContent = (
+  content: string,
+  purpose?: TransferPurpose,
+): string => {
+  const sanitizedContent = sanitizeTransferContent(content);
+  
+  if (purpose && purpose.code) {
+    return `[${purpose.code}] ${sanitizedContent}`;
+  }
+  
+  return sanitizedContent;
+};
+
+/*
+ * Extract purpose code from transfer content
+ */
+export const extractPurposeFromContent = (content: string): {
+  purposeCode?: string;
+  cleanContent: string;
+} => {
+  const match = content.match(/^\[([^\]]+)\]\s*(.*)$/);
+  
+  if (match) {
+    return {
+      purposeCode: match[1],
+      cleanContent: match[2] || '',
+    };
+  }
+  
+  return {
+    cleanContent: content,
   };
 };
 

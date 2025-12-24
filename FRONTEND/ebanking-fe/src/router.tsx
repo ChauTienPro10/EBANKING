@@ -9,6 +9,7 @@ import { LoginPage } from "./sections/pages/LoginPage";
 import { NotFoundPage } from "./sections/pages/NotFoundPage";
 import { NotificationsPage } from "./sections/pages/NotificationsPage";
 import { AccountsPage } from "./sections/pages/AccountsPage";
+import { TransactionRequestsPage } from "./sections/pages/TransactionRequestsPage";
 
 export const router = createBrowserRouter([
   {
@@ -26,6 +27,7 @@ export const router = createBrowserRouter([
           { path: "audit", element: <AuditPage /> },
           { path: "accounts", element: <AccountsPage /> },
           { path: "notifications", element: <NotificationsPage /> },
+          { path: "transaction-requests", element: <TransactionRequestsPage /> },
         ],
       },
       { path: "*", element: <NotFoundPage /> },

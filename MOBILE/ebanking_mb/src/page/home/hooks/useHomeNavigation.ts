@@ -80,6 +80,18 @@ export const useHomeNavigation = (
         navigation.navigate('Statistics' as never);
         break;
       case 'savings':
+        // Validate eKYC before allowing Savings navigation
+        const savingsEkycValidation = validateEkyc(
+          (reason: 'NOT_VERIFIED' | 'EXPIRED') => {
+            setEkycExpiredReason(reason);
+            setShowEkycExpiredModal(true);
+          },
+        );
+
+        if (!savingsEkycValidation.isValid) {
+          return;
+        }
+
         navigation.navigate('SavingsHome' as never);
         break;
       case 'loan':
@@ -106,6 +118,24 @@ export const useHomeNavigation = (
         navigation.navigate('Lottery');
         break;
       case 'data':
+        // Validate eKYC before allowing Data 4G navigation
+        const dataEkycValidation = validateEkyc(
+          (reason: 'NOT_VERIFIED' | 'EXPIRED') => {
+            setEkycExpiredReason(reason);
+            setShowEkycExpiredModal(true);
+          },
+        );
+
+        if (!dataEkycValidation.isValid) {
+          return;
+        }
+
+        if (account) {
+          navigation.navigate('Data4G');
+        } else {
+          navigation.navigate('OpenCard', { userInfo });
+        }
+        break;
       case 'game':
       case 'flight':
         onShowComingSoon?.();

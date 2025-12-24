@@ -4,6 +4,7 @@ import {
   FormErrors,
   TransferFormData,
   TransferParams,
+  TransferPurpose,
 } from '../types/transfer.types';
 import { formatAmount } from '../utils/transfer.utils';
 import { CardIcon } from '../../../components/icon';
@@ -15,6 +16,7 @@ export const useTransferForm = (initialParams?: TransferParams) => {
     content: 'Chuyển tiền',
     transferType: 'internal',
     selectedBank: undefined,
+    purpose: undefined,
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
@@ -47,7 +49,7 @@ export const useTransferForm = (initialParams?: TransferParams) => {
 
   const handleInputChange = (
     field: keyof TransferFormData,
-    value: string | 'internal' | 'external' | Bank,
+    value: string | 'internal' | 'external' | Bank | TransferPurpose,
   ) => {
     setFormData(prev => ({ ...prev, [field]: value }));
 
@@ -65,6 +67,10 @@ export const useTransferForm = (initialParams?: TransferParams) => {
     setFormData(prev => ({ ...prev, selectedBank: bank }));
   };
 
+  const handlePurposeSelect = (purpose: TransferPurpose) => {
+    setFormData(prev => ({ ...prev, purpose }));
+  };
+
   const setFormErrors = (newErrors: FormErrors) => {
     setErrors(newErrors);
   };
@@ -75,6 +81,7 @@ export const useTransferForm = (initialParams?: TransferParams) => {
     handleInputChange,
     handleAmountChange,
     handleBankSelect,
+    handlePurposeSelect,
     setFormErrors,
     setFormData,
   };

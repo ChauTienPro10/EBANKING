@@ -12,25 +12,20 @@ import { useTranslation } from 'react-i18next';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
-import { CheckCircle, Home, RotateCcw } from 'lucide-react-native';
+import { CheckCircle, Home, RotateCcw, XCircle } from 'lucide-react-native';
 
-import { PrepaidTransaction, MobileOperator, PrepaidPackage } from '../../services/MobilePrepaidService';
+import { PrepaidTransaction, MobileOperator } from '../../services/MobilePrepaidService';
+import Header from '../../components/Header';
 import { RootStackParamList } from '../../navigation/types';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'MobilePrepaidResult'>;
 type RoutePropType = RouteProp<RootStackParamList, 'MobilePrepaidResult'>;
 
-interface RouteParams {
-  transaction: PrepaidTransaction;
-  operator: MobileOperator;
-  package: PrepaidPackage;
-}
-
 const MobilePrepaidResultScreen: React.FC = () => {
   const { t } = useTranslation();
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute<RoutePropType>();
-  const { transaction, operator, package: selectedPackage } = route.params;
+  const { transaction, operator, amount } = route.params;
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('vi-VN').format(amount) + 'đ';
@@ -55,37 +50,64 @@ const MobilePrepaidResultScreen: React.FC = () => {
     navigation.navigate('MobilePrepaid' as never);
   };
 
-  const isSuccess = transaction.status === 'success';
+  const isSuccess = transaction.status === 'COMPLETED';
+  const isPending = transaction.status === 'PENDING';
+  const isFailed = transaction.status === 'FAILED';
+
+  const getHeaderTitle = () => {
+    if (isSuccess) return 'Nạp tiền thành công';
+    if (isPending) return 'Đang xử lý';
+    return 'Nạp tiền thất bại';
+  };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
+      <Header title={getHeaderTitle()} showBackButton />
+      
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Status Header */}
         <View style={styles.statusContainer}>
-          <View style={[styles.statusIcon, isSuccess ? styles.successIcon : styles.failureIcon]}>
-            <CheckCircle size={48} color={isSuccess ? '#4CAF50' : '#F44336'} />
+          <View style={[
+            styles.statusIcon, 
+            isSuccess ? styles.successIcon : 
+            isPending ? styles.pendingIcon : 
+            styles.failureIcon
+          ]}>
+            {isSuccess ? (
+              <CheckCircle size={48} color="#4CAF50" />
+            ) : isPending ? (
+              <CheckCircle size={48} color="#FF9800" />
+            ) : (
+              <XCircle size={48} color="#F44336" />
+            )}
           </View>
-          <Text style={[styles.statusTitle, isSuccess ? styles.successTitle : styles.failureTitle]}>
-            {isSuccess ? t('mobile_prepaid.success_title') : t('mobile_prepaid.failed_title')}
+          <Text style={[
+            styles.statusTitle, 
+            isSuccess ? styles.successTitle : 
+            isPending ? styles.pendingTitle : 
+            styles.failureTitle
+          ]}>
+            {isSuccess ? 'Nạp tiền thành công' : 
+             isPending ? 'Đang xử lý' : 
+             'Nạp tiền thất bại'}
           </Text>
           <Text style={styles.statusMessage}>
             {isSuccess 
-              ? t('mobile_prepaid.success_message', { 
-                  amount: formatCurrency(transaction.amount), 
-                  phone: transaction.phoneNumber 
-                })
-              : t('mobile_prepaid.failed_message')
+              ? `Đã nạp thành công ${formatCurrency(amount)} vào số ${transaction.phoneNumber}`
+              : isPending
+              ? 'Giao dịch đang được xử lý, vui lòng chờ trong giây lát'
+              : transaction.failureReason || 'Giao dịch không thành công, vui lòng thử lại'
             }
           </Text>
         </View>
 
         {/* Transaction Details */}
-        {isSuccess && (
+        {(isSuccess || isPending) && (
           <View style={styles.card}>
             <Text style={styles.cardTitle}>Chi tiết giao dịch</Text>
             
             <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>{t('mobile_prepaid.transaction_id')}</Text>
+              <Text style={styles.detailLabel}>Mã giao dịch</Text>
               <Text style={styles.detailValue}>{transaction.transactionId}</Text>
             </View>
 
@@ -97,39 +119,54 @@ const MobilePrepaidResultScreen: React.FC = () => {
             <View style={styles.detailRow}>
               <Text style={styles.detailLabel}>Nhà mạng</Text>
               <View style={styles.operatorInfo}>
-                <Image source={{ uri: operator.logo }} style={styles.operatorLogo} />
-                <Text style={styles.detailValue}>{operator.name}</Text>
+                <Image source={{ uri: operator.logoUrl }} style={styles.operatorLogo} />
+                <Text style={styles.detailValue}>{operator.providerName}</Text>
               </View>
             </View>
 
             <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Gói nạp</Text>
-              <View>
-                <Text style={styles.detailValue}>
-                  {formatCurrency(selectedPackage.amount)}
-                  {selectedPackage.bonus > 0 && (
-                    <Text style={styles.bonusText}>
-                      {' '}+{formatCurrency(selectedPackage.bonus)} KM
-                    </Text>
-                  )}
-                </Text>
-                <Text style={styles.packageDescription}>{selectedPackage.description}</Text>
-              </View>
+              <Text style={styles.detailLabel}>Số tiền nạp</Text>
+              <Text style={styles.amountValue}>{formatCurrency(transaction.amount)}</Text>
+            </View>
+
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>Trạng thái</Text>
+              <Text style={[
+                styles.statusValue,
+                isSuccess ? styles.successStatus : 
+                isPending ? styles.pendingStatus : 
+                styles.failedStatus
+              ]}>
+                {isSuccess ? 'Thành công' : 
+                 isPending ? 'Đang xử lý' : 
+                 'Thất bại'}
+              </Text>
             </View>
 
             <View style={styles.separator} />
 
             <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Số tiền</Text>
-              <Text style={styles.amountValue}>{formatCurrency(transaction.amount)}</Text>
-            </View>
-
-            <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>{t('mobile_prepaid.completed_at')}</Text>
+              <Text style={styles.detailLabel}>Thời gian tạo</Text>
               <Text style={styles.detailValue}>
-                {transaction.completedAt ? formatDateTime(transaction.completedAt) : '-'}
+                {formatDateTime(transaction.createdAt)}
               </Text>
             </View>
+
+            {transaction.completedAt && (
+              <View style={styles.detailRow}>
+                <Text style={styles.detailLabel}>Thời gian hoàn thành</Text>
+                <Text style={styles.detailValue}>
+                  {formatDateTime(transaction.completedAt)}
+                </Text>
+              </View>
+            )}
+
+            {transaction.providerTransactionId && (
+              <View style={styles.detailRow}>
+                <Text style={styles.detailLabel}>Mã GD nhà mạng</Text>
+                <Text style={styles.detailValue}>{transaction.providerTransactionId}</Text>
+              </View>
+            )}
           </View>
         )}
 
@@ -141,6 +178,26 @@ const MobilePrepaidResultScreen: React.FC = () => {
               • Tiền đã được nạp vào thuê bao thành công{'\n'}
               • Kiểm tra số dư bằng cách gọi *101#{'\n'}
               • Lưu lại mã giao dịch để tra cứu sau này
+            </Text>
+          </View>
+        )}
+
+        {/* Pending Info */}
+        {isPending && (
+          <View style={styles.pendingCard}>
+            <Text style={styles.pendingCardTitle}>⏳ Đang xử lý</Text>
+            <Text style={styles.pendingText}>
+              Giao dịch của bạn đang được xử lý. Vui lòng chờ trong giây lát và kiểm tra lại sau.
+            </Text>
+          </View>
+        )}
+
+        {/* Face Auth Required */}
+        {transaction.requiresFaceAuth && !transaction.faceAuthVerified && (
+          <View style={styles.warningCard}>
+            <Text style={styles.warningTitle}>🔐 Yêu cầu xác thực</Text>
+            <Text style={styles.warningText}>
+              Giao dịch này yêu cầu xác thực khuôn mặt. Vui lòng hoàn thành xác thực để tiếp tục.
             </Text>
           </View>
         )}
@@ -158,7 +215,7 @@ const MobilePrepaidResultScreen: React.FC = () => {
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -187,6 +244,9 @@ const styles = StyleSheet.create({
   successIcon: {
     backgroundColor: '#e8f5e8',
   },
+  pendingIcon: {
+    backgroundColor: '#fff3e0',
+  },
   failureIcon: {
     backgroundColor: '#ffebee',
   },
@@ -198,6 +258,9 @@ const styles = StyleSheet.create({
   },
   successTitle: {
     color: '#4CAF50',
+  },
+  pendingTitle: {
+    color: '#FF9800',
   },
   failureTitle: {
     color: '#F44336',
@@ -278,6 +341,19 @@ const styles = StyleSheet.create({
     color: '#2196F3',
     fontWeight: 'bold',
   },
+  statusValue: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  successStatus: {
+    color: '#4CAF50',
+  },
+  pendingStatus: {
+    color: '#FF9800',
+  },
+  failedStatus: {
+    color: '#F44336',
+  },
   tipsCard: {
     backgroundColor: '#fff3cd',
     borderRadius: 12,
@@ -295,6 +371,44 @@ const styles = StyleSheet.create({
   tipsText: {
     fontSize: 14,
     color: '#856404',
+    lineHeight: 20,
+  },
+  pendingCard: {
+    backgroundColor: '#fff3e0',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 24,
+    borderLeftWidth: 4,
+    borderLeftColor: '#ff9800',
+  },
+  pendingCardTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#e65100',
+    marginBottom: 8,
+  },
+  pendingText: {
+    fontSize: 14,
+    color: '#e65100',
+    lineHeight: 20,
+  },
+  warningCard: {
+    backgroundColor: '#ffebee',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 24,
+    borderLeftWidth: 4,
+    borderLeftColor: '#f44336',
+  },
+  warningTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#c62828',
+    marginBottom: 8,
+  },
+  warningText: {
+    fontSize: 14,
+    color: '#c62828',
     lineHeight: 20,
   },
   actionButtons: {

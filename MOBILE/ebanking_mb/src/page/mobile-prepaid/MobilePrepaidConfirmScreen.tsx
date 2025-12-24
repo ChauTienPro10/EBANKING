@@ -14,27 +14,24 @@ import { useTranslation } from 'react-i18next';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
+import { useSelector } from 'react-redux';
 import { CheckCircle, Smartphone, CreditCard } from 'lucide-react-native';
 
-import MobilePrepaidService from '../../services/MobilePrepaidService';
-import { MobileOperator, PrepaidPackage } from '../../services/MobilePrepaidService';
+import MobilePrepaidService, { MobileOperator } from '../../services/MobilePrepaidService';
 import PinModal from '../../components/PinModal';
+import Header from '../../components/Header';
 import { RootStackParamList } from '../../navigation/types';
+import { RootState } from '../../store';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'MobilePrepaidConfirm'>;
 type RoutePropType = RouteProp<RootStackParamList, 'MobilePrepaidConfirm'>;
-
-interface RouteParams {
-  phoneNumber: string;
-  operator: MobileOperator;
-  package: PrepaidPackage;
-}
 
 const MobilePrepaidConfirmScreen: React.FC = () => {
   const { t } = useTranslation();
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute<RoutePropType>();
-  const { phoneNumber, operator, package: selectedPackage } = route.params;
+  const { phoneNumber, operator, amount, fee, totalAmount } = route.params;
+  const { userInfoData: userInfo, accountTransResponse, loginResponse } = useSelector((state: RootState) => state.app);
 
   const [loading, setLoading] = useState(false);
   const [showPinModal, setShowPinModal] = useState(false);
@@ -48,15 +45,22 @@ const MobilePrepaidConfirmScreen: React.FC = () => {
   };
 
   const handlePinSubmit = async (pin: string) => {
+    if (!userInfo?.id || !loginResponse?.username || !accountTransResponse?.accountNumber) {
+      Alert.alert('Lỗi', 'Thông tin tài khoản không hợp lệ');
+      return;
+    }
+
     try {
       setLoading(true);
       setShowPinModal(false);
 
       const request = {
+        userId: userInfo.id,
+        username: loginResponse.username,
+        accountNumber: accountTransResponse.accountNumber,
         phoneNumber,
-        operatorId: operator.id,
-        packageId: selectedPackage.id,
-        amount: selectedPackage.amount,
+        telecomProvider: operator.providerCode,
+        amount,
         pin,
       };
 
@@ -65,13 +69,13 @@ const MobilePrepaidConfirmScreen: React.FC = () => {
       navigation.replace('MobilePrepaidResult', {
         transaction,
         operator,
-        package: selectedPackage,
+        amount,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Top-up error:', error);
       Alert.alert(
         t('mobile_prepaid.failed_title'),
-        t('mobile_prepaid.failed_message')
+        error.message || t('mobile_prepaid.failed_message')
       );
     } finally {
       setLoading(false);
@@ -84,22 +88,25 @@ const MobilePrepaidConfirmScreen: React.FC = () => {
 
   if (loading) {
     return (
-      <SafeAreaView style={styles.container}>
+      <View style={styles.container}>
+        <Header title={t('mobile_prepaid.confirm.title')} showBackButton />
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#2196F3" />
           <Text style={styles.loadingText}>{t('mobile_prepaid.processing')}</Text>
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
     <SafeAreaView style={styles.container}>
+      <Header title={t('mobile_prepaid.confirm.title')} showBackButton />
+      
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
           <CheckCircle size={24} color="#4CAF50" />
-          <Text style={styles.title}>{t('mobile_prepaid.confirm.title')}</Text>
+          <Text style={styles.headerText}>Xác nhận thông tin giao dịch</Text>
         </View>
 
         {/* Transaction Details Card */}
@@ -117,43 +124,33 @@ const MobilePrepaidConfirmScreen: React.FC = () => {
           <View style={styles.detailRow}>
             <Text style={styles.detailLabel}>{t('mobile_prepaid.confirm.operator_label')}</Text>
             <View style={styles.operatorInfo}>
-              <Image source={{ uri: operator.logo }} style={styles.operatorLogo} />
-              <Text style={styles.detailValue}>{operator.name}</Text>
+              <Image source={{ uri: operator.logoUrl }} style={styles.operatorLogo} />
+              <Text style={styles.detailValue}>{operator.providerName}</Text>
             </View>
           </View>
 
           <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>{t('mobile_prepaid.confirm.package_label')}</Text>
-            <View>
-              <Text style={styles.detailValue}>
-                {formatCurrency(selectedPackage.amount)}
-                {selectedPackage.bonus > 0 && (
-                  <Text style={styles.bonusText}>
-                    {' '}+{formatCurrency(selectedPackage.bonus)} KM
-                  </Text>
-                )}
-              </Text>
-              <Text style={styles.packageDescription}>{selectedPackage.description}</Text>
-            </View>
+            <Text style={styles.detailLabel}>{t('mobile_prepaid.confirm.amount_label')}</Text>
+            <Text style={styles.detailValue}>{formatCurrency(amount)}</Text>
           </View>
 
           <View style={styles.separator} />
 
           <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>{t('mobile_prepaid.confirm.amount_label')}</Text>
-            <Text style={styles.amountValue}>{formatCurrency(selectedPackage.amount)}</Text>
+            <Text style={styles.detailLabel}>Số tiền nạp:</Text>
+            <Text style={styles.amountValue}>{formatCurrency(amount)}</Text>
           </View>
 
           <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>{t('mobile_prepaid.confirm.fee_label')}</Text>
-            <Text style={styles.feeValue}>{t('mobile_prepaid.confirm.free_fee')}</Text>
+            <Text style={styles.detailLabel}>Phí giao dịch:</Text>
+            <Text style={styles.feeValue}>{formatCurrency(fee)}</Text>
           </View>
 
           <View style={styles.separator} />
 
           <View style={styles.detailRow}>
             <Text style={styles.totalLabel}>{t('mobile_prepaid.confirm.total_label')}</Text>
-            <Text style={styles.totalValue}>{formatCurrency(selectedPackage.amount)}</Text>
+            <Text style={styles.totalValue}>{formatCurrency(totalAmount)}</Text>
           </View>
         </View>
 
@@ -165,7 +162,9 @@ const MobilePrepaidConfirmScreen: React.FC = () => {
           </View>
           <View style={styles.paymentMethod}>
             <Text style={styles.paymentMethodText}>Tài khoản chính</Text>
-            <Text style={styles.paymentMethodBalance}>Số dư: 50,000,000đ</Text>
+            <Text style={styles.paymentMethodBalance}>
+              STK: {accountTransResponse?.accountNumber || 'N/A'}
+            </Text>
           </View>
         </View>
 
@@ -206,9 +205,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 24,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
+  headerText: {
+    fontSize: 18,
+    fontWeight: '600',
     color: '#333',
     marginLeft: 12,
   },

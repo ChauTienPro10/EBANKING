@@ -41,6 +41,7 @@ const transactionStatusMap: Record<
   { labelKey: string; color: "success" | "pending" | "failed" }
 > = {
   SUCCESS: { labelKey: "transactions.statuses.success", color: "success" },
+  COMPLETED: { labelKey: "transactions.statuses.success", color: "success" }, // COMPLETED cũng hiển thị thành công màu xanh
   PENDING: { labelKey: "transactions.statuses.pending", color: "pending" },
   FAILED: { labelKey: "transactions.statuses.failed", color: "failed" },
   SUSPICIOUS: { labelKey: "transactions.statuses.suspicious", color: "failed" },
@@ -253,6 +254,9 @@ export function TransactionsPage() {
                   {t("transactions.filters.allStatuses")}
                 </SelectItem>
                 <SelectItem value="SUCCESS">
+                  {t("transactions.statuses.success")}
+                </SelectItem>
+                <SelectItem value="COMPLETED">
                   {t("transactions.statuses.success")}
                 </SelectItem>
                 <SelectItem value="PENDING">

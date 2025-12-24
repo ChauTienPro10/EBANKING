@@ -22,11 +22,24 @@ export type RootStackParamList = {
   MobilePrepaidConfirm: {
     phoneNumber: string;
     operator: any;
-    package: any;
+    amount: number;
+    fee: number;
+    totalAmount: number;
   };
   MobilePrepaidResult: {
     transaction: any;
     operator: any;
+    amount: number;
+  };
+  Data4G: undefined;
+  Data4GConfirm: {
+    phoneNumber: string;
+    provider: string;
+    package: any;
+  };
+  Data4GResult: {
+    transaction: any;
+    provider: string;
     package: any;
   };
   PayBill: undefined;

@@ -15,7 +15,9 @@ import Toast from 'react-native-toast-message';
 import { RootStackParamList } from '../../navigation/types';
 import { SavingsService } from '../../services/SavingsService';
 import { SavingsAccount } from '../../types/SavingsTypes';
+import { useEkycValidation } from '../../utils/useEkycValidation';
 import Header from '../../components/Header';
+import ConfirmModal from '../../components/ConfirmModal';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 type RouteProp = NavigationRouteProp<RootStackParamList, 'SavingsAccountDetail'>;
@@ -24,10 +26,12 @@ export default function SavingsAccountDetailScreen() {
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute<RouteProp>();
   const { accountNumber } = route.params;
+  const { validateEkyc } = useEkycValidation();
   
   const [account, setAccount] = useState<SavingsAccount | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [showEKYCModal, setShowEKYCModal] = useState(false);
 
   const loadAccountDetail = async () => {
     try {
@@ -95,6 +99,17 @@ export default function SavingsAccountDetailScreen() {
   };
 
   const handleTransferToSavings = () => {
+    // Validate eKYC for high-value transactions
+    const ekycValidation = validateEkyc(
+      (reason: 'NOT_VERIFIED' | 'EXPIRED') => {
+        setShowEKYCModal(true);
+      },
+    );
+
+    if (!ekycValidation.isValid) {
+      return;
+    }
+
     navigation.navigate('SavingsTransfer', {
       accountNumber,
       type: 'TO_SAVINGS',
@@ -102,6 +117,17 @@ export default function SavingsAccountDetailScreen() {
   };
 
   const handleTransferFromSavings = () => {
+    // Validate eKYC for high-value transactions
+    const ekycValidation = validateEkyc(
+      (reason: 'NOT_VERIFIED' | 'EXPIRED') => {
+        setShowEKYCModal(true);
+      },
+    );
+
+    if (!ekycValidation.isValid) {
+      return;
+    }
+
     navigation.navigate('SavingsTransfer', {
       accountNumber,
       type: 'FROM_SAVINGS',
@@ -109,6 +135,17 @@ export default function SavingsAccountDetailScreen() {
   };
 
   const handleDepositRequest = () => {
+    // Validate eKYC for cash transactions
+    const ekycValidation = validateEkyc(
+      (reason: 'NOT_VERIFIED' | 'EXPIRED') => {
+        setShowEKYCModal(true);
+      },
+    );
+
+    if (!ekycValidation.isValid) {
+      return;
+    }
+
     navigation.navigate('CreateSavingsRequest', {
       accountNumber,
       type: 'DEPOSIT',
@@ -116,6 +153,17 @@ export default function SavingsAccountDetailScreen() {
   };
 
   const handleWithdrawRequest = () => {
+    // Validate eKYC for cash transactions
+    const ekycValidation = validateEkyc(
+      (reason: 'NOT_VERIFIED' | 'EXPIRED') => {
+        setShowEKYCModal(true);
+      },
+    );
+
+    if (!ekycValidation.isValid) {
+      return;
+    }
+
     navigation.navigate('CreateSavingsRequest', {
       accountNumber,
       type: 'WITHDRAW',
@@ -323,6 +371,21 @@ export default function SavingsAccountDetailScreen() {
           </View>
         </View>
       </ScrollView>
+
+      {/* eKYC Modal */}
+      <ConfirmModal
+        visible={showEKYCModal}
+        title="⚠️ Yêu cầu xác thực eKYC"
+        message="Giao dịch tiết kiệm yêu cầu xác thực eKYC. Vui lòng hoàn thành xác thực để tiếp tục."
+        confirmText="Xác thực ngay"
+        cancelText="Hủy bỏ"
+        onConfirm={() => {
+          setShowEKYCModal(false);
+          navigation.navigate('EKYC');
+        }}
+        onCancel={() => setShowEKYCModal(false)}
+        confirmButtonStyle={{ backgroundColor: '#1976D2' }}
+      />
     </View>
   );
 }

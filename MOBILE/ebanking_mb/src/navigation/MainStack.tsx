@@ -43,6 +43,11 @@ import MobilePrepaidScreen from '../page/mobile-prepaid/MobilePrepaidScreen';
 import MobilePrepaidConfirmScreen from '../page/mobile-prepaid/MobilePrepaidConfirmScreen';
 import MobilePrepaidResultScreen from '../page/mobile-prepaid/MobilePrepaidResultScreen';
 
+// Data 4G screens
+import Data4GScreen from '../page/data-4g/Data4GScreen';
+import Data4GConfirmScreen from '../page/data-4g/Data4GConfirmScreen';
+import Data4GResultScreen from '../page/data-4g/Data4GResultScreen';
+
 // Chat screens
 import ChatListScreen from '../page/chat/ChatListScreen';
 import ChatConversationScreen from '../page/chat/ChatConversationScreen';
@@ -79,6 +84,9 @@ export default function MainStack() {
       <Stack.Screen name="MobilePrepaid" component={MobilePrepaidScreen} />
       <Stack.Screen name="MobilePrepaidConfirm" component={MobilePrepaidConfirmScreen} />
       <Stack.Screen name="MobilePrepaidResult" component={MobilePrepaidResultScreen} />
+      <Stack.Screen name="Data4G" component={Data4GScreen} />
+      <Stack.Screen name="Data4GConfirm" component={Data4GConfirmScreen} />
+      <Stack.Screen name="Data4GResult" component={Data4GResultScreen} />
       <Stack.Screen name="Lottery" component={LotteryScreen} />
       <Stack.Screen name="Statistics" component={StatisticsScreen} />
       <Stack.Screen name="OpenCard" component={OpenAccountScreen} />

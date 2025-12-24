@@ -76,7 +76,7 @@ public class TransactionGrpcService extends TransactionServiceGrpc.TransactionSe
                         .setCurrency(tx.getCurrency())
                         .setTransactionAt(tx.getTransactionAt().toString())
                         .setStatus(tx.getStatus())
-                        .setDescription(tx.getDescription())
+                        .setDescription(tx.getDescription() != null ? tx.getDescription() : "")
                         .setTransactionType(tx.getTransactionType())
                         .build();
 

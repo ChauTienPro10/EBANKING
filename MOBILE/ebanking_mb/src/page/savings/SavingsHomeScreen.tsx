@@ -15,18 +15,22 @@ import { RootStackParamList } from '../../navigation/types';
 import { RootState } from '../../store';
 import { SavingsService } from '../../services/SavingsService';
 import { SavingsAccount } from '../../types/SavingsTypes';
+import { useEkycValidation } from '../../utils/useEkycValidation';
 import SavingsCard from '../../components/savings/SavingsCard';
 import Header from '../../components/Header';
+import ConfirmModal from '../../components/ConfirmModal';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 export default function SavingsHomeScreen() {
   const navigation = useNavigation<NavigationProp>();
   const { userInfoData: userInfo } = useSelector((state: RootState) => state.app);
+  const { validateEkyc } = useEkycValidation();
   
   const [savingsAccounts, setSavingsAccounts] = useState<SavingsAccount[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [showEKYCModal, setShowEKYCModal] = useState(false);
 
   const loadSavingsAccounts = async () => {
     if (!userInfo?.id) return;
@@ -59,6 +63,17 @@ export default function SavingsHomeScreen() {
   };
 
   const handleCreateAccount = () => {
+    // Validate eKYC before allowing account creation
+    const ekycValidation = validateEkyc(
+      (reason: 'NOT_VERIFIED' | 'EXPIRED') => {
+        setShowEKYCModal(true);
+      },
+    );
+
+    if (!ekycValidation.isValid) {
+      return;
+    }
+
     navigation.navigate('CreateSavingsAccount');
   };
 
@@ -185,6 +200,21 @@ export default function SavingsHomeScreen() {
           )}
         </View>
       </ScrollView>
+
+      {/* eKYC Modal */}
+      <ConfirmModal
+        visible={showEKYCModal}
+        title="⚠️ Yêu cầu xác thực eKYC"
+        message="Tính năng tiết kiệm yêu cầu xác thực eKYC. Vui lòng hoàn thành xác thực để tiếp tục."
+        confirmText="Xác thực ngay"
+        cancelText="Hủy bỏ"
+        onConfirm={() => {
+          setShowEKYCModal(false);
+          navigation.navigate('EKYC');
+        }}
+        onCancel={() => setShowEKYCModal(false)}
+        confirmButtonStyle={{ backgroundColor: '#1976D2' }}
+      />
     </View>
   );
 }

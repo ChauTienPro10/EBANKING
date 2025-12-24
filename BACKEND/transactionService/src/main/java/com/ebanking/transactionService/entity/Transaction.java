@@ -42,6 +42,9 @@ public class Transaction {
 
     private String description;
 
+    @Column(name = "purpose_code", length = 20)
+    private String purposeCode;
+
     private String failureReason;
 
     private LocalDateTime transactionAt;

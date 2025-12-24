@@ -18,6 +18,7 @@ import { RootState, AppDispatch } from '../../store';
 import { SavingsService } from '../../services/SavingsService';
 import { SavingsAccount } from '../../types/SavingsTypes';
 import { fetchAccountTransInfo } from '../../store/fetchAPI/AccountFetch';
+import { useEkycValidation } from '../../utils/useEkycValidation';
 import Header from '../../components/Header';
 import ConfirmModal from '../../components/ConfirmModal';
 import PinInputModal from '../../components/PinInputModal';
@@ -31,6 +32,7 @@ export default function SavingsTransferScreen() {
   const dispatch = useDispatch<AppDispatch>();
   const { accountNumber, type } = route.params;
   const { userInfoData: userInfo, accountTransResponse, loginResponse } = useSelector((state: RootState) => state.app);
+  const { validateEkyc } = useEkycValidation();
   
   const [account, setAccount] = useState<SavingsAccount | null>(null);
   const [amount, setAmount] = useState('');
@@ -40,6 +42,7 @@ export default function SavingsTransferScreen() {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showPinModal, setShowPinModal] = useState(false);
   const [showFullWithdrawalWarning, setShowFullWithdrawalWarning] = useState(false);
+  const [showEKYCModal, setShowEKYCModal] = useState(false);
 
   useEffect(() => {
     loadAccountDetail();
@@ -106,8 +109,22 @@ export default function SavingsTransferScreen() {
   const handleTransfer = () => {
     if (!validateTransfer() || !account || !accountTransResponse?.accountNumber) return;
     
-    // Check if this is a full withdrawal from savings
     const transferAmount = parseCurrency(amount);
+    
+    // Check eKYC for high-value transactions (> 10M VND)
+    if (transferAmount > 10000000) {
+      const ekycValidation = validateEkyc(
+        (reason: 'NOT_VERIFIED' | 'EXPIRED') => {
+          setShowEKYCModal(true);
+        },
+      );
+
+      if (!ekycValidation.isValid) {
+        return;
+      }
+    }
+    
+    // Check if this is a full withdrawal from savings
     if (type === 'FROM_SAVINGS' && account && transferAmount === account.balance) {
       setShowFullWithdrawalWarning(true);
     } else {
@@ -346,6 +363,21 @@ export default function SavingsTransferScreen() {
         onConfirm={handleConfirmFullWithdrawal}
         onCancel={() => setShowFullWithdrawalWarning(false)}
         confirmButtonStyle={{ backgroundColor: '#F44336' }} // Red color for warning
+      />
+
+      {/* eKYC Modal */}
+      <ConfirmModal
+        visible={showEKYCModal}
+        title="⚠️ Yêu cầu xác thực eKYC"
+        message="Giao dịch có giá trị lớn yêu cầu xác thực eKYC. Vui lòng hoàn thành xác thực để tiếp tục."
+        confirmText="Xác thực ngay"
+        cancelText="Hủy bỏ"
+        onConfirm={() => {
+          setShowEKYCModal(false);
+          navigation.navigate('EKYC');
+        }}
+        onCancel={() => setShowEKYCModal(false)}
+        confirmButtonStyle={{ backgroundColor: '#1976D2' }}
       />
     </View>
   );

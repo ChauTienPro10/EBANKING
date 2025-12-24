@@ -96,4 +96,27 @@ export const API = {
   GET_SAVINGS_REQUESTS: `${AUTH_SERVICE}/transaction-requests/user/{userId}`,
   GET_SAVINGS_REQUEST_DETAIL: `${AUTH_SERVICE}/savings/request/{requestId}`,
   CANCEL_SAVINGS_REQUEST: `${AUTH_SERVICE}/savings/request/{requestId}/cancel`,
+
+  // Phone Top-up APIs
+  GET_PHONE_TOPUP_PROVIDERS: `${AUTH_SERVICE}/phone-topup/providers`,
+  PHONE_TOPUP: `${AUTH_SERVICE}/phone-topup`,
+  PHONE_TOPUP_VERIFY_FACE_AUTH: `${AUTH_SERVICE}/phone-topup/verify-face-auth/{faceAuthSessionId}`,
+  GET_PHONE_TOPUP_HISTORY: `${AUTH_SERVICE}/phone-topup/history/{userId}`,
+  GET_PHONE_TOPUP_TRANSACTION: `${AUTH_SERVICE}/phone-topup/transaction/{transactionId}`,
+
+  // Data 4G APIs
+  GET_DATA_PACKAGES: `${AUTH_SERVICE}/data-topup/packages`,
+  GET_DATA_PACKAGES_BY_PROVIDER: `${AUTH_SERVICE}/data-topup/packages/provider/{providerId}`,
+  GET_DATA_PACKAGES_BY_PROVIDER_CODE: `${AUTH_SERVICE}/data-topup/packages/provider-code/{providerCode}`,
+  GET_DATA_PACKAGE_BY_ID: `${AUTH_SERVICE}/data-topup/packages/{packageId}`,
+  GET_DATA_PACKAGE_BY_CODE: `${AUTH_SERVICE}/data-topup/packages/code/{packageCode}`,
+  GET_DATA_PACKAGES_BY_PRICE_RANGE: `${AUTH_SERVICE}/data-topup/packages/provider/{providerId}/price-range`,
+  INITIATE_DATA_TOPUP: `${AUTH_SERVICE}/data-topup/initiate`,
+  VERIFY_DATA_FACE_AUTH: `${AUTH_SERVICE}/data-topup/verify-face-auth`,
+  GET_DATA_TRANSACTION: `${AUTH_SERVICE}/data-topup/transaction/{transactionId}`,
+  GET_DATA_HISTORY: `${AUTH_SERVICE}/data-topup/history`,
+  GET_DATA_HISTORY_PAGINATED: `${AUTH_SERVICE}/data-topup/history/paginated`,
+
+  // Transfer Purpose APIs
+  GET_TRANSFER_PURPOSES: `${AUTH_SERVICE}/transfer/purposes`,
 };

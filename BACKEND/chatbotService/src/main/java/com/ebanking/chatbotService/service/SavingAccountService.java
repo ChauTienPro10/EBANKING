@@ -421,27 +421,6 @@ public class SavingAccountService {
         }
     }
 
-    String getApplicableInterestRateAsString(
-            Integer termMonths,
-            BigDecimal amount
-    ) {
-        InterestRate rate = getApplicableInterestRate(termMonths, amount);
-        String minAmountText = formatAmount(rate.getMinAmount(), true);
-
-        String maxAmountText = formatAmount(rate.getMaxAmount(), false);
-
-        return String.format(
-                "Với kỳ hạn %d tháng và số tiền %s VNĐ, " +
-                        "lãi suất áp dụng là %.2f%%/năm. " +
-                        "Mức lãi suất này áp dụng cho khoản tiền từ %s đến %s.",
-                termMonths,
-                formatAmount(amount, false),
-                rate.getAnnualRate(),
-                minAmountText,
-                maxAmountText
-        );
-    }
-
     /**
      * Lấy danh sách lãi suất theo kỳ hạn
      */
@@ -600,6 +579,162 @@ public class SavingAccountService {
         } catch (Exception e) {
             log.error("Lỗi khi tính toán lãi suất dự kiến: amount={}, termMonths={}, error={}", amount, termMonths, e.getMessage());
             return "Không thể tính toán lãi suất dự kiến lúc này.";
+        }
+    }
+
+    /**
+     * Lấy thông tin lãi suất phù hợp dưới dạng string cho chatbot
+     */
+    public String getApplicableInterestRateAsString(Integer termMonths, BigDecimal amount) {
+        try {
+            InterestRate applicableRate = getApplicableInterestRate(termMonths, amount);
+            
+            if (applicableRate == null) {
+                return "Không tìm thấy lãi suất phù hợp cho số tiền " + String.format("%,.0f", amount) + " VNĐ và kỳ hạn " + termMonths + " tháng.";
+            }
+            
+            StringBuilder result = new StringBuilder();
+            result.append("Lãi suất áp dụng:\n");
+            result.append("- Kỳ hạn: ").append(termMonths).append(" tháng\n");
+            result.append("- Số tiền: ").append(String.format("%,.0f VNĐ", amount)).append("\n");
+            result.append("- Lãi suất: ").append(String.format("%.2f", applicableRate.getAnnualRate().multiply(BigDecimal.valueOf(100)))).append("%/năm\n");
+            
+            return result.toString();
+            
+        } catch (Exception e) {
+            log.error("Lỗi khi lấy lãi suất phù hợp: termMonths={}, amount={}, error={}", termMonths, amount, e.getMessage());
+            return "Không thể lấy thông tin lãi suất lúc này.";
+        }
+    }
+
+    /**
+     * Lấy tổng lãi đã nhận được của user từ tất cả tài khoản tiết kiệm
+     */
+    public String getTotalInterestEarnedAsString(Long userId) {
+        try {
+            BigDecimal totalInterest = getTotalInterestEarnedByUserId(userId);
+            List<SavingsAccount> accounts = getSavingsAccountsByUserId(userId);
+            
+            if (accounts.isEmpty()) {
+                return "Bạn chưa có tài khoản tiết kiệm nào.";
+            }
+            
+            StringBuilder result = new StringBuilder();
+            result.append("Tổng lãi đã nhận được từ tiết kiệm:\n");
+            result.append("- Tổng lãi: ").append(String.format("%,.0f VNĐ", totalInterest)).append("\n");
+            result.append("- Từ ").append(accounts.size()).append(" tài khoản tiết kiệm\n\n");
+            
+            result.append("Chi tiết theo từng tài khoản:\n");
+            for (SavingsAccount account : accounts) {
+                result.append("- ").append(account.getAccountNumber());
+                if (account.getTotalInterestEarned() != null) {
+                    result.append(": ").append(String.format("%,.0f VNĐ", account.getTotalInterestEarned()));
+                } else {
+                    result.append(": 0 VNĐ");
+                }
+                result.append(" (").append(account.getStatus()).append(")\n");
+            }
+            
+            return result.toString();
+            
+        } catch (Exception e) {
+            log.error("Lỗi khi lấy tổng lãi của user {}: {}", userId, e.getMessage());
+            return "Không thể lấy thông tin tổng lãi lúc này.";
+        }
+    }
+
+    /**
+     * Lấy thông tin lãi suất tháng này (lãi suất hiện tại đang áp dụng)
+     */
+    public String getCurrentMonthInterestRatesAsString() {
+        try {
+            List<InterestRate> currentRates = getActiveInterestRates();
+            
+            if (currentRates.isEmpty()) {
+                return "Hiện tại không có lãi suất nào đang áp dụng.";
+            }
+            
+            StringBuilder result = new StringBuilder();
+            result.append("Lãi suất tiết kiệm tháng này:\n\n");
+            
+            // Group by term
+            Map<Integer, List<InterestRate>> ratesByTerm = new java.util.HashMap<>();
+            for (InterestRate rate : currentRates) {
+                ratesByTerm.computeIfAbsent(rate.getTermMonths(), k -> new java.util.ArrayList<>()).add(rate);
+            }
+            
+            for (Map.Entry<Integer, List<InterestRate>> entry : ratesByTerm.entrySet()) {
+                Integer term = entry.getKey();
+                List<InterestRate> rates = entry.getValue();
+                
+                result.append("📅 Kỳ hạn ").append(term).append(" tháng:\n");
+                
+                for (InterestRate rate : rates) {
+                    result.append("  💰 Từ ").append(String.format("%,.0f", rate.getMinAmount()));
+                    
+                    if (rate.getMaxAmount() != null) {
+                        result.append(" - ").append(String.format("%,.0f", rate.getMaxAmount()));
+                    } else {
+                        result.append(" trở lên");
+                    }
+                    
+                    result.append(" VNĐ: ").append(String.format("%.2f", rate.getAnnualRate().multiply(BigDecimal.valueOf(100)))).append("%/năm\n");
+                }
+                
+                result.append("\n");
+            }
+            
+            result.append("⏰ Có hiệu lực từ: ").append(LocalDateTime.now().toLocalDate()).append("\n");
+            
+            return result.toString();
+            
+        } catch (Exception e) {
+            log.error("Lỗi khi lấy lãi suất tháng này: {}", e.getMessage());
+            return "Không thể lấy thông tin lãi suất tháng này.";
+        }
+    }
+
+    /**
+     * Lấy thông tin tài khoản tiết kiệm và lãi suất của user
+     */
+    public String getUserSavingsAndInterestSummary(Long userId) {
+        try {
+            List<SavingsAccount> accounts = getActiveSavingsAccountsByUserId(userId);
+            
+            if (accounts.isEmpty()) {
+                return "Bạn chưa có tài khoản tiết kiệm nào đang hoạt động.";
+            }
+            
+            StringBuilder result = new StringBuilder();
+            result.append("Tóm tắt tài khoản tiết kiệm của bạn:\n\n");
+            
+            BigDecimal totalBalance = BigDecimal.ZERO;
+            BigDecimal totalInterest = BigDecimal.ZERO;
+            
+            for (SavingsAccount account : accounts) {
+                result.append("📋 ").append(account.getAccountNumber()).append("\n");
+                result.append("  💵 Số dư: ").append(String.format("%,.0f %s", account.getBalance(), account.getCurrency())).append("\n");
+                result.append("  📅 Kỳ hạn: ").append(account.getTermMonths()).append(" tháng\n");
+                result.append("  📈 Đáo hạn: ").append(account.getMaturityDate().toLocalDate()).append("\n");
+                
+                if (account.getTotalInterestEarned() != null) {
+                    result.append("  💰 Lãi đã nhận: ").append(String.format("%,.0f %s", account.getTotalInterestEarned(), account.getCurrency())).append("\n");
+                    totalInterest = totalInterest.add(account.getTotalInterestEarned());
+                }
+                
+                totalBalance = totalBalance.add(account.getBalance());
+                result.append("\n");
+            }
+            
+            result.append("📊 Tổng kết:\n");
+            result.append("  💵 Tổng số dư: ").append(String.format("%,.0f VNĐ", totalBalance)).append("\n");
+            result.append("  💰 Tổng lãi đã nhận: ").append(String.format("%,.0f VNĐ", totalInterest)).append("\n");
+            
+            return result.toString();
+            
+        } catch (Exception e) {
+            log.error("Lỗi khi lấy tóm tắt tiết kiệm của user {}: {}", userId, e.getMessage());
+            return "Không thể lấy thông tin tóm tắt tiết kiệm.";
         }
     }
 

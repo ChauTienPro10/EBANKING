@@ -15,29 +15,33 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useSelector } from 'react-redux';
 import { Smartphone, ChevronDown, Check } from 'lucide-react-native';
 
 import MobilePrepaidService, {
   MobileOperator,
-  PrepaidPackage,
-  PrepaidRequest,
+  Denomination,
 } from '../../services/MobilePrepaidService';
 import { RootStackParamList } from '../../navigation/types';
+import { RootState } from '../../store';
+import Header from '../../components/Header';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'MobilePrepaid'>;
 
 const MobilePrepaidScreen: React.FC = () => {
   const { t } = useTranslation();
   const navigation = useNavigation<NavigationProp>();
+  const { userInfoData: userInfo, accountTransResponse } = useSelector((state: RootState) => state.app);
 
   const [phoneNumber, setPhoneNumber] = useState('');
   const [selectedOperator, setSelectedOperator] = useState<MobileOperator | null>(null);
-  const [selectedPackage, setSelectedPackage] = useState<PrepaidPackage | null>(null);
+  const [selectedDenomination, setSelectedDenomination] = useState<Denomination | null>(null);
+  const [customAmount, setCustomAmount] = useState('');
   const [operators, setOperators] = useState<MobileOperator[]>([]);
-  const [packages, setPackages] = useState<PrepaidPackage[]>([]);
   const [loading, setLoading] = useState(false);
   const [showOperatorModal, setShowOperatorModal] = useState(false);
-  const [showPackageModal, setShowPackageModal] = useState(false);
+  const [showDenominationModal, setShowDenominationModal] = useState(false);
+  const [useCustomAmount, setUseCustomAmount] = useState(false);
   const [recentNumbers] = useState(['0987654321', '0912345678', '0901234567']);
 
   useEffect(() => {
@@ -47,14 +51,11 @@ const MobilePrepaidScreen: React.FC = () => {
   useEffect(() => {
     if (phoneNumber.length >= 10) {
       detectOperator();
+    } else {
+      setSelectedOperator(null);
+      setSelectedDenomination(null);
     }
   }, [phoneNumber]);
-
-  useEffect(() => {
-    if (selectedOperator) {
-      loadPackages();
-    }
-  }, [selectedOperator]);
 
   const loadOperators = async () => {
     try {
@@ -68,26 +69,14 @@ const MobilePrepaidScreen: React.FC = () => {
   const detectOperator = async () => {
     try {
       const operator = await MobilePrepaidService.detectOperator(phoneNumber);
-      if (operator && operator.id !== selectedOperator?.id) {
+      if (operator && operator.providerId !== selectedOperator?.providerId) {
         setSelectedOperator(operator);
-        setSelectedPackage(null);
+        setSelectedDenomination(null);
+        setCustomAmount('');
+        setUseCustomAmount(false);
       }
     } catch (error) {
       console.error('Error detecting operator:', error);
-    }
-  };
-
-  const loadPackages = async () => {
-    if (!selectedOperator) return;
-    
-    try {
-      setLoading(true);
-      const data = await MobilePrepaidService.getPrepaidPackages(selectedOperator.id);
-      setPackages(data);
-    } catch (error) {
-      console.error('Error loading packages:', error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -101,7 +90,7 @@ const MobilePrepaidScreen: React.FC = () => {
       return false;
     }
 
-    if (phoneNumber.replace(/\D/g, '').length < 10) {
+    if (!MobilePrepaidService.validatePhoneNumber(phoneNumber)) {
       Alert.alert(t('common.error'), t('mobile_prepaid.validation.phone_invalid'));
       return false;
     }
@@ -111,21 +100,41 @@ const MobilePrepaidScreen: React.FC = () => {
       return false;
     }
 
-    if (!selectedPackage) {
-      Alert.alert(t('common.error'), t('mobile_prepaid.validation.package_required'));
+    const amount = useCustomAmount ? parseInt(customAmount.replace(/\D/g, '')) : selectedDenomination?.amount;
+    
+    if (!amount || amount <= 0) {
+      Alert.alert(t('common.error'), t('mobile_prepaid.validation.amount_required'));
+      return false;
+    }
+
+    if (!MobilePrepaidService.validateAmount(amount, selectedOperator)) {
+      Alert.alert(
+        t('common.error'), 
+        `Số tiền phải từ ${formatCurrency(selectedOperator.minAmount)} đến ${formatCurrency(selectedOperator.maxAmount)}`
+      );
       return false;
     }
 
     return true;
   };
 
+  const getSelectedAmount = (): number => {
+    return useCustomAmount ? parseInt(customAmount.replace(/\D/g, '')) || 0 : selectedDenomination?.amount || 0;
+  };
+
   const handleConfirm = () => {
     if (!validateForm()) return;
 
+    const amount = getSelectedAmount();
+    const fee = selectedOperator ? MobilePrepaidService.calculateFee(amount, selectedOperator) : 0;
+    const totalAmount = selectedOperator ? MobilePrepaidService.calculateTotalAmount(amount, selectedOperator) : amount;
+
     navigation.navigate('MobilePrepaidConfirm', {
-      phoneNumber,
-      operator: selectedOperator,
-      package: selectedPackage,
+      phoneNumber: MobilePrepaidService.formatPhoneNumber(phoneNumber),
+      operator: selectedOperator!,
+      amount,
+      fee,
+      totalAmount,
     });
   };
 
@@ -133,42 +142,42 @@ const MobilePrepaidScreen: React.FC = () => {
     <TouchableOpacity
       style={[
         styles.operatorItem,
-        selectedOperator?.id === item.id && styles.operatorItemSelected,
+        selectedOperator?.providerId === item.providerId && styles.operatorItemSelected,
       ]}
       onPress={() => {
         setSelectedOperator(item);
-        setSelectedPackage(null);
+        setSelectedDenomination(null);
+        setCustomAmount('');
+        setUseCustomAmount(false);
         setShowOperatorModal(false);
       }}
     >
-      <Image source={{ uri: item.logo }} style={styles.operatorLogo} />
-      <Text style={styles.operatorName}>{item.name}</Text>
-      {selectedOperator?.id === item.id && (
+      <Image source={{ uri: item.logoUrl }} style={styles.operatorLogo} />
+      <Text style={styles.operatorName}>{item.providerName}</Text>
+      {selectedOperator?.providerId === item.providerId && (
         <Check size={20} color="#4CAF50" style={styles.checkIcon} />
       )}
     </TouchableOpacity>
   );
 
-  const renderPackageItem = ({ item }: { item: PrepaidPackage }) => (
+  const renderDenominationItem = ({ item }: { item: Denomination }) => (
     <TouchableOpacity
       style={[
         styles.packageItem,
-        selectedPackage?.id === item.id && styles.packageItemSelected,
+        selectedDenomination?.denominationId === item.denominationId && styles.packageItemSelected,
       ]}
       onPress={() => {
-        setSelectedPackage(item);
-        setShowPackageModal(false);
+        setSelectedDenomination(item);
+        setUseCustomAmount(false);
+        setCustomAmount('');
+        setShowDenominationModal(false);
       }}
     >
       <View style={styles.packageHeader}>
-        <Text style={styles.packageAmount}>{formatCurrency(item.amount)}</Text>
-        {item.bonus > 0 && (
-          <Text style={styles.packageBonus}>+{formatCurrency(item.bonus)} KM</Text>
-        )}
+        <Text style={styles.packageAmount}>{item.displayName}</Text>
       </View>
-      <Text style={styles.packageDescription}>{item.description}</Text>
-      <Text style={styles.packageValidity}>{t('mobile_prepaid.validity')}: {item.validity}</Text>
-      {selectedPackage?.id === item.id && (
+      <Text style={styles.packageDescription}>Nạp tiền {formatCurrency(item.amount)}</Text>
+      {selectedDenomination?.denominationId === item.denominationId && (
         <Check size={20} color="#4CAF50" style={styles.checkIcon} />
       )}
     </TouchableOpacity>
@@ -185,14 +194,16 @@ const MobilePrepaidScreen: React.FC = () => {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
+      <>
+      <Header title={t('mobile_prepaid.title')} showBackButton />
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+        
         {/* Header */}
         <View style={styles.header}>
           <Smartphone size={24} color="#2196F3" />
-          <Text style={styles.title}>{t('mobile_prepaid.title')}</Text>
+          <Text style={styles.subtitle}>{t('mobile_prepaid.subtitle')}</Text>
         </View>
-        <Text style={styles.subtitle}>{t('mobile_prepaid.subtitle')}</Text>
 
         {/* Recent Numbers */}
         {recentNumbers.length > 0 && (
@@ -228,8 +239,8 @@ const MobilePrepaidScreen: React.FC = () => {
           >
             {selectedOperator ? (
               <View style={styles.selectedOperator}>
-                <Image source={{ uri: selectedOperator.logo }} style={styles.operatorLogoSmall} />
-                <Text style={styles.selectedOperatorText}>{selectedOperator.name}</Text>
+                <Image source={{ uri: selectedOperator.logoUrl }} style={styles.operatorLogoSmall} />
+                <Text style={styles.selectedOperatorText}>{selectedOperator.providerName}</Text>
               </View>
             ) : (
               <Text style={styles.selectorPlaceholder}>{t('mobile_prepaid.auto_detect')}</Text>
@@ -238,35 +249,93 @@ const MobilePrepaidScreen: React.FC = () => {
           </TouchableOpacity>
         </View>
 
-        {/* Package Selection */}
+        {/* Amount Selection */}
         {selectedOperator && (
           <View style={styles.section}>
-            <Text style={styles.label}>{t('mobile_prepaid.select_package')}</Text>
-            <TouchableOpacity
-              style={styles.selector}
-              onPress={() => setShowPackageModal(true)}
-            >
-              {selectedPackage ? (
-                <View>
-                  <Text style={styles.selectedPackageAmount}>
-                    {formatCurrency(selectedPackage.amount)}
-                    {selectedPackage.bonus > 0 && (
-                      <Text style={styles.selectedPackageBonus}>
-                        {' '}+{formatCurrency(selectedPackage.bonus)} KM
-                      </Text>
-                    )}
+            <Text style={styles.label}>{t('mobile_prepaid.select_amount')}</Text>
+            
+            {/* Denomination buttons */}
+            <View style={styles.denominationGrid}>
+              {selectedOperator.denominations.map((denomination) => (
+                <TouchableOpacity
+                  key={denomination.denominationId}
+                  style={[
+                    styles.denominationButton,
+                    selectedDenomination?.denominationId === denomination.denominationId && 
+                    !useCustomAmount && styles.denominationButtonSelected,
+                  ]}
+                  onPress={() => {
+                    setSelectedDenomination(denomination);
+                    setUseCustomAmount(false);
+                    setCustomAmount('');
+                  }}
+                >
+                  <Text style={[
+                    styles.denominationText,
+                    selectedDenomination?.denominationId === denomination.denominationId && 
+                    !useCustomAmount && styles.denominationTextSelected,
+                  ]}>
+                    {denomination.displayName}
                   </Text>
-                  <Text style={styles.selectedPackageDescription}>
-                    {selectedPackage.description}
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            {/* Custom amount option */}
+            <TouchableOpacity
+              style={[
+                styles.customAmountButton,
+                useCustomAmount && styles.customAmountButtonSelected,
+              ]}
+              onPress={() => {
+                setUseCustomAmount(true);
+                setSelectedDenomination(null);
+              }}
+            >
+              <Text style={[
+                styles.customAmountText,
+                useCustomAmount && styles.customAmountTextSelected,
+              ]}>
+                Số tiền khác
+              </Text>
+            </TouchableOpacity>
+
+            {/* Custom amount input */}
+            {useCustomAmount && (
+              <TextInput
+                style={styles.customAmountInput}
+                placeholder={`Từ ${formatCurrency(selectedOperator.minAmount)} đến ${formatCurrency(selectedOperator.maxAmount)}`}
+                value={customAmount}
+                onChangeText={(text) => {
+                  const numericValue = text.replace(/\D/g, '');
+                  const formattedValue = numericValue ? formatCurrency(parseInt(numericValue)) : '';
+                  setCustomAmount(formattedValue);
+                }}
+                keyboardType="numeric"
+              />
+            )}
+
+            {/* Fee information */}
+            {(selectedDenomination || (useCustomAmount && customAmount)) && (
+              <View style={styles.feeInfo}>
+                <View style={styles.feeRow}>
+                  <Text style={styles.feeLabel}>Số tiền nạp:</Text>
+                  <Text style={styles.feeValue}>{formatCurrency(getSelectedAmount())}</Text>
+                </View>
+                <View style={styles.feeRow}>
+                  <Text style={styles.feeLabel}>Phí giao dịch:</Text>
+                  <Text style={styles.feeValue}>
+                    {formatCurrency(MobilePrepaidService.calculateFee(getSelectedAmount(), selectedOperator))}
                   </Text>
                 </View>
-              ) : (
-                <Text style={styles.selectorPlaceholder}>
-                  {loading ? t('common.loading') : t('mobile_prepaid.select_package')}
-                </Text>
-              )}
-              <ChevronDown size={20} color="#666" />
-            </TouchableOpacity>
+                <View style={[styles.feeRow, styles.totalRow]}>
+                  <Text style={styles.totalLabel}>Tổng cộng:</Text>
+                  <Text style={styles.totalValue}>
+                    {formatCurrency(MobilePrepaidService.calculateTotalAmount(getSelectedAmount(), selectedOperator))}
+                  </Text>
+                </View>
+              </View>
+            )}
           </View>
         )}
 
@@ -274,10 +343,12 @@ const MobilePrepaidScreen: React.FC = () => {
         <TouchableOpacity
           style={[
             styles.confirmButton,
-            (!phoneNumber || !selectedOperator || !selectedPackage) && styles.confirmButtonDisabled,
+            (!phoneNumber || !selectedOperator || (!selectedDenomination && !useCustomAmount) || 
+             (useCustomAmount && !customAmount)) && styles.confirmButtonDisabled,
           ]}
           onPress={handleConfirm}
-          disabled={!phoneNumber || !selectedOperator || !selectedPackage}
+          disabled={!phoneNumber || !selectedOperator || (!selectedDenomination && !useCustomAmount) || 
+                   (useCustomAmount && !customAmount)}
         >
           <Text style={styles.confirmButtonText}>{t('mobile_prepaid.confirm_topup')}</Text>
         </TouchableOpacity>
@@ -291,7 +362,7 @@ const MobilePrepaidScreen: React.FC = () => {
             <FlatList
               data={operators}
               renderItem={renderOperatorItem}
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item) => item.providerId.toString()}
               style={styles.modalList}
             />
             <TouchableOpacity
@@ -304,31 +375,29 @@ const MobilePrepaidScreen: React.FC = () => {
         </View>
       )}
 
-      {/* Package Modal */}
-      {showPackageModal && (
+      {/* Denomination Modal */}
+      {showDenominationModal && selectedOperator && (
         <View style={styles.modal}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>{t('mobile_prepaid.select_package')}</Text>
-            {loading ? (
-              <ActivityIndicator size="large" color="#2196F3" style={styles.loader} />
-            ) : (
-              <FlatList
-                data={packages}
-                renderItem={renderPackageItem}
-                keyExtractor={(item) => item.id}
-                style={styles.modalList}
-              />
-            )}
+            <Text style={styles.modalTitle}>{t('mobile_prepaid.select_amount')}</Text>
+            <FlatList
+              data={selectedOperator.denominations}
+              renderItem={renderDenominationItem}
+              keyExtractor={(item) => item.denominationId.toString()}
+              style={styles.modalList}
+            />
             <TouchableOpacity
               style={styles.modalCloseButton}
-              onPress={() => setShowPackageModal(false)}
+              onPress={() => setShowDenominationModal(false)}
             >
               <Text style={styles.modalCloseButtonText}>{t('common.close')}</Text>
             </TouchableOpacity>
           </View>
         </View>
       )}
-    </SafeAreaView>
+      </>
+
+    </View>
   );
 };
 
@@ -344,18 +413,13 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-    marginLeft: 12,
+    marginBottom: 16,
   },
   subtitle: {
     fontSize: 16,
     color: '#666',
-    marginBottom: 24,
+    marginLeft: 12,
+    flex: 1,
   },
   section: {
     marginBottom: 24,
@@ -559,6 +623,102 @@ const styles = StyleSheet.create({
   },
   loader: {
     padding: 40,
+  },
+  denominationGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginBottom: 16,
+    gap: 8,
+  },
+  denominationButton: {
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    minWidth: '30%',
+    alignItems: 'center',
+  },
+  denominationButtonSelected: {
+    backgroundColor: '#e3f2fd',
+    borderColor: '#2196F3',
+  },
+  denominationText: {
+    fontSize: 14,
+    color: '#333',
+    fontWeight: '500',
+  },
+  denominationTextSelected: {
+    color: '#2196F3',
+    fontWeight: '600',
+  },
+  customAmountButton: {
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    borderRadius: 8,
+    padding: 16,
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  customAmountButtonSelected: {
+    backgroundColor: '#e3f2fd',
+    borderColor: '#2196F3',
+  },
+  customAmountText: {
+    fontSize: 16,
+    color: '#333',
+  },
+  customAmountTextSelected: {
+    color: '#2196F3',
+    fontWeight: '600',
+  },
+  customAmountInput: {
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    borderRadius: 8,
+    padding: 16,
+    fontSize: 16,
+    marginBottom: 16,
+  },
+  feeInfo: {
+    backgroundColor: '#f8f9fa',
+    borderRadius: 8,
+    padding: 16,
+    marginTop: 8,
+  },
+  feeRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  feeLabel: {
+    fontSize: 14,
+    color: '#666',
+  },
+  feeValue: {
+    fontSize: 14,
+    color: '#333',
+    fontWeight: '500',
+  },
+  totalRow: {
+    borderTopWidth: 1,
+    borderTopColor: '#e0e0e0',
+    paddingTop: 8,
+    marginTop: 8,
+    marginBottom: 0,
+  },
+  totalLabel: {
+    fontSize: 16,
+    color: '#333',
+    fontWeight: '600',
+  },
+  totalValue: {
+    fontSize: 16,
+    color: '#2196F3',
+    fontWeight: 'bold',
   },
 });
 
