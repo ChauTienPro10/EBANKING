@@ -244,6 +244,32 @@ public class UserService {
             return "Không thể lấy thông tin người dùng lúc này.";
         }
     }
+    
+    /**
+     * Lấy số dư tài khoản thanh toán
+     * Note: Phương thức này trả về thông báo vì cần truy vấn từ DB_TRANSACTION_SERVICE
+     * Trong thực tế, cần inject thêm JdbcTemplate cho DB_TRANSACTION_SERVICE
+     */
+    public String getBalanceAccountPay(String username) {
+        try {
+            Long userId = getUserId(username);
+            if (userId == null) {
+                return "Không tìm thấy thông tin người dùng.";
+            }
+            
+            // Trả về thông báo hướng dẫn
+            // Trong thực tế, cần query từ payment_account table trong DB_TRANSACTION_SERVICE
+            return "💳 Để xem số dư tài khoản thanh toán, vui lòng truy cập ứng dụng di động hoặc liên hệ hotline 1900-xxxx.\n\n" +
+                   "📱 Hoặc bạn có thể hỏi tôi về:\n" +
+                   "- Lãi suất tiết kiệm\n" +
+                   "- Tài khoản tiết kiệm của bạn\n" +
+                   "- Tính toán lãi suất dự kiến";
+            
+        } catch (Exception e) {
+            log.error("Lỗi khi lấy số dư tài khoản thanh toán cho user {}: {}", username, e.getMessage());
+            return "Không thể lấy thông tin số dư lúc này.";
+        }
+    }
 
     // Row Mappers
     private static class UserRowMapper implements RowMapper<User> {
@@ -284,18 +310,28 @@ public class UserService {
                 userInfo.setCreateAt(rs.getLong("info_create_at"));
                 userInfo.setUpdatedAt(rs.getLong("info_updated_at"));
                 
-                // Handle UUID
-                String ekycSessionIdStr = rs.getString("ekyc_session_id");
-                if (ekycSessionIdStr != null) {
-                    userInfo.setEkycSessionId(UUID.fromString(ekycSessionIdStr));
+                // Handle UUID - Skip if binary format
+                try {
+                    String ekycSessionIdStr = rs.getString("ekyc_session_id");
+                    if (ekycSessionIdStr != null && !ekycSessionIdStr.isEmpty()) {
+                        userInfo.setEkycSessionId(UUID.fromString(ekycSessionIdStr));
+                    }
+                } catch (Exception e) {
+                    // UUID is in binary format, skip it for chatbot purposes
+                    log.debug("Skipping binary UUID for user info: {}", e.getMessage());
                 }
                 
                 userInfo.setEkycStatus(rs.getString("ekyc_status"));
                 
-                // Handle LocalDateTime
-                java.sql.Timestamp ekycVerifiedAt = rs.getTimestamp("ekyc_verified_at");
-                if (ekycVerifiedAt != null) {
-                    userInfo.setEkycVerifiedAt(ekycVerifiedAt.toLocalDateTime());
+                // Handle LocalDateTime - ekyc_verified_at might be LONG or TIMESTAMP
+                try {
+                    java.sql.Timestamp ekycVerifiedAt = rs.getTimestamp("ekyc_verified_at");
+                    if (ekycVerifiedAt != null) {
+                        userInfo.setEkycVerifiedAt(ekycVerifiedAt.toLocalDateTime());
+                    }
+                } catch (Exception e) {
+                    // If it's stored as LONG, skip it for chatbot purposes
+                    log.debug("Skipping ekyc_verified_at conversion: {}", e.getMessage());
                 }
                 
                 userInfo.setAvatarPath(rs.getString("avatar_path"));
@@ -329,18 +365,28 @@ public class UserService {
             userInfo.setCreateAt(rs.getLong("create_at"));
             userInfo.setUpdatedAt(rs.getLong("updated_at"));
             
-            // Handle UUID
-            String ekycSessionIdStr = rs.getString("ekyc_session_id");
-            if (ekycSessionIdStr != null) {
-                userInfo.setEkycSessionId(UUID.fromString(ekycSessionIdStr));
+            // Handle UUID - Skip if binary format
+            try {
+                String ekycSessionIdStr = rs.getString("ekyc_session_id");
+                if (ekycSessionIdStr != null && !ekycSessionIdStr.isEmpty()) {
+                    userInfo.setEkycSessionId(UUID.fromString(ekycSessionIdStr));
+                }
+            } catch (Exception e) {
+                // UUID is in binary format, skip it for chatbot purposes
+                log.debug("Skipping binary UUID for user info: {}", e.getMessage());
             }
             
             userInfo.setEkycStatus(rs.getString("ekyc_status"));
             
-            // Handle LocalDateTime
-            java.sql.Timestamp ekycVerifiedAt = rs.getTimestamp("ekyc_verified_at");
-            if (ekycVerifiedAt != null) {
-                userInfo.setEkycVerifiedAt(ekycVerifiedAt.toLocalDateTime());
+            // Handle LocalDateTime - ekyc_verified_at might be LONG or TIMESTAMP
+            try {
+                java.sql.Timestamp ekycVerifiedAt = rs.getTimestamp("ekyc_verified_at");
+                if (ekycVerifiedAt != null) {
+                    userInfo.setEkycVerifiedAt(ekycVerifiedAt.toLocalDateTime());
+                }
+            } catch (Exception e) {
+                // If it's stored as LONG, skip it for chatbot purposes
+                log.debug("Skipping ekyc_verified_at conversion: {}", e.getMessage());
             }
             
             userInfo.setAvatarPath(rs.getString("avatar_path"));
