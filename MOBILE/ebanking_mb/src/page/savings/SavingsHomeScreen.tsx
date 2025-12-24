@@ -11,6 +11,7 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSelector } from 'react-redux';
 import Toast from 'react-native-toast-message';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { RootStackParamList } from '../../navigation/types';
 import { RootState } from '../../store';
 import { SavingsService } from '../../services/SavingsService';
@@ -19,14 +20,17 @@ import { useEkycValidation } from '../../utils/useEkycValidation';
 import SavingsCard from '../../components/savings/SavingsCard';
 import Header from '../../components/Header';
 import ConfirmModal from '../../components/ConfirmModal';
+import Colors from '../../constants/color';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 export default function SavingsHomeScreen() {
   const navigation = useNavigation<NavigationProp>();
-  const { userInfoData: userInfo } = useSelector((state: RootState) => state.app);
+  const { userInfoData: userInfo } = useSelector(
+    (state: RootState) => state.app,
+  );
   const { validateEkyc } = useEkycValidation();
-  
+
   const [savingsAccounts, setSavingsAccounts] = useState<SavingsAccount[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -36,7 +40,9 @@ export default function SavingsHomeScreen() {
     if (!userInfo?.id) return;
 
     try {
-      const accounts = await SavingsService.getSavingsAccounts(userInfo.id.toString());
+      const accounts = await SavingsService.getSavingsAccounts(
+        userInfo.id.toString(),
+      );
       setSavingsAccounts(accounts);
     } catch (error) {
       console.error('Error loading savings accounts:', error);
@@ -54,7 +60,7 @@ export default function SavingsHomeScreen() {
   useFocusEffect(
     useCallback(() => {
       loadSavingsAccounts();
-    }, [userInfo?.id])
+    }, [userInfo?.id]),
   );
 
   const onRefresh = () => {
@@ -94,7 +100,8 @@ export default function SavingsHomeScreen() {
   };
 
   const getActiveAccountsCount = () => {
-    return savingsAccounts.filter(account => account.status !== 'CLOSED').length;
+    return savingsAccounts.filter(account => account.status !== 'CLOSED')
+      .length;
   };
 
   const formatCurrency = (amount: number) => {
@@ -107,7 +114,7 @@ export default function SavingsHomeScreen() {
   return (
     <View style={styles.container}>
       <Header title="Tài khoản tiết kiệm" showBackButton />
-      
+
       <ScrollView
         style={styles.content}
         refreshControl={
@@ -122,9 +129,11 @@ export default function SavingsHomeScreen() {
           </Text>
           <Text style={styles.accountCount}>
             {getActiveAccountsCount()} tài khoản đang hoạt động
-            {savingsAccounts.filter(acc => acc.status === 'CLOSED').length > 0 && 
-              ` • ${savingsAccounts.filter(acc => acc.status === 'CLOSED').length} đã đóng`
-            }
+            {savingsAccounts.filter(acc => acc.status === 'CLOSED').length >
+              0 &&
+              ` • ${
+                savingsAccounts.filter(acc => acc.status === 'CLOSED').length
+              } đã đóng`}
           </Text>
         </View>
 
@@ -136,7 +145,7 @@ export default function SavingsHomeScreen() {
           >
             <Text style={styles.actionButtonText}>Mở tài khoản mới</Text>
           </TouchableOpacity>
-          
+
           <TouchableOpacity
             style={[styles.actionButton, styles.secondaryButton]}
             onPress={handleViewRequests}
@@ -150,7 +159,7 @@ export default function SavingsHomeScreen() {
         {/* Danh sách tài khoản */}
         <View style={styles.accountsContainer}>
           <Text style={styles.sectionTitle}>Tài khoản tiết kiệm của bạn</Text>
-          
+
           {loading ? (
             <View style={styles.loadingContainer}>
               <Text style={styles.loadingText}>Đang tải...</Text>
@@ -169,29 +178,37 @@ export default function SavingsHomeScreen() {
               {/* Active and Matured Accounts */}
               {savingsAccounts
                 .filter(account => account.status !== 'CLOSED')
-                .map((account) => (
+                .map(account => (
                   <SavingsCard
                     key={account.id}
                     account={account}
                     onPress={() => handleAccountPress(account.accountNumber)}
                   />
                 ))}
-              
+
               {/* Closed Accounts Section */}
-              {savingsAccounts.filter(account => account.status === 'CLOSED').length > 0 && (
+              {savingsAccounts.filter(account => account.status === 'CLOSED')
+                .length > 0 && (
                 <>
                   <View style={styles.closedAccountsHeader}>
                     <Text style={styles.closedAccountsTitle}>
-                      Tài khoản đã đóng ({savingsAccounts.filter(acc => acc.status === 'CLOSED').length})
+                      Tài khoản đã đóng (
+                      {
+                        savingsAccounts.filter(acc => acc.status === 'CLOSED')
+                          .length
+                      }
+                      )
                     </Text>
                   </View>
                   {savingsAccounts
                     .filter(account => account.status === 'CLOSED')
-                    .map((account) => (
+                    .map(account => (
                       <SavingsCard
                         key={account.id}
                         account={account}
-                        onPress={() => handleAccountPress(account.accountNumber)}
+                        onPress={() =>
+                          handleAccountPress(account.accountNumber)
+                        }
                       />
                     ))}
                 </>

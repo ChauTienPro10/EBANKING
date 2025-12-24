@@ -15,7 +15,8 @@ import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSelector } from 'react-redux';
-import { Wifi, ChevronDown, Check, Filter } from 'lucide-react-native';
+import { ChevronDown, Filter } from 'lucide-react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import Data4GService, { DataPackage } from '../../services/Data4GService';
 import { RootStackParamList } from '../../navigation/types';
@@ -27,18 +28,24 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Data4G'>;
 const Data4GScreen: React.FC = () => {
   const { t } = useTranslation();
   const navigation = useNavigation<NavigationProp>();
-  const { userInfoData: userInfo, accountTransResponse } = useSelector((state: RootState) => state.app);
+  const { userInfoData: userInfo, accountTransResponse } = useSelector(
+    (state: RootState) => state.app,
+  );
 
   const [phoneNumber, setPhoneNumber] = useState('');
   const [selectedProvider, setSelectedProvider] = useState<string>('');
-  const [selectedPackage, setSelectedPackage] = useState<DataPackage | null>(null);
+  const [selectedPackage, setSelectedPackage] = useState<DataPackage | null>(
+    null,
+  );
   const [packages, setPackages] = useState<DataPackage[]>([]);
   const [filteredPackages, setFilteredPackages] = useState<DataPackage[]>([]);
   const [loading, setLoading] = useState(false);
   const [showProviderModal, setShowProviderModal] = useState(false);
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [priceFilter, setPriceFilter] = useState({ min: '', max: '' });
-  const [sortBy, setSortBy] = useState<'price' | 'dataAmount' | 'validityDays'>('price');
+  const [sortBy, setSortBy] = useState<'price' | 'dataAmount' | 'validityDays'>(
+    'price',
+  );
   const [recentNumbers] = useState(['0987654321', '0912345678', '0901234567']);
 
   const providers = [
@@ -69,7 +76,8 @@ const Data4GScreen: React.FC = () => {
   }, [packages, priceFilter, sortBy]);
 
   const detectProvider = () => {
-    const providerCode = Data4GService.detectProviderFromPhoneNumber(phoneNumber);
+    const providerCode =
+      Data4GService.detectProviderFromPhoneNumber(phoneNumber);
     if (providerCode && providerCode !== selectedProvider) {
       setSelectedProvider(providerCode);
       setSelectedPackage(null);
@@ -78,10 +86,12 @@ const Data4GScreen: React.FC = () => {
 
   const loadPackages = async () => {
     if (!selectedProvider) return;
-    
+
     try {
       setLoading(true);
-      const data = await Data4GService.getDataPackagesByProviderCode(selectedProvider);
+      const data = await Data4GService.getDataPackagesByProviderCode(
+        selectedProvider,
+      );
       setPackages(data);
     } catch (error) {
       console.error('Error loading packages:', error);
@@ -96,9 +106,17 @@ const Data4GScreen: React.FC = () => {
 
     // Apply price filter
     if (priceFilter.min || priceFilter.max) {
-      const minPrice = priceFilter.min ? parseInt(priceFilter.min.replace(/\D/g, '')) : undefined;
-      const maxPrice = priceFilter.max ? parseInt(priceFilter.max.replace(/\D/g, '')) : undefined;
-      filtered = Data4GService.filterPackagesByPrice(filtered, minPrice, maxPrice);
+      const minPrice = priceFilter.min
+        ? parseInt(priceFilter.min.replace(/\D/g, ''))
+        : undefined;
+      const maxPrice = priceFilter.max
+        ? parseInt(priceFilter.max.replace(/\D/g, ''))
+        : undefined;
+      filtered = Data4GService.filterPackagesByPrice(
+        filtered,
+        minPrice,
+        maxPrice,
+      );
     }
 
     // Apply sorting
@@ -145,7 +163,11 @@ const Data4GScreen: React.FC = () => {
     });
   };
 
-  const renderProviderItem = ({ item }: { item: { code: string; name: string } }) => (
+  const renderProviderItem = ({
+    item,
+  }: {
+    item: { code: string; name: string };
+  }) => (
     <TouchableOpacity
       style={[
         styles.providerItem,
@@ -159,7 +181,7 @@ const Data4GScreen: React.FC = () => {
     >
       <Text style={styles.providerName}>{item.name}</Text>
       {selectedProvider === item.code && (
-        <Check size={20} color="#4CAF50" style={styles.checkIcon} />
+        <Ionicons name="checkmark-circle" size={22} color="#09a0a5" />
       )}
     </TouchableOpacity>
   );
@@ -168,7 +190,8 @@ const Data4GScreen: React.FC = () => {
     <TouchableOpacity
       style={[
         styles.packageItem,
-        selectedPackage?.packageId === item.packageId && styles.packageItemSelected,
+        selectedPackage?.packageId === item.packageId &&
+          styles.packageItemSelected,
       ]}
       onPress={() => setSelectedPackage(item)}
     >
@@ -176,18 +199,23 @@ const Data4GScreen: React.FC = () => {
         <Text style={styles.packageName}>{item.packageName}</Text>
         <Text style={styles.packagePrice}>{formatCurrency(item.price)}</Text>
       </View>
-      
+
       <View style={styles.packageDetails}>
         <Text style={styles.packageData}>{item.formattedDataAmount}</Text>
         <Text style={styles.packageValidity}>
           {Data4GService.formatValidity(item.validityDays)}
         </Text>
       </View>
-      
+
       <Text style={styles.packageDescription}>{item.description}</Text>
-      
+
       {selectedPackage?.packageId === item.packageId && (
-        <Check size={20} color="#4CAF50" style={styles.checkIcon} />
+        <Ionicons
+          name="checkmark-circle"
+          size={22}
+          color="#09a0a5"
+          style={styles.checkIcon}
+        />
       )}
     </TouchableOpacity>
   );
@@ -208,15 +236,11 @@ const Data4GScreen: React.FC = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['bottom']}>
       <Header title="Nạp Data 4G" showBackButton />
-      
+
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Wifi size={24} color="#2196F3" />
-          <Text style={styles.subtitle}>Nạp data 4G nhanh chóng cho thuê bao di động</Text>
-        </View>
+        {/* Header Info - Removed as it's redundant with page title */}
 
         {/* Recent Numbers */}
         {recentNumbers.length > 0 && (
@@ -250,10 +274,12 @@ const Data4GScreen: React.FC = () => {
             style={styles.selector}
             onPress={() => setShowProviderModal(true)}
           >
-            <Text style={[
-              styles.selectorText,
-              !selectedProvider && styles.selectorPlaceholder
-            ]}>
+            <Text
+              style={[
+                styles.selectorText,
+                !selectedProvider && styles.selectorPlaceholder,
+              ]}
+            >
               {getSelectedProviderName()}
             </Text>
             <ChevronDown size={20} color="#666" />
@@ -273,7 +299,7 @@ const Data4GScreen: React.FC = () => {
                 <Text style={styles.filterText}>Lọc</Text>
               </TouchableOpacity>
             </View>
-            
+
             {loading ? (
               <View style={styles.loadingContainer}>
                 <ActivityIndicator size="large" color="#2196F3" />
@@ -283,7 +309,7 @@ const Data4GScreen: React.FC = () => {
               <FlatList
                 data={filteredPackages}
                 renderItem={renderPackageItem}
-                keyExtractor={(item) => item.packageId.toString()}
+                keyExtractor={item => item.packageId.toString()}
                 scrollEnabled={false}
                 ListEmptyComponent={
                   <Text style={styles.emptyText}>Không có gói data nào</Text>
@@ -297,7 +323,8 @@ const Data4GScreen: React.FC = () => {
         <TouchableOpacity
           style={[
             styles.confirmButton,
-            (!phoneNumber || !selectedProvider || !selectedPackage) && styles.confirmButtonDisabled,
+            (!phoneNumber || !selectedProvider || !selectedPackage) &&
+              styles.confirmButtonDisabled,
           ]}
           onPress={handleConfirm}
           disabled={!phoneNumber || !selectedProvider || !selectedPackage}
@@ -314,7 +341,7 @@ const Data4GScreen: React.FC = () => {
             <FlatList
               data={providers}
               renderItem={renderProviderItem}
-              keyExtractor={(item) => item.code}
+              keyExtractor={item => item.code}
               style={styles.modalList}
             />
             <TouchableOpacity
@@ -332,7 +359,7 @@ const Data4GScreen: React.FC = () => {
         <View style={styles.modal}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Lọc gói data</Text>
-            
+
             {/* Price Filter */}
             <View style={styles.filterSection}>
               <Text style={styles.filterLabel}>Khoảng giá</Text>
@@ -341,7 +368,9 @@ const Data4GScreen: React.FC = () => {
                   style={styles.priceInput}
                   placeholder="Từ"
                   value={priceFilter.min}
-                  onChangeText={(text) => setPriceFilter(prev => ({ ...prev, min: text }))}
+                  onChangeText={text =>
+                    setPriceFilter(prev => ({ ...prev, min: text }))
+                  }
                   keyboardType="numeric"
                 />
                 <Text style={styles.priceSeparator}>-</Text>
@@ -349,7 +378,9 @@ const Data4GScreen: React.FC = () => {
                   style={styles.priceInput}
                   placeholder="Đến"
                   value={priceFilter.max}
-                  onChangeText={(text) => setPriceFilter(prev => ({ ...prev, max: text }))}
+                  onChangeText={text =>
+                    setPriceFilter(prev => ({ ...prev, max: text }))
+                  }
                   keyboardType="numeric"
                 />
               </View>
@@ -362,7 +393,7 @@ const Data4GScreen: React.FC = () => {
                 { key: 'price', label: 'Giá' },
                 { key: 'dataAmount', label: 'Dung lượng' },
                 { key: 'validityDays', label: 'Thời hạn' },
-              ].map((option) => (
+              ].map(option => (
                 <TouchableOpacity
                   key={option.key}
                   style={styles.sortOption}
@@ -370,7 +401,11 @@ const Data4GScreen: React.FC = () => {
                 >
                   <Text style={styles.sortOptionText}>{option.label}</Text>
                   {sortBy === option.key && (
-                    <Check size={16} color="#2196F3" />
+                    <Ionicons
+                      name="checkmark-circle"
+                      size={18}
+                      color="#09a0a5"
+                    />
                   )}
                 </TouchableOpacity>
               ))}
@@ -386,7 +421,7 @@ const Data4GScreen: React.FC = () => {
               >
                 <Text style={styles.filterResetText}>Đặt lại</Text>
               </TouchableOpacity>
-              
+
               <TouchableOpacity
                 style={styles.filterApplyButton}
                 onPress={() => setShowFilterModal(false)}
@@ -404,62 +439,70 @@ const Data4GScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#F8F9FA',
   },
   content: {
     flex: 1,
-    padding: 16,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    backgroundColor: '#FFFFFF',
+    marginBottom: 2,
   },
   subtitle: {
-    fontSize: 16,
-    color: '#666',
+    fontSize: 14,
+    color: '#6B7280',
     marginLeft: 12,
     flex: 1,
   },
   section: {
-    marginBottom: 24,
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 20,
+    paddingVertical: 20,
+    marginBottom: 2,
   },
   sectionTitle: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
-    color: '#333',
+    color: '#374151',
     marginBottom: 12,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   label: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
-    color: '#333',
-    marginBottom: 8,
+    color: '#374151',
+    marginBottom: 12,
   },
   input: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    fontSize: 16,
+    backgroundColor: '#F9FAFB',
+    borderRadius: 8,
+    padding: 14,
+    fontSize: 15,
     borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderColor: '#E5E7EB',
+    color: '#111827',
   },
   selector: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
+    backgroundColor: '#F9FAFB',
+    borderRadius: 8,
+    padding: 14,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderColor: '#E5E7EB',
   },
   selectorText: {
-    fontSize: 16,
-    color: '#333',
+    fontSize: 15,
+    color: '#111827',
   },
   selectorPlaceholder: {
-    color: '#999',
+    color: '#9CA3AF',
   },
   packageHeader: {
     flexDirection: 'row',
@@ -472,13 +515,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 12,
     paddingVertical: 6,
-    backgroundColor: '#e3f2fd',
-    borderRadius: 16,
+    backgroundColor: '#E0F7F8',
+    borderRadius: 6,
   },
   filterText: {
-    fontSize: 14,
-    color: '#2196F3',
+    fontSize: 13,
+    color: '#09a0a5',
     marginLeft: 4,
+    fontWeight: '500',
   },
   loadingContainer: {
     alignItems: 'center',
@@ -486,54 +530,56 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 14,
-    color: '#666',
-    marginTop: 8,
+    color: '#6B7280',
+    marginTop: 12,
   },
   emptyText: {
     textAlign: 'center',
     fontSize: 14,
-    color: '#666',
-    padding: 20,
+    color: '#9CA3AF',
+    padding: 32,
   },
   recentNumbers: {
     flexDirection: 'row',
+    paddingHorizontal: 20,
   },
   recentNumberItem: {
-    backgroundColor: '#fff',
+    backgroundColor: '#F9FAFB',
     paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingVertical: 10,
     borderRadius: 20,
     marginRight: 8,
     borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderColor: '#E5E7EB',
   },
   recentNumberText: {
-    fontSize: 14,
-    color: '#333',
+    fontSize: 13,
+    color: '#374151',
+    fontWeight: '500',
   },
   packageItem: {
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderWidth: 1.5,
+    borderColor: '#E5E7EB',
     position: 'relative',
   },
   packageItemSelected: {
-    borderColor: '#2196F3',
-    backgroundColor: '#e3f2fd',
+    borderColor: '#09a0a5',
+    backgroundColor: '#F0FDFD',
   },
   packageName: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '600',
-    color: '#333',
+    color: '#111827',
     flex: 1,
   },
   packagePrice: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#2196F3',
+    fontWeight: '700',
+    color: '#09a0a5',
   },
   packageDetails: {
     flexDirection: 'row',
@@ -541,40 +587,50 @@ const styles = StyleSheet.create({
     marginVertical: 8,
   },
   packageData: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#4CAF50',
+    fontSize: 17,
+    fontWeight: '700',
+    color: '#059669',
     marginRight: 16,
   },
   packageValidity: {
-    fontSize: 14,
-    color: '#666',
+    fontSize: 13,
+    color: '#6B7280',
   },
   packageDescription: {
-    fontSize: 14,
-    color: '#666',
+    fontSize: 13,
+    color: '#6B7280',
     marginTop: 4,
+    lineHeight: 18,
   },
   checkIcon: {
     position: 'absolute',
-    top: 8,
-    right: 8,
+    top: 12,
+    right: 12,
   },
   confirmButton: {
-    backgroundColor: '#2196F3',
-    borderRadius: 12,
+    backgroundColor: '#09a0a5',
+    borderRadius: 10,
     padding: 16,
     alignItems: 'center',
+    marginHorizontal: 20,
     marginTop: 24,
     marginBottom: 32,
+    shadowColor: '#09a0a5',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   confirmButtonDisabled: {
-    backgroundColor: '#ccc',
+    backgroundColor: '#D1D5DB',
+    shadowOpacity: 0,
+    elevation: 0,
   },
   confirmButtonText: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '600',
-    color: '#fff',
+    color: '#FFFFFF',
+    letterSpacing: 0.3,
   },
   modal: {
     position: 'absolute',
@@ -587,17 +643,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalContent: {
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderRadius: 16,
-    padding: 20,
+    padding: 24,
     width: '90%',
     maxHeight: '80%',
   },
   modalTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 16,
+    fontWeight: '700',
+    color: '#111827',
+    marginBottom: 20,
     textAlign: 'center',
   },
   modalList: {
@@ -607,39 +663,43 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 16,
-    borderRadius: 12,
+    borderRadius: 10,
     marginBottom: 8,
-    backgroundColor: '#f8f8f8',
+    backgroundColor: '#F9FAFB',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
   },
   providerItemSelected: {
-    backgroundColor: '#e3f2fd',
-    borderWidth: 1,
-    borderColor: '#2196F3',
+    backgroundColor: '#E0F7F8',
+    borderColor: '#09a0a5',
+    borderWidth: 1.5,
   },
   providerName: {
-    fontSize: 16,
-    color: '#333',
+    fontSize: 15,
+    color: '#111827',
     flex: 1,
+    fontWeight: '500',
   },
   modalCloseButton: {
-    backgroundColor: '#f0f0f0',
-    borderRadius: 12,
-    padding: 16,
+    backgroundColor: '#F3F4F6',
+    borderRadius: 10,
+    padding: 14,
     alignItems: 'center',
     marginTop: 16,
   },
   modalCloseButtonText: {
-    fontSize: 16,
-    color: '#333',
+    fontSize: 15,
+    color: '#374151',
+    fontWeight: '600',
   },
   filterSection: {
-    marginBottom: 20,
+    marginBottom: 24,
   },
   filterLabel: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
-    color: '#333',
-    marginBottom: 8,
+    color: '#374151',
+    marginBottom: 10,
   },
   priceFilterRow: {
     flexDirection: 'row',
@@ -647,55 +707,57 @@ const styles = StyleSheet.create({
   },
   priceInput: {
     flex: 1,
-    backgroundColor: '#f8f8f8',
+    backgroundColor: '#F9FAFB',
     borderRadius: 8,
     padding: 12,
     fontSize: 14,
     borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderColor: '#E5E7EB',
   },
   priceSeparator: {
     marginHorizontal: 12,
     fontSize: 16,
-    color: '#666',
+    color: '#9CA3AF',
   },
   sortOption: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: 14,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    borderBottomColor: '#F3F4F6',
   },
   sortOptionText: {
-    fontSize: 16,
-    color: '#333',
+    fontSize: 15,
+    color: '#374151',
   },
   filterButtons: {
     flexDirection: 'row',
     gap: 12,
+    marginTop: 8,
   },
   filterResetButton: {
     flex: 1,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: '#F3F4F6',
     borderRadius: 8,
-    padding: 12,
+    padding: 14,
     alignItems: 'center',
   },
   filterResetText: {
     fontSize: 14,
-    color: '#666',
+    color: '#6B7280',
+    fontWeight: '600',
   },
   filterApplyButton: {
     flex: 1,
-    backgroundColor: '#2196F3',
+    backgroundColor: '#09a0a5',
     borderRadius: 8,
-    padding: 12,
+    padding: 14,
     alignItems: 'center',
   },
   filterApplyText: {
     fontSize: 14,
-    color: '#fff',
+    color: '#FFFFFF',
     fontWeight: '600',
   },
 });

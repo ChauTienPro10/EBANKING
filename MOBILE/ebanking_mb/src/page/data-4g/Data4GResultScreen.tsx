@@ -11,14 +11,26 @@ import { useTranslation } from 'react-i18next';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
-import { CheckCircle, Home, RotateCcw, XCircle, Clock } from 'lucide-react-native';
+import {
+  CheckCircle,
+  Home,
+  RotateCcw,
+  XCircle,
+  Clock,
+} from 'lucide-react-native';
 
-import { DataTopUpTransaction, DataPackage } from '../../services/Data4GService';
+import {
+  DataTopUpTransaction,
+  DataPackage,
+} from '../../services/Data4GService';
 import Data4GService from '../../services/Data4GService';
 import Header from '../../components/Header';
 import { RootStackParamList } from '../../navigation/types';
 
-type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Data4GResult'>;
+type NavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'Data4GResult'
+>;
 type RoutePropType = RouteProp<RootStackParamList, 'Data4GResult'>;
 
 const Data4GResultScreen: React.FC = () => {
@@ -62,27 +74,31 @@ const Data4GResultScreen: React.FC = () => {
 
   const getProviderName = () => {
     const providerNames: Record<string, string> = {
-      'VIETTEL': 'Viettel',
-      'VINAPHONE': 'VinaPhone',
-      'MOBIFONE': 'MobiFone',
-      'VIETNAMOBILE': 'Vietnamobile',
+      VIETTEL: 'Viettel',
+      VINAPHONE: 'VinaPhone',
+      MOBIFONE: 'MobiFone',
+      VIETNAMOBILE: 'Vietnamobile',
     };
     return providerNames[provider] || provider;
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['bottom']}>
       <Header title={getHeaderTitle()} showBackButton />
-      
+
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Status Header */}
         <View style={styles.statusContainer}>
-          <View style={[
-            styles.statusIcon, 
-            isSuccess ? styles.successIcon : 
-            isPending ? styles.pendingIcon : 
-            styles.failureIcon
-          ]}>
+          <View
+            style={[
+              styles.statusIcon,
+              isSuccess
+                ? styles.successIcon
+                : isPending
+                ? styles.pendingIcon
+                : styles.failureIcon,
+            ]}
+          >
             {isSuccess ? (
               <CheckCircle size={48} color="#4CAF50" />
             ) : isPending ? (
@@ -91,23 +107,29 @@ const Data4GResultScreen: React.FC = () => {
               <XCircle size={48} color="#F44336" />
             )}
           </View>
-          <Text style={[
-            styles.statusTitle, 
-            isSuccess ? styles.successTitle : 
-            isPending ? styles.pendingTitle : 
-            styles.failureTitle
-          ]}>
-            {isSuccess ? 'Nạp data thành công' : 
-             isPending ? 'Đang xử lý' : 
-             'Nạp data thất bại'}
+          <Text
+            style={[
+              styles.statusTitle,
+              isSuccess
+                ? styles.successTitle
+                : isPending
+                ? styles.pendingTitle
+                : styles.failureTitle,
+            ]}
+          >
+            {isSuccess
+              ? 'Nạp data thành công'
+              : isPending
+              ? 'Đang xử lý'
+              : 'Nạp data thất bại'}
           </Text>
           <Text style={styles.statusMessage}>
-            {isSuccess 
+            {isSuccess
               ? `Đã nạp thành công gói ${selectedPackage.formattedDataAmount} cho số ${transaction.phoneNumber}`
               : isPending
               ? 'Giao dịch đang được xử lý, vui lòng chờ trong giây lát'
-              : transaction.failureReason || 'Giao dịch không thành công, vui lòng thử lại'
-            }
+              : transaction.failureReason ||
+                'Giao dịch không thành công, vui lòng thử lại'}
           </Text>
         </View>
 
@@ -115,10 +137,12 @@ const Data4GResultScreen: React.FC = () => {
         {(isSuccess || isPending) && (
           <View style={styles.card}>
             <Text style={styles.cardTitle}>Chi tiết giao dịch</Text>
-            
+
             <View style={styles.detailRow}>
               <Text style={styles.detailLabel}>Mã giao dịch</Text>
-              <Text style={styles.detailValue}>{transaction.transactionId}</Text>
+              <Text style={styles.detailValue}>
+                {transaction.transactionId}
+              </Text>
             </View>
 
             <View style={styles.detailRow}>
@@ -134,29 +158,40 @@ const Data4GResultScreen: React.FC = () => {
             <View style={styles.detailRow}>
               <Text style={styles.detailLabel}>Gói data</Text>
               <View>
-                <Text style={styles.detailValue}>{transaction.packageName}</Text>
+                <Text style={styles.detailValue}>
+                  {transaction.packageName}
+                </Text>
                 <Text style={styles.packageDetails}>
-                  {transaction.formattedDataAmount} • {Data4GService.formatValidity(transaction.validityDays)}
+                  {transaction.formattedDataAmount} •{' '}
+                  {Data4GService.formatValidity(transaction.validityDays)}
                 </Text>
               </View>
             </View>
 
             <View style={styles.detailRow}>
               <Text style={styles.detailLabel}>Giá trị</Text>
-              <Text style={styles.amountValue}>{formatCurrency(transaction.amount)}</Text>
+              <Text style={styles.amountValue}>
+                {formatCurrency(transaction.amount)}
+              </Text>
             </View>
 
             <View style={styles.detailRow}>
               <Text style={styles.detailLabel}>Trạng thái</Text>
-              <Text style={[
-                styles.statusValue,
-                isSuccess ? styles.successStatus : 
-                isPending ? styles.pendingStatus : 
-                styles.failedStatus
-              ]}>
-                {isSuccess ? 'Thành công' : 
-                 isPending ? 'Đang xử lý' : 
-                 'Thất bại'}
+              <Text
+                style={[
+                  styles.statusValue,
+                  isSuccess
+                    ? styles.successStatus
+                    : isPending
+                    ? styles.pendingStatus
+                    : styles.failedStatus,
+                ]}
+              >
+                {isSuccess
+                  ? 'Thành công'
+                  : isPending
+                  ? 'Đang xử lý'
+                  : 'Thất bại'}
               </Text>
             </View>
 
@@ -181,7 +216,9 @@ const Data4GResultScreen: React.FC = () => {
             {transaction.providerTransactionId && (
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Mã GD nhà mạng</Text>
-                <Text style={styles.detailValue}>{transaction.providerTransactionId}</Text>
+                <Text style={styles.detailValue}>
+                  {transaction.providerTransactionId}
+                </Text>
               </View>
             )}
           </View>
@@ -192,10 +229,10 @@ const Data4GResultScreen: React.FC = () => {
           <View style={styles.tipsCard}>
             <Text style={styles.tipsTitle}>💡 Lưu ý</Text>
             <Text style={styles.tipsText}>
-              • Data đã được nạp vào thuê bao thành công{'\n'}
-              • Kiểm tra dung lượng data bằng cách gọi *101#{'\n'}
-              • Data có hiệu lực trong {Data4GService.formatValidity(transaction.validityDays)}{'\n'}
-              • Lưu lại mã giao dịch để tra cứu sau này
+              • Data đã được nạp vào thuê bao thành công{'\n'}• Kiểm tra dung
+              lượng data bằng cách gọi *101#{'\n'}• Data có hiệu lực trong{' '}
+              {Data4GService.formatValidity(transaction.validityDays)}
+              {'\n'}• Lưu lại mã giao dịch để tra cứu sau này
             </Text>
           </View>
         )}
@@ -205,7 +242,8 @@ const Data4GResultScreen: React.FC = () => {
           <View style={styles.pendingCard}>
             <Text style={styles.pendingCardTitle}>⏳ Đang xử lý</Text>
             <Text style={styles.pendingText}>
-              Giao dịch của bạn đang được xử lý. Data sẽ được nạp vào thuê bao trong vài phút tới.
+              Giao dịch của bạn đang được xử lý. Data sẽ được nạp vào thuê bao
+              trong vài phút tới.
             </Text>
           </View>
         )}
@@ -215,7 +253,8 @@ const Data4GResultScreen: React.FC = () => {
           <View style={styles.warningCard}>
             <Text style={styles.warningTitle}>🔐 Yêu cầu xác thực</Text>
             <Text style={styles.warningText}>
-              Giao dịch này yêu cầu xác thực khuôn mặt. Vui lòng hoàn thành xác thực để tiếp tục.
+              Giao dịch này yêu cầu xác thực khuôn mặt. Vui lòng hoàn thành xác
+              thực để tiếp tục.
             </Text>
           </View>
         )}
@@ -247,12 +286,18 @@ const Data4GResultScreen: React.FC = () => {
 
         {/* Action Buttons */}
         <View style={styles.actionButtons}>
-          <TouchableOpacity style={styles.secondaryButton} onPress={handleGoHome}>
-            <Home size={20} color="#2196F3" />
+          <TouchableOpacity
+            style={styles.secondaryButton}
+            onPress={handleGoHome}
+          >
+            <Home size={20} color="#09a0a5" />
             <Text style={styles.secondaryButtonText}>Về trang chủ</Text>
           </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.primaryButton} onPress={handleTopUpAgain}>
+
+          <TouchableOpacity
+            style={styles.primaryButton}
+            onPress={handleTopUpAgain}
+          >
             <RotateCcw size={20} color="#fff" />
             <Text style={styles.primaryButtonText}>Nạp data khác</Text>
           </TouchableOpacity>
@@ -361,7 +406,7 @@ const styles = StyleSheet.create({
   },
   amountValue: {
     fontSize: 16,
-    color: '#2196F3',
+    color: '#09a0a5',
     fontWeight: 'bold',
   },
   statusValue: {
@@ -483,17 +528,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#2196F3',
+    borderColor: '#09a0a5',
   },
   secondaryButtonText: {
     fontSize: 16,
-    color: '#2196F3',
+    color: '#09a0a5',
     fontWeight: '600',
     marginLeft: 8,
   },
   primaryButton: {
     flex: 1,
-    backgroundColor: '#2196F3',
+    backgroundColor: '#09a0a5',
     borderRadius: 12,
     padding: 16,
     alignItems: 'center',

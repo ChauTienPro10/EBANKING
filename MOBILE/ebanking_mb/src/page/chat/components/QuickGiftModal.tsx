@@ -79,8 +79,8 @@ const QuickGiftModal: React.FC<QuickGiftModalProps> = ({
           {/* Info Text */}
           <View style={styles.infoContainer}>
             <Text style={styles.infoText}>
-              Số tiền đi kèm món quà sẽ được chuyển thẳng vào Ví MoMo của người
-              nhận.
+              Số tiền đi kèm món quà sẽ được chuyển thẳng vào tài khoản của
+              người nhận
             </Text>
           </View>
 

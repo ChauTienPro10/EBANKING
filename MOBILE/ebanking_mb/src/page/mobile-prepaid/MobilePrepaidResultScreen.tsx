@@ -12,13 +12,20 @@ import { useTranslation } from 'react-i18next';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
-import { CheckCircle, Home, RotateCcw, XCircle } from 'lucide-react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
-import { PrepaidTransaction, MobileOperator } from '../../services/MobilePrepaidService';
+import {
+  PrepaidTransaction,
+  MobileOperator,
+} from '../../services/MobilePrepaidService';
 import Header from '../../components/Header';
 import { RootStackParamList } from '../../navigation/types';
+import Colors from '../../constants/color';
 
-type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'MobilePrepaidResult'>;
+type NavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'MobilePrepaidResult'
+>;
 type RoutePropType = RouteProp<RootStackParamList, 'MobilePrepaidResult'>;
 
 const MobilePrepaidResultScreen: React.FC = () => {
@@ -63,41 +70,57 @@ const MobilePrepaidResultScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       <Header title={getHeaderTitle()} showBackButton />
-      
+
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Status Header */}
         <View style={styles.statusContainer}>
-          <View style={[
-            styles.statusIcon, 
-            isSuccess ? styles.successIcon : 
-            isPending ? styles.pendingIcon : 
-            styles.failureIcon
-          ]}>
+          <View
+            style={[
+              styles.statusIcon,
+              isSuccess
+                ? styles.successIcon
+                : isPending
+                ? styles.pendingIcon
+                : styles.failureIcon,
+            ]}
+          >
             {isSuccess ? (
-              <CheckCircle size={48} color="#4CAF50" />
+              <Ionicons
+                name="checkmark-circle"
+                size={48}
+                color={Colors.success}
+              />
             ) : isPending ? (
-              <CheckCircle size={48} color="#FF9800" />
+              <Ionicons name="time-outline" size={48} color={Colors.warning} />
             ) : (
-              <XCircle size={48} color="#F44336" />
+              <Ionicons name="close-circle" size={48} color={Colors.error} />
             )}
           </View>
-          <Text style={[
-            styles.statusTitle, 
-            isSuccess ? styles.successTitle : 
-            isPending ? styles.pendingTitle : 
-            styles.failureTitle
-          ]}>
-            {isSuccess ? 'Nạp tiền thành công' : 
-             isPending ? 'Đang xử lý' : 
-             'Nạp tiền thất bại'}
+          <Text
+            style={[
+              styles.statusTitle,
+              isSuccess
+                ? styles.successTitle
+                : isPending
+                ? styles.pendingTitle
+                : styles.failureTitle,
+            ]}
+          >
+            {isSuccess
+              ? 'Nạp tiền thành công'
+              : isPending
+              ? 'Đang xử lý'
+              : 'Nạp tiền thất bại'}
           </Text>
           <Text style={styles.statusMessage}>
-            {isSuccess 
-              ? `Đã nạp thành công ${formatCurrency(amount)} vào số ${transaction.phoneNumber}`
+            {isSuccess
+              ? `Đã nạp thành công ${formatCurrency(amount)} vào số ${
+                  transaction.phoneNumber
+                }`
               : isPending
               ? 'Giao dịch đang được xử lý, vui lòng chờ trong giây lát'
-              : transaction.failureReason || 'Giao dịch không thành công, vui lòng thử lại'
-            }
+              : transaction.failureReason ||
+                'Giao dịch không thành công, vui lòng thử lại'}
           </Text>
         </View>
 
@@ -105,10 +128,12 @@ const MobilePrepaidResultScreen: React.FC = () => {
         {(isSuccess || isPending) && (
           <View style={styles.card}>
             <Text style={styles.cardTitle}>Chi tiết giao dịch</Text>
-            
+
             <View style={styles.detailRow}>
               <Text style={styles.detailLabel}>Mã giao dịch</Text>
-              <Text style={styles.detailValue}>{transaction.transactionId}</Text>
+              <Text style={styles.detailValue}>
+                {transaction.transactionId}
+              </Text>
             </View>
 
             <View style={styles.detailRow}>
@@ -119,27 +144,38 @@ const MobilePrepaidResultScreen: React.FC = () => {
             <View style={styles.detailRow}>
               <Text style={styles.detailLabel}>Nhà mạng</Text>
               <View style={styles.operatorInfo}>
-                <Image source={{ uri: operator.logoUrl }} style={styles.operatorLogo} />
+                <Image
+                  source={{ uri: operator.logoUrl }}
+                  style={styles.operatorLogo}
+                />
                 <Text style={styles.detailValue}>{operator.providerName}</Text>
               </View>
             </View>
 
             <View style={styles.detailRow}>
               <Text style={styles.detailLabel}>Số tiền nạp</Text>
-              <Text style={styles.amountValue}>{formatCurrency(transaction.amount)}</Text>
+              <Text style={styles.amountValue}>
+                {formatCurrency(transaction.amount)}
+              </Text>
             </View>
 
             <View style={styles.detailRow}>
               <Text style={styles.detailLabel}>Trạng thái</Text>
-              <Text style={[
-                styles.statusValue,
-                isSuccess ? styles.successStatus : 
-                isPending ? styles.pendingStatus : 
-                styles.failedStatus
-              ]}>
-                {isSuccess ? 'Thành công' : 
-                 isPending ? 'Đang xử lý' : 
-                 'Thất bại'}
+              <Text
+                style={[
+                  styles.statusValue,
+                  isSuccess
+                    ? styles.successStatus
+                    : isPending
+                    ? styles.pendingStatus
+                    : styles.failedStatus,
+                ]}
+              >
+                {isSuccess
+                  ? 'Thành công'
+                  : isPending
+                  ? 'Đang xử lý'
+                  : 'Thất bại'}
               </Text>
             </View>
 
@@ -164,7 +200,9 @@ const MobilePrepaidResultScreen: React.FC = () => {
             {transaction.providerTransactionId && (
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Mã GD nhà mạng</Text>
-                <Text style={styles.detailValue}>{transaction.providerTransactionId}</Text>
+                <Text style={styles.detailValue}>
+                  {transaction.providerTransactionId}
+                </Text>
               </View>
             )}
           </View>
@@ -175,9 +213,8 @@ const MobilePrepaidResultScreen: React.FC = () => {
           <View style={styles.tipsCard}>
             <Text style={styles.tipsTitle}>💡 Lưu ý</Text>
             <Text style={styles.tipsText}>
-              • Tiền đã được nạp vào thuê bao thành công{'\n'}
-              • Kiểm tra số dư bằng cách gọi *101#{'\n'}
-              • Lưu lại mã giao dịch để tra cứu sau này
+              • Tiền đã được nạp vào thuê bao thành công{'\n'}• Kiểm tra số dư
+              bằng cách gọi *101#{'\n'}• Lưu lại mã giao dịch để tra cứu sau này
             </Text>
           </View>
         )}
@@ -187,7 +224,8 @@ const MobilePrepaidResultScreen: React.FC = () => {
           <View style={styles.pendingCard}>
             <Text style={styles.pendingCardTitle}>⏳ Đang xử lý</Text>
             <Text style={styles.pendingText}>
-              Giao dịch của bạn đang được xử lý. Vui lòng chờ trong giây lát và kiểm tra lại sau.
+              Giao dịch của bạn đang được xử lý. Vui lòng chờ trong giây lát và
+              kiểm tra lại sau.
             </Text>
           </View>
         )}
@@ -197,20 +235,27 @@ const MobilePrepaidResultScreen: React.FC = () => {
           <View style={styles.warningCard}>
             <Text style={styles.warningTitle}>🔐 Yêu cầu xác thực</Text>
             <Text style={styles.warningText}>
-              Giao dịch này yêu cầu xác thực khuôn mặt. Vui lòng hoàn thành xác thực để tiếp tục.
+              Giao dịch này yêu cầu xác thực khuôn mặt. Vui lòng hoàn thành xác
+              thực để tiếp tục.
             </Text>
           </View>
         )}
 
         {/* Action Buttons */}
         <View style={styles.actionButtons}>
-          <TouchableOpacity style={styles.secondaryButton} onPress={handleGoHome}>
-            <Home size={20} color="#2196F3" />
+          <TouchableOpacity
+            style={styles.secondaryButton}
+            onPress={handleGoHome}
+          >
+            <Ionicons name="home-outline" size={20} color={Colors.main_bule} />
             <Text style={styles.secondaryButtonText}>Về trang chủ</Text>
           </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.primaryButton} onPress={handleTopUpAgain}>
-            <RotateCcw size={20} color="#fff" />
+
+          <TouchableOpacity
+            style={styles.primaryButton}
+            onPress={handleTopUpAgain}
+          >
+            <Ionicons name="refresh-outline" size={20} color={Colors.white} />
             <Text style={styles.primaryButtonText}>Nạp tiền khác</Text>
           </TouchableOpacity>
         </View>
@@ -222,7 +267,7 @@ const MobilePrepaidResultScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: Colors.background,
   },
   content: {
     flex: 1,
@@ -242,13 +287,13 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   successIcon: {
-    backgroundColor: '#e8f5e8',
+    backgroundColor: Colors.successLight,
   },
   pendingIcon: {
-    backgroundColor: '#fff3e0',
+    backgroundColor: Colors.warningLight,
   },
   failureIcon: {
-    backgroundColor: '#ffebee',
+    backgroundColor: Colors.errorLight,
   },
   statusTitle: {
     fontSize: 24,
@@ -257,26 +302,26 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   successTitle: {
-    color: '#4CAF50',
+    color: Colors.success,
   },
   pendingTitle: {
-    color: '#FF9800',
+    color: Colors.warning,
   },
   failureTitle: {
-    color: '#F44336',
+    color: Colors.error,
   },
   statusMessage: {
     fontSize: 16,
-    color: '#666',
+    color: Colors.textSecondary,
     textAlign: 'center',
     lineHeight: 24,
   },
   card: {
-    backgroundColor: '#fff',
-    borderRadius: 16,
+    backgroundColor: Colors.white,
+    borderRadius: 12,
     padding: 20,
     marginBottom: 16,
-    shadowColor: '#000',
+    shadowColor: Colors.black,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -288,7 +333,7 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#333',
+    color: Colors.textPrimary,
     marginBottom: 16,
   },
   detailRow: {
@@ -299,12 +344,12 @@ const styles = StyleSheet.create({
   },
   detailLabel: {
     fontSize: 14,
-    color: '#666',
+    color: Colors.textSecondary,
     flex: 1,
   },
   detailValue: {
     fontSize: 14,
-    color: '#333',
+    color: Colors.textPrimary,
     fontWeight: '500',
     flex: 1,
     textAlign: 'right',
@@ -322,23 +367,23 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   bonusText: {
-    color: '#4CAF50',
+    color: Colors.success,
     fontWeight: '600',
   },
   packageDescription: {
     fontSize: 12,
-    color: '#999',
+    color: Colors.textSecondary,
     textAlign: 'right',
     marginTop: 4,
   },
   separator: {
     height: 1,
-    backgroundColor: '#e0e0e0',
+    backgroundColor: Colors.border,
     marginVertical: 16,
   },
   amountValue: {
     fontSize: 16,
-    color: '#2196F3',
+    color: Colors.main_bule,
     fontWeight: 'bold',
   },
   statusValue: {
@@ -346,21 +391,21 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   successStatus: {
-    color: '#4CAF50',
+    color: Colors.success,
   },
   pendingStatus: {
-    color: '#FF9800',
+    color: Colors.warning,
   },
   failedStatus: {
-    color: '#F44336',
+    color: Colors.error,
   },
   tipsCard: {
-    backgroundColor: '#fff3cd',
+    backgroundColor: Colors.warningLight,
     borderRadius: 12,
     padding: 16,
     marginBottom: 24,
     borderLeftWidth: 4,
-    borderLeftColor: '#ffc107',
+    borderLeftColor: Colors.warning,
   },
   tipsTitle: {
     fontSize: 16,
@@ -374,12 +419,12 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   pendingCard: {
-    backgroundColor: '#fff3e0',
+    backgroundColor: Colors.warningLight,
     borderRadius: 12,
     padding: 16,
     marginBottom: 24,
     borderLeftWidth: 4,
-    borderLeftColor: '#ff9800',
+    borderLeftColor: Colors.warning,
   },
   pendingCardTitle: {
     fontSize: 16,
@@ -393,12 +438,12 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   warningCard: {
-    backgroundColor: '#ffebee',
+    backgroundColor: Colors.errorLight,
     borderRadius: 12,
     padding: 16,
     marginBottom: 24,
     borderLeftWidth: 4,
-    borderLeftColor: '#f44336',
+    borderLeftColor: Colors.error,
   },
   warningTitle: {
     fontSize: 16,
@@ -418,33 +463,38 @@ const styles = StyleSheet.create({
   },
   secondaryButton: {
     flex: 1,
-    backgroundColor: '#fff',
-    borderRadius: 12,
+    backgroundColor: Colors.white,
+    borderRadius: 10,
     padding: 16,
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: '#2196F3',
+    borderWidth: 1.5,
+    borderColor: Colors.main_bule,
   },
   secondaryButtonText: {
     fontSize: 16,
-    color: '#2196F3',
+    color: Colors.main_bule,
     fontWeight: '600',
     marginLeft: 8,
   },
   primaryButton: {
     flex: 1,
-    backgroundColor: '#2196F3',
-    borderRadius: 12,
+    backgroundColor: Colors.main_bule,
+    borderRadius: 10,
     padding: 16,
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'center',
+    shadowColor: Colors.main_bule,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   primaryButtonText: {
     fontSize: 16,
-    color: '#fff',
+    color: Colors.white,
     fontWeight: '600',
     marginLeft: 8,
   },

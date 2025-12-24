@@ -16,7 +16,8 @@ import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSelector } from 'react-redux';
-import { Smartphone, ChevronDown, Check } from 'lucide-react-native';
+import { ChevronDown } from 'lucide-react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import MobilePrepaidService, {
   MobileOperator,
@@ -25,17 +26,25 @@ import MobilePrepaidService, {
 import { RootStackParamList } from '../../navigation/types';
 import { RootState } from '../../store';
 import Header from '../../components/Header';
+import Colors from '../../constants/color';
 
-type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'MobilePrepaid'>;
+type NavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'MobilePrepaid'
+>;
 
 const MobilePrepaidScreen: React.FC = () => {
   const { t } = useTranslation();
   const navigation = useNavigation<NavigationProp>();
-  const { userInfoData: userInfo, accountTransResponse } = useSelector((state: RootState) => state.app);
+  const { userInfoData: userInfo, accountTransResponse } = useSelector(
+    (state: RootState) => state.app,
+  );
 
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [selectedOperator, setSelectedOperator] = useState<MobileOperator | null>(null);
-  const [selectedDenomination, setSelectedDenomination] = useState<Denomination | null>(null);
+  const [selectedOperator, setSelectedOperator] =
+    useState<MobileOperator | null>(null);
+  const [selectedDenomination, setSelectedDenomination] =
+    useState<Denomination | null>(null);
   const [customAmount, setCustomAmount] = useState('');
   const [operators, setOperators] = useState<MobileOperator[]>([]);
   const [loading, setLoading] = useState(false);
@@ -86,31 +95,47 @@ const MobilePrepaidScreen: React.FC = () => {
 
   const validateForm = () => {
     if (!phoneNumber.trim()) {
-      Alert.alert(t('common.error'), t('mobile_prepaid.validation.phone_required'));
+      Alert.alert(
+        t('common.error'),
+        t('mobile_prepaid.validation.phone_required'),
+      );
       return false;
     }
 
     if (!MobilePrepaidService.validatePhoneNumber(phoneNumber)) {
-      Alert.alert(t('common.error'), t('mobile_prepaid.validation.phone_invalid'));
+      Alert.alert(
+        t('common.error'),
+        t('mobile_prepaid.validation.phone_invalid'),
+      );
       return false;
     }
 
     if (!selectedOperator) {
-      Alert.alert(t('common.error'), t('mobile_prepaid.validation.operator_required'));
+      Alert.alert(
+        t('common.error'),
+        t('mobile_prepaid.validation.operator_required'),
+      );
       return false;
     }
 
-    const amount = useCustomAmount ? parseInt(customAmount.replace(/\D/g, '')) : selectedDenomination?.amount;
-    
+    const amount = useCustomAmount
+      ? parseInt(customAmount.replace(/\D/g, ''))
+      : selectedDenomination?.amount;
+
     if (!amount || amount <= 0) {
-      Alert.alert(t('common.error'), t('mobile_prepaid.validation.amount_required'));
+      Alert.alert(
+        t('common.error'),
+        t('mobile_prepaid.validation.amount_required'),
+      );
       return false;
     }
 
     if (!MobilePrepaidService.validateAmount(amount, selectedOperator)) {
       Alert.alert(
-        t('common.error'), 
-        `Số tiền phải từ ${formatCurrency(selectedOperator.minAmount)} đến ${formatCurrency(selectedOperator.maxAmount)}`
+        t('common.error'),
+        `Số tiền phải từ ${formatCurrency(
+          selectedOperator.minAmount,
+        )} đến ${formatCurrency(selectedOperator.maxAmount)}`,
       );
       return false;
     }
@@ -119,15 +144,21 @@ const MobilePrepaidScreen: React.FC = () => {
   };
 
   const getSelectedAmount = (): number => {
-    return useCustomAmount ? parseInt(customAmount.replace(/\D/g, '')) || 0 : selectedDenomination?.amount || 0;
+    return useCustomAmount
+      ? parseInt(customAmount.replace(/\D/g, '')) || 0
+      : selectedDenomination?.amount || 0;
   };
 
   const handleConfirm = () => {
     if (!validateForm()) return;
 
     const amount = getSelectedAmount();
-    const fee = selectedOperator ? MobilePrepaidService.calculateFee(amount, selectedOperator) : 0;
-    const totalAmount = selectedOperator ? MobilePrepaidService.calculateTotalAmount(amount, selectedOperator) : amount;
+    const fee = selectedOperator
+      ? MobilePrepaidService.calculateFee(amount, selectedOperator)
+      : 0;
+    const totalAmount = selectedOperator
+      ? MobilePrepaidService.calculateTotalAmount(amount, selectedOperator)
+      : amount;
 
     navigation.navigate('MobilePrepaidConfirm', {
       phoneNumber: MobilePrepaidService.formatPhoneNumber(phoneNumber),
@@ -142,7 +173,8 @@ const MobilePrepaidScreen: React.FC = () => {
     <TouchableOpacity
       style={[
         styles.operatorItem,
-        selectedOperator?.providerId === item.providerId && styles.operatorItemSelected,
+        selectedOperator?.providerId === item.providerId &&
+          styles.operatorItemSelected,
       ]}
       onPress={() => {
         setSelectedOperator(item);
@@ -155,7 +187,7 @@ const MobilePrepaidScreen: React.FC = () => {
       <Image source={{ uri: item.logoUrl }} style={styles.operatorLogo} />
       <Text style={styles.operatorName}>{item.providerName}</Text>
       {selectedOperator?.providerId === item.providerId && (
-        <Check size={20} color="#4CAF50" style={styles.checkIcon} />
+        <Ionicons name="checkmark-circle" size={22} color={Colors.main_bule} />
       )}
     </TouchableOpacity>
   );
@@ -164,7 +196,8 @@ const MobilePrepaidScreen: React.FC = () => {
     <TouchableOpacity
       style={[
         styles.packageItem,
-        selectedDenomination?.denominationId === item.denominationId && styles.packageItemSelected,
+        selectedDenomination?.denominationId === item.denominationId &&
+          styles.packageItemSelected,
       ]}
       onPress={() => {
         setSelectedDenomination(item);
@@ -176,9 +209,16 @@ const MobilePrepaidScreen: React.FC = () => {
       <View style={styles.packageHeader}>
         <Text style={styles.packageAmount}>{item.displayName}</Text>
       </View>
-      <Text style={styles.packageDescription}>Nạp tiền {formatCurrency(item.amount)}</Text>
+      <Text style={styles.packageDescription}>
+        Nạp tiền {formatCurrency(item.amount)}
+      </Text>
       {selectedDenomination?.denominationId === item.denominationId && (
-        <Check size={20} color="#4CAF50" style={styles.checkIcon} />
+        <Ionicons
+          name="checkmark-circle"
+          size={22}
+          color={Colors.main_bule}
+          style={styles.checkIcon}
+        />
       )}
     </TouchableOpacity>
   );
@@ -194,21 +234,15 @@ const MobilePrepaidScreen: React.FC = () => {
   );
 
   return (
-    <View style={styles.container}>
-      <>
+    <SafeAreaView style={styles.container} edges={['bottom']}>
       <Header title={t('mobile_prepaid.title')} showBackButton />
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        
-        {/* Header */}
-        <View style={styles.header}>
-          <Smartphone size={24} color="#2196F3" />
-          <Text style={styles.subtitle}>{t('mobile_prepaid.subtitle')}</Text>
-        </View>
-
         {/* Recent Numbers */}
         {recentNumbers.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>{t('mobile_prepaid.recent_numbers')}</Text>
+            <Text style={styles.sectionTitle}>
+              {t('mobile_prepaid.recent_numbers')}
+            </Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               <View style={styles.recentNumbers}>
                 {recentNumbers.map(renderRecentNumber)}
@@ -232,18 +266,27 @@ const MobilePrepaidScreen: React.FC = () => {
 
         {/* Operator Selection */}
         <View style={styles.section}>
-          <Text style={styles.label}>{t('mobile_prepaid.select_operator')}</Text>
+          <Text style={styles.label}>
+            {t('mobile_prepaid.select_operator')}
+          </Text>
           <TouchableOpacity
             style={styles.selector}
             onPress={() => setShowOperatorModal(true)}
           >
             {selectedOperator ? (
               <View style={styles.selectedOperator}>
-                <Image source={{ uri: selectedOperator.logoUrl }} style={styles.operatorLogoSmall} />
-                <Text style={styles.selectedOperatorText}>{selectedOperator.providerName}</Text>
+                <Image
+                  source={{ uri: selectedOperator.logoUrl }}
+                  style={styles.operatorLogoSmall}
+                />
+                <Text style={styles.selectedOperatorText}>
+                  {selectedOperator.providerName}
+                </Text>
               </View>
             ) : (
-              <Text style={styles.selectorPlaceholder}>{t('mobile_prepaid.auto_detect')}</Text>
+              <Text style={styles.selectorPlaceholder}>
+                {t('mobile_prepaid.auto_detect')}
+              </Text>
             )}
             <ChevronDown size={20} color="#666" />
           </TouchableOpacity>
@@ -252,17 +295,21 @@ const MobilePrepaidScreen: React.FC = () => {
         {/* Amount Selection */}
         {selectedOperator && (
           <View style={styles.section}>
-            <Text style={styles.label}>{t('mobile_prepaid.select_amount')}</Text>
-            
+            <Text style={styles.label}>
+              {t('mobile_prepaid.select_amount')}
+            </Text>
+
             {/* Denomination buttons */}
             <View style={styles.denominationGrid}>
-              {selectedOperator.denominations.map((denomination) => (
+              {selectedOperator.denominations.map(denomination => (
                 <TouchableOpacity
                   key={denomination.denominationId}
                   style={[
                     styles.denominationButton,
-                    selectedDenomination?.denominationId === denomination.denominationId && 
-                    !useCustomAmount && styles.denominationButtonSelected,
+                    selectedDenomination?.denominationId ===
+                      denomination.denominationId &&
+                      !useCustomAmount &&
+                      styles.denominationButtonSelected,
                   ]}
                   onPress={() => {
                     setSelectedDenomination(denomination);
@@ -270,11 +317,15 @@ const MobilePrepaidScreen: React.FC = () => {
                     setCustomAmount('');
                   }}
                 >
-                  <Text style={[
-                    styles.denominationText,
-                    selectedDenomination?.denominationId === denomination.denominationId && 
-                    !useCustomAmount && styles.denominationTextSelected,
-                  ]}>
+                  <Text
+                    style={[
+                      styles.denominationText,
+                      selectedDenomination?.denominationId ===
+                        denomination.denominationId &&
+                        !useCustomAmount &&
+                        styles.denominationTextSelected,
+                    ]}
+                  >
                     {denomination.displayName}
                   </Text>
                 </TouchableOpacity>
@@ -292,10 +343,12 @@ const MobilePrepaidScreen: React.FC = () => {
                 setSelectedDenomination(null);
               }}
             >
-              <Text style={[
-                styles.customAmountText,
-                useCustomAmount && styles.customAmountTextSelected,
-              ]}>
+              <Text
+                style={[
+                  styles.customAmountText,
+                  useCustomAmount && styles.customAmountTextSelected,
+                ]}
+              >
                 Số tiền khác
               </Text>
             </TouchableOpacity>
@@ -304,11 +357,15 @@ const MobilePrepaidScreen: React.FC = () => {
             {useCustomAmount && (
               <TextInput
                 style={styles.customAmountInput}
-                placeholder={`Từ ${formatCurrency(selectedOperator.minAmount)} đến ${formatCurrency(selectedOperator.maxAmount)}`}
+                placeholder={`Từ ${formatCurrency(
+                  selectedOperator.minAmount,
+                )} đến ${formatCurrency(selectedOperator.maxAmount)}`}
                 value={customAmount}
-                onChangeText={(text) => {
+                onChangeText={text => {
                   const numericValue = text.replace(/\D/g, '');
-                  const formattedValue = numericValue ? formatCurrency(parseInt(numericValue)) : '';
+                  const formattedValue = numericValue
+                    ? formatCurrency(parseInt(numericValue))
+                    : '';
                   setCustomAmount(formattedValue);
                 }}
                 keyboardType="numeric"
@@ -320,18 +377,30 @@ const MobilePrepaidScreen: React.FC = () => {
               <View style={styles.feeInfo}>
                 <View style={styles.feeRow}>
                   <Text style={styles.feeLabel}>Số tiền nạp:</Text>
-                  <Text style={styles.feeValue}>{formatCurrency(getSelectedAmount())}</Text>
+                  <Text style={styles.feeValue}>
+                    {formatCurrency(getSelectedAmount())}
+                  </Text>
                 </View>
                 <View style={styles.feeRow}>
                   <Text style={styles.feeLabel}>Phí giao dịch:</Text>
                   <Text style={styles.feeValue}>
-                    {formatCurrency(MobilePrepaidService.calculateFee(getSelectedAmount(), selectedOperator))}
+                    {formatCurrency(
+                      MobilePrepaidService.calculateFee(
+                        getSelectedAmount(),
+                        selectedOperator,
+                      ),
+                    )}
                   </Text>
                 </View>
                 <View style={[styles.feeRow, styles.totalRow]}>
                   <Text style={styles.totalLabel}>Tổng cộng:</Text>
                   <Text style={styles.totalValue}>
-                    {formatCurrency(MobilePrepaidService.calculateTotalAmount(getSelectedAmount(), selectedOperator))}
+                    {formatCurrency(
+                      MobilePrepaidService.calculateTotalAmount(
+                        getSelectedAmount(),
+                        selectedOperator,
+                      ),
+                    )}
                   </Text>
                 </View>
               </View>
@@ -343,14 +412,23 @@ const MobilePrepaidScreen: React.FC = () => {
         <TouchableOpacity
           style={[
             styles.confirmButton,
-            (!phoneNumber || !selectedOperator || (!selectedDenomination && !useCustomAmount) || 
-             (useCustomAmount && !customAmount)) && styles.confirmButtonDisabled,
+            (!phoneNumber ||
+              !selectedOperator ||
+              (!selectedDenomination && !useCustomAmount) ||
+              (useCustomAmount && !customAmount)) &&
+              styles.confirmButtonDisabled,
           ]}
           onPress={handleConfirm}
-          disabled={!phoneNumber || !selectedOperator || (!selectedDenomination && !useCustomAmount) || 
-                   (useCustomAmount && !customAmount)}
+          disabled={
+            !phoneNumber ||
+            !selectedOperator ||
+            (!selectedDenomination && !useCustomAmount) ||
+            (useCustomAmount && !customAmount)
+          }
         >
-          <Text style={styles.confirmButtonText}>{t('mobile_prepaid.confirm_topup')}</Text>
+          <Text style={styles.confirmButtonText}>
+            {t('mobile_prepaid.confirm_topup')}
+          </Text>
         </TouchableOpacity>
       </ScrollView>
 
@@ -358,18 +436,22 @@ const MobilePrepaidScreen: React.FC = () => {
       {showOperatorModal && (
         <View style={styles.modal}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>{t('mobile_prepaid.select_operator')}</Text>
+            <Text style={styles.modalTitle}>
+              {t('mobile_prepaid.select_operator')}
+            </Text>
             <FlatList
               data={operators}
               renderItem={renderOperatorItem}
-              keyExtractor={(item) => item.providerId.toString()}
+              keyExtractor={item => item.providerId.toString()}
               style={styles.modalList}
             />
             <TouchableOpacity
               style={styles.modalCloseButton}
               onPress={() => setShowOperatorModal(false)}
             >
-              <Text style={styles.modalCloseButtonText}>{t('common.close')}</Text>
+              <Text style={styles.modalCloseButtonText}>
+                {t('common.close')}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -379,84 +461,80 @@ const MobilePrepaidScreen: React.FC = () => {
       {showDenominationModal && selectedOperator && (
         <View style={styles.modal}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>{t('mobile_prepaid.select_amount')}</Text>
+            <Text style={styles.modalTitle}>
+              {t('mobile_prepaid.select_amount')}
+            </Text>
             <FlatList
               data={selectedOperator.denominations}
               renderItem={renderDenominationItem}
-              keyExtractor={(item) => item.denominationId.toString()}
+              keyExtractor={item => item.denominationId.toString()}
               style={styles.modalList}
             />
             <TouchableOpacity
               style={styles.modalCloseButton}
               onPress={() => setShowDenominationModal(false)}
             >
-              <Text style={styles.modalCloseButtonText}>{t('common.close')}</Text>
+              <Text style={styles.modalCloseButtonText}>
+                {t('common.close')}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
       )}
-      </>
-
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: Colors.background,
   },
   content: {
     flex: 1,
-    padding: 16,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#666',
-    marginLeft: 12,
-    flex: 1,
   },
   section: {
-    marginBottom: 24,
+    backgroundColor: Colors.white,
+    paddingHorizontal: 20,
+    paddingVertical: 20,
+    marginBottom: 2,
   },
   sectionTitle: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
-    color: '#333',
+    color: Colors.textPrimary,
     marginBottom: 12,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   label: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
-    color: '#333',
-    marginBottom: 8,
+    color: Colors.textPrimary,
+    marginBottom: 12,
   },
   input: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    fontSize: 16,
+    backgroundColor: '#F9FAFB',
+    borderRadius: 8,
+    padding: 14,
+    fontSize: 15,
     borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderColor: Colors.border,
+    color: Colors.textPrimary,
   },
   selector: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
+    backgroundColor: '#F9FAFB',
+    borderRadius: 8,
+    padding: 14,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderColor: Colors.border,
   },
   selectorPlaceholder: {
-    fontSize: 16,
-    color: '#999',
+    fontSize: 15,
+    color: '#9CA3AF',
   },
   selectedOperator: {
     flexDirection: 'row',
@@ -469,8 +547,8 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   selectedOperatorText: {
-    fontSize: 16,
-    color: '#333',
+    fontSize: 15,
+    color: Colors.textPrimary,
   },
   selectedPackageAmount: {
     fontSize: 16,
@@ -487,35 +565,46 @@ const styles = StyleSheet.create({
   },
   recentNumbers: {
     flexDirection: 'row',
+    paddingHorizontal: 20,
   },
   recentNumberItem: {
-    backgroundColor: '#fff',
+    backgroundColor: '#F9FAFB',
     paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingVertical: 10,
     borderRadius: 20,
     marginRight: 8,
     borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderColor: Colors.border,
   },
   recentNumberText: {
-    fontSize: 14,
-    color: '#333',
+    fontSize: 13,
+    color: Colors.textPrimary,
+    fontWeight: '500',
   },
   confirmButton: {
-    backgroundColor: '#2196F3',
-    borderRadius: 12,
+    backgroundColor: Colors.main_bule,
+    borderRadius: 10,
     padding: 16,
     alignItems: 'center',
+    marginHorizontal: 20,
     marginTop: 24,
     marginBottom: 32,
+    shadowColor: Colors.main_bule,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   confirmButtonDisabled: {
-    backgroundColor: '#ccc',
+    backgroundColor: '#D1D5DB',
+    shadowOpacity: 0,
+    elevation: 0,
   },
   confirmButtonText: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '600',
-    color: '#fff',
+    color: Colors.white,
+    letterSpacing: 0.3,
   },
   modal: {
     position: 'absolute',
@@ -528,34 +617,36 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalContent: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.white,
     borderRadius: 16,
-    padding: 20,
+    padding: 24,
     width: '90%',
     maxHeight: '80%',
   },
   modalTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 16,
+    fontWeight: '700',
+    color: Colors.textPrimary,
+    marginBottom: 20,
     textAlign: 'center',
   },
   modalList: {
-    maxHeight: 400,
+    maxHeight: 300,
   },
   operatorItem: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 16,
-    borderRadius: 12,
+    borderRadius: 10,
     marginBottom: 8,
-    backgroundColor: '#f8f8f8',
+    backgroundColor: '#F9FAFB',
+    borderWidth: 1,
+    borderColor: Colors.border,
   },
   operatorItemSelected: {
-    backgroundColor: '#e3f2fd',
-    borderWidth: 1,
-    borderColor: '#2196F3',
+    backgroundColor: '#E0F7F8',
+    borderColor: Colors.main_bule,
+    borderWidth: 1.5,
   },
   operatorLogo: {
     width: 40,
@@ -564,21 +655,23 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   operatorName: {
-    fontSize: 16,
-    color: '#333',
+    fontSize: 15,
+    color: Colors.textPrimary,
     flex: 1,
+    fontWeight: '500',
   },
   packageItem: {
-    padding: 16,
+    backgroundColor: Colors.white,
     borderRadius: 12,
-    marginBottom: 8,
-    backgroundColor: '#f8f8f8',
+    padding: 16,
+    marginBottom: 12,
+    borderWidth: 1.5,
+    borderColor: Colors.border,
     position: 'relative',
   },
   packageItemSelected: {
-    backgroundColor: '#e3f2fd',
-    borderWidth: 1,
-    borderColor: '#2196F3',
+    borderColor: Colors.main_bule,
+    backgroundColor: '#F0FDFD',
   },
   packageHeader: {
     flexDirection: 'row',
@@ -586,9 +679,9 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   packageAmount: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
+    fontSize: 15,
+    fontWeight: '600',
+    color: Colors.textPrimary,
   },
   packageBonus: {
     fontSize: 14,
@@ -597,9 +690,10 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   packageDescription: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 4,
+    fontSize: 13,
+    color: Colors.textSecondary,
+    marginTop: 4,
+    lineHeight: 18,
   },
   packageValidity: {
     fontSize: 12,
@@ -607,22 +701,20 @@ const styles = StyleSheet.create({
   },
   checkIcon: {
     position: 'absolute',
-    top: 8,
-    right: 8,
+    top: 12,
+    right: 12,
   },
   modalCloseButton: {
-    backgroundColor: '#f0f0f0',
-    borderRadius: 12,
-    padding: 16,
+    backgroundColor: '#F3F4F6',
+    borderRadius: 10,
+    padding: 14,
     alignItems: 'center',
     marginTop: 16,
   },
   modalCloseButtonText: {
-    fontSize: 16,
-    color: '#333',
-  },
-  loader: {
-    padding: 40,
+    fontSize: 15,
+    color: Colors.textPrimary,
+    fontWeight: '600',
   },
   denominationGrid: {
     flexDirection: 'row',
@@ -631,9 +723,9 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   denominationButton: {
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
+    backgroundColor: Colors.white,
+    borderWidth: 1.5,
+    borderColor: Colors.border,
     borderRadius: 8,
     paddingHorizontal: 16,
     paddingVertical: 12,
@@ -641,53 +733,59 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   denominationButtonSelected: {
-    backgroundColor: '#e3f2fd',
-    borderColor: '#2196F3',
+    backgroundColor: '#E0F7F8',
+    borderColor: Colors.main_bule,
+    borderWidth: 2,
   },
   denominationText: {
     fontSize: 14,
-    color: '#333',
+    color: Colors.textPrimary,
     fontWeight: '500',
   },
   denominationTextSelected: {
-    color: '#2196F3',
-    fontWeight: '600',
+    color: Colors.main_bule,
+    fontWeight: '700',
   },
   customAmountButton: {
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
+    backgroundColor: Colors.white,
+    borderWidth: 1.5,
+    borderColor: Colors.border,
     borderRadius: 8,
     padding: 16,
     alignItems: 'center',
     marginBottom: 12,
   },
   customAmountButtonSelected: {
-    backgroundColor: '#e3f2fd',
-    borderColor: '#2196F3',
+    backgroundColor: '#E0F7F8',
+    borderColor: Colors.main_bule,
+    borderWidth: 2,
   },
   customAmountText: {
-    fontSize: 16,
-    color: '#333',
+    fontSize: 15,
+    color: Colors.textPrimary,
+    fontWeight: '500',
   },
   customAmountTextSelected: {
-    color: '#2196F3',
-    fontWeight: '600',
+    color: Colors.main_bule,
+    fontWeight: '700',
   },
   customAmountInput: {
-    backgroundColor: '#fff',
+    backgroundColor: '#F9FAFB',
     borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderColor: Colors.border,
     borderRadius: 8,
     padding: 16,
-    fontSize: 16,
+    fontSize: 15,
     marginBottom: 16,
+    color: Colors.textPrimary,
   },
   feeInfo: {
-    backgroundColor: '#f8f9fa',
-    borderRadius: 8,
+    backgroundColor: '#F0FDFD',
+    borderRadius: 10,
     padding: 16,
     marginTop: 8,
+    borderWidth: 1,
+    borderColor: '#E0F7F8',
   },
   feeRow: {
     flexDirection: 'row',
@@ -696,29 +794,29 @@ const styles = StyleSheet.create({
   },
   feeLabel: {
     fontSize: 14,
-    color: '#666',
+    color: Colors.textSecondary,
   },
   feeValue: {
     fontSize: 14,
-    color: '#333',
-    fontWeight: '500',
+    color: Colors.textPrimary,
+    fontWeight: '600',
   },
   totalRow: {
     borderTopWidth: 1,
-    borderTopColor: '#e0e0e0',
-    paddingTop: 8,
+    borderTopColor: '#B8E6E8',
+    paddingTop: 12,
     marginTop: 8,
     marginBottom: 0,
   },
   totalLabel: {
     fontSize: 16,
-    color: '#333',
-    fontWeight: '600',
+    color: Colors.textPrimary,
+    fontWeight: '700',
   },
   totalValue: {
-    fontSize: 16,
-    color: '#2196F3',
-    fontWeight: 'bold',
+    fontSize: 18,
+    fontWeight: '700',
+    color: Colors.main_bule,
   },
 });
 

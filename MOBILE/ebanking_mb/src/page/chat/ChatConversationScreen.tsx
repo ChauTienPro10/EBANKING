@@ -173,7 +173,9 @@ const ChatConversationScreen = () => {
     const accountNumber = accountTransResponse?.accountNumber;
     if (!accountNumber) return;
 
-    const reminderMessage = `💰 Nhắc trả tiền: ${amount}đ\n${message}`;
+    // Format amount with thousand separators
+    const formattedAmount = parseInt(amount, 10).toLocaleString('vi-VN');
+    const reminderMessage = `💰 Nhắc trả tiền: ${formattedAmount}đ\n${message}`;
 
     try {
       setSending(true);
@@ -210,47 +212,17 @@ const ChatConversationScreen = () => {
     }
   };
 
-  const handleQuickGiftSend = async (gift: any) => {
-    const accountNumber = accountTransResponse?.accountNumber;
-    if (!accountNumber) return;
+  const handleQuickGiftSend = (gift: any) => {
+    // Navigate to Transfer screen with pre-filled gift info
+    const giftContent = `🎁 Tặng quà: ${gift.emoji} ${gift.name}`;
 
-    const giftMessage = `🎁 Tặng quà: ${gift.emoji} ${
-      gift.name
-    } - ${gift.price.toLocaleString('vi-VN')}đ`;
-
-    try {
-      setSending(true);
-      if (isConnected) {
-        WebSocketService.sendMessage(otherUserId, giftMessage);
-        const optimisticMessage = {
-          id: `temp-${Date.now()}`,
-          senderId: accountNumber,
-          receiverId: otherUserId,
-          content: giftMessage,
-          createdAt: new Date().toISOString(),
-          conversationId: conversationId,
-          messageType: 'TEXT' as const,
-          isRead: false,
-        };
-        dispatch(addMessage(optimisticMessage));
-        setTimeout(() => {
-          setDeliveredMessageIds(prev =>
-            new Set(prev).add(optimisticMessage.id),
-          );
-        }, 500);
-      } else {
-        const message = await ChatAPI.sendMessage(
-          { receiverId: otherUserId, content: giftMessage },
-          accountNumber,
-        );
-        dispatch(addMessage(message));
-        setDeliveredMessageIds(prev => new Set(prev).add(message.id));
-      }
-    } catch (error) {
-      console.error('Error sending gift:', error);
-    } finally {
-      setSending(false);
-    }
+    (navigation as any).navigate('Transfer', {
+      receiver: otherUserId,
+      recipientAccount: otherUserId,
+      recipientName: otherUserName,
+      amount: gift.price.toString(),
+      content: giftContent,
+    });
   };
 
   const handleSend = async () => {
