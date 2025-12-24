@@ -3,6 +3,7 @@ import { TransferFormData, TransferPurpose } from '../types/transfer.types';
 export const STORAGE_KEY = 'saved_recipient_accounts';
 
 export const formatAmount = (text: string): string => {
+  if (!text) return '';
   const numericValue = text.replace(/[^\d.]/g, '');
   const parts = numericValue.split('.');
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -35,30 +36,32 @@ export const buildTransferContent = (
   purpose?: TransferPurpose,
 ): string => {
   const sanitizedContent = sanitizeTransferContent(content);
-  
+
   if (purpose && purpose.code) {
     return `[${purpose.code}] ${sanitizedContent}`;
   }
-  
+
   return sanitizedContent;
 };
 
 /*
  * Extract purpose code from transfer content
  */
-export const extractPurposeFromContent = (content: string): {
+export const extractPurposeFromContent = (
+  content: string,
+): {
   purposeCode?: string;
   cleanContent: string;
 } => {
   const match = content.match(/^\[([^\]]+)\]\s*(.*)$/);
-  
+
   if (match) {
     return {
       purposeCode: match[1],
       cleanContent: match[2] || '',
     };
   }
-  
+
   return {
     cleanContent: content,
   };

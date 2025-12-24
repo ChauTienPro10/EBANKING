@@ -22,7 +22,10 @@ import Header from '../../components/Header';
 import { RootStackParamList } from '../../navigation/types';
 import { RootState } from '../../store';
 
-type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Data4GConfirm'>;
+type NavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'Data4GConfirm'
+>;
 type RoutePropType = RouteProp<RootStackParamList, 'Data4GConfirm'>;
 
 const Data4GConfirmScreen: React.FC = () => {
@@ -30,7 +33,11 @@ const Data4GConfirmScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute<RoutePropType>();
   const { phoneNumber, provider, package: selectedPackage } = route.params;
-  const { userInfoData: userInfo, accountTransResponse, loginResponse } = useSelector((state: RootState) => state.app);
+  const {
+    userInfoData: userInfo,
+    accountTransResponse,
+    loginResponse,
+  } = useSelector((state: RootState) => state.app);
 
   const [loading, setLoading] = useState(false);
   const [showPinModal, setShowPinModal] = useState(false);
@@ -44,7 +51,11 @@ const Data4GConfirmScreen: React.FC = () => {
   };
 
   const handlePinSubmit = async (pin: string) => {
-    if (!userInfo?.id || !loginResponse?.username || !accountTransResponse?.accountNumber) {
+    if (
+      !userInfo?.id ||
+      !loginResponse?.username ||
+      !accountTransResponse?.accountNumber
+    ) {
       Alert.alert('Lỗi', 'Thông tin tài khoản không hợp lệ');
       return;
     }
@@ -73,7 +84,7 @@ const Data4GConfirmScreen: React.FC = () => {
       console.error('Data top-up error:', error);
       Alert.alert(
         'Nạp data thất bại',
-        error.message || 'Không thể nạp data. Vui lòng thử lại.'
+        error.message || 'Không thể nạp data. Vui lòng thử lại.',
       );
     } finally {
       setLoading(false);
@@ -86,20 +97,20 @@ const Data4GConfirmScreen: React.FC = () => {
 
   const getProviderName = () => {
     const providerNames: Record<string, string> = {
-      'VIETTEL': 'Viettel',
-      'VINAPHONE': 'VinaPhone',
-      'MOBIFONE': 'MobiFone',
-      'VIETNAMOBILE': 'Vietnamobile',
+      VIETTEL: 'Viettel',
+      VINAPHONE: 'VinaPhone',
+      MOBIFONE: 'MobiFone',
+      VIETNAMOBILE: 'Vietnamobile',
     };
     return providerNames[provider] || provider;
   };
 
   if (loading) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.container} edges={['bottom']}>
         <Header title="Xác nhận nạp data" showBackButton />
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#2196F3" />
+          <ActivityIndicator size="large" color="#09a0a5" />
           <Text style={styles.loadingText}>Đang xử lý...</Text>
         </View>
       </SafeAreaView>
@@ -107,9 +118,9 @@ const Data4GConfirmScreen: React.FC = () => {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['bottom']}>
       <Header title="Xác nhận nạp data" showBackButton />
-      
+
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
@@ -137,23 +148,30 @@ const Data4GConfirmScreen: React.FC = () => {
           <View style={styles.detailRow}>
             <Text style={styles.detailLabel}>Gói data</Text>
             <View>
-              <Text style={styles.detailValue}>{selectedPackage.packageName}</Text>
+              <Text style={styles.detailValue}>
+                {selectedPackage.packageName}
+              </Text>
               <Text style={styles.packageDetails}>
-                {selectedPackage.formattedDataAmount} • {Data4GService.formatValidity(selectedPackage.validityDays)}
+                {selectedPackage.formattedDataAmount} •{' '}
+                {Data4GService.formatValidity(selectedPackage.validityDays)}
               </Text>
             </View>
           </View>
 
           <View style={styles.detailRow}>
             <Text style={styles.detailLabel}>Mô tả</Text>
-            <Text style={styles.detailValue}>{selectedPackage.description}</Text>
+            <Text style={styles.detailValue}>
+              {selectedPackage.description}
+            </Text>
           </View>
 
           <View style={styles.separator} />
 
           <View style={styles.detailRow}>
             <Text style={styles.detailLabel}>Giá gói</Text>
-            <Text style={styles.amountValue}>{formatCurrency(selectedPackage.price)}</Text>
+            <Text style={styles.amountValue}>
+              {formatCurrency(selectedPackage.price)}
+            </Text>
           </View>
 
           <View style={styles.detailRow}>
@@ -165,14 +183,16 @@ const Data4GConfirmScreen: React.FC = () => {
 
           <View style={styles.detailRow}>
             <Text style={styles.totalLabel}>Tổng thanh toán</Text>
-            <Text style={styles.totalValue}>{formatCurrency(selectedPackage.price)}</Text>
+            <Text style={styles.totalValue}>
+              {formatCurrency(selectedPackage.price)}
+            </Text>
           </View>
         </View>
 
         {/* Package Benefits */}
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Quyền lợi gói data</Text>
-          
+
           <View style={styles.benefitItem}>
             <Text style={styles.benefitIcon}>📱</Text>
             <View style={styles.benefitContent}>
@@ -207,7 +227,7 @@ const Data4GConfirmScreen: React.FC = () => {
         {/* Payment Method */}
         <View style={styles.card}>
           <View style={styles.cardHeader}>
-            <CreditCard size={20} color="#2196F3" />
+            <CreditCard size={20} color="#09a0a5" />
             <Text style={styles.cardTitle}>Phương thức thanh toán</Text>
           </View>
           <View style={styles.paymentMethod}>
@@ -223,8 +243,11 @@ const Data4GConfirmScreen: React.FC = () => {
           <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
             <Text style={styles.cancelButtonText}>Hủy</Text>
           </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.confirmButton} onPress={handleConfirm}>
+
+          <TouchableOpacity
+            style={styles.confirmButton}
+            onPress={handleConfirm}
+          >
             <Text style={styles.confirmButtonText}>Xác nhận nạp data</Text>
           </TouchableOpacity>
         </View>
@@ -332,7 +355,7 @@ const styles = StyleSheet.create({
   },
   totalValue: {
     fontSize: 18,
-    color: '#2196F3',
+    color: '#09a0a5',
     fontWeight: 'bold',
   },
   benefitItem: {
@@ -374,13 +397,12 @@ const styles = StyleSheet.create({
     color: '#666',
   },
   actionButtons: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     marginTop: 24,
     marginBottom: 32,
     gap: 12,
   },
   cancelButton: {
-    flex: 1,
     backgroundColor: '#f0f0f0',
     borderRadius: 12,
     padding: 16,
@@ -392,8 +414,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   confirmButton: {
-    flex: 1,
-    backgroundColor: '#2196F3',
+    backgroundColor: '#09a0a5',
     borderRadius: 12,
     padding: 16,
     alignItems: 'center',

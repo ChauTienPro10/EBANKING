@@ -28,8 +28,16 @@ export const useTransferForm = (initialParams?: TransferParams) => {
       initialParams?.receiver !== ''
     ) {
       handleInputChange('recipientAccount', initialParams.receiver);
-      handleAmountChange(initialParams.amount);
-      handleInputChange('content', initialParams.content);
+
+      // Only set amount if it's provided
+      if (initialParams.amount) {
+        handleAmountChange(initialParams.amount);
+      }
+
+      // Only set content if it's provided
+      if (initialParams.content) {
+        handleInputChange('content', initialParams.content);
+      }
 
       if (
         initialParams.bankCode !== null &&
