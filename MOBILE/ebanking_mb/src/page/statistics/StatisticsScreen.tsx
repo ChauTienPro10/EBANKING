@@ -23,6 +23,7 @@ import {
   fetchAnalysisPreviousWeek,
   fetchAnalysisWeeklyStats,
 } from '../../store/fetchAPI/AnalysisFetch';
+import { fetchTransactionHistory } from '../../store/fetchAPI/TransactionHistory';
 import Colors from '../../constants/color';
 import PeriodDropdown from './components/PeriodDropdown';
 import StatisticsCard from './components/StatisticsCard';
@@ -69,6 +70,48 @@ const StatisticsScreen: React.FC = () => {
     (state: RootState) => state.app.accountTransResponse?.accountNumber || '',
   );
 
+  // Get real transaction history from Redux
+  const realTransactions = useSelector(
+    (state: RootState) => state.transactionHistories?.data || [],
+  );
+
+  // Generate mock transactions for historical data
+  const mockTransactions = useMemo(() => {
+    if (USE_MOCK_DATA && currentAccountNumber) {
+      return generateMockTransactions(currentAccountNumber);
+    }
+    return [];
+  }, [currentAccountNumber]);
+
+  // Merge real transactions with mock transactions
+  const allTransactions = useMemo(() => {
+    // Filter out savings transactions
+    const filteredReal = realTransactions.filter(t => {
+      // Filter by transaction type
+      if (
+        t.transactionType === 'PAYMENT_TO_SAVINGS' ||
+        t.transactionType === 'SAVINGS_TO_PAYMENT'
+      ) {
+        return false;
+      }
+
+      // Filter by description (case-insensitive)
+      const desc = (t.description || '').toLowerCase();
+      if (
+        desc.includes('tiết kiệm') ||
+        desc.includes('tiet kiem') ||
+        desc.includes('savings')
+      ) {
+        return false;
+      }
+
+      return true;
+    });
+
+    const merged = [...filteredReal, ...mockTransactions];
+    return merged;
+  }, [realTransactions, mockTransactions]);
+
   // Derive current and previous period data based on selection
   const periodData = useMemo(() => {
     let current: AnalysisData | null = null;
@@ -79,10 +122,112 @@ const StatisticsScreen: React.FC = () => {
       previous = analysisPreviousWeek;
     } else if (selectedPeriod === 'month') {
       current = analysisCurrentMonth;
-      previous = analysisPreviousMonth;
+      // Use mock data for previous month if enabled
+      if (USE_MOCK_DATA && mockTransactions.length > 0) {
+        const previousMonthTransactions = filterTransactionsByPeriod(
+          mockTransactions,
+          selectedPeriod,
+          1,
+        );
+
+        const stats = calculatePeriodStats(
+          previousMonthTransactions,
+          currentAccountNumber,
+        );
+
+        previous = {
+          totalAmountInPeriodByUsername: stats.totalOutgoing,
+          totalIncomingAmount: stats.totalIncoming,
+          transactionCountInPeriodByUsername: stats.totalTransactions,
+          transactionLargestInPeriodByUsername: stats.largestTransaction,
+          mostAccountInfoTransferManyTimeInPeriod: stats.mostFrequentRecipient
+            ? ({
+                accountNumber: stats.mostFrequentRecipient.accountNumber,
+              } as any)
+            : null,
+          mostAccountInfoTransferManyTimeInPeriodCount:
+            stats.mostFrequentRecipient?.count || 0,
+          mostAccountInfoTransferManyTimeInPeriodTotalAmount:
+            stats.mostFrequentRecipient?.totalAmount || 0,
+        } as AnalysisData;
+      } else {
+        previous = analysisPreviousMonth;
+      }
+    } else if (selectedPeriod === 'year') {
+      // For year: use mock data for both current year (2025) and previous year (2024)
+      if (USE_MOCK_DATA && mockTransactions.length > 0) {
+        // Current year (2025) - use API data if available, otherwise mock
+        const currentYearTransactions = filterTransactionsByPeriod(
+          mockTransactions,
+          selectedPeriod,
+          0,
+        );
+        const currentStats = calculatePeriodStats(
+          currentYearTransactions,
+          currentAccountNumber,
+        );
+
+        // Combine with API data for current month (Dec 2025)
+        const apiCurrentTotal =
+          analysisCurrentMonth?.totalAmountInPeriodByUsername || 0;
+        const apiCurrentIncoming =
+          analysisCurrentMonth?.totalIncomingAmount || 0;
+        const apiCurrentCount =
+          analysisCurrentMonth?.transactionCountInPeriodByUsername || 0;
+
+        current = {
+          totalAmountInPeriodByUsername:
+            currentStats.totalOutgoing + apiCurrentTotal,
+          totalIncomingAmount: currentStats.totalIncoming + apiCurrentIncoming,
+          transactionCountInPeriodByUsername:
+            currentStats.totalTransactions + apiCurrentCount,
+          transactionLargestInPeriodByUsername:
+            currentStats.largestTransaction ||
+            analysisCurrentMonth?.transactionLargestInPeriodByUsername ||
+            null,
+          mostAccountInfoTransferManyTimeInPeriod:
+            currentStats.mostFrequentRecipient
+              ? ({
+                  accountNumber:
+                    currentStats.mostFrequentRecipient.accountNumber,
+                } as any)
+              : null,
+          mostAccountInfoTransferManyTimeInPeriodCount:
+            currentStats.mostFrequentRecipient?.count || 0,
+          mostAccountInfoTransferManyTimeInPeriodTotalAmount:
+            currentStats.mostFrequentRecipient?.totalAmount || 0,
+        } as AnalysisData;
+
+        // Previous year (2024) - use mock data
+        const previousYearTransactions = filterTransactionsByPeriod(
+          mockTransactions,
+          selectedPeriod,
+          1,
+        );
+        const previousStats = calculatePeriodStats(
+          previousYearTransactions,
+          currentAccountNumber,
+        );
+        previous = {
+          totalAmountInPeriodByUsername: previousStats.totalOutgoing,
+          totalIncomingAmount: previousStats.totalIncoming,
+          transactionCountInPeriodByUsername: previousStats.totalTransactions,
+          transactionLargestInPeriodByUsername:
+            previousStats.largestTransaction,
+          mostAccountInfoTransferManyTimeInPeriod:
+            previousStats.mostFrequentRecipient
+              ? ({
+                  accountNumber:
+                    previousStats.mostFrequentRecipient.accountNumber,
+                } as any)
+              : null,
+          mostAccountInfoTransferManyTimeInPeriodCount:
+            previousStats.mostFrequentRecipient?.count || 0,
+          mostAccountInfoTransferManyTimeInPeriodTotalAmount:
+            previousStats.mostFrequentRecipient?.totalAmount || 0,
+        } as AnalysisData;
+      }
     }
-    // For 'year', fall back to month or handle separately if API supports year
-    // currently API only supports week/month logic in store slices shown
 
     return {
       current,
@@ -96,33 +241,57 @@ const StatisticsScreen: React.FC = () => {
     analysisPreviousWeek,
     analysisCurrentMonth,
     analysisPreviousMonth,
+    mockTransactions,
+    currentAccountNumber,
     t,
   ]);
 
   // Calculate trend data for line chart
   const trendData = useMemo(() => {
-    if (selectedPeriod === 'week' && analysisWeeklyStats) {
-      // Map analysisWeeklyStats to chart data
-      const labels = analysisWeeklyStats.map(stat => {
-        // Assume we have a date field or we compute from index (Mon-Sun)
-        const d = (stat as any).date
-          ? new Date((stat as any).date)
-          : new Date();
-        return `${d.getDate()}/${d.getMonth() + 1}`;
-      });
-      const data = analysisWeeklyStats.map(
-        stat => stat.totalAmountInPeriodByUsername,
+    // For current period, use only REAL transactions (no mock data)
+    // This ensures we only show actual transaction history
+    const filteredReal = realTransactions.filter(t => {
+      // Filter by transaction type
+      if (
+        t.transactionType === 'PAYMENT_TO_SAVINGS' ||
+        t.transactionType === 'SAVINGS_TO_PAYMENT'
+      ) {
+        return false;
+      }
+
+      // Filter by description (case-insensitive)
+      const desc = (t.description || '').toLowerCase();
+      if (
+        desc.includes('tiết kiệm') ||
+        desc.includes('tiet kiem') ||
+        desc.includes('savings')
+      ) {
+        return false;
+      }
+
+      return true;
+    });
+
+    if (filteredReal.length > 0) {
+      const currentPeriodTransactions = filterTransactionsByPeriod(
+        filteredReal,
+        selectedPeriod,
+        0,
       );
-      return { labels, data };
+
+      return calculateTrendData(
+        currentPeriodTransactions,
+        selectedPeriod,
+        currentAccountNumber,
+      );
     }
 
-    // Fallback for month or missing data: use empty or simple layout
     return { labels: [], data: [] };
-  }, [analysisWeeklyStats, selectedPeriod]);
+  }, [selectedPeriod, realTransactions, currentAccountNumber]);
 
   const onRefresh = async () => {
     setRefreshing(true);
-    if (isLoggedIn && loginResponse?.username) {
+    if (isLoggedIn && loginResponse?.username && currentAccountNumber) {
       await Promise.all([
         dispatch(fetchAnalysis30Days(loginResponse.username)),
         dispatch(fetchAnalysisCurrentMonth(loginResponse.username)),
@@ -130,6 +299,14 @@ const StatisticsScreen: React.FC = () => {
         dispatch(fetchAnalysisCurrentWeek(loginResponse.username)),
         dispatch(fetchAnalysisPreviousWeek(loginResponse.username)),
         dispatch(fetchAnalysisWeeklyStats(loginResponse.username)),
+        dispatch(
+          fetchTransactionHistory({
+            username: loginResponse.username,
+            sender: currentAccountNumber,
+            page: 0,
+            limit: 100,
+          }),
+        ),
       ]);
     }
     setRefreshing(false);
@@ -143,20 +320,24 @@ const StatisticsScreen: React.FC = () => {
     periodData.current?.transactionCountInPeriodByUsername || 0;
 
   // Map AnalysisData to TopInsights props
-  const largestTransaction =
-    periodData.current?.transactionLargestInPeriodByUsername || null;
+  // Use previous period data if current period has no insights
+  const insightsData = periodData.current?.transactionLargestInPeriodByUsername
+    ? periodData.current
+    : periodData.previous;
 
-  const mostFrequentRecipient = periodData.current
-    ?.mostAccountInfoTransferManyTimeInPeriod
-    ? {
-        accountNumber:
-          periodData.current.mostAccountInfoTransferManyTimeInPeriod
-            .accountNumber,
-        count: periodData.current.mostAccountInfoTransferManyTimeInPeriodCount,
-        totalAmount:
-          periodData.current.mostAccountInfoTransferManyTimeInPeriodTotalAmount,
-      }
-    : null;
+  const largestTransaction =
+    insightsData?.transactionLargestInPeriodByUsername || null;
+
+  const mostFrequentRecipient =
+    insightsData?.mostAccountInfoTransferManyTimeInPeriod
+      ? {
+          accountNumber:
+            insightsData.mostAccountInfoTransferManyTimeInPeriod.accountNumber,
+          count: insightsData.mostAccountInfoTransferManyTimeInPeriodCount,
+          totalAmount:
+            insightsData.mostAccountInfoTransferManyTimeInPeriodTotalAmount,
+        }
+      : null;
 
   const averageTransaction =
     currentTransactionCount > 0 ? currentTotal / currentTransactionCount : 0;
