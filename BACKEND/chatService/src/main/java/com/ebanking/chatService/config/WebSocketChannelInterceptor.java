@@ -9,6 +9,8 @@ import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.stereotype.Component;
 
+import java.security.Principal;
+
 @Component
 @Slf4j
 public class WebSocketChannelInterceptor implements ChannelInterceptor {
@@ -22,8 +24,19 @@ public class WebSocketChannelInterceptor implements ChannelInterceptor {
             String userId = accessor.getFirstNativeHeader("X-User-Id");
             
             if (userId != null) {
+                // Store userId in session attributes
                 accessor.getSessionAttributes().put("userId", userId);
-                log.info("WebSocket CONNECT: userId={}", userId);
+                
+                // CRITICAL: Set user Principal for Spring WebSocket routing
+                // Without this, convertAndSendToUser() cannot route messages to specific users
+                accessor.setUser(new Principal() {
+                    @Override
+                    public String getName() {
+                        return userId;
+                    }
+                });
+                
+                log.info("WebSocket CONNECT: userId={}, Principal set", userId);
             } else {
                 log.warn("WebSocket CONNECT without X-User-Id header");
             }

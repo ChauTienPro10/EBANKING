@@ -56,9 +56,16 @@ public class ChatService {
         conversation.setLastMessageTime(message.getCreatedAt());
         conversationRepository.save(conversation);
         
-        // Send via WebSocket
+        // Send via WebSocket to BOTH sender and receiver
         ChatMessageDto dto = toDto(message);
+        
+        // Send to receiver
         webSocketService.sendMessageToUser(request.getReceiverId(), dto);
+        log.info("Message sent to receiver: {}", request.getReceiverId());
+        
+        // Send to sender (so they see their own message in real-time)
+        webSocketService.sendMessageToUser(senderId, dto);
+        log.info("Message sent to sender: {}", senderId);
         
         return dto;
     }
