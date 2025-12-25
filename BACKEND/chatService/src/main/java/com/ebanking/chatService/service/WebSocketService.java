@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -27,6 +29,23 @@ public class WebSocketService {
             log.debug("Message sent successfully to user: {}", userId);
         } catch (Exception e) {
             log.error("Error sending message to user: {}", userId, e);
+        }
+    }
+    
+    /**
+     * Send read receipt to message sender
+     */
+    public void sendReadReceipt(String userId, Map<String, Object> readReceipt) {
+        log.info("Sending read receipt to user: {}", userId);
+        try {
+            messagingTemplate.convertAndSendToUser(
+                userId,
+                "/queue/read-receipts",
+                readReceipt
+            );
+            log.debug("Read receipt sent successfully to user: {}", userId);
+        } catch (Exception e) {
+            log.error("Error sending read receipt to user: {}", userId, e);
         }
     }
     

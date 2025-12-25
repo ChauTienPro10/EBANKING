@@ -15,6 +15,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -90,7 +95,28 @@ public class ChatService {
     @Transactional
     public void markAsRead(Long conversationId, String userId) {
         log.info("Marking messages as read for conversation: {}, user: {}", conversationId, userId);
+        
+        // Get all unread messages in this conversation for this user
+        List<ChatMessage> unreadMessages = messageRepository.findUnreadMessagesInConversation(conversationId, userId);
+        
+        // Mark as read in database
         messageRepository.markConversationAsRead(conversationId, userId);
+        
+        // Send read receipts to senders via WebSocket
+        for (ChatMessage message : unreadMessages) {
+            // Create read receipt DTO
+            Map<String, Object> readReceipt = new HashMap<>();
+            readReceipt.put("messageId", message.getId());
+            readReceipt.put("conversationId", conversationId);
+            readReceipt.put("readBy", userId);
+            readReceipt.put("readAt", LocalDateTime.now());
+            
+            // Send to original sender
+            webSocketService.sendReadReceipt(message.getSenderId(), readReceipt);
+            log.debug("Read receipt sent to sender: {} for message: {}", message.getSenderId(), message.getId());
+        }
+        
+        log.info("Marked {} messages as read and sent receipts", unreadMessages.size());
     }
     
     /**
