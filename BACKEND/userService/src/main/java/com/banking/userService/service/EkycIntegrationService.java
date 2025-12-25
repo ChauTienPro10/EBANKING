@@ -91,7 +91,6 @@ public class EkycIntegrationService {
         // Only allow reset if current status is not VERIFIED or is expired
         if ("VERIFIED".equals(userInfo.getEkycStatus())) {
             // Demo
-            // Production: Change to 365 * 24 * 60 * 60 * 1000 for 1 year
             // long fiveMinutesAgo = System.currentTimeMillis() - (24 * 60 * 60 * 1000L);
             long fiveMinutesAgo = System.currentTimeMillis() - (24 * 60 * 60 * 1000L);
             if (userInfo.getEkycVerifiedAt() != null &&

@@ -318,7 +318,6 @@ const styles = StyleSheet.create({
   },
   statusContainer: {
     alignItems: 'center',
-    paddingVertical: 32,
     marginBottom: 24,
   },
   statusIcon: {

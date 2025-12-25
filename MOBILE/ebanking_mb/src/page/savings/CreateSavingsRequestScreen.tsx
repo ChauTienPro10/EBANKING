@@ -22,14 +22,19 @@ import ConfirmModal from '../../components/ConfirmModal';
 import PinInputModal from '../../components/PinInputModal';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
-type RouteProp = NavigationRouteProp<RootStackParamList, 'CreateSavingsRequest'>;
+type RouteProp = NavigationRouteProp<
+  RootStackParamList,
+  'CreateSavingsRequest'
+>;
 
 export default function CreateSavingsRequestScreen() {
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute<RouteProp>();
   const { accountNumber, type } = route.params;
-  const { userInfoData: userInfo, loginResponse } = useSelector((state: RootState) => state.app);
-  
+  const { userInfoData: userInfo, loginResponse } = useSelector(
+    (state: RootState) => state.app,
+  );
+
   const [account, setAccount] = useState<SavingsAccount | null>(null);
   const [amount, setAmount] = useState('');
   const [note, setNote] = useState('');
@@ -44,7 +49,9 @@ export default function CreateSavingsRequestScreen() {
 
   const loadAccountDetail = async () => {
     try {
-      const accountData = await SavingsService.getSavingsAccountDetail(accountNumber);
+      const accountData = await SavingsService.getSavingsAccountDetail(
+        accountNumber,
+      );
       setAccount(accountData);
     } catch (error) {
       console.error('Error loading account detail:', error);
@@ -76,7 +83,7 @@ export default function CreateSavingsRequestScreen() {
 
   const validateRequest = () => {
     const requestAmount = parseCurrency(amount);
-    
+
     if (requestAmount <= 0) {
       Toast.show({
         type: 'error',
@@ -116,7 +123,7 @@ export default function CreateSavingsRequestScreen() {
       });
       return false;
     }
-    
+
     return true;
   };
 
@@ -143,7 +150,7 @@ export default function CreateSavingsRequestScreen() {
           note: note.trim() || undefined,
         },
         userInfo.id,
-        loginResponse.username
+        loginResponse.username,
       );
 
       Toast.show({
@@ -173,7 +180,7 @@ export default function CreateSavingsRequestScreen() {
   };
 
   const getDescription = () => {
-    return type === 'DEPOSIT' 
+    return type === 'DEPOSIT'
       ? 'Tạo yêu cầu nạp tiền mặt vào tài khoản tiết kiệm. Yêu cầu sẽ được xử lý trong vòng 1-2 ngày làm việc.'
       : 'Tạo yêu cầu rút tiền mặt từ tài khoản tiết kiệm. Yêu cầu sẽ được xử lý trong vòng 1-2 ngày làm việc.';
   };
@@ -187,7 +194,7 @@ export default function CreateSavingsRequestScreen() {
       <View style={styles.container}>
         <Header title={getTitle()} showBackButton />
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#1976D2" />
+          <ActivityIndicator size="large" color="#09a0a5" />
           <Text style={styles.loadingText}>Đang tải...</Text>
         </View>
       </View>
@@ -199,7 +206,9 @@ export default function CreateSavingsRequestScreen() {
       <View style={styles.container}>
         <Header title={getTitle()} showBackButton />
         <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>Không tìm thấy thông tin tài khoản</Text>
+          <Text style={styles.errorText}>
+            Không tìm thấy thông tin tài khoản
+          </Text>
         </View>
       </View>
     );
@@ -208,7 +217,7 @@ export default function CreateSavingsRequestScreen() {
   return (
     <View style={styles.container}>
       <Header title={getTitle()} showBackButton />
-      
+
       <ScrollView style={styles.content}>
         {/* Mô tả */}
         <View style={styles.descriptionContainer}>
@@ -219,12 +228,15 @@ export default function CreateSavingsRequestScreen() {
         {/* Thông tin tài khoản */}
         <View style={styles.accountContainer}>
           <Text style={styles.sectionTitle}>Tài khoản tiết kiệm</Text>
-          
+
           <View style={styles.accountCard}>
             <Text style={styles.accountName}>
-              {account.accountName || `Tài khoản tiết kiệm ${account.termMonths} tháng`}
+              {account.accountName ||
+                `Tài khoản tiết kiệm ${account.termMonths} tháng`}
             </Text>
-            <Text style={styles.accountNumber}>STK: {account.accountNumber}</Text>
+            <Text style={styles.accountNumber}>
+              STK: {account.accountNumber}
+            </Text>
             <Text style={styles.accountBalance}>
               Số dư: {formatCurrency(account.balance)}
             </Text>
@@ -244,24 +256,20 @@ export default function CreateSavingsRequestScreen() {
             placeholder="Nhập số tiền"
             keyboardType="numeric"
           />
-          
+
           {type === 'WITHDRAW' && (
             <Text style={styles.maxAmountText}>
               Số dư khả dụng: {formatCurrency(account.balance)}
             </Text>
           )}
-          
+
           <View style={styles.amountHints}>
             <Text style={styles.hintTitle}>Lưu ý:</Text>
-            <Text style={styles.hintText}>
-              • Số tiền tối thiểu: 100,000 ₫
-            </Text>
+            <Text style={styles.hintText}>• Số tiền tối thiểu: 100,000 ₫</Text>
             <Text style={styles.hintText}>
               • Số tiền tối đa mỗi lần: 500,000,000 ₫
             </Text>
-            <Text style={styles.hintText}>
-              • Phí xử lý: Miễn phí
-            </Text>
+            <Text style={styles.hintText}>• Phí xử lý: Miễn phí</Text>
           </View>
         </View>
 
@@ -283,27 +291,28 @@ export default function CreateSavingsRequestScreen() {
         {/* Thông tin xử lý */}
         <View style={styles.processingInfoContainer}>
           <Text style={styles.sectionTitle}>Thông tin xử lý</Text>
-          
+
           <View style={styles.infoCard}>
             <View style={styles.infoRow}>
               <Text style={styles.infoLabel}>Thời gian xử lý:</Text>
               <Text style={styles.infoValue}>1-2 ngày làm việc</Text>
             </View>
-            
+
             <View style={styles.infoRow}>
               <Text style={styles.infoLabel}>Phí xử lý:</Text>
               <Text style={styles.infoValue}>Miễn phí</Text>
             </View>
-            
+
             <View style={styles.infoRow}>
               <Text style={styles.infoLabel}>Trạng thái:</Text>
               <Text style={styles.infoValue}>Chờ duyệt sau khi tạo</Text>
             </View>
           </View>
-          
+
           <View style={styles.warningContainer}>
             <Text style={styles.warningText}>
-              ⚠️ Yêu cầu không thể chỉnh sửa sau khi tạo. Vui lòng kiểm tra kỹ thông tin trước khi xác nhận.
+              ⚠️ Yêu cầu không thể chỉnh sửa sau khi tạo. Vui lòng kiểm tra kỹ
+              thông tin trước khi xác nhận.
             </Text>
           </View>
         </View>
@@ -311,7 +320,7 @@ export default function CreateSavingsRequestScreen() {
         {/* Tóm tắt yêu cầu */}
         <View style={styles.summaryContainer}>
           <Text style={styles.sectionTitle}>Tóm tắt yêu cầu</Text>
-          
+
           <View style={styles.summaryCard}>
             <View style={styles.summaryRow}>
               <Text style={styles.summaryLabel}>Loại yêu cầu:</Text>
@@ -319,19 +328,19 @@ export default function CreateSavingsRequestScreen() {
                 {type === 'DEPOSIT' ? 'Nạp tiền mặt' : 'Rút tiền mặt'}
               </Text>
             </View>
-            
+
             <View style={styles.summaryRow}>
               <Text style={styles.summaryLabel}>Tài khoản:</Text>
               <Text style={styles.summaryValue}>{account.accountNumber}</Text>
             </View>
-            
+
             <View style={styles.summaryRow}>
               <Text style={styles.summaryLabel}>Số tiền:</Text>
               <Text style={[styles.summaryValue, styles.amountValue]}>
                 {amount ? formatCurrency(parseCurrency(amount)) : '0 ₫'}
               </Text>
             </View>
-            
+
             {note.trim() && (
               <View style={styles.summaryRow}>
                 <Text style={styles.summaryLabel}>Ghi chú:</Text>
@@ -360,7 +369,9 @@ export default function CreateSavingsRequestScreen() {
       <ConfirmModal
         visible={showConfirmModal}
         title="Xác nhận yêu cầu"
-        message={`Bạn có chắc chắn muốn tạo yêu cầu ${type === 'DEPOSIT' ? 'nạp' : 'rút'} ${amount ? formatCurrency(parseCurrency(amount)) : '0 ₫'} tiền mặt?`}
+        message={`Bạn có chắc chắn muốn tạo yêu cầu ${
+          type === 'DEPOSIT' ? 'nạp' : 'rút'
+        } ${amount ? formatCurrency(parseCurrency(amount)) : '0 ₫'} tiền mặt?`}
         onConfirm={handleConfirmRequest}
         onCancel={() => setShowConfirmModal(false)}
       />
@@ -368,7 +379,9 @@ export default function CreateSavingsRequestScreen() {
       <PinInputModal
         visible={showPinModal}
         title="Nhập mã PIN"
-        message={`Vui lòng nhập mã PIN để xác nhận tạo yêu cầu ${type === 'DEPOSIT' ? 'nạp' : 'rút'} tiền mặt`}
+        message={`Vui lòng nhập mã PIN để xác nhận tạo yêu cầu ${
+          type === 'DEPOSIT' ? 'nạp' : 'rút'
+        } tiền mặt`}
         onConfirm={() => {
           setShowPinModal(false);
           performCreateRequest();

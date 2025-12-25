@@ -109,6 +109,7 @@ export const useAvatarUpload = () => {
       await fetch.post(url, payload, true);
 
       // Refresh user info to get new avatar URL
+      // Timestamp is automatically added in Redux reducer
       await dispatch(fetchUserInfo(loginResponse.id));
 
       Toast.show({

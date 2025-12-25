@@ -151,7 +151,15 @@ const appSlice = createSlice({
         console.error('[FETCH FAILED]', action.payload);
       })
       .addCase(fetchUserInfo.fulfilled, (state, action) => {
-        state.userInfoData = action.payload;
+        // Add timestamp to avatarUrl to prevent caching issues
+        if (action.payload?.avatarUrl) {
+          state.userInfoData = {
+            ...action.payload,
+            avatarUrl: `${action.payload.avatarUrl}?t=${Date.now()}`,
+          };
+        } else {
+          state.userInfoData = action.payload;
+        }
       })
       .addCase(fetchUserInfo.rejected, (state, action) => {
         console.error('[FETCH FAILED]', action.payload);
