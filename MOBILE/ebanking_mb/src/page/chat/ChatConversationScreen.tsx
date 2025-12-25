@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
+  Text,
   FlatList,
   KeyboardAvoidingView,
   Platform,
@@ -54,6 +55,9 @@ const ChatConversationScreen = () => {
     (state: RootState) => state.app.accountTransResponse,
   );
   const isConnected = useSelector((state: RootState) => state.chat.isConnected);
+  const isOtherUserTyping = useSelector(
+    (state: RootState) => state.chat.typingStatus[otherUserId] || false,
+  );
 
   const [inputText, setInputText] = useState('');
   const [loading, setLoading] = useState(false);
@@ -90,7 +94,65 @@ const ChatConversationScreen = () => {
         />
       ),
     });
+  }, [conversationId, otherUserName, otherUserId, isConnected, navigation]);
 
+  // Use ref to track current conversation ID to avoid listener cleanup race condition
+  const currentConversationRef = useRef(conversationId);
+  const currentOtherUserRef = useRef(otherUserId);
+
+  // Update refs when conversation changes
+  useEffect(() => {
+    currentConversationRef.current = conversationId;
+    currentOtherUserRef.current = otherUserId;
+  }, [conversationId, otherUserId]);
+
+  // Listen to WebSocket messages for real-time updates
+  // Setup once on mount to avoid race condition where cleanup happens during message receive
+  useEffect(() => {
+    console.log('🔌 Setting up WebSocket listener');
+
+    const unsubscribe = WebSocketService.onMessage(newMessage => {
+      const currentConvId = currentConversationRef.current;
+      const currentOtherUser = currentOtherUserRef.current;
+
+      console.log('📨 WebSocket message received:', {
+        messageConvId: newMessage.conversationId,
+        currentConvId,
+        senderId: newMessage.senderId,
+        receiverId: newMessage.receiverId,
+        content: newMessage.content,
+      });
+
+      // Check if message belongs to current conversation
+      const messageConvId = String(newMessage.conversationId);
+      const convId = String(currentConvId);
+
+      const belongsToConversation =
+        messageConvId === convId ||
+        newMessage.senderId === currentOtherUser ||
+        newMessage.receiverId === currentOtherUser;
+
+      if (belongsToConversation) {
+        console.log(
+          '✅ Message belongs to current conversation, scrolling to bottom',
+        );
+
+        // Scroll to bottom to show new message
+        setTimeout(() => {
+          flatListRef.current?.scrollToEnd({ animated: true });
+        }, 100);
+      } else {
+        console.log('❌ Message does NOT belong to current conversation');
+      }
+    });
+
+    return () => {
+      console.log('🔌 Cleaning up WebSocket listener');
+      unsubscribe();
+    };
+  }, []); // Empty deps - setup once, use refs for current values
+
+  useEffect(() => {
     return () => {
       dispatch(setCurrentConversation(null));
     };
@@ -129,6 +191,31 @@ const ChatConversationScreen = () => {
       keyboardDidHideListener.remove();
     };
   }, []);
+
+  // Send typing indicator when user is typing
+  useEffect(() => {
+    let typingTimeout: ReturnType<typeof setTimeout>;
+
+    if (inputText.length > 0 && isConnected) {
+      // Send typing indicator
+      WebSocketService.sendTypingIndicator(otherUserId, true);
+
+      // Auto-stop typing after 3 seconds of no input
+      typingTimeout = setTimeout(() => {
+        WebSocketService.sendTypingIndicator(otherUserId, false);
+      }, 3000);
+    } else if (inputText.length === 0 && isConnected) {
+      // User cleared input, stop typing
+      WebSocketService.sendTypingIndicator(otherUserId, false);
+    }
+
+    return () => {
+      clearTimeout(typingTimeout);
+      if (isConnected) {
+        WebSocketService.sendTypingIndicator(otherUserId, false);
+      }
+    };
+  }, [inputText, otherUserId, isConnected]);
 
   const loadMessages = async () => {
     const accountNumber = accountTransResponse?.accountNumber;
@@ -181,6 +268,8 @@ const ChatConversationScreen = () => {
       setSending(true);
       if (isConnected) {
         WebSocketService.sendMessage(otherUserId, reminderMessage);
+
+        // Optimistic update
         const optimisticMessage = {
           id: `temp-${Date.now()}`,
           senderId: accountNumber,
@@ -198,6 +287,7 @@ const ChatConversationScreen = () => {
           );
         }, 500);
       } else {
+        // Fallback to HTTP
         const message = await ChatAPI.sendMessage(
           { receiverId: otherUserId, content: reminderMessage },
           accountNumber,
@@ -231,7 +321,6 @@ const ChatConversationScreen = () => {
 
     const messageText = inputText.trim();
     setInputText('');
-
     try {
       setSending(true);
 
@@ -239,7 +328,7 @@ const ChatConversationScreen = () => {
         // Send via WebSocket
         WebSocketService.sendMessage(otherUserId, messageText);
 
-        // Optimistic UI update - add message to store immediately
+        // Optimistic UI update - add message immediately for instant feedback
         const optimisticMessage = {
           id: `temp-${Date.now()}`,
           senderId: accountNumber,
@@ -252,7 +341,7 @@ const ChatConversationScreen = () => {
         };
         dispatch(addMessage(optimisticMessage));
 
-        // Simulate delivery after 500ms for visual feedback
+        // Mark as delivered after short delay
         setTimeout(() => {
           setDeliveredMessageIds(prev =>
             new Set(prev).add(optimisticMessage.id),
@@ -265,7 +354,6 @@ const ChatConversationScreen = () => {
           accountNumber,
         );
         dispatch(addMessage(message));
-        // Mark as delivered immediately for HTTP
         setDeliveredMessageIds(prev => new Set(prev).add(message.id));
       }
     } catch (error) {
@@ -347,6 +435,20 @@ const ChatConversationScreen = () => {
           <View style={{ height: keyboardVisible ? 10 : 10 }} />
         }
       />
+
+      {isOtherUserTyping && (
+        <View
+          style={{
+            paddingHorizontal: 16,
+            paddingVertical: 8,
+            backgroundColor: '#F0F0F0',
+          }}
+        >
+          <Text style={{ fontSize: 12, color: '#666', fontStyle: 'italic' }}>
+            {otherUserName} đang nhập...
+          </Text>
+        </View>
+      )}
 
       <QuickActionsBar
         onTransferPress={handleTransferAction}

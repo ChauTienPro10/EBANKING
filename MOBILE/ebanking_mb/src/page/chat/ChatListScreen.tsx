@@ -10,8 +10,13 @@ import {
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../store';
-import { setConversations, updateUnreadCount } from '../../store/chatSlice';
+import {
+  setConversations,
+  updateUnreadCount,
+  updateConversationLastMessage,
+} from '../../store/chatSlice';
 import ChatAPI from '../../services/ChatAPI';
+import WebSocketService from '../../services/WebSocketService';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import EmptyChatState from '../../components/chat/EmptyChatState';
 
@@ -61,6 +66,28 @@ const ChatListScreen = () => {
     const index = Math.abs(hash) % colors.length;
     return colors[index];
   };
+
+  // Listen to WebSocket messages for real-time conversation updates
+  useEffect(() => {
+    const unsubscribe = WebSocketService.onMessage(newMessage => {
+      console.log(
+        '📨 New message in ChatListScreen, updating conversation list',
+      );
+
+      // Update conversation in the list without full reload
+      dispatch(
+        updateConversationLastMessage({
+          conversationId: newMessage.conversationId,
+          lastMessage: newMessage.content,
+          lastMessageTime: newMessage.createdAt,
+        }),
+      );
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [dispatch]);
 
   useFocusEffect(
     React.useCallback(() => {

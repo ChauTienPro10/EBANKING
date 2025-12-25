@@ -28,6 +28,7 @@ interface ChatState {
   currentConversationId: string | null;
   isConnected: boolean;
   unreadCount: number;
+  typingStatus: Record<string, boolean>; // userId -> isTyping
 }
 
 const initialState: ChatState = {
@@ -36,6 +37,7 @@ const initialState: ChatState = {
   currentConversationId: null,
   isConnected: false,
   unreadCount: 0,
+  typingStatus: {},
 };
 
 const chatSlice = createSlice({
@@ -50,36 +52,83 @@ const chatSlice = createSlice({
       const message = action.payload;
       const convId = message.conversationId;
 
-      // Initialize messages array if not exists
-      if (!state.messages[convId]) {
-        state.messages[convId] = [];
+      console.log('🔴 [Redux] addMessage called:', {
+        convId,
+        messageId: message.id,
+        senderId: message.senderId,
+        receiverId: message.receiverId,
+        content: message.content,
+      });
+
+      // Get current messages or empty array
+      const currentMessages = state.messages[convId] || [];
+      console.log('🔴 [Redux] Current messages count:', currentMessages.length);
+
+      // Check if this is a real message replacing a temp message
+      const isTempMessage = String(message.id).startsWith('temp-');
+
+      if (!isTempMessage) {
+        // This is a REAL message from backend
+        // Check if we have a temp message with same content that should be replaced
+        const tempMessageIndex = currentMessages.findIndex(
+          m =>
+            String(m.id).startsWith('temp-') &&
+            m.content === message.content &&
+            m.senderId === message.senderId &&
+            m.receiverId === message.receiverId,
+        );
+
+        if (tempMessageIndex !== -1) {
+          console.log('🔄 [Redux] Replacing temp message with real message');
+          // Replace temp message with real one
+          const newMessages = [...currentMessages];
+          newMessages[tempMessageIndex] = message;
+          state.messages[convId] = newMessages;
+
+          // Update conversation
+          const conversation = state.conversations.find(c => c.id === convId);
+          if (conversation) {
+            conversation.lastMessage = message.content;
+            conversation.lastMessageTime = message.createdAt;
+          }
+          return;
+        }
       }
 
-      // Add message if not already exists
-      const exists = state.messages[convId].some(m => m.id === message.id);
+      // Check if message already exists (by ID)
+      const exists = currentMessages.some(m => m.id === message.id);
+      console.log('🔴 [Redux] Message exists?', exists);
+
       if (!exists) {
-        state.messages[convId].push(message);
+        // Create NEW array reference to trigger React re-render
+        const newMessages = [...currentMessages, message];
 
         // Sort by createdAt
-        state.messages[convId].sort(
+        newMessages.sort(
           (a, b) =>
             new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
         );
-      }
 
-      // Update unread count
-      if (!message.isRead && message.receiverId !== message.senderId) {
-        state.unreadCount += 1;
-      }
+        // Assign new array (this creates new reference)
+        state.messages[convId] = newMessages;
+        console.log('✅ [Redux] Message added! New count:', newMessages.length);
 
-      // Update conversation last message
-      const conversation = state.conversations.find(c => c.id === convId);
-      if (conversation) {
-        conversation.lastMessage = message.content;
-        conversation.lastMessageTime = message.createdAt;
-        if (!message.isRead) {
-          conversation.unreadCount += 1;
+        // Update unread count
+        if (!message.isRead && message.receiverId !== message.senderId) {
+          state.unreadCount += 1;
         }
+
+        // Update conversation last message
+        const conversation = state.conversations.find(c => c.id === convId);
+        if (conversation) {
+          conversation.lastMessage = message.content;
+          conversation.lastMessageTime = message.createdAt;
+          if (!message.isRead) {
+            conversation.unreadCount += 1;
+          }
+        }
+      } else {
+        console.log('⚠️ [Redux] Message already exists, skipping');
       }
     },
 
@@ -137,6 +186,43 @@ const chatSlice = createSlice({
     updateUnreadCount: (state, action: PayloadAction<number>) => {
       state.unreadCount = action.payload;
     },
+
+    setTypingStatus: (
+      state,
+      action: PayloadAction<{ userId: string; isTyping: boolean }>,
+    ) => {
+      const { userId, isTyping } = action.payload;
+      state.typingStatus[userId] = isTyping;
+    },
+
+    updateConversationLastMessage: (
+      state,
+      action: PayloadAction<{
+        conversationId: string;
+        lastMessage: string;
+        lastMessageTime: string;
+      }>,
+    ) => {
+      const { conversationId, lastMessage, lastMessageTime } = action.payload;
+      const conversation = state.conversations.find(
+        c => c.id === conversationId,
+      );
+      if (conversation) {
+        conversation.lastMessage = lastMessage;
+        conversation.lastMessageTime = lastMessageTime;
+
+        // Re-sort conversations by last message time
+        state.conversations.sort((a, b) => {
+          const timeA = a.lastMessageTime
+            ? new Date(a.lastMessageTime).getTime()
+            : 0;
+          const timeB = b.lastMessageTime
+            ? new Date(b.lastMessageTime).getTime()
+            : 0;
+          return timeB - timeA;
+        });
+      }
+    },
   },
 });
 
@@ -148,6 +234,8 @@ export const {
   setCurrentConversation,
   markAsRead,
   updateUnreadCount,
+  setTypingStatus,
+  updateConversationLastMessage,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;
