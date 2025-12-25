@@ -8,26 +8,35 @@ import {
   ActivityIndicator,
   RefreshControl,
 } from 'react-native';
-import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
+import {
+  useNavigation,
+  useRoute,
+  useFocusEffect,
+} from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp as NavigationRouteProp } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { RootStackParamList } from '../../navigation/types';
 import { SavingsService } from '../../services/SavingsService';
 import { SavingsAccount } from '../../types/SavingsTypes';
 import { useEkycValidation } from '../../utils/useEkycValidation';
 import Header from '../../components/Header';
 import ConfirmModal from '../../components/ConfirmModal';
+import Colors from '../../constants/color';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
-type RouteProp = NavigationRouteProp<RootStackParamList, 'SavingsAccountDetail'>;
+type RouteProp = NavigationRouteProp<
+  RootStackParamList,
+  'SavingsAccountDetail'
+>;
 
 export default function SavingsAccountDetailScreen() {
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute<RouteProp>();
   const { accountNumber } = route.params;
   const { validateEkyc } = useEkycValidation();
-  
+
   const [account, setAccount] = useState<SavingsAccount | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -35,7 +44,9 @@ export default function SavingsAccountDetailScreen() {
 
   const loadAccountDetail = async () => {
     try {
-      const accountData = await SavingsService.getSavingsAccountDetail(accountNumber);
+      const accountData = await SavingsService.getSavingsAccountDetail(
+        accountNumber,
+      );
       setAccount(accountData);
     } catch (error) {
       console.error('Error loading account detail:', error);
@@ -53,7 +64,7 @@ export default function SavingsAccountDetailScreen() {
   useFocusEffect(
     useCallback(() => {
       loadAccountDetail();
-    }, [accountNumber])
+    }, [accountNumber]),
   );
 
   const onRefresh = () => {
@@ -62,39 +73,43 @@ export default function SavingsAccountDetailScreen() {
   };
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('vi-VN', {
-      style: 'currency',
-      currency: 'VND',
-    }).format(amount);
+    return new Intl.NumberFormat('vi-VN').format(amount);
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('vi-VN');
+    return new Date(dateString).toLocaleDateString('vi-VN', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusConfig = (status: string) => {
     switch (status) {
       case 'ACTIVE':
-        return '#4CAF50';
+        return {
+          color: '#10B981',
+          bgColor: '#ECFDF5',
+          text: 'Đang hoạt động',
+        };
       case 'MATURED':
-        return '#FF9800';
+        return {
+          color: '#F59E0B',
+          bgColor: '#FEF3C7',
+          text: 'Đã đến hạn',
+        };
       case 'CLOSED':
-        return '#F44336';
+        return {
+          color: '#6B7280',
+          bgColor: '#F3F4F6',
+          text: 'Đã đóng',
+        };
       default:
-        return '#9E9E9E';
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'ACTIVE':
-        return 'Đang hoạt động';
-      case 'MATURED':
-        return 'Đã đến hạn';
-      case 'CLOSED':
-        return 'Đã đóng';
-      default:
-        return status;
+        return {
+          color: '#6B7280',
+          bgColor: '#F3F4F6',
+          text: status,
+        };
     }
   };
 
@@ -181,7 +196,7 @@ export default function SavingsAccountDetailScreen() {
   const calculateEstimatedInterest = () => {
     if (!account) return 0;
     const principal = account.balance;
-    const rate = account.interestRate / 100;
+    const rate = account.interestRate; // Already in decimal format (e.g., 0.042 for 4.2%)
     const timeInYears = account.termMonths / 12;
     return principal * rate * timeInYears;
   };
@@ -191,7 +206,7 @@ export default function SavingsAccountDetailScreen() {
       <View style={styles.container}>
         <Header title="Chi tiết tài khoản" showBackButton />
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#1976D2" />
+          <ActivityIndicator size="large" color={Colors.main_bule} />
           <Text style={styles.loadingText}>Đang tải...</Text>
         </View>
       </View>
@@ -203,7 +218,9 @@ export default function SavingsAccountDetailScreen() {
       <View style={styles.container}>
         <Header title="Chi tiết tài khoản" showBackButton />
         <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>Không tìm thấy thông tin tài khoản</Text>
+          <Text style={styles.errorText}>
+            Không tìm thấy thông tin tài khoản
+          </Text>
         </View>
       </View>
     );
@@ -215,7 +232,7 @@ export default function SavingsAccountDetailScreen() {
   return (
     <View style={styles.container}>
       <Header title="Chi tiết tài khoản" showBackButton />
-      
+
       <ScrollView
         style={styles.content}
         refreshControl={
@@ -225,32 +242,55 @@ export default function SavingsAccountDetailScreen() {
         {/* Thông tin tài khoản */}
         <View style={styles.accountCard}>
           <View style={styles.accountHeader}>
-            <Text style={styles.accountName}>
-              {account.accountName || `Tài khoản tiết kiệm ${account.termMonths} tháng`}
-            </Text>
+            <View style={styles.headerLeft}>
+              <View style={styles.iconContainer}>
+                <Ionicons name="wallet" size={24} color={Colors.main_bule} />
+              </View>
+              <View style={styles.headerTextContainer}>
+                <Text style={styles.accountName}>
+                  {account.accountName ||
+                    `Tiết kiệm ${account.termMonths} tháng`}
+                </Text>
+                <Text style={styles.accountNumber}>
+                  {account.accountNumber}
+                </Text>
+              </View>
+            </View>
             <View
               style={[
                 styles.statusBadge,
-                { backgroundColor: getStatusColor(account.status) },
+                { backgroundColor: getStatusConfig(account.status).bgColor },
               ]}
             >
-              <Text style={styles.statusText}>{getStatusText(account.status)}</Text>
+              <Text
+                style={[
+                  styles.statusText,
+                  { color: getStatusConfig(account.status).color },
+                ]}
+              >
+                {getStatusConfig(account.status).text}
+              </Text>
             </View>
           </View>
-
-          <Text style={styles.accountNumber}>STK: {account.accountNumber}</Text>
 
           <View style={styles.balanceContainer}>
             <Text style={styles.balanceLabel}>Số dư hiện tại</Text>
-            <Text style={styles.balance}>{formatCurrency(account.balance)}</Text>
+            <Text style={styles.balance}>
+              {formatCurrency(account.balance)}{' '}
+              <Text style={styles.currency}>₫</Text>
+            </Text>
           </View>
 
           <View style={styles.detailsRow}>
-            <View style={styles.detailItem}>
+            <View style={styles.detailCard}>
+              <Ionicons name="trending-up" size={16} color={Colors.main_bule} />
               <Text style={styles.detailLabel}>Lãi suất</Text>
-              <Text style={styles.detailValue}>{account.interestRate}%/năm</Text>
+              <Text style={styles.detailValue}>
+                {(account.interestRate * 100).toFixed(2)}%/năm
+              </Text>
             </View>
-            <View style={styles.detailItem}>
+            <View style={styles.detailCard}>
+              <Ionicons name="calendar" size={16} color={Colors.main_bule} />
               <Text style={styles.detailLabel}>Kỳ hạn</Text>
               <Text style={styles.detailValue}>{account.termMonths} tháng</Text>
             </View>
@@ -260,36 +300,47 @@ export default function SavingsAccountDetailScreen() {
         {/* Thông tin kỳ hạn */}
         <View style={styles.infoCard}>
           <Text style={styles.cardTitle}>Thông tin kỳ hạn</Text>
-          
+
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Ngày mở tài khoản:</Text>
             <Text style={styles.infoValue}>{formatDate(account.openDate)}</Text>
           </View>
-          
+
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Ngày đến hạn:</Text>
-            <Text style={styles.infoValue}>{formatDate(account.maturityDate)}</Text>
+            <Text style={styles.infoValue}>
+              {formatDate(account.maturityDate)}
+            </Text>
           </View>
-          
+
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Số ngày còn lại:</Text>
-            <Text style={[styles.infoValue, { color: daysToMaturity > 0 ? '#2E7D32' : '#D32F2F' }]}>
+            <Text
+              style={[
+                styles.infoValue,
+                { color: daysToMaturity > 0 ? '#10B981' : '#EF4444' },
+              ]}
+            >
               {daysToMaturity > 0 ? `${daysToMaturity} ngày` : 'Đã đến hạn'}
             </Text>
           </View>
-          
+
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Tự động gia hạn:</Text>
             <Text style={styles.infoValue}>
-              {account.autoRenewal !== undefined ? (account.autoRenewal ? 'Có' : 'Không') : 'Không'}
+              {account.autoRenewal !== undefined
+                ? account.autoRenewal
+                  ? 'Có'
+                  : 'Không'
+                : 'Không'}
             </Text>
           </View>
 
           {account.totalInterestEarned !== undefined && (
             <View style={styles.infoRow}>
               <Text style={styles.infoLabel}>Tổng lãi đã nhận:</Text>
-              <Text style={[styles.infoValue, { color: '#2E7D32' }]}>
-                {formatCurrency(account.totalInterestEarned)}
+              <Text style={[styles.infoValue, { color: '#10B981' }]}>
+                {formatCurrency(account.totalInterestEarned)} ₫
               </Text>
             </View>
           )}
@@ -305,18 +356,18 @@ export default function SavingsAccountDetailScreen() {
         {/* Ước tính lãi */}
         <View style={styles.infoCard}>
           <Text style={styles.cardTitle}>Ước tính lãi suất</Text>
-          
+
           <View style={styles.interestContainer}>
             <Text style={styles.interestLabel}>Lãi dự kiến khi đến hạn</Text>
             <Text style={styles.interestValue}>
-              {formatCurrency(estimatedInterest)}
+              {formatCurrency(estimatedInterest)} ₫
             </Text>
           </View>
-          
+
           <View style={styles.totalContainer}>
             <Text style={styles.totalLabel}>Tổng tiền nhận được</Text>
             <Text style={styles.totalValue}>
-              {formatCurrency(account.balance + estimatedInterest)}
+              {formatCurrency(account.balance + estimatedInterest)} ₫
             </Text>
           </View>
         </View>
@@ -324,14 +375,18 @@ export default function SavingsAccountDetailScreen() {
         {/* Tài khoản liên kết */}
         <View style={styles.infoCard}>
           <Text style={styles.cardTitle}>Tài khoản liên kết</Text>
-          <Text style={styles.linkedAccount}>{account.linkedTransactionAccount}</Text>
-          <Text style={styles.linkedAccountLabel}>Tài khoản giao dịch chính</Text>
+          <Text style={styles.linkedAccount}>
+            {account.linkedTransactionAccount}
+          </Text>
+          <Text style={styles.linkedAccountLabel}>
+            Tài khoản giao dịch chính
+          </Text>
         </View>
 
         {/* Các nút chức năng */}
         <View style={styles.actionsContainer}>
           <Text style={styles.actionsTitle}>Giao dịch</Text>
-          
+
           <View style={styles.actionRow}>
             <TouchableOpacity
               style={styles.actionButton}
@@ -339,32 +394,38 @@ export default function SavingsAccountDetailScreen() {
             >
               <Text style={styles.actionButtonText}>Nạp từ TK giao dịch</Text>
             </TouchableOpacity>
-            
+
             <TouchableOpacity
               style={[styles.actionButton, styles.secondaryButton]}
               onPress={handleTransferFromSavings}
             >
-              <Text style={[styles.actionButtonText, styles.secondaryButtonText]}>
+              <Text
+                style={[styles.actionButtonText, styles.secondaryButtonText]}
+              >
                 Chuyển về TK giao dịch
               </Text>
             </TouchableOpacity>
           </View>
-          
+
           <View style={styles.actionRow}>
             <TouchableOpacity
               style={[styles.actionButton, styles.tertiaryButton]}
               onPress={handleDepositRequest}
             >
-              <Text style={[styles.actionButtonText, styles.tertiaryButtonText]}>
+              <Text
+                style={[styles.actionButtonText, styles.tertiaryButtonText]}
+              >
                 Yêu cầu nạp tiền mặt
               </Text>
             </TouchableOpacity>
-            
+
             <TouchableOpacity
               style={[styles.actionButton, styles.tertiaryButton]}
               onPress={handleWithdrawRequest}
             >
-              <Text style={[styles.actionButtonText, styles.tertiaryButtonText]}>
+              <Text
+                style={[styles.actionButtonText, styles.tertiaryButtonText]}
+              >
                 Yêu cầu rút tiền mặt
               </Text>
             </TouchableOpacity>
@@ -384,7 +445,7 @@ export default function SavingsAccountDetailScreen() {
           navigation.navigate('EKYC');
         }}
         onCancel={() => setShowEKYCModal(false)}
-        confirmButtonStyle={{ backgroundColor: '#1976D2' }}
+        confirmButtonStyle={{ backgroundColor: Colors.main_bule }}
       />
     </View>
   );
@@ -393,7 +454,7 @@ export default function SavingsAccountDetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: Colors.background,
   },
   content: {
     flex: 1,
@@ -405,8 +466,8 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     marginTop: 16,
-    fontSize: 16,
-    color: '#666666',
+    fontSize: 15,
+    color: Colors.textSecondary,
   },
   errorContainer: {
     flex: 1,
@@ -414,144 +475,184 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   errorText: {
-    fontSize: 16,
-    color: '#666666',
+    fontSize: 15,
+    color: Colors.textSecondary,
   },
   accountCard: {
-    backgroundColor: '#1976D2',
+    backgroundColor: Colors.white,
     margin: 16,
+    marginBottom: 12,
     padding: 20,
     borderRadius: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
+    borderWidth: 1,
+    borderColor: '#F3F4F6',
   },
   accountHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
+    alignItems: 'flex-start',
+    marginBottom: 20,
   },
-  accountName: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    marginRight: 12,
+  },
+  iconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 14,
+    backgroundColor: `${Colors.main_bule}15`,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  headerTextContainer: {
     flex: 1,
   },
+  accountName: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: Colors.textPrimary,
+    marginBottom: 6,
+  },
   statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
     borderRadius: 12,
   },
   statusText: {
-    fontSize: 12,
-    color: '#FFFFFF',
+    fontSize: 11,
     fontWeight: '600',
   },
   accountNumber: {
-    fontSize: 14,
-    color: '#E3F2FD',
-    marginBottom: 16,
+    fontSize: 13,
+    color: Colors.textSecondary,
+    fontFamily: 'monospace',
   },
   balanceContainer: {
-    marginBottom: 16,
+    marginBottom: 20,
+    paddingBottom: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3F4F6',
   },
   balanceLabel: {
-    fontSize: 14,
-    color: '#E3F2FD',
-    marginBottom: 4,
+    fontSize: 13,
+    color: Colors.textSecondary,
+    marginBottom: 8,
   },
   balance: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
+    fontSize: 32,
+    fontWeight: '700',
+    color: Colors.textPrimary,
+    letterSpacing: -0.5,
+  },
+  currency: {
+    fontSize: 22,
+    fontWeight: '600',
+    color: Colors.textSecondary,
   },
   detailsRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    gap: 12,
   },
-  detailItem: {
+  detailCard: {
     flex: 1,
+    backgroundColor: '#F9FAFB',
+    borderRadius: 12,
+    padding: 14,
+    gap: 6,
   },
   detailLabel: {
-    fontSize: 12,
-    color: '#E8EAF6',
-    marginBottom: 4,
+    fontSize: 11,
+    color: Colors.textSecondary,
   },
   detailValue: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: Colors.textPrimary,
   },
   infoCard: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.white,
     marginHorizontal: 16,
-    marginBottom: 16,
-    padding: 16,
-    borderRadius: 12,
-    elevation: 2,
+    marginBottom: 12,
+    padding: 18,
+    borderRadius: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
+    borderWidth: 1,
+    borderColor: '#F3F4F6',
   },
   cardTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#333333',
-    marginBottom: 12,
+    color: Colors.textPrimary,
+    marginBottom: 16,
   },
   infoRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 12,
   },
   infoLabel: {
     fontSize: 14,
-    color: '#666666',
+    color: Colors.textSecondary,
   },
   infoValue: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#333333',
+    color: Colors.textPrimary,
   },
   interestContainer: {
     alignItems: 'center',
     marginBottom: 16,
   },
   interestLabel: {
-    fontSize: 14,
-    color: '#666666',
-    marginBottom: 4,
+    fontSize: 13,
+    color: Colors.textSecondary,
+    marginBottom: 8,
   },
   interestValue: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#2E7D32',
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#10B981',
   },
   totalContainer: {
     alignItems: 'center',
     paddingTop: 16,
     borderTopWidth: 1,
-    borderTopColor: '#E0E0E0',
+    borderTopColor: '#F3F4F6',
   },
   totalLabel: {
-    fontSize: 14,
-    color: '#666666',
-    marginBottom: 4,
+    fontSize: 13,
+    color: Colors.textSecondary,
+    marginBottom: 8,
   },
   totalValue: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#1976D2',
+    fontSize: 28,
+    fontWeight: '700',
+    color: Colors.main_bule,
   },
   linkedAccount: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '600',
-    color: '#333333',
-    marginBottom: 4,
+    color: Colors.textPrimary,
+    marginBottom: 6,
+    fontFamily: 'monospace',
   },
   linkedAccountLabel: {
     fontSize: 12,
-    color: '#666666',
+    color: Colors.textSecondary,
   },
   actionsContainer: {
     marginHorizontal: 16,
@@ -560,7 +661,7 @@ const styles = StyleSheet.create({
   actionsTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#333333',
+    color: Colors.textPrimary,
     marginBottom: 12,
   },
   actionRow: {
@@ -570,30 +671,39 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     flex: 1,
-    backgroundColor: '#1976D2',
-    paddingVertical: 12,
-    borderRadius: 8,
+    backgroundColor: Colors.main_bule,
+    paddingVertical: 14,
+    borderRadius: 12,
     alignItems: 'center',
+    shadowColor: Colors.main_bule,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
   },
   secondaryButton: {
-    backgroundColor: 'transparent',
-    borderWidth: 1,
-    borderColor: '#1976D2',
+    backgroundColor: Colors.white,
+    borderWidth: 1.5,
+    borderColor: Colors.main_bule,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
   },
   tertiaryButton: {
-    backgroundColor: 'transparent',
-    borderWidth: 1,
-    borderColor: '#FF9800',
+    backgroundColor: Colors.white,
+    borderWidth: 1.5,
+    borderColor: '#F59E0B',
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
   },
   actionButtonText: {
-    color: '#FFFFFF',
+    color: Colors.white,
     fontSize: 14,
     fontWeight: '600',
   },
   secondaryButtonText: {
-    color: '#1976D2',
+    color: Colors.main_bule,
   },
   tertiaryButtonText: {
-    color: '#FF9800',
+    color: '#F59E0B',
   },
 });

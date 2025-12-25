@@ -12,6 +12,7 @@ import { useSelector } from 'react-redux';
 import Toast from 'react-native-toast-message';
 import { RootState } from '../store';
 import { SavingsService } from '../services/SavingsService';
+import Colors from '../constants/color';
 
 interface PinInputModalProps {
   visible: boolean;
@@ -55,8 +56,11 @@ export default function PinInputModal({
 
     setVerifying(true);
     try {
-      const isValidPin = await SavingsService.verifyPin(loginResponse.username, pin);
-      
+      const isValidPin = await SavingsService.verifyPin(
+        loginResponse.username,
+        pin,
+      );
+
       if (isValidPin) {
         onConfirm(pin);
         setPin(''); // Clear PIN after successful verification
@@ -97,13 +101,14 @@ export default function PinInputModal({
         <View style={styles.modal}>
           <Text style={styles.title}>{title}</Text>
           <Text style={styles.message}>{message}</Text>
-          
+
           <View style={styles.pinContainer}>
             <TextInput
               style={styles.pinInput}
               value={pin}
               onChangeText={setPin}
-              placeholder="Nhập mã PIN"
+              placeholder="••••••"
+              placeholderTextColor={Colors.textSecondary}
               secureTextEntry
               keyboardType="numeric"
               maxLength={6}
@@ -111,16 +116,17 @@ export default function PinInputModal({
               editable={!isProcessing}
             />
           </View>
-          
+
           <View style={styles.buttonContainer}>
             <TouchableOpacity
               style={[styles.button, styles.cancelButton]}
               onPress={handleCancel}
               disabled={isProcessing}
+              activeOpacity={0.7}
             >
               <Text style={styles.cancelText}>Hủy</Text>
             </TouchableOpacity>
-            
+
             <TouchableOpacity
               style={[
                 styles.button,
@@ -129,9 +135,10 @@ export default function PinInputModal({
               ]}
               onPress={handleConfirm}
               disabled={pin.length < 4 || isProcessing}
+              activeOpacity={0.8}
             >
               {isProcessing ? (
-                <ActivityIndicator color="#FFFFFF" size="small" />
+                <ActivityIndicator color={Colors.white} size="small" />
               ) : (
                 <Text style={styles.confirmText}>
                   {verifying ? 'Đang xác thực...' : 'Xác nhận'}
@@ -151,76 +158,90 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
+    padding: 20,
   },
   modal: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 20,
-    margin: 20,
-    minWidth: 320,
-    maxWidth: 380,
+    backgroundColor: Colors.white,
+    borderRadius: 20,
+    padding: 24,
+    width: '100%',
+    maxWidth: 360,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 16,
+    elevation: 10,
   },
   title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333333',
+    fontSize: 20,
+    fontWeight: '700',
+    color: Colors.textPrimary,
     marginBottom: 12,
     textAlign: 'center',
   },
   message: {
-    fontSize: 16,
-    color: '#666666',
-    marginBottom: 20,
+    fontSize: 15,
+    color: Colors.textSecondary,
+    marginBottom: 24,
     textAlign: 'center',
     lineHeight: 22,
   },
   pinContainer: {
-    marginBottom: 20,
+    marginBottom: 24,
     alignItems: 'center',
   },
   pinInput: {
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 18,
+    borderWidth: 2,
+    borderColor: Colors.main_bule,
+    borderRadius: 12,
+    padding: 16,
+    fontSize: 24,
+    fontWeight: '600',
     textAlign: 'center',
-    width: 200,
-    letterSpacing: 4,
+    width: '100%',
+    letterSpacing: 8,
+    color: Colors.textPrimary,
+    backgroundColor: `${Colors.main_bule}08`,
   },
   buttonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     gap: 12,
   },
   button: {
     flex: 1,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 8,
+    paddingVertical: 14,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 44,
+    minHeight: 48,
   },
   cancelButton: {
-    backgroundColor: '#F5F5F5',
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
+    backgroundColor: Colors.white,
+    borderWidth: 1.5,
+    borderColor: Colors.border,
   },
   confirmButton: {
-    backgroundColor: '#1976D2',
+    backgroundColor: Colors.main_bule,
+    shadowColor: Colors.main_bule,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   disabledButton: {
-    backgroundColor: '#CCCCCC',
+    backgroundColor: Colors.textSecondary,
+    opacity: 0.5,
+    shadowOpacity: 0,
+    elevation: 0,
   },
   cancelText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#666666',
+    color: Colors.textSecondary,
   },
   confirmText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: Colors.white,
   },
 });

@@ -1,11 +1,8 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { SavingsAccount } from '../../types/SavingsTypes';
+import Colors from '../../constants/color';
 
 interface SavingsCardProps {
   account: SavingsAccount;
@@ -14,14 +11,15 @@ interface SavingsCardProps {
 
 export default function SavingsCard({ account, onPress }: SavingsCardProps) {
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('vi-VN', {
-      style: 'currency',
-      currency: 'VND',
-    }).format(amount);
+    return new Intl.NumberFormat('vi-VN').format(amount);
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('vi-VN');
+    return new Date(dateString).toLocaleDateString('vi-VN', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
   };
 
   const formatDateTime = (dateString: string) => {
@@ -34,97 +32,153 @@ export default function SavingsCard({ account, onPress }: SavingsCardProps) {
     });
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusConfig = (status: string) => {
     switch (status) {
       case 'ACTIVE':
-        return '#4CAF50';
+        return {
+          color: '#10B981',
+          bgColor: '#ECFDF5',
+          text: 'Đang hoạt động',
+          icon: 'checkmark-circle' as const,
+        };
       case 'MATURED':
-        return '#FF9800';
+        return {
+          color: '#F59E0B',
+          bgColor: '#FEF3C7',
+          text: 'Đã đến hạn',
+          icon: 'time' as const,
+        };
       case 'CLOSED':
-        return '#F44336';
+        return {
+          color: '#6B7280',
+          bgColor: '#F3F4F6',
+          text: 'Đã đóng',
+          icon: 'close-circle' as const,
+        };
       default:
-        return '#9E9E9E';
+        return {
+          color: '#6B7280',
+          bgColor: '#F3F4F6',
+          text: status,
+          icon: 'ellipse' as const,
+        };
     }
   };
 
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'ACTIVE':
-        return 'Đang hoạt động';
-      case 'MATURED':
-        return 'Đã đến hạn';
-      case 'CLOSED':
-        return 'Đã đóng';
-      default:
-        return status;
-    }
-  };
-
-  // Use gray color scheme for closed accounts
   const isClosedAccount = account.status === 'CLOSED';
-  const cardBackgroundColor = isClosedAccount ? '#9E9E9E' : '#1976D2';
+  const statusConfig = getStatusConfig(account.status);
 
   return (
-    <TouchableOpacity onPress={onPress} style={styles.container}>
-      <View style={[styles.cardContent, { backgroundColor: cardBackgroundColor }]}>
+    <TouchableOpacity
+      onPress={onPress}
+      style={styles.container}
+      activeOpacity={0.7}
+    >
+      <View style={styles.cardContent}>
+        {/* Header Section */}
         <View style={styles.header}>
-          <Text style={styles.accountName}>
-            {account.accountName || `Tài khoản tiết kiệm ${account.termMonths} tháng`}
-          </Text>
+          <View style={styles.headerLeft}>
+            <View
+              style={[
+                styles.iconContainer,
+                { backgroundColor: `${Colors.main_bule}15` },
+              ]}
+            >
+              <Ionicons name="wallet" size={20} color={Colors.main_bule} />
+            </View>
+            <View style={styles.headerTextContainer}>
+              <Text style={styles.accountName} numberOfLines={1}>
+                {account.accountName || `Tiết kiệm ${account.termMonths} tháng`}
+              </Text>
+              <Text style={styles.accountNumber}>{account.accountNumber}</Text>
+            </View>
+          </View>
           <View
             style={[
               styles.statusBadge,
-              { backgroundColor: getStatusColor(account.status) },
+              { backgroundColor: statusConfig.bgColor },
             ]}
           >
-            <Text style={styles.statusText}>{getStatusText(account.status)}</Text>
+            <Ionicons
+              name={statusConfig.icon}
+              size={12}
+              color={statusConfig.color}
+            />
+            <Text style={[styles.statusText, { color: statusConfig.color }]}>
+              {statusConfig.text}
+            </Text>
           </View>
         </View>
 
-        <Text style={styles.accountNumber}>
-          STK: {account.accountNumber}
-        </Text>
-
-        <View style={styles.balanceContainer}>
+        {/* Balance Section */}
+        <View style={styles.balanceSection}>
           {isClosedAccount ? (
             <>
               <Text style={styles.balanceLabel}>Thời gian tất toán</Text>
               <Text style={styles.closureTime}>
-                {account.updatedAt ? formatDateTime(account.updatedAt) : 'Không xác định'}
+                {account.updatedAt
+                  ? formatDateTime(account.updatedAt)
+                  : 'Không xác định'}
               </Text>
             </>
           ) : (
             <>
               <Text style={styles.balanceLabel}>Số dư hiện tại</Text>
-              <Text style={styles.balance}>{formatCurrency(account.balance)}</Text>
+              <Text style={styles.balance}>
+                {formatCurrency(account.balance)}{' '}
+                <Text style={styles.currency}>₫</Text>
+              </Text>
             </>
           )}
         </View>
 
-        <View style={styles.detailsContainer}>
-          <View style={styles.detailItem}>
+        {/* Details Grid */}
+        <View style={styles.detailsGrid}>
+          <View style={styles.detailCard}>
+            <View style={styles.detailIconWrapper}>
+              <Ionicons name="trending-up" size={14} color={Colors.main_bule} />
+            </View>
             <Text style={styles.detailLabel}>Lãi suất</Text>
-            <Text style={styles.detailValue}>{account.interestRate}%/năm</Text>
+            <Text style={styles.detailValue}>
+              {(account.interestRate * 100).toFixed(2)}%/năm
+            </Text>
           </View>
-          <View style={styles.detailItem}>
+
+          <View style={styles.detailCard}>
+            <View style={styles.detailIconWrapper}>
+              <Ionicons name="calendar" size={14} color={Colors.main_bule} />
+            </View>
             <Text style={styles.detailLabel}>Kỳ hạn</Text>
             <Text style={styles.detailValue}>{account.termMonths} tháng</Text>
           </View>
+
           {account.totalInterestEarned !== undefined && (
-            <View style={styles.detailItem}>
+            <View style={styles.detailCard}>
+              <View style={styles.detailIconWrapper}>
+                <Ionicons name="cash" size={14} color={Colors.main_bule} />
+              </View>
               <Text style={styles.detailLabel}>Lãi đã nhận</Text>
-              <Text style={styles.detailValue}>{formatCurrency(account.totalInterestEarned)}</Text>
+              <Text style={styles.detailValue}>
+                {formatCurrency(account.totalInterestEarned)} ₫
+              </Text>
             </View>
           )}
         </View>
 
-        <View style={styles.dateContainer}>
-          <Text style={styles.dateText}>
-            Ngày mở: {formatDate(account.openDate)}
-          </Text>
-          <Text style={styles.dateText}>
-            Ngày đến hạn: {formatDate(account.maturityDate)}
-          </Text>
+        {/* Date Info */}
+        <View style={styles.dateSection}>
+          <View style={styles.dateRow}>
+            <Ionicons name="calendar-outline" size={12} color={Colors.grey3} />
+            <Text style={styles.dateText}>
+              Ngày mở: {formatDate(account.openDate)}
+            </Text>
+          </View>
+          <View style={styles.dateRow}>
+            <Ionicons name="calendar-outline" size={12} color={Colors.grey3} />
+            <Text style={styles.dateText}>
+              Đến hạn: {formatDate(account.maturityDate)}
+            </Text>
+          </View>
         </View>
       </View>
     </TouchableOpacity>
@@ -134,89 +188,130 @@ export default function SavingsCard({ account, onPress }: SavingsCardProps) {
 const styles = StyleSheet.create({
   container: {
     marginHorizontal: 16,
-    marginVertical: 8,
-    borderRadius: 16,
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    marginVertical: 6,
   },
   cardContent: {
-    padding: 20,
+    backgroundColor: Colors.white,
     borderRadius: 16,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
+    borderWidth: 1,
+    borderColor: '#F3F4F6',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 16,
+  },
+  headerLeft: {
+    flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
+    flex: 1,
+    marginRight: 8,
+  },
+  iconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  headerTextContainer: {
+    flex: 1,
   },
   accountName: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
-    flex: 1,
-  },
-  statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  statusText: {
-    fontSize: 12,
-    color: '#FFFFFF',
+    fontSize: 16,
     fontWeight: '600',
-  },
-  accountNumber: {
-    fontSize: 14,
-    color: '#E3F2FD',
-    marginBottom: 16,
-  },
-  balanceContainer: {
-    marginBottom: 16,
-  },
-  balanceLabel: {
-    fontSize: 14,
-    color: '#E3F2FD',
+    color: Colors.textPrimary,
     marginBottom: 4,
   },
+  accountNumber: {
+    fontSize: 13,
+    color: Colors.textSecondary,
+    fontFamily: 'monospace',
+  },
+  statusBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 12,
+    gap: 4,
+  },
+  statusText: {
+    fontSize: 11,
+    fontWeight: '600',
+  },
+  balanceSection: {
+    marginBottom: 16,
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3F4F6',
+  },
+  balanceLabel: {
+    fontSize: 13,
+    color: Colors.textSecondary,
+    marginBottom: 6,
+  },
   balance: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
+    fontSize: 28,
+    fontWeight: '700',
+    color: Colors.textPrimary,
+    letterSpacing: -0.5,
+  },
+  currency: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: Colors.textSecondary,
   },
   closureTime: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: Colors.textPrimary,
   },
-  detailsContainer: {
+  detailsGrid: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 16,
+    flexWrap: 'wrap',
+    marginHorizontal: -4,
+    marginBottom: 12,
   },
-  detailItem: {
+  detailCard: {
     flex: 1,
+    minWidth: '30%',
+    backgroundColor: '#F9FAFB',
+    borderRadius: 12,
+    padding: 12,
+    margin: 4,
+  },
+  detailIconWrapper: {
+    marginBottom: 6,
   },
   detailLabel: {
-    fontSize: 12,
-    color: '#E3F2FD',
+    fontSize: 11,
+    color: Colors.textSecondary,
     marginBottom: 4,
   },
   detailValue: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: Colors.textPrimary,
   },
-  dateContainer: {
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.2)',
-    paddingTop: 12,
+  dateSection: {
+    gap: 6,
+  },
+  dateRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
   },
   dateText: {
     fontSize: 12,
-    color: '#E3F2FD',
-    marginBottom: 2,
+    color: Colors.textSecondary,
   },
 });
