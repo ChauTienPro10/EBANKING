@@ -230,7 +230,7 @@ export default function SavingsHomeScreen() {
           navigation.navigate('EKYC');
         }}
         onCancel={() => setShowEKYCModal(false)}
-        confirmButtonStyle={{ backgroundColor: '#1976D2' }}
+        confirmButtonStyle={{ backgroundColor: Colors.main_bule }}
       />
     </View>
   );
@@ -239,71 +239,83 @@ export default function SavingsHomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: Colors.background,
   },
   content: {
     flex: 1,
   },
   summaryContainer: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.white,
     margin: 16,
-    padding: 20,
-    borderRadius: 12,
+    marginBottom: 12,
+    padding: 24,
+    borderRadius: 16,
     alignItems: 'center',
-    elevation: 2,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
+    borderWidth: 1,
+    borderColor: '#F3F4F6',
   },
   summaryTitle: {
-    fontSize: 16,
-    color: '#666666',
+    fontSize: 14,
+    color: Colors.textSecondary,
     marginBottom: 8,
+    fontWeight: '500',
   },
   totalBalance: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#2E7D32',
-    marginBottom: 4,
+    fontSize: 32,
+    fontWeight: '700',
+    color: Colors.main_bule,
+    marginBottom: 8,
+    letterSpacing: -0.5,
   },
   accountCount: {
-    fontSize: 14,
-    color: '#999999',
+    fontSize: 13,
+    color: Colors.textSecondary,
   },
   actionContainer: {
     flexDirection: 'row',
     marginHorizontal: 16,
-    marginBottom: 16,
+    marginBottom: 20,
     gap: 12,
   },
   actionButton: {
     flex: 1,
-    backgroundColor: '#1976D2',
-    paddingVertical: 12,
-    borderRadius: 8,
+    backgroundColor: Colors.main_bule,
+    paddingVertical: 14,
+    borderRadius: 12,
     alignItems: 'center',
+    shadowColor: Colors.main_bule,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
   },
   secondaryButton: {
-    backgroundColor: 'transparent',
-    borderWidth: 1,
-    borderColor: '#1976D2',
+    backgroundColor: Colors.white,
+    borderWidth: 1.5,
+    borderColor: Colors.main_bule,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
   },
   actionButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
+    color: Colors.white,
+    fontSize: 15,
     fontWeight: '600',
   },
   secondaryButtonText: {
-    color: '#1976D2',
+    color: Colors.main_bule,
   },
   accountsContainer: {
     marginBottom: 20,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333333',
+    fontSize: 17,
+    fontWeight: '600',
+    color: Colors.textPrimary,
     marginHorizontal: 16,
     marginBottom: 12,
   },
@@ -312,22 +324,28 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   loadingText: {
-    fontSize: 16,
-    color: '#666666',
+    fontSize: 15,
+    color: Colors.textSecondary,
   },
   emptyContainer: {
     padding: 40,
     alignItems: 'center',
+    backgroundColor: Colors.white,
+    marginHorizontal: 16,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#F3F4F6',
   },
   emptyText: {
     fontSize: 16,
-    color: '#666666',
+    color: Colors.textPrimary,
     textAlign: 'center',
     marginBottom: 8,
+    fontWeight: '500',
   },
   emptySubText: {
     fontSize: 14,
-    color: '#999999',
+    color: Colors.textSecondary,
     textAlign: 'center',
   },
   closedAccountsHeader: {
@@ -336,11 +354,11 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     paddingTop: 16,
     borderTopWidth: 1,
-    borderTopColor: '#E0E0E0',
+    borderTopColor: '#E5E7EB',
   },
   closedAccountsTitle: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '600',
-    color: '#666666',
+    color: Colors.textSecondary,
   },
 });

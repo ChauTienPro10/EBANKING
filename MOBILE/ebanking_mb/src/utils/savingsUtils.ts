@@ -1,9 +1,17 @@
-import { SavingsTermType, SavingsAccountDto, SavingsAccount, CashRequestResponseDto, SavingsRequest } from '../types/SavingsTypes';
+import {
+  SavingsTermType,
+  SavingsAccountDto,
+  SavingsAccount,
+  CashRequestResponseDto,
+  SavingsRequest,
+} from '../types/SavingsTypes';
 
 /**
  * Transform backend CashRequestResponseDto to frontend SavingsRequest
  */
-export const transformCashRequestResponse = (dto: CashRequestResponseDto): SavingsRequest => {
+export const transformCashRequestResponse = (
+  dto: CashRequestResponseDto,
+): SavingsRequest => {
   return {
     id: dto.requestId.toString(),
     requestNumber: dto.requestNumber,
@@ -19,7 +27,9 @@ export const transformCashRequestResponse = (dto: CashRequestResponseDto): Savin
     note: dto.description,
   };
 };
-export const transformSavingsAccountDto = (dto: SavingsAccountDto): SavingsAccount => {
+export const transformSavingsAccountDto = (
+  dto: SavingsAccountDto,
+): SavingsAccount => {
   return {
     id: dto.savingsAccountId.toString(),
     accountNumber: dto.accountNumber,
@@ -41,11 +51,14 @@ export const transformSavingsAccountDto = (dto: SavingsAccountDto): SavingsAccou
 /**
  * Transform backend InterestRateDto to frontend SavingsTermType
  */
-export const transformInterestRateToSavingsTerm = (rate: any): SavingsTermType => {
+export const transformInterestRateToSavingsTerm = (
+  rate: any,
+): SavingsTermType => {
   // Handle null maxAmount by setting to a very high number (representing no limit)
-  const maxAmount = rate.maxAmount !== null && rate.maxAmount !== undefined 
-    ? rate.maxAmount 
-    : Number.MAX_SAFE_INTEGER; // Use max safe integer to represent "no limit"
+  const maxAmount =
+    rate.maxAmount !== null && rate.maxAmount !== undefined
+      ? rate.maxAmount
+      : Number.MAX_SAFE_INTEGER; // Use max safe integer to represent "no limit"
 
   return {
     interestRateId: rate.interestRateId,
@@ -57,7 +70,9 @@ export const transformInterestRateToSavingsTerm = (rate: any): SavingsTermType =
     status: rate.status,
     effectiveFrom: rate.effectiveFrom,
     effectiveTo: rate.effectiveTo,
-    description: `Lãi suất ${rate.annualRate}%/năm cho kỳ hạn ${rate.termMonths} tháng`
+    description: `Lãi suất ${(rate.annualRate * 100).toFixed(
+      2,
+    )}%/năm cho kỳ hạn ${rate.termMonths} tháng`,
   };
 };
 
@@ -104,7 +119,7 @@ export const formatDateTime = (dateString: string): string => {
 export const calculateEstimatedInterest = (
   principal: number,
   annualRate: number,
-  termMonths: number
+  termMonths: number,
 ): number => {
   const rate = annualRate / 100;
   const timeInYears = termMonths / 12;
@@ -186,24 +201,29 @@ export const getRequestTypeIcon = (type: string): string => {
  */
 export const validateSavingsAccountForm = (
   selectedTerm: SavingsTermType | null,
-  amount: number
+  amount: number,
 ): { isValid: boolean; error?: string } => {
   if (!selectedTerm) {
     return { isValid: false, error: 'Vui lòng chọn kỳ hạn gửi tiết kiệm' };
   }
 
   if (amount < selectedTerm.minAmount) {
-    return { 
-      isValid: false, 
-      error: `Số tiền gửi tối thiểu là ${formatCurrency(selectedTerm.minAmount)}` 
+    return {
+      isValid: false,
+      error: `Số tiền gửi tối thiểu là ${formatCurrency(
+        selectedTerm.minAmount,
+      )}`,
     };
   }
 
   // Only validate maxAmount if it's not representing "no limit"
-  if (selectedTerm.maxAmount !== Number.MAX_SAFE_INTEGER && amount > selectedTerm.maxAmount) {
-    return { 
-      isValid: false, 
-      error: `Số tiền gửi tối đa là ${formatCurrency(selectedTerm.maxAmount)}` 
+  if (
+    selectedTerm.maxAmount !== Number.MAX_SAFE_INTEGER &&
+    amount > selectedTerm.maxAmount
+  ) {
+    return {
+      isValid: false,
+      error: `Số tiền gửi tối đa là ${formatCurrency(selectedTerm.maxAmount)}`,
     };
   }
 
@@ -215,7 +235,7 @@ export const validateSavingsAccountForm = (
  */
 export const validateTransferAmount = (
   amount: number,
-  availableBalance?: number
+  availableBalance?: number,
 ): { isValid: boolean; error?: string } => {
   if (amount <= 0) {
     return { isValid: false, error: 'Vui lòng nhập số tiền hợp lệ' };
@@ -234,7 +254,7 @@ export const validateTransferAmount = (
 export const validateSavingsRequestAmount = (
   amount: number,
   type: 'DEPOSIT' | 'WITHDRAW',
-  availableBalance?: number
+  availableBalance?: number,
 ): { isValid: boolean; error?: string } => {
   const MIN_AMOUNT = 100000; // 100,000 VND
   const MAX_AMOUNT = 500000000; // 500,000,000 VND
@@ -244,20 +264,24 @@ export const validateSavingsRequestAmount = (
   }
 
   if (amount < MIN_AMOUNT) {
-    return { 
-      isValid: false, 
-      error: `Số tiền tối thiểu là ${formatCurrency(MIN_AMOUNT)}` 
+    return {
+      isValid: false,
+      error: `Số tiền tối thiểu là ${formatCurrency(MIN_AMOUNT)}`,
     };
   }
 
   if (amount > MAX_AMOUNT) {
-    return { 
-      isValid: false, 
-      error: `Số tiền tối đa là ${formatCurrency(MAX_AMOUNT)}` 
+    return {
+      isValid: false,
+      error: `Số tiền tối đa là ${formatCurrency(MAX_AMOUNT)}`,
     };
   }
 
-  if (type === 'WITHDRAW' && availableBalance !== undefined && amount > availableBalance) {
+  if (
+    type === 'WITHDRAW' &&
+    availableBalance !== undefined &&
+    amount > availableBalance
+  ) {
     return { isValid: false, error: 'Số dư tài khoản tiết kiệm không đủ' };
   }
 

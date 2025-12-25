@@ -241,7 +241,7 @@ export default function CreateSavingsRequestScreen() {
               Số dư: {formatCurrency(account.balance)}
             </Text>
             <Text style={styles.accountRate}>
-              Lãi suất: {account.interestRate}%/năm
+              Lãi suất: {(account.interestRate * 100).toFixed(2)}%/năm
             </Text>
           </View>
         </View>
