@@ -37,7 +37,6 @@ import {
   getPeriodLabel,
   calculateTrendData,
 } from './utils/statisticsUtils';
-import { generateMockTransactions, USE_MOCK_DATA } from './utils/mockData';
 
 const StatisticsScreen: React.FC = () => {
   const { t, i18n } = useTranslation();
@@ -75,17 +74,8 @@ const StatisticsScreen: React.FC = () => {
     (state: RootState) => state.transactionHistories?.data || [],
   );
 
-  // Generate mock transactions for historical data
-  const mockTransactions = useMemo(() => {
-    if (USE_MOCK_DATA && currentAccountNumber) {
-      return generateMockTransactions(currentAccountNumber);
-    }
-    return [];
-  }, [currentAccountNumber]);
-
-  // Merge real transactions with mock transactions
+  // Filter real transactions - remove savings transactions
   const allTransactions = useMemo(() => {
-    // Filter out savings transactions
     const filteredReal = realTransactions.filter(t => {
       // Filter by transaction type
       if (
@@ -108,9 +98,8 @@ const StatisticsScreen: React.FC = () => {
       return true;
     });
 
-    const merged = [...filteredReal, ...mockTransactions];
-    return merged;
-  }, [realTransactions, mockTransactions]);
+    return filteredReal;
+  }, [realTransactions]);
 
   // Derive current and previous period data based on selection
   const periodData = useMemo(() => {
@@ -122,111 +111,12 @@ const StatisticsScreen: React.FC = () => {
       previous = analysisPreviousWeek;
     } else if (selectedPeriod === 'month') {
       current = analysisCurrentMonth;
-      // Use mock data for previous month if enabled
-      if (USE_MOCK_DATA && mockTransactions.length > 0) {
-        const previousMonthTransactions = filterTransactionsByPeriod(
-          mockTransactions,
-          selectedPeriod,
-          1,
-        );
-
-        const stats = calculatePeriodStats(
-          previousMonthTransactions,
-          currentAccountNumber,
-        );
-
-        previous = {
-          totalAmountInPeriodByUsername: stats.totalOutgoing,
-          totalIncomingAmount: stats.totalIncoming,
-          transactionCountInPeriodByUsername: stats.totalTransactions,
-          transactionLargestInPeriodByUsername: stats.largestTransaction,
-          mostAccountInfoTransferManyTimeInPeriod: stats.mostFrequentRecipient
-            ? ({
-                accountNumber: stats.mostFrequentRecipient.accountNumber,
-              } as any)
-            : null,
-          mostAccountInfoTransferManyTimeInPeriodCount:
-            stats.mostFrequentRecipient?.count || 0,
-          mostAccountInfoTransferManyTimeInPeriodTotalAmount:
-            stats.mostFrequentRecipient?.totalAmount || 0,
-        } as AnalysisData;
-      } else {
-        previous = analysisPreviousMonth;
-      }
+      previous = analysisPreviousMonth;
     } else if (selectedPeriod === 'year') {
-      // For year: use mock data for both current year (2025) and previous year (2024)
-      if (USE_MOCK_DATA && mockTransactions.length > 0) {
-        // Current year (2025) - use API data if available, otherwise mock
-        const currentYearTransactions = filterTransactionsByPeriod(
-          mockTransactions,
-          selectedPeriod,
-          0,
-        );
-        const currentStats = calculatePeriodStats(
-          currentYearTransactions,
-          currentAccountNumber,
-        );
-
-        // Combine with API data for current month (Dec 2025)
-        const apiCurrentTotal =
-          analysisCurrentMonth?.totalAmountInPeriodByUsername || 0;
-        const apiCurrentIncoming =
-          analysisCurrentMonth?.totalIncomingAmount || 0;
-        const apiCurrentCount =
-          analysisCurrentMonth?.transactionCountInPeriodByUsername || 0;
-
-        current = {
-          totalAmountInPeriodByUsername:
-            currentStats.totalOutgoing + apiCurrentTotal,
-          totalIncomingAmount: currentStats.totalIncoming + apiCurrentIncoming,
-          transactionCountInPeriodByUsername:
-            currentStats.totalTransactions + apiCurrentCount,
-          transactionLargestInPeriodByUsername:
-            currentStats.largestTransaction ||
-            analysisCurrentMonth?.transactionLargestInPeriodByUsername ||
-            null,
-          mostAccountInfoTransferManyTimeInPeriod:
-            currentStats.mostFrequentRecipient
-              ? ({
-                  accountNumber:
-                    currentStats.mostFrequentRecipient.accountNumber,
-                } as any)
-              : null,
-          mostAccountInfoTransferManyTimeInPeriodCount:
-            currentStats.mostFrequentRecipient?.count || 0,
-          mostAccountInfoTransferManyTimeInPeriodTotalAmount:
-            currentStats.mostFrequentRecipient?.totalAmount || 0,
-        } as AnalysisData;
-
-        // Previous year (2024) - use mock data
-        const previousYearTransactions = filterTransactionsByPeriod(
-          mockTransactions,
-          selectedPeriod,
-          1,
-        );
-        const previousStats = calculatePeriodStats(
-          previousYearTransactions,
-          currentAccountNumber,
-        );
-        previous = {
-          totalAmountInPeriodByUsername: previousStats.totalOutgoing,
-          totalIncomingAmount: previousStats.totalIncoming,
-          transactionCountInPeriodByUsername: previousStats.totalTransactions,
-          transactionLargestInPeriodByUsername:
-            previousStats.largestTransaction,
-          mostAccountInfoTransferManyTimeInPeriod:
-            previousStats.mostFrequentRecipient
-              ? ({
-                  accountNumber:
-                    previousStats.mostFrequentRecipient.accountNumber,
-                } as any)
-              : null,
-          mostAccountInfoTransferManyTimeInPeriodCount:
-            previousStats.mostFrequentRecipient?.count || 0,
-          mostAccountInfoTransferManyTimeInPeriodTotalAmount:
-            previousStats.mostFrequentRecipient?.totalAmount || 0,
-        } as AnalysisData;
-      }
+      // Year statistics - use current month data as placeholder
+      // Backend should implement year-based analytics API
+      current = analysisCurrentMonth;
+      previous = analysisPreviousMonth;
     }
 
     return {
@@ -241,7 +131,6 @@ const StatisticsScreen: React.FC = () => {
     analysisPreviousWeek,
     analysisCurrentMonth,
     analysisPreviousMonth,
-    mockTransactions,
     currentAccountNumber,
     t,
   ]);
