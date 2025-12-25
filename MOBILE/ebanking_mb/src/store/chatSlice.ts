@@ -195,6 +195,46 @@ const chatSlice = createSlice({
       state.typingStatus[userId] = isTyping;
     },
 
+    markMessageAsRead: (
+      state,
+      action: PayloadAction<{ messageId: number; conversationId: number }>,
+    ) => {
+      const { messageId, conversationId } = action.payload;
+      console.log('✓✓ [Redux] Marking message as read:', {
+        messageId,
+        conversationId,
+      });
+
+      const messages = state.messages[conversationId];
+      if (!messages) {
+        console.warn('⚠️ [Redux] No messages found for conversation');
+        return;
+      }
+
+      // Convert both to string for comparison since message.id can be string or number
+      const messageIndex = messages.findIndex(
+        m => String(m.id) === String(messageId),
+      );
+
+      if (messageIndex === -1) {
+        console.warn('⚠️ [Redux] Message not found:', messageId);
+        return;
+      }
+
+      if (messages[messageIndex].isRead) {
+        console.log('ℹ️ [Redux] Message already read');
+        return;
+      }
+
+      // CRITICAL: Create new array to force reference change
+      const updatedMessages = messages.map((msg, idx) =>
+        idx === messageIndex ? { ...msg, isRead: true } : msg,
+      );
+      state.messages[conversationId] = updatedMessages;
+
+      console.log('✅ [Redux] Created new array, reference changed');
+    },
+
     updateConversationLastMessage: (
       state,
       action: PayloadAction<{
@@ -235,6 +275,7 @@ export const {
   markAsRead,
   updateUnreadCount,
   setTypingStatus,
+  markMessageAsRead,
   updateConversationLastMessage,
 } = chatSlice.actions;
 

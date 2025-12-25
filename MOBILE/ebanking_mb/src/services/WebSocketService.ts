@@ -1,7 +1,12 @@
 import { Client, IMessage } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { store } from '../store';
-import { addMessage, setConnected, setTypingStatus } from '../store/chatSlice';
+import {
+  addMessage,
+  setConnected,
+  setTypingStatus,
+  markMessageAsRead,
+} from '../store/chatSlice';
 import { HOST_SERVER } from '../constants/api';
 
 class WebSocketService {
@@ -20,22 +25,17 @@ class WebSocketService {
   ): Promise<void> {
     return new Promise((resolve, reject) => {
       this.userId = userId;
-      console.log('🔌 [WebSocket] Connecting with userId:', userId);
-      console.log('🔌 [WebSocket] Server URL:', serverUrl);
 
       this.client = new Client({
         webSocketFactory: () => new SockJS(`${serverUrl}/ws-chat`),
         connectHeaders: {
           'X-User-Id': userId,
         },
-        debug: str => {
-          console.log('[WebSocket Debug]', str);
-        },
+        debug: () => {},
         reconnectDelay: 5000,
         heartbeatIncoming: 4000,
         heartbeatOutgoing: 4000,
         onConnect: () => {
-          console.log('✅ WebSocket connected for userId:', userId);
           this.reconnectAttempts = 0;
           store.dispatch(setConnected(true));
           this.subscribeToMessages();
@@ -47,11 +47,9 @@ class WebSocketService {
           reject(new Error(frame.headers['message']));
         },
         onWebSocketClose: () => {
-          console.log('WebSocket connection closed');
           store.dispatch(setConnected(false));
         },
         onDisconnect: () => {
-          console.log('WebSocket disconnected');
           store.dispatch(setConnected(false));
         },
       });
@@ -69,39 +67,16 @@ class WebSocketService {
       return;
     }
 
-    console.log(
-      '📡 [WebSocket] Subscribing to /user/queue/messages for userId:',
-      this.userId,
-    );
-
     // Subscribe to personal messages
     this.client.subscribe(`/user/queue/messages`, (message: IMessage) => {
       try {
-        console.log(
-          '🔵 [WebSocket] RAW message received from broker:',
-          message,
-        );
         const data = JSON.parse(message.body);
-        console.log('📨 [WebSocket] Parsed message data:', {
-          id: data.id,
-          conversationId: data.conversationId,
-          senderId: data.senderId,
-          receiverId: data.receiverId,
-          content: data.content,
-        });
 
         // Dispatch to Redux store
-        console.log('🔴 [WebSocket] Dispatching to Redux...');
         store.dispatch(addMessage(data));
-        console.log('✅ [WebSocket] Dispatched to Redux successfully');
 
         // Notify all listeners (for components)
-        console.log(
-          '🔔 [WebSocket] Notifying listeners, count:',
-          this.messageListeners.size,
-        );
         this.notifyListeners(data);
-        console.log('✅ [WebSocket] Listeners notified');
       } catch (error) {
         console.error('❌ [WebSocket] Error parsing message:', error);
       }
@@ -111,7 +86,6 @@ class WebSocketService {
     this.client.subscribe(`/user/queue/notifications`, (message: IMessage) => {
       try {
         const data = JSON.parse(message.body);
-        console.log('🔔 Received notification:', data);
 
         // Dispatch to Redux store
         store.dispatch(addMessage(data));
@@ -127,7 +101,6 @@ class WebSocketService {
     this.client.subscribe(`/user/queue/typing`, (message: IMessage) => {
       try {
         const data = JSON.parse(message.body);
-        console.log('⌨️ Typing indicator:', data);
 
         // Update typing status in Redux
         store.dispatch(
@@ -141,9 +114,22 @@ class WebSocketService {
       }
     });
 
-    console.log(
-      '✅ Subscribed to messages, notifications, and typing indicators',
-    );
+    // Subscribe to read receipts
+    this.client.subscribe(`/user/queue/read-receipts`, (message: IMessage) => {
+      try {
+        const data = JSON.parse(message.body);
+
+        // Update message read status in Redux
+        store.dispatch(
+          markMessageAsRead({
+            messageId: data.messageId,
+            conversationId: data.conversationId,
+          }),
+        );
+      } catch (error) {
+        console.error('❌ [WebSocket] Error parsing read receipt:', error);
+      }
+    });
   }
 
   /**
@@ -188,8 +174,6 @@ class WebSocketService {
       destination: '/app/chat.send',
       body: JSON.stringify(message),
     });
-
-    console.log('📤 Message sent:', message);
   }
 
   /**
@@ -210,8 +194,6 @@ class WebSocketService {
       destination: '/app/chat.typing',
       body: JSON.stringify(indicator),
     });
-
-    console.log('⌨️ Typing indicator sent:', indicator);
   }
 
   /**
@@ -224,7 +206,6 @@ class WebSocketService {
       this.userId = null;
       this.messageListeners.clear();
       store.dispatch(setConnected(false));
-      console.log('WebSocket disconnected');
     }
   }
 

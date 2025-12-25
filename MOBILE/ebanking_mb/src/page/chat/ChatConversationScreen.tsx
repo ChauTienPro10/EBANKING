@@ -76,7 +76,6 @@ const ChatConversationScreen = () => {
   useEffect(() => {
     dispatch(setCurrentConversation(conversationId));
     loadMessages();
-    markConversationAsRead();
 
     // Set custom header
     navigation.setOptions({
@@ -95,6 +94,20 @@ const ChatConversationScreen = () => {
       ),
     });
   }, [conversationId, otherUserName, otherUserId, isConnected, navigation]);
+
+  // Mark messages as read when accountTransResponse is ready
+  useEffect(() => {
+    const accountNumber = accountTransResponse?.accountNumber;
+    if (!accountNumber) return;
+
+    ChatAPI.markAsRead(conversationId, accountNumber)
+      .then(() => {
+        dispatch(markAsRead(conversationId));
+      })
+      .catch(error => {
+        console.error('Error marking messages as read:', error);
+      });
+  }, [accountTransResponse?.accountNumber, conversationId, dispatch]);
 
   // Use ref to track current conversation ID to avoid listener cleanup race condition
   const currentConversationRef = useRef(conversationId);
@@ -237,13 +250,25 @@ const ChatConversationScreen = () => {
 
   const markConversationAsRead = async () => {
     const accountNumber = accountTransResponse?.accountNumber;
-    if (!accountNumber) return;
+    console.log('📖 [MarkAsRead] Attempting to mark conversation as read:', {
+      conversationId,
+      accountNumber,
+      hasAccountNumber: !!accountNumber,
+    });
+
+    if (!accountNumber) {
+      console.warn('⚠️ [MarkAsRead] No account number, skipping');
+      return;
+    }
 
     try {
+      console.log('📡 [MarkAsRead] Calling API...');
       await ChatAPI.markAsRead(conversationId, accountNumber);
+      console.log('✅ [MarkAsRead] API call successful');
       dispatch(markAsRead(conversationId));
+      console.log('✅ [MarkAsRead] Redux updated');
     } catch (error) {
-      console.error('Error marking as read:', error);
+      console.error('❌ [MarkAsRead] Error:', error);
     }
   };
 

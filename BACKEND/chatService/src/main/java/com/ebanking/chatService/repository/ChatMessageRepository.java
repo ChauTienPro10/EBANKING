@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> {
     
@@ -42,6 +44,16 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
            "(m.senderId = :userId OR m.receiverId = :userId) " +
            "ORDER BY m.createdAt DESC LIMIT 1")
     ChatMessage findLatestMessageForUser(
+        @Param("conversationId") Long conversationId,
+        @Param("userId") String userId
+    );
+    
+    /**
+     * Find unread messages in a conversation for a user (for sending read receipts)
+     */
+    @Query("SELECT m FROM ChatMessage m WHERE " +
+           "m.conversationId = :conversationId AND m.receiverId = :userId AND m.isRead = false")
+    List<ChatMessage> findUnreadMessagesInConversation(
         @Param("conversationId") Long conversationId,
         @Param("userId") String userId
     );
