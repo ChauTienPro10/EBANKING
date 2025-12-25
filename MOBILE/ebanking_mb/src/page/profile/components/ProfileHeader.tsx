@@ -26,6 +26,10 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
   const { t } = useTranslation();
   const userInfo = useSelector((state: RootState) => state.app.userInfoData);
 
+  React.useEffect(() => {
+    console.log('🖼️ ProfileHeader - avatarUrl:', userInfo?.avatarUrl);
+  }, [userInfo?.avatarUrl]);
+
   return (
     <Animated.View style={[styles.unifiedHeader, { height: headerHeight }]}>
       {/* Top Navigation - Always visible */}

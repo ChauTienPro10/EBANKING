@@ -23,18 +23,24 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 export default function SavingsRequestListScreen() {
   const navigation = useNavigation<NavigationProp>();
-  const { userInfoData: userInfo } = useSelector((state: RootState) => state.app);
-  
+  const { userInfoData: userInfo } = useSelector(
+    (state: RootState) => state.app,
+  );
+
   const [requests, setRequests] = useState<SavingsRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [filter, setFilter] = useState<'ALL' | 'PENDING' | 'APPROVED' | 'REJECTED'>('ALL');
+  const [filter, setFilter] = useState<
+    'ALL' | 'PENDING' | 'APPROVED' | 'REJECTED'
+  >('ALL');
 
-  const loadRequests = async () => {
+  const loadRequests = useCallback(async () => {
     if (!userInfo?.id) return;
 
     try {
-      const requestsData = await SavingsService.getSavingsRequests(userInfo.id.toString());
+      const requestsData = await SavingsService.getSavingsRequests(
+        userInfo.id.toString(),
+      );
       setRequests(requestsData);
     } catch (error) {
       console.error('Error loading requests:', error);
@@ -43,12 +49,12 @@ export default function SavingsRequestListScreen() {
       setLoading(false);
       setRefreshing(false);
     }
-  };
+  }, [userInfo?.id]);
 
   useFocusEffect(
     useCallback(() => {
       loadRequests();
-    }, [userInfo?.id])
+    }, [loadRequests]),
   );
 
   const onRefresh = () => {
@@ -57,7 +63,9 @@ export default function SavingsRequestListScreen() {
   };
 
   const handleRequestPress = (requestId: string) => {
-    navigation.navigate('SavingsRequestDetail', { requestId });
+    navigation.navigate('SavingsRequestDetail', {
+      requestId: Number(requestId),
+    });
   };
 
   const getFilteredRequests = () => {
@@ -89,7 +97,7 @@ export default function SavingsRequestListScreen() {
   return (
     <View style={styles.container}>
       <Header title="Danh sách yêu cầu" showBackButton />
-      
+
       {/* Bộ lọc */}
       <View style={styles.filterContainer}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -101,7 +109,7 @@ export default function SavingsRequestListScreen() {
               Tất cả ({getStatusCount('ALL')})
             </Text>
           </TouchableOpacity>
-          
+
           <TouchableOpacity
             style={getFilterButtonStyle('PENDING')}
             onPress={() => setFilter('PENDING')}
@@ -110,7 +118,7 @@ export default function SavingsRequestListScreen() {
               Chờ duyệt ({getStatusCount('PENDING')})
             </Text>
           </TouchableOpacity>
-          
+
           <TouchableOpacity
             style={getFilterButtonStyle('APPROVED')}
             onPress={() => setFilter('APPROVED')}
@@ -119,7 +127,7 @@ export default function SavingsRequestListScreen() {
               Đã duyệt ({getStatusCount('APPROVED')})
             </Text>
           </TouchableOpacity>
-          
+
           <TouchableOpacity
             style={getFilterButtonStyle('REJECTED')}
             onPress={() => setFilter('REJECTED')}
@@ -140,17 +148,22 @@ export default function SavingsRequestListScreen() {
       >
         {loading ? (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#1976D2" />
+            <ActivityIndicator size="large" color="#09a0a5" />
             <Text style={styles.loadingText}>Đang tải...</Text>
           </View>
         ) : filteredRequests.length === 0 ? (
           <View style={styles.emptyContainer}>
             <Text style={styles.emptyIcon}>📋</Text>
             <Text style={styles.emptyText}>
-              {filter === 'ALL' 
+              {filter === 'ALL'
                 ? 'Bạn chưa có yêu cầu nào'
-                : `Không có yêu cầu ${filter === 'PENDING' ? 'chờ duyệt' : filter === 'APPROVED' ? 'đã duyệt' : 'bị từ chối'}`
-              }
+                : `Không có yêu cầu ${
+                    filter === 'PENDING'
+                      ? 'chờ duyệt'
+                      : filter === 'APPROVED'
+                      ? 'đã duyệt'
+                      : 'bị từ chối'
+                  }`}
             </Text>
             <Text style={styles.emptySubText}>
               Các yêu cầu nạp/rút tiền mặt sẽ hiển thị tại đây
@@ -161,21 +174,27 @@ export default function SavingsRequestListScreen() {
             {/* Thống kê nhanh */}
             <View style={styles.statsContainer}>
               <View style={styles.statItem}>
-                <Text style={styles.statNumber}>{getStatusCount('PENDING')}</Text>
+                <Text style={styles.statNumber}>
+                  {getStatusCount('PENDING')}
+                </Text>
                 <Text style={styles.statLabel}>Chờ duyệt</Text>
               </View>
               <View style={styles.statItem}>
-                <Text style={styles.statNumber}>{getStatusCount('APPROVED')}</Text>
+                <Text style={styles.statNumber}>
+                  {getStatusCount('APPROVED')}
+                </Text>
                 <Text style={styles.statLabel}>Đã duyệt</Text>
               </View>
               <View style={styles.statItem}>
-                <Text style={styles.statNumber}>{getStatusCount('REJECTED')}</Text>
+                <Text style={styles.statNumber}>
+                  {getStatusCount('REJECTED')}
+                </Text>
                 <Text style={styles.statLabel}>Bị từ chối</Text>
               </View>
             </View>
 
             {/* Danh sách yêu cầu */}
-            {filteredRequests.map((request) => (
+            {filteredRequests.map(request => (
               <RequestCard
                 key={request.id}
                 request={request}
@@ -218,8 +237,8 @@ const styles = StyleSheet.create({
     borderColor: '#E0E0E0',
   },
   activeFilterButton: {
-    backgroundColor: '#1976D2',
-    borderColor: '#1976D2',
+    backgroundColor: '#09a0a5',
+    borderColor: '#09a0a5',
   },
   filterButtonText: {
     fontSize: 14,
@@ -280,7 +299,7 @@ const styles = StyleSheet.create({
   statNumber: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#1976D2',
+    color: '#09a0a5',
     marginBottom: 4,
   },
   statLabel: {
@@ -296,7 +315,7 @@ const styles = StyleSheet.create({
   },
   noteText: {
     fontSize: 12,
-    color: '#1976D2',
+    color: '#09a0a5',
     textAlign: 'center',
   },
 });

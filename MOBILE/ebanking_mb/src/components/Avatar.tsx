@@ -29,17 +29,24 @@ const Avatar: React.FC<AvatarProps> = ({
   };
 
   const AvatarContent = () => {
-    // Add cache busting to force reload when avatar changes
-    const imageUri = src ? `${src}?t=${Date.now()}` : undefined;
-
     return (
       <View style={[styles.container, containerStyle]}>
-        {imageUri ? (
+        {src ? (
           <Image
-            source={{ uri: imageUri }}
+            source={{ uri: src }}
             style={[avatarStyle, styles.image]}
             // Force reload on URI change
-            key={imageUri}
+            key={src}
+            onError={error => {
+              console.error(
+                '❌ Avatar image load error:',
+                error.nativeEvent.error,
+              );
+              console.error('❌ Failed URL:', src);
+            }}
+            onLoad={() => {
+              console.log('✅ Avatar image loaded successfully:', src);
+            }}
           />
         ) : (
           <View style={[avatarStyle, styles.placeholder]}>

@@ -26,9 +26,13 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 export default function CreateSavingsAccountScreen() {
   const navigation = useNavigation<NavigationProp>();
   const dispatch = useDispatch<AppDispatch>();
-  const { userInfoData: userInfo, accountTransResponse } = useSelector((state: RootState) => state.app);
-  
-  const [selectedTerm, setSelectedTerm] = useState<SavingsTermType | null>(null);
+  const { userInfoData: userInfo, accountTransResponse } = useSelector(
+    (state: RootState) => state.app,
+  );
+
+  const [selectedTerm, setSelectedTerm] = useState<SavingsTermType | null>(
+    null,
+  );
   const [initialAmount, setInitialAmount] = useState('');
   const [terms, setTerms] = useState<SavingsTermType[]>([]);
   const [loading, setLoading] = useState(true);
@@ -105,7 +109,9 @@ export default function CreateSavingsAccountScreen() {
       Toast.show({
         type: 'error',
         text1: 'Lỗi',
-        text2: `Số tiền gửi tối thiểu là ${formatCurrency(selectedTerm.minAmount)}`,
+        text2: `Số tiền gửi tối thiểu là ${formatCurrency(
+          selectedTerm.minAmount,
+        )}`,
       });
       return false;
     }
@@ -116,7 +122,9 @@ export default function CreateSavingsAccountScreen() {
         Toast.show({
           type: 'error',
           text1: 'Lỗi',
-          text2: `Số tiền gửi tối đa là ${formatCurrency(selectedTerm.maxAmount)}`,
+          text2: `Số tiền gửi tối đa là ${formatCurrency(
+            selectedTerm.maxAmount,
+          )}`,
         });
         return false;
       }
@@ -179,7 +187,7 @@ export default function CreateSavingsAccountScreen() {
       <View style={styles.container}>
         <Header title="Mở tài khoản tiết kiệm" showBackButton />
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#1976D2" />
+          <ActivityIndicator size="large" color="#09a0a5" />
           <Text style={styles.loadingText}>Đang tải...</Text>
         </View>
       </View>
@@ -189,26 +197,29 @@ export default function CreateSavingsAccountScreen() {
   return (
     <View style={styles.container}>
       <Header title="Mở tài khoản tiết kiệm" showBackButton />
-      
+
       <ScrollView style={styles.content}>
         {/* Thông tin người dùng */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Thông tin người dùng</Text>
           <View style={styles.infoCard}>
             <Text style={styles.infoLabel}>Họ và tên:</Text>
-            <Text style={styles.infoValue}>{userInfo?.fullName || 'Chưa có thông tin'}</Text>
+            <Text style={styles.infoValue}>
+              {userInfo?.fullName || 'Chưa có thông tin'}
+            </Text>
           </View>
         </View>
 
         {/* Chọn kỳ hạn */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Chọn kỳ hạn gửi tiết kiệm</Text>
-          {terms.map((term) => (
+          {terms.map(term => (
             <TouchableOpacity
               key={term.interestRateId}
               style={[
                 styles.termCard,
-                selectedTerm?.interestRateId === term.interestRateId && styles.selectedTermCard,
+                selectedTerm?.interestRateId === term.interestRateId &&
+                  styles.selectedTermCard,
               ]}
               onPress={() => setSelectedTerm(term)}
             >
@@ -218,11 +229,10 @@ export default function CreateSavingsAccountScreen() {
               </View>
               <Text style={styles.termDuration}>{term.termMonths} tháng</Text>
               <Text style={styles.termAmount}>
-                Số tiền: {formatCurrency(term.minAmount)} - {
-                  term.maxAmount === Number.MAX_SAFE_INTEGER 
-                    ? 'Không giới hạn' 
-                    : formatCurrency(term.maxAmount)
-                }
+                Số tiền: {formatCurrency(term.minAmount)} -{' '}
+                {term.maxAmount === Number.MAX_SAFE_INTEGER
+                  ? 'Không giới hạn'
+                  : formatCurrency(term.maxAmount)}
               </Text>
               <Text style={styles.termDescription}>{term.description}</Text>
             </TouchableOpacity>
@@ -234,19 +244,19 @@ export default function CreateSavingsAccountScreen() {
           <Text style={styles.sectionTitle}>Số tiền gửi ban đầu</Text>
           <TextInput
             style={styles.input}
-            value={initialAmount ? formatCurrency(parseCurrency(initialAmount)) : ''}
+            value={
+              initialAmount ? formatCurrency(parseCurrency(initialAmount)) : ''
+            }
             onChangeText={handleAmountChange}
             placeholder="Nhập số tiền"
             keyboardType="numeric"
           />
           {selectedTerm && (
             <Text style={styles.amountHint}>
-              Tối thiểu: {formatCurrency(selectedTerm.minAmount)} - 
-              Tối đa: {
-                selectedTerm.maxAmount === Number.MAX_SAFE_INTEGER 
-                  ? 'Không giới hạn' 
-                  : formatCurrency(selectedTerm.maxAmount)
-              }
+              Tối thiểu: {formatCurrency(selectedTerm.minAmount)} - Tối đa:{' '}
+              {selectedTerm.maxAmount === Number.MAX_SAFE_INTEGER
+                ? 'Không giới hạn'
+                : formatCurrency(selectedTerm.maxAmount)}
             </Text>
           )}
         </View>
@@ -256,13 +266,17 @@ export default function CreateSavingsAccountScreen() {
           <Text style={styles.sectionTitle}>Tài khoản thanh toán</Text>
           <View style={styles.linkedAccountCard}>
             <Text style={styles.linkedAccountText}>
-              {accountTransResponse?.accountNumber || 'Chưa có tài khoản thanh toán'}
+              {accountTransResponse?.accountNumber ||
+                'Chưa có tài khoản thanh toán'}
             </Text>
             <Text style={styles.linkedAccountSubText}>
               Loại: {accountTransResponse?.accountType || 'N/A'}
             </Text>
             <Text style={styles.linkedAccountSubText}>
-              Số dư: {accountTransResponse ? formatCurrency(accountTransResponse.balance) : 'N/A'}
+              Số dư:{' '}
+              {accountTransResponse
+                ? formatCurrency(accountTransResponse.balance)
+                : 'N/A'}
             </Text>
           </View>
         </View>
@@ -277,12 +291,16 @@ export default function CreateSavingsAccountScreen() {
             </View>
             <View style={styles.summaryRow}>
               <Text style={styles.summaryLabel}>Tài khoản nguồn:</Text>
-              <Text style={styles.summaryValue}>{accountTransResponse?.accountNumber}</Text>
+              <Text style={styles.summaryValue}>
+                {accountTransResponse?.accountNumber}
+              </Text>
             </View>
             <View style={styles.summaryRow}>
               <Text style={styles.summaryLabel}>Kỳ hạn:</Text>
               <Text style={styles.summaryValue}>
-                {selectedTerm ? `${selectedTerm.termMonths} tháng` : 'Chưa chọn'}
+                {selectedTerm
+                  ? `${selectedTerm.termMonths} tháng`
+                  : 'Chưa chọn'}
               </Text>
             </View>
             <View style={styles.summaryRow}>
@@ -294,7 +312,9 @@ export default function CreateSavingsAccountScreen() {
             <View style={styles.summaryRow}>
               <Text style={styles.summaryLabel}>Số tiền gửi:</Text>
               <Text style={[styles.summaryValue, styles.amountValue]}>
-                {initialAmount ? formatCurrency(parseCurrency(initialAmount)) : '0 ₫'}
+                {initialAmount
+                  ? formatCurrency(parseCurrency(initialAmount))
+                  : '0 ₫'}
               </Text>
             </View>
             <View style={styles.summaryRow}>
@@ -323,7 +343,9 @@ export default function CreateSavingsAccountScreen() {
       <ConfirmModal
         visible={showConfirmModal}
         title="Xác nhận tạo tài khoản"
-        message={`Bạn có chắc chắn muốn tạo tài khoản tiết kiệm với số tiền ${initialAmount ? formatCurrency(parseCurrency(initialAmount)) : '0 ₫'}?`}
+        message={`Bạn có chắc chắn muốn tạo tài khoản tiết kiệm với số tiền ${
+          initialAmount ? formatCurrency(parseCurrency(initialAmount)) : '0 ₫'
+        }?`}
         onConfirm={handleConfirmCreate}
         onCancel={() => setShowConfirmModal(false)}
       />
@@ -486,7 +508,7 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   amountValue: {
-    color: '#1976D2',
+    color: '#09a0a5',
     fontSize: 16,
   },
   buttonContainer: {
@@ -496,7 +518,7 @@ const styles = StyleSheet.create({
     borderTopColor: '#E0E0E0',
   },
   createButton: {
-    backgroundColor: '#1976D2',
+    backgroundColor: '#09a0a5',
     paddingVertical: 16,
     borderRadius: 8,
     alignItems: 'center',
