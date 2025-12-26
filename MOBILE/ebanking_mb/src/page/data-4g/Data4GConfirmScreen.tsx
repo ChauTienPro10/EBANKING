@@ -15,12 +15,19 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { CheckCircle, Wifi, CreditCard } from 'lucide-react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import Data4GService, { DataPackage } from '../../services/Data4GService';
 import PinModal from '../../components/PinModal';
 import Header from '../../components/Header';
+import Colors from '../../constants/color';
 import { RootStackParamList } from '../../navigation/types';
 import { RootState } from '../../store';
+import {
+  translatePackageName,
+  translatePackageDescription,
+  translateValidity,
+} from '../../utils/translationHelpers';
 
 type NavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -108,10 +115,10 @@ const Data4GConfirmScreen: React.FC = () => {
   if (loading) {
     return (
       <SafeAreaView style={styles.container} edges={['bottom']}>
-        <Header title="Xác nhận nạp data" showBackButton />
+        <Header title={t('data_4g.confirm_title')} showBackButton />
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#09a0a5" />
-          <Text style={styles.loadingText}>Đang xử lý...</Text>
+          <Text style={styles.loadingText}>{t('data_4g.processing')}</Text>
         </View>
       </SafeAreaView>
     );
@@ -119,70 +126,74 @@ const Data4GConfirmScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
-      <Header title="Xác nhận nạp data" showBackButton />
+      <Header title={t('data_4g.confirm_title')} showBackButton />
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
           <CheckCircle size={24} color="#4CAF50" />
-          <Text style={styles.headerText}>Xác nhận thông tin nạp data</Text>
+          <Text style={styles.headerText}>{t('data_4g.confirm_info')}</Text>
         </View>
 
         {/* Transaction Details Card */}
         <View style={styles.card}>
           <View style={styles.cardHeader}>
             <Wifi size={20} color="#2196F3" />
-            <Text style={styles.cardTitle}>Nạp Data 4G</Text>
+            <Text style={styles.cardTitle}>{t('data_4g.title')}</Text>
           </View>
 
           <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Số điện thoại</Text>
+            <Text style={styles.detailLabel}>{t('data_4g.phone_number')}</Text>
             <Text style={styles.detailValue}>{phoneNumber}</Text>
           </View>
 
           <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Nhà mạng</Text>
+            <Text style={styles.detailLabel}>{t('data_4g.provider')}</Text>
             <Text style={styles.detailValue}>{getProviderName()}</Text>
           </View>
 
           <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Gói data</Text>
+            <Text style={styles.detailLabel}>{t('data_4g.package')}</Text>
             <View>
               <Text style={styles.detailValue}>
-                {selectedPackage.packageName}
+                {translatePackageName(selectedPackage.packageName)}
               </Text>
               <Text style={styles.packageDetails}>
                 {selectedPackage.formattedDataAmount} •{' '}
-                {Data4GService.formatValidity(selectedPackage.validityDays)}
+                {translateValidity(
+                  Data4GService.formatValidity(selectedPackage.validityDays),
+                )}
               </Text>
             </View>
           </View>
 
           <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Mô tả</Text>
+            <Text style={styles.detailLabel}>{t('data_4g.description')}</Text>
             <Text style={styles.detailValue}>
-              {selectedPackage.description}
+              {translatePackageDescription(selectedPackage.description)}
             </Text>
           </View>
 
           <View style={styles.separator} />
 
           <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Giá gói</Text>
+            <Text style={styles.detailLabel}>{t('data_4g.price')}</Text>
             <Text style={styles.amountValue}>
               {formatCurrency(selectedPackage.price)}
             </Text>
           </View>
 
           <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Phí giao dịch</Text>
-            <Text style={styles.feeValue}>Miễn phí</Text>
+            <Text style={styles.detailLabel}>
+              {t('data_4g.transaction_fee')}
+            </Text>
+            <Text style={styles.feeValue}>{t('data_4g.free')}</Text>
           </View>
 
           <View style={styles.separator} />
 
           <View style={styles.detailRow}>
-            <Text style={styles.totalLabel}>Tổng thanh toán</Text>
+            <Text style={styles.totalLabel}>{t('data_4g.total')}</Text>
             <Text style={styles.totalValue}>
               {formatCurrency(selectedPackage.price)}
             </Text>
@@ -191,34 +202,50 @@ const Data4GConfirmScreen: React.FC = () => {
 
         {/* Package Benefits */}
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>Quyền lợi gói data</Text>
+          <Text style={styles.cardTitle}>{t('data_4g.benefits_title')}</Text>
 
           <View style={styles.benefitItem}>
-            <Text style={styles.benefitIcon}>📱</Text>
+            <View style={styles.benefitIconContainer}>
+              <Ionicons name="cellular" size={22} color="#059669" />
+            </View>
             <View style={styles.benefitContent}>
-              <Text style={styles.benefitTitle}>Dung lượng data</Text>
+              <Text style={styles.benefitTitle}>
+                {t('data_4g.benefit_data')}
+              </Text>
               <Text style={styles.benefitDescription}>
-                {selectedPackage.formattedDataAmount} data tốc độ cao
+                {t('data_4g.benefit_data_desc', {
+                  amount: selectedPackage.formattedDataAmount,
+                })}
               </Text>
             </View>
           </View>
 
           <View style={styles.benefitItem}>
-            <Text style={styles.benefitIcon}>⏰</Text>
+            <View style={styles.benefitIconContainer}>
+              <Ionicons name="time-outline" size={22} color="#F59E0B" />
+            </View>
             <View style={styles.benefitContent}>
-              <Text style={styles.benefitTitle}>Thời hạn sử dụng</Text>
+              <Text style={styles.benefitTitle}>
+                {t('data_4g.benefit_validity')}
+              </Text>
               <Text style={styles.benefitDescription}>
-                {Data4GService.formatValidity(selectedPackage.validityDays)}
+                {translateValidity(
+                  Data4GService.formatValidity(selectedPackage.validityDays),
+                )}
               </Text>
             </View>
           </View>
 
           <View style={styles.benefitItem}>
-            <Text style={styles.benefitIcon}>🚀</Text>
+            <View style={styles.benefitIconContainer}>
+              <Ionicons name="flash" size={22} color="#8B5CF6" />
+            </View>
             <View style={styles.benefitContent}>
-              <Text style={styles.benefitTitle}>Tốc độ</Text>
+              <Text style={styles.benefitTitle}>
+                {t('data_4g.benefit_speed')}
+              </Text>
               <Text style={styles.benefitDescription}>
-                Tốc độ 4G cao, không giới hạn băng thông
+                {t('data_4g.benefit_speed_desc')}
               </Text>
             </View>
           </View>
@@ -228,12 +255,15 @@ const Data4GConfirmScreen: React.FC = () => {
         <View style={styles.card}>
           <View style={styles.cardHeader}>
             <CreditCard size={20} color="#09a0a5" />
-            <Text style={styles.cardTitle}>Phương thức thanh toán</Text>
+            <Text style={styles.cardTitle}>{t('data_4g.payment_method')}</Text>
           </View>
           <View style={styles.paymentMethod}>
-            <Text style={styles.paymentMethodText}>Tài khoản chính</Text>
+            <Text style={styles.paymentMethodText}>
+              {t('data_4g.primary_account')}
+            </Text>
             <Text style={styles.paymentMethodBalance}>
-              STK: {accountTransResponse?.accountNumber || 'N/A'}
+              {t('data_4g.account_number')}:{' '}
+              {accountTransResponse?.accountNumber || 'N/A'}
             </Text>
           </View>
         </View>
@@ -241,14 +271,16 @@ const Data4GConfirmScreen: React.FC = () => {
         {/* Action Buttons */}
         <View style={styles.actionButtons}>
           <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
-            <Text style={styles.cancelButtonText}>Hủy</Text>
+            <Text style={styles.cancelButtonText}>{t('data_4g.cancel')}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.confirmButton}
             onPress={handleConfirm}
           >
-            <Text style={styles.confirmButtonText}>Xác nhận nạp data</Text>
+            <Text style={styles.confirmButtonText}>
+              {t('data_4g.confirm_button')}
+            </Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -361,7 +393,16 @@ const styles = StyleSheet.create({
   benefitItem: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    marginBottom: 16,
+    marginBottom: 18,
+  },
+  benefitIconContainer: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: '#F9FAFB',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 14,
   },
   benefitIcon: {
     fontSize: 24,
@@ -373,13 +414,13 @@ const styles = StyleSheet.create({
   },
   benefitTitle: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
+    fontWeight: '700',
+    color: '#111827',
     marginBottom: 4,
   },
   benefitDescription: {
     fontSize: 14,
-    color: '#666',
+    color: '#6B7280',
     lineHeight: 20,
   },
   paymentMethod: {
@@ -400,29 +441,36 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     marginTop: 24,
     marginBottom: 32,
-    gap: 12,
+    gap: 14,
   },
   cancelButton: {
-    backgroundColor: '#f0f0f0',
+    backgroundColor: '#FFFFFF',
     borderRadius: 12,
-    padding: 16,
+    padding: 18,
     alignItems: 'center',
+    borderWidth: 1.5,
+    borderColor: '#D1D5DB',
   },
   cancelButtonText: {
-    fontSize: 16,
-    color: '#666',
-    fontWeight: '600',
+    fontSize: 17,
+    color: '#6B7280',
+    fontWeight: '700',
   },
   confirmButton: {
     backgroundColor: '#09a0a5',
     borderRadius: 12,
-    padding: 16,
+    padding: 18,
     alignItems: 'center',
+    shadowColor: '#09a0a5',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.35,
+    shadowRadius: 8,
+    elevation: 5,
   },
   confirmButtonText: {
-    fontSize: 16,
+    fontSize: 17,
     color: '#fff',
-    fontWeight: '600',
+    fontWeight: '700',
   },
   loadingContainer: {
     flex: 1,

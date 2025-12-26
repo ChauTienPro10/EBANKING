@@ -160,12 +160,16 @@ const MobilePrepaidConfirmScreen: React.FC = () => {
           <View style={styles.separator} />
 
           <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Số tiền nạp:</Text>
+            <Text style={styles.detailLabel}>
+              {t('mobile_prepaid.amount_label')}
+            </Text>
             <Text style={styles.amountValue}>{formatCurrency(amount)}</Text>
           </View>
 
           <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Phí giao dịch:</Text>
+            <Text style={styles.detailLabel}>
+              {t('mobile_prepaid.fee_label')}
+            </Text>
             <Text style={styles.feeValue}>{formatCurrency(fee)}</Text>
           </View>
 
@@ -183,10 +187,14 @@ const MobilePrepaidConfirmScreen: React.FC = () => {
         <View style={styles.card}>
           <View style={styles.cardHeader}>
             <Ionicons name="card-outline" size={20} color={Colors.main_bule} />
-            <Text style={styles.cardTitle}>Phương thức thanh toán</Text>
+            <Text style={styles.cardTitle}>
+              {t('mobile_prepaid.confirm.payment_method')}
+            </Text>
           </View>
           <View style={styles.paymentMethod}>
-            <Text style={styles.paymentMethodText}>Tài khoản chính</Text>
+            <Text style={styles.paymentMethodText}>
+              {t('mobile_prepaid.confirm.primary_account')}
+            </Text>
             <Text style={styles.paymentMethodBalance}>
               STK: {accountTransResponse?.accountNumber || 'N/A'}
             </Text>
@@ -348,6 +356,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 16,
     alignItems: 'center',
+    borderColor: Colors.main_bule,
+    borderWidth: 1,
   },
   cancelButtonText: {
     fontSize: 15,

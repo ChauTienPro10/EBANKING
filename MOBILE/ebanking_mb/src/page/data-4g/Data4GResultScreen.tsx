@@ -18,6 +18,7 @@ import {
   XCircle,
   Clock,
 } from 'lucide-react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import {
   DataTopUpTransaction,
@@ -26,6 +27,10 @@ import {
 import Data4GService from '../../services/Data4GService';
 import Header from '../../components/Header';
 import { RootStackParamList } from '../../navigation/types';
+import {
+  translatePackageName,
+  translateValidity,
+} from '../../utils/translationHelpers';
 
 type NavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -67,9 +72,9 @@ const Data4GResultScreen: React.FC = () => {
   const isFailed = transaction.status === 'FAILED';
 
   const getHeaderTitle = () => {
-    if (isSuccess) return 'Nạp data thành công';
-    if (isPending) return 'Đang xử lý';
-    return 'Nạp data thất bại';
+    if (isSuccess) return t('data_4g.success_title');
+    if (isPending) return t('data_4g.status_pending');
+    return t('data_4g.failed_title');
   };
 
   const getProviderName = () => {
@@ -118,65 +123,75 @@ const Data4GResultScreen: React.FC = () => {
             ]}
           >
             {isSuccess
-              ? 'Nạp data thành công'
+              ? t('data_4g.success_title')
               : isPending
-              ? 'Đang xử lý'
-              : 'Nạp data thất bại'}
+              ? t('data_4g.status_pending')
+              : t('data_4g.failed_title')}
           </Text>
           <Text style={styles.statusMessage}>
             {isSuccess
-              ? `Đã nạp thành công gói ${selectedPackage.formattedDataAmount} cho số ${transaction.phoneNumber}`
+              ? t('data_4g.success_message', {
+                  package: selectedPackage.formattedDataAmount,
+                  phone: transaction.phoneNumber,
+                })
               : isPending
-              ? 'Giao dịch đang được xử lý, vui lòng chờ trong giây lát'
-              : transaction.failureReason ||
-                'Giao dịch không thành công, vui lòng thử lại'}
+              ? t('mobile_prepaid.result.pending_message')
+              : transaction.failureReason || t('data_4g.failed_message')}
           </Text>
         </View>
 
         {/* Transaction Details */}
         {(isSuccess || isPending) && (
           <View style={styles.card}>
-            <Text style={styles.cardTitle}>Chi tiết giao dịch</Text>
+            <Text style={styles.cardTitle}>
+              {t('data_4g.transaction_details')}
+            </Text>
 
             <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Mã giao dịch</Text>
+              <Text style={styles.detailLabel}>
+                {t('data_4g.transaction_id')}
+              </Text>
               <Text style={styles.detailValue}>
                 {transaction.transactionId}
               </Text>
             </View>
 
             <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Số điện thoại</Text>
+              <Text style={styles.detailLabel}>
+                {t('data_4g.phone_number')}
+              </Text>
               <Text style={styles.detailValue}>{transaction.phoneNumber}</Text>
             </View>
 
             <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Nhà mạng</Text>
+              <Text style={styles.detailLabel}>{t('data_4g.provider')}</Text>
               <Text style={styles.detailValue}>{getProviderName()}</Text>
             </View>
 
             <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Gói data</Text>
+              <Text style={styles.detailLabel}>{t('data_4g.package')}</Text>
               <View>
                 <Text style={styles.detailValue}>
-                  {transaction.packageName}
+                  {translatePackageName(transaction.packageName)}
                 </Text>
                 <Text style={styles.packageDetails}>
                   {transaction.formattedDataAmount} •{' '}
-                  {Data4GService.formatValidity(transaction.validityDays)}
+                  {translateValidity(
+                    Data4GService.formatValidity(transaction.validityDays),
+                  )}
                 </Text>
               </View>
             </View>
 
             <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Giá trị</Text>
+              <Text style={styles.detailLabel}>{t('data_4g.price')}</Text>
               <Text style={styles.amountValue}>
                 {formatCurrency(transaction.amount)}
               </Text>
             </View>
 
             <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Trạng thái</Text>
+              <Text style={styles.detailLabel}>{t('data_4g.status')}</Text>
               <Text
                 style={[
                   styles.statusValue,
@@ -188,17 +203,19 @@ const Data4GResultScreen: React.FC = () => {
                 ]}
               >
                 {isSuccess
-                  ? 'Thành công'
+                  ? t('data_4g.status_completed')
                   : isPending
-                  ? 'Đang xử lý'
-                  : 'Thất bại'}
+                  ? t('data_4g.status_pending')
+                  : t('data_4g.status_failed')}
               </Text>
             </View>
 
             <View style={styles.separator} />
 
             <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Thời gian tạo</Text>
+              <Text style={styles.detailLabel}>
+                {t('mobile_prepaid.result.created_at_label')}
+              </Text>
               <Text style={styles.detailValue}>
                 {formatDateTime(transaction.createdAt)}
               </Text>
@@ -206,7 +223,9 @@ const Data4GResultScreen: React.FC = () => {
 
             {transaction.completedAt && (
               <View style={styles.detailRow}>
-                <Text style={styles.detailLabel}>Thời gian hoàn thành</Text>
+                <Text style={styles.detailLabel}>
+                  {t('mobile_prepaid.result.completed_at_label')}
+                </Text>
                 <Text style={styles.detailValue}>
                   {formatDateTime(transaction.completedAt)}
                 </Text>
@@ -215,7 +234,9 @@ const Data4GResultScreen: React.FC = () => {
 
             {transaction.providerTransactionId && (
               <View style={styles.detailRow}>
-                <Text style={styles.detailLabel}>Mã GD nhà mạng</Text>
+                <Text style={styles.detailLabel}>
+                  {t('mobile_prepaid.result.provider_transaction_id_label')}
+                </Text>
                 <Text style={styles.detailValue}>
                   {transaction.providerTransactionId}
                 </Text>
@@ -227,12 +248,20 @@ const Data4GResultScreen: React.FC = () => {
         {/* Success Tips */}
         {isSuccess && (
           <View style={styles.tipsCard}>
-            <Text style={styles.tipsTitle}>💡 Lưu ý</Text>
+            <View style={styles.cardHeaderRow}>
+              <View style={styles.iconContainer}>
+                <Ionicons name="bulb-outline" size={20} color="#09a0a5" />
+              </View>
+              <Text style={styles.tipsTitle}>
+                {t('mobile_prepaid.result.tips_title')}
+              </Text>
+            </View>
             <Text style={styles.tipsText}>
-              • Data đã được nạp vào thuê bao thành công{'\n'}• Kiểm tra dung
-              lượng data bằng cách gọi *101#{'\n'}• Data có hiệu lực trong{' '}
-              {Data4GService.formatValidity(transaction.validityDays)}
-              {'\n'}• Lưu lại mã giao dịch để tra cứu sau này
+              {t('data_4g.result_tips_text', {
+                validity: translateValidity(
+                  Data4GService.formatValidity(transaction.validityDays),
+                ),
+              })}
             </Text>
           </View>
         )}
@@ -240,10 +269,16 @@ const Data4GResultScreen: React.FC = () => {
         {/* Pending Info */}
         {isPending && (
           <View style={styles.pendingCard}>
-            <Text style={styles.pendingCardTitle}>⏳ Đang xử lý</Text>
+            <View style={styles.cardHeaderRow}>
+              <View style={styles.iconContainer}>
+                <Ionicons name="time-outline" size={20} color="#FF9800" />
+              </View>
+              <Text style={styles.pendingCardTitle}>
+                {t('mobile_prepaid.result.pending_card_title')}
+              </Text>
+            </View>
             <Text style={styles.pendingText}>
-              Giao dịch của bạn đang được xử lý. Data sẽ được nạp vào thuê bao
-              trong vài phút tới.
+              {t('data_4g.result_pending_text')}
             </Text>
           </View>
         )}
@@ -251,10 +286,11 @@ const Data4GResultScreen: React.FC = () => {
         {/* Face Auth Required */}
         {transaction.requiresFaceAuth && !transaction.faceAuthVerified && (
           <View style={styles.warningCard}>
-            <Text style={styles.warningTitle}>🔐 Yêu cầu xác thực</Text>
+            <Text style={styles.warningTitle}>
+              {t('mobile_prepaid.result.auth_required_title')}
+            </Text>
             <Text style={styles.warningText}>
-              Giao dịch này yêu cầu xác thực khuôn mặt. Vui lòng hoàn thành xác
-              thực để tiếp tục.
+              {t('mobile_prepaid.result.auth_required_text')}
             </Text>
           </View>
         )}
@@ -262,23 +298,49 @@ const Data4GResultScreen: React.FC = () => {
         {/* Data Usage Tips */}
         {isSuccess && (
           <View style={styles.usageCard}>
-            <Text style={styles.usageTitle}>📱 Cách sử dụng data hiệu quả</Text>
-            <View style={styles.usageTip}>
-              <Text style={styles.usageTipIcon}>💡</Text>
-              <Text style={styles.usageTipText}>
-                Tắt tự động cập nhật ứng dụng khi không dùng WiFi
+            <View style={styles.cardHeaderRow}>
+              <View style={styles.iconContainer}>
+                <Ionicons
+                  name="phone-portrait-outline"
+                  size={20}
+                  color="#09a0a5"
+                />
+              </View>
+              <Text style={styles.usageTitle}>
+                {t('data_4g.usage_tips_title')}
               </Text>
             </View>
             <View style={styles.usageTip}>
-              <Text style={styles.usageTipIcon}>📊</Text>
+              <Ionicons
+                name="checkmark-circle"
+                size={18}
+                color="#09a0a5"
+                style={styles.usageTipIcon}
+              />
               <Text style={styles.usageTipText}>
-                Theo dõi lưu lượng data trong Cài đặt điện thoại
+                {t('data_4g.usage_tip_1')}
               </Text>
             </View>
             <View style={styles.usageTip}>
-              <Text style={styles.usageTipIcon}>🔄</Text>
+              <Ionicons
+                name="checkmark-circle"
+                size={18}
+                color="#09a0a5"
+                style={styles.usageTipIcon}
+              />
               <Text style={styles.usageTipText}>
-                Sử dụng WiFi khi có thể để tiết kiệm data 4G
+                {t('data_4g.usage_tip_2')}
+              </Text>
+            </View>
+            <View style={styles.usageTip}>
+              <Ionicons
+                name="checkmark-circle"
+                size={18}
+                color="#09a0a5"
+                style={styles.usageTipIcon}
+              />
+              <Text style={styles.usageTipText}>
+                {t('data_4g.usage_tip_3')}
               </Text>
             </View>
           </View>
@@ -291,7 +353,9 @@ const Data4GResultScreen: React.FC = () => {
             onPress={handleGoHome}
           >
             <Home size={20} color="#09a0a5" />
-            <Text style={styles.secondaryButtonText}>Về trang chủ</Text>
+            <Text style={styles.secondaryButtonText}>
+              {t('data_4g.back_home')}
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -299,7 +363,9 @@ const Data4GResultScreen: React.FC = () => {
             onPress={handleTopUpAgain}
           >
             <RotateCcw size={20} color="#fff" />
-            <Text style={styles.primaryButtonText}>Nạp data khác</Text>
+            <Text style={styles.primaryButtonText}>
+              {t('data_4g.try_again')}
+            </Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -427,42 +493,61 @@ const styles = StyleSheet.create({
     marginVertical: 16,
   },
   tipsCard: {
-    backgroundColor: '#fff3cd',
+    backgroundColor: '#fff',
     borderRadius: 12,
     padding: 16,
     marginBottom: 16,
-    borderLeftWidth: 4,
-    borderLeftColor: '#ffc107',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  cardHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  iconContainer: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    backgroundColor: '#E0F7F7',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 10,
   },
   tipsTitle: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '600',
-    color: '#856404',
-    marginBottom: 8,
+    color: '#333',
+    flex: 1,
   },
   tipsText: {
     fontSize: 14,
-    color: '#856404',
-    lineHeight: 20,
+    color: '#666',
+    lineHeight: 22,
   },
   pendingCard: {
-    backgroundColor: '#fff3e0',
+    backgroundColor: '#fff',
     borderRadius: 12,
     padding: 16,
     marginBottom: 16,
-    borderLeftWidth: 4,
-    borderLeftColor: '#ff9800',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 3,
   },
   pendingCardTitle: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '600',
-    color: '#e65100',
-    marginBottom: 8,
+    color: '#333',
   },
   pendingText: {
     fontSize: 14,
-    color: '#e65100',
-    lineHeight: 20,
+    color: '#666',
+    lineHeight: 22,
   },
   warningCard: {
     backgroundColor: '#ffebee',
@@ -484,34 +569,36 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   usageCard: {
-    backgroundColor: '#e8f5e8',
+    backgroundColor: '#fff',
     borderRadius: 12,
     padding: 16,
     marginBottom: 16,
-    borderLeftWidth: 4,
-    borderLeftColor: '#4caf50',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 3,
   },
   usageTitle: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '600',
-    color: '#2e7d32',
-    marginBottom: 12,
+    color: '#333',
+    flex: 1,
   },
   usageTip: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    marginBottom: 8,
+    marginTop: 12,
   },
   usageTipIcon: {
-    fontSize: 16,
-    marginRight: 8,
+    marginRight: 10,
     marginTop: 2,
   },
   usageTipText: {
     fontSize: 14,
-    color: '#2e7d32',
+    color: '#666',
     flex: 1,
-    lineHeight: 20,
+    lineHeight: 22,
   },
   actionButtons: {
     flexDirection: 'row',

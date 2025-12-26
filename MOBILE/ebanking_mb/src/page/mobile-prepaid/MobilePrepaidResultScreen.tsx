@@ -62,9 +62,9 @@ const MobilePrepaidResultScreen: React.FC = () => {
   const isFailed = transaction.status === 'FAILED';
 
   const getHeaderTitle = () => {
-    if (isSuccess) return 'Nạp tiền thành công';
-    if (isPending) return 'Đang xử lý';
-    return 'Nạp tiền thất bại';
+    if (isSuccess) return t('mobile_prepaid.result.success_header');
+    if (isPending) return t('mobile_prepaid.result.pending_header');
+    return t('mobile_prepaid.result.failed_header');
   };
 
   return (
@@ -107,42 +107,51 @@ const MobilePrepaidResultScreen: React.FC = () => {
             ]}
           >
             {isSuccess
-              ? 'Nạp tiền thành công'
+              ? t('mobile_prepaid.result.success_title')
               : isPending
-              ? 'Đang xử lý'
-              : 'Nạp tiền thất bại'}
+              ? t('mobile_prepaid.result.pending_title')
+              : t('mobile_prepaid.result.failed_title')}
           </Text>
           <Text style={styles.statusMessage}>
             {isSuccess
-              ? `Đã nạp thành công ${formatCurrency(amount)} vào số ${
-                  transaction.phoneNumber
-                }`
+              ? t('mobile_prepaid.result.success_message', {
+                  amount: formatCurrency(amount),
+                  phone: transaction.phoneNumber,
+                })
               : isPending
-              ? 'Giao dịch đang được xử lý, vui lòng chờ trong giây lát'
+              ? t('mobile_prepaid.result.pending_message')
               : transaction.failureReason ||
-                'Giao dịch không thành công, vui lòng thử lại'}
+                t('mobile_prepaid.result.failed_message')}
           </Text>
         </View>
 
         {/* Transaction Details */}
         {(isSuccess || isPending) && (
           <View style={styles.card}>
-            <Text style={styles.cardTitle}>Chi tiết giao dịch</Text>
+            <Text style={styles.cardTitle}>
+              {t('mobile_prepaid.result.transaction_details')}
+            </Text>
 
             <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Mã giao dịch</Text>
+              <Text style={styles.detailLabel}>
+                {t('mobile_prepaid.result.transaction_id_label')}
+              </Text>
               <Text style={styles.detailValue}>
                 {transaction.transactionId}
               </Text>
             </View>
 
             <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Số điện thoại</Text>
+              <Text style={styles.detailLabel}>
+                {t('mobile_prepaid.result.phone_label')}
+              </Text>
               <Text style={styles.detailValue}>{transaction.phoneNumber}</Text>
             </View>
 
             <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Nhà mạng</Text>
+              <Text style={styles.detailLabel}>
+                {t('mobile_prepaid.result.operator_label')}
+              </Text>
               <View style={styles.operatorInfo}>
                 <Image
                   source={{ uri: operator.logoUrl }}
@@ -153,14 +162,18 @@ const MobilePrepaidResultScreen: React.FC = () => {
             </View>
 
             <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Số tiền nạp</Text>
+              <Text style={styles.detailLabel}>
+                {t('mobile_prepaid.result.amount_label')}
+              </Text>
               <Text style={styles.amountValue}>
                 {formatCurrency(transaction.amount)}
               </Text>
             </View>
 
             <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Trạng thái</Text>
+              <Text style={styles.detailLabel}>
+                {t('mobile_prepaid.result.status_label')}
+              </Text>
               <Text
                 style={[
                   styles.statusValue,
@@ -172,17 +185,19 @@ const MobilePrepaidResultScreen: React.FC = () => {
                 ]}
               >
                 {isSuccess
-                  ? 'Thành công'
+                  ? t('mobile_prepaid.result.status_success')
                   : isPending
-                  ? 'Đang xử lý'
-                  : 'Thất bại'}
+                  ? t('mobile_prepaid.result.status_pending')
+                  : t('mobile_prepaid.result.status_failed')}
               </Text>
             </View>
 
             <View style={styles.separator} />
 
             <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Thời gian tạo</Text>
+              <Text style={styles.detailLabel}>
+                {t('mobile_prepaid.result.created_at_label')}
+              </Text>
               <Text style={styles.detailValue}>
                 {formatDateTime(transaction.createdAt)}
               </Text>
@@ -190,7 +205,9 @@ const MobilePrepaidResultScreen: React.FC = () => {
 
             {transaction.completedAt && (
               <View style={styles.detailRow}>
-                <Text style={styles.detailLabel}>Thời gian hoàn thành</Text>
+                <Text style={styles.detailLabel}>
+                  {t('mobile_prepaid.result.completed_at_label')}
+                </Text>
                 <Text style={styles.detailValue}>
                   {formatDateTime(transaction.completedAt)}
                 </Text>
@@ -199,7 +216,9 @@ const MobilePrepaidResultScreen: React.FC = () => {
 
             {transaction.providerTransactionId && (
               <View style={styles.detailRow}>
-                <Text style={styles.detailLabel}>Mã GD nhà mạng</Text>
+                <Text style={styles.detailLabel}>
+                  {t('mobile_prepaid.result.provider_transaction_id_label')}
+                </Text>
                 <Text style={styles.detailValue}>
                   {transaction.providerTransactionId}
                 </Text>
@@ -211,10 +230,11 @@ const MobilePrepaidResultScreen: React.FC = () => {
         {/* Success Tips */}
         {isSuccess && (
           <View style={styles.tipsCard}>
-            <Text style={styles.tipsTitle}>💡 Lưu ý</Text>
+            <Text style={styles.tipsTitle}>
+              {t('mobile_prepaid.result.tips_title')}
+            </Text>
             <Text style={styles.tipsText}>
-              • Tiền đã được nạp vào thuê bao thành công{'\n'}• Kiểm tra số dư
-              bằng cách gọi *101#{'\n'}• Lưu lại mã giao dịch để tra cứu sau này
+              {t('mobile_prepaid.result.tips_text')}
             </Text>
           </View>
         )}
@@ -222,10 +242,11 @@ const MobilePrepaidResultScreen: React.FC = () => {
         {/* Pending Info */}
         {isPending && (
           <View style={styles.pendingCard}>
-            <Text style={styles.pendingCardTitle}>⏳ Đang xử lý</Text>
+            <Text style={styles.pendingCardTitle}>
+              {t('mobile_prepaid.result.pending_card_title')}
+            </Text>
             <Text style={styles.pendingText}>
-              Giao dịch của bạn đang được xử lý. Vui lòng chờ trong giây lát và
-              kiểm tra lại sau.
+              {t('mobile_prepaid.result.pending_card_text')}
             </Text>
           </View>
         )}
@@ -233,10 +254,11 @@ const MobilePrepaidResultScreen: React.FC = () => {
         {/* Face Auth Required */}
         {transaction.requiresFaceAuth && !transaction.faceAuthVerified && (
           <View style={styles.warningCard}>
-            <Text style={styles.warningTitle}>🔐 Yêu cầu xác thực</Text>
+            <Text style={styles.warningTitle}>
+              {t('mobile_prepaid.result.auth_required_title')}
+            </Text>
             <Text style={styles.warningText}>
-              Giao dịch này yêu cầu xác thực khuôn mặt. Vui lòng hoàn thành xác
-              thực để tiếp tục.
+              {t('mobile_prepaid.result.auth_required_text')}
             </Text>
           </View>
         )}
@@ -248,7 +270,9 @@ const MobilePrepaidResultScreen: React.FC = () => {
             onPress={handleGoHome}
           >
             <Ionicons name="home-outline" size={20} color={Colors.main_bule} />
-            <Text style={styles.secondaryButtonText}>Về trang chủ</Text>
+            <Text style={styles.secondaryButtonText}>
+              {t('mobile_prepaid.result.go_home_button')}
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -256,7 +280,9 @@ const MobilePrepaidResultScreen: React.FC = () => {
             onPress={handleTopUpAgain}
           >
             <Ionicons name="refresh-outline" size={20} color={Colors.white} />
-            <Text style={styles.primaryButtonText}>Nạp tiền khác</Text>
+            <Text style={styles.primaryButtonText}>
+              {t('mobile_prepaid.result.top_up_again_button')}
+            </Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -275,7 +301,6 @@ const styles = StyleSheet.create({
   },
   statusContainer: {
     alignItems: 'center',
-    paddingVertical: 32,
     marginBottom: 24,
   },
   statusIcon: {

@@ -330,28 +330,36 @@ const MobilePrepaidScreen: React.FC = () => {
                   </Text>
                 </TouchableOpacity>
               ))}
-            </View>
 
-            {/* Custom amount option */}
-            <TouchableOpacity
-              style={[
-                styles.customAmountButton,
-                useCustomAmount && styles.customAmountButtonSelected,
-              ]}
-              onPress={() => {
-                setUseCustomAmount(true);
-                setSelectedDenomination(null);
-              }}
-            >
-              <Text
+              {/* Custom amount option as grid item */}
+              <TouchableOpacity
                 style={[
-                  styles.customAmountText,
-                  useCustomAmount && styles.customAmountTextSelected,
+                  styles.denominationButton,
+                  useCustomAmount && styles.denominationButtonSelected,
                 ]}
+                onPress={() => {
+                  setUseCustomAmount(true);
+                  setSelectedDenomination(null);
+                }}
               >
-                Số tiền khác
-              </Text>
-            </TouchableOpacity>
+                <Ionicons
+                  name="create-outline"
+                  size={16}
+                  color={
+                    useCustomAmount ? Colors.main_bule : Colors.textSecondary
+                  }
+                  style={{ marginBottom: 4 }}
+                />
+                <Text
+                  style={[
+                    styles.denominationText,
+                    useCustomAmount && styles.denominationTextSelected,
+                  ]}
+                >
+                  Khác
+                </Text>
+              </TouchableOpacity>
+            </View>
 
             {/* Custom amount input */}
             {useCustomAmount && (
@@ -376,13 +384,17 @@ const MobilePrepaidScreen: React.FC = () => {
             {(selectedDenomination || (useCustomAmount && customAmount)) && (
               <View style={styles.feeInfo}>
                 <View style={styles.feeRow}>
-                  <Text style={styles.feeLabel}>Số tiền nạp:</Text>
+                  <Text style={styles.feeLabel}>
+                    {t('mobile_prepaid.amount_label')}
+                  </Text>
                   <Text style={styles.feeValue}>
                     {formatCurrency(getSelectedAmount())}
                   </Text>
                 </View>
                 <View style={styles.feeRow}>
-                  <Text style={styles.feeLabel}>Phí giao dịch:</Text>
+                  <Text style={styles.feeLabel}>
+                    {t('mobile_prepaid.fee_label')}
+                  </Text>
                   <Text style={styles.feeValue}>
                     {formatCurrency(
                       MobilePrepaidService.calculateFee(
@@ -393,7 +405,9 @@ const MobilePrepaidScreen: React.FC = () => {
                   </Text>
                 </View>
                 <View style={[styles.feeRow, styles.totalRow]}>
-                  <Text style={styles.totalLabel}>Tổng cộng:</Text>
+                  <Text style={styles.totalLabel}>
+                    {t('mobile_prepaid.total_label')}
+                  </Text>
                   <Text style={styles.totalValue}>
                     {formatCurrency(
                       MobilePrepaidService.calculateTotalAmount(
@@ -721,26 +735,35 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     marginBottom: 16,
     gap: 8,
+    justifyContent: 'space-between',
   },
   denominationButton: {
     backgroundColor: Colors.white,
     borderWidth: 1.5,
     borderColor: Colors.border,
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    minWidth: '30%',
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 14,
+    width: '31.5%',
     alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 56,
   },
   denominationButtonSelected: {
     backgroundColor: '#E0F7F8',
     borderColor: Colors.main_bule,
     borderWidth: 2,
+    shadowColor: Colors.main_bule,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 2,
   },
   denominationText: {
-    fontSize: 14,
+    fontSize: 13,
     color: Colors.textPrimary,
-    fontWeight: '500',
+    fontWeight: '600',
+    textAlign: 'center',
   },
   denominationTextSelected: {
     color: Colors.main_bule,
@@ -750,20 +773,27 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     borderWidth: 1.5,
     borderColor: Colors.border,
-    borderRadius: 8,
+    borderRadius: 10,
     padding: 16,
     alignItems: 'center',
     marginBottom: 12,
+    flexDirection: 'row',
+    justifyContent: 'center',
   },
   customAmountButtonSelected: {
     backgroundColor: '#E0F7F8',
     borderColor: Colors.main_bule,
     borderWidth: 2,
+    shadowColor: Colors.main_bule,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 2,
   },
   customAmountText: {
     fontSize: 15,
     color: Colors.textPrimary,
-    fontWeight: '500',
+    fontWeight: '600',
   },
   customAmountTextSelected: {
     color: Colors.main_bule,
@@ -771,41 +801,49 @@ const styles = StyleSheet.create({
   },
   customAmountInput: {
     backgroundColor: '#F9FAFB',
-    borderWidth: 1,
-    borderColor: Colors.border,
-    borderRadius: 8,
+    borderWidth: 1.5,
+    borderColor: Colors.main_bule,
+    borderRadius: 10,
     padding: 16,
     fontSize: 15,
     marginBottom: 16,
     color: Colors.textPrimary,
+    fontWeight: '600',
   },
   feeInfo: {
     backgroundColor: '#F0FDFD',
-    borderRadius: 10,
-    padding: 16,
-    marginTop: 8,
-    borderWidth: 1,
-    borderColor: '#E0F7F8',
+    borderRadius: 12,
+    padding: 18,
+    marginTop: 12,
+    borderWidth: 1.5,
+    borderColor: '#B8E6E8',
+    shadowColor: Colors.main_bule,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 2,
   },
   feeRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 8,
+    marginBottom: 10,
+    alignItems: 'center',
   },
   feeLabel: {
     fontSize: 14,
     color: Colors.textSecondary,
+    fontWeight: '500',
   },
   feeValue: {
-    fontSize: 14,
+    fontSize: 15,
     color: Colors.textPrimary,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   totalRow: {
-    borderTopWidth: 1,
+    borderTopWidth: 1.5,
     borderTopColor: '#B8E6E8',
-    paddingTop: 12,
-    marginTop: 8,
+    paddingTop: 14,
+    marginTop: 6,
     marginBottom: 0,
   },
   totalLabel: {
@@ -814,7 +852,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   totalValue: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: '700',
     color: Colors.main_bule,
   },

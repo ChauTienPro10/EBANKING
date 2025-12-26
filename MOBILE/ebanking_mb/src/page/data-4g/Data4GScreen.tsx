@@ -22,6 +22,11 @@ import Data4GService, { DataPackage } from '../../services/Data4GService';
 import { RootStackParamList } from '../../navigation/types';
 import { RootState } from '../../store';
 import Header from '../../components/Header';
+import {
+  translatePackageName,
+  translatePackageDescription,
+  translateValidity,
+} from '../../utils/translationHelpers';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Data4G'>;
 
@@ -95,7 +100,7 @@ const Data4GScreen: React.FC = () => {
       setPackages(data);
     } catch (error) {
       console.error('Error loading packages:', error);
-      Alert.alert('Lỗi', 'Không thể tải danh sách gói data');
+      Alert.alert(t('common.error'), t('data_4g.validation.package_required'));
     } finally {
       setLoading(false);
     }
@@ -136,7 +141,7 @@ const Data4GScreen: React.FC = () => {
     }
 
     if (!Data4GService.validatePhoneNumber(phoneNumber)) {
-      Alert.alert('Lỗi', 'Số điện thoại không hợp lệ');
+      Alert.alert(t('common.error'), t('data_4g.validation.phone_invalid'));
       return false;
     }
 
@@ -195,28 +200,42 @@ const Data4GScreen: React.FC = () => {
       ]}
       onPress={() => setSelectedPackage(item)}
     >
-      <View style={styles.packageHeader}>
-        <Text style={styles.packageName}>{item.packageName}</Text>
-        <Text style={styles.packagePrice}>{formatCurrency(item.price)}</Text>
+      <View style={styles.packageContent}>
+        {/* Left side - Checkmark indicator */}
+        <View style={styles.packageCheckContainer}>
+          {selectedPackage?.packageId === item.packageId && (
+            <Ionicons name="checkmark-circle" size={24} color="#09a0a5" />
+          )}
+        </View>
+
+        {/* Main content */}
+        <View style={styles.packageMainContent}>
+          {/* Header row with name and price */}
+          <View style={styles.packageHeader}>
+            <Text style={styles.packageName}>
+              {translatePackageName(item.packageName)}
+            </Text>
+            <Text style={styles.packagePrice}>
+              {formatCurrency(item.price)}
+            </Text>
+          </View>
+
+          {/* Data and validity row */}
+          <View style={styles.packageDetails}>
+            <Text style={styles.packageData}>{item.formattedDataAmount}</Text>
+            <Text style={styles.packageValidity}>
+              {translateValidity(
+                Data4GService.formatValidity(item.validityDays),
+              )}
+            </Text>
+          </View>
+
+          {/* Description */}
+          <Text style={styles.packageDescription}>
+            {translatePackageDescription(item.description)}
+          </Text>
+        </View>
       </View>
-
-      <View style={styles.packageDetails}>
-        <Text style={styles.packageData}>{item.formattedDataAmount}</Text>
-        <Text style={styles.packageValidity}>
-          {Data4GService.formatValidity(item.validityDays)}
-        </Text>
-      </View>
-
-      <Text style={styles.packageDescription}>{item.description}</Text>
-
-      {selectedPackage?.packageId === item.packageId && (
-        <Ionicons
-          name="checkmark-circle"
-          size={22}
-          color="#09a0a5"
-          style={styles.checkIcon}
-        />
-      )}
     </TouchableOpacity>
   );
 
@@ -232,12 +251,12 @@ const Data4GScreen: React.FC = () => {
 
   const getSelectedProviderName = () => {
     const provider = providers.find(p => p.code === selectedProvider);
-    return provider?.name || 'Chọn nhà mạng';
+    return provider?.name || t('data_4g.select_provider');
   };
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
-      <Header title="Nạp Data 4G" showBackButton />
+      <Header title={t('data_4g.title')} showBackButton />
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Header Info - Removed as it's redundant with page title */}
@@ -245,7 +264,9 @@ const Data4GScreen: React.FC = () => {
         {/* Recent Numbers */}
         {recentNumbers.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Số gần đây</Text>
+            <Text style={styles.sectionTitle}>
+              {t('data_4g.recent_numbers')}
+            </Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               <View style={styles.recentNumbers}>
                 {recentNumbers.map(renderRecentNumber)}
@@ -256,10 +277,10 @@ const Data4GScreen: React.FC = () => {
 
         {/* Phone Number Input */}
         <View style={styles.section}>
-          <Text style={styles.label}>Số điện thoại</Text>
+          <Text style={styles.label}>{t('data_4g.phone_number')}</Text>
           <TextInput
             style={styles.input}
-            placeholder="Nhập số điện thoại cần nạp data"
+            placeholder={t('data_4g.phone_number_placeholder')}
             value={phoneNumber}
             onChangeText={setPhoneNumber}
             keyboardType="phone-pad"
@@ -269,7 +290,7 @@ const Data4GScreen: React.FC = () => {
 
         {/* Provider Selection */}
         <View style={styles.section}>
-          <Text style={styles.label}>Nhà mạng</Text>
+          <Text style={styles.label}>{t('data_4g.provider')}</Text>
           <TouchableOpacity
             style={styles.selector}
             onPress={() => setShowProviderModal(true)}
@@ -289,21 +310,21 @@ const Data4GScreen: React.FC = () => {
         {/* Package Selection */}
         {selectedProvider && (
           <View style={styles.section}>
-            <View style={styles.packageHeader}>
-              <Text style={styles.label}>Gói data</Text>
+            <View style={styles.packageFilterHeader}>
+              <Text style={styles.label}>{t('data_4g.package')}</Text>
               <TouchableOpacity
                 style={styles.filterButton}
                 onPress={() => setShowFilterModal(true)}
               >
                 <Filter size={16} color="#2196F3" />
-                <Text style={styles.filterText}>Lọc</Text>
+                <Text style={styles.filterText}>{t('data_4g.filter')}</Text>
               </TouchableOpacity>
             </View>
 
             {loading ? (
               <View style={styles.loadingContainer}>
                 <ActivityIndicator size="large" color="#2196F3" />
-                <Text style={styles.loadingText}>Đang tải gói data...</Text>
+                <Text style={styles.loadingText}>{t('common.loading')}</Text>
               </View>
             ) : (
               <FlatList
@@ -312,7 +333,9 @@ const Data4GScreen: React.FC = () => {
                 keyExtractor={item => item.packageId.toString()}
                 scrollEnabled={false}
                 ListEmptyComponent={
-                  <Text style={styles.emptyText}>Không có gói data nào</Text>
+                  <Text style={styles.emptyText}>
+                    {t('data_4g.select_package')}
+                  </Text>
                 }
               />
             )}
@@ -329,7 +352,9 @@ const Data4GScreen: React.FC = () => {
           onPress={handleConfirm}
           disabled={!phoneNumber || !selectedProvider || !selectedPackage}
         >
-          <Text style={styles.confirmButtonText}>Xác nhận nạp data</Text>
+          <Text style={styles.confirmButtonText}>
+            {t('data_4g.confirm_button')}
+          </Text>
         </TouchableOpacity>
       </ScrollView>
 
@@ -337,7 +362,9 @@ const Data4GScreen: React.FC = () => {
       {showProviderModal && (
         <View style={styles.modal}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Chọn nhà mạng</Text>
+            <Text style={styles.modalTitle}>
+              {t('data_4g.select_provider')}
+            </Text>
             <FlatList
               data={providers}
               renderItem={renderProviderItem}
@@ -356,17 +383,25 @@ const Data4GScreen: React.FC = () => {
 
       {/* Filter Modal */}
       {showFilterModal && (
-        <View style={styles.modal}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Lọc gói data</Text>
+        <TouchableOpacity
+          style={styles.modal}
+          activeOpacity={1}
+          onPress={() => setShowFilterModal(false)}
+        >
+          <TouchableOpacity
+            style={styles.modalContent}
+            activeOpacity={1}
+            onPress={e => e.stopPropagation()}
+          >
+            <Text style={styles.modalTitle}>{t('data_4g.filter_title')}</Text>
 
             {/* Price Filter */}
             <View style={styles.filterSection}>
-              <Text style={styles.filterLabel}>Khoảng giá</Text>
+              <Text style={styles.filterLabel}>{t('data_4g.price_range')}</Text>
               <View style={styles.priceFilterRow}>
                 <TextInput
                   style={styles.priceInput}
-                  placeholder="Từ"
+                  placeholder={t('data_4g.price_from')}
                   value={priceFilter.min}
                   onChangeText={text =>
                     setPriceFilter(prev => ({ ...prev, min: text }))
@@ -376,7 +411,7 @@ const Data4GScreen: React.FC = () => {
                 <Text style={styles.priceSeparator}>-</Text>
                 <TextInput
                   style={styles.priceInput}
-                  placeholder="Đến"
+                  placeholder={t('data_4g.price_to')}
                   value={priceFilter.max}
                   onChangeText={text =>
                     setPriceFilter(prev => ({ ...prev, max: text }))
@@ -388,11 +423,11 @@ const Data4GScreen: React.FC = () => {
 
             {/* Sort Options */}
             <View style={styles.filterSection}>
-              <Text style={styles.filterLabel}>Sắp xếp theo</Text>
+              <Text style={styles.filterLabel}>{t('data_4g.sort_by')}</Text>
               {[
-                { key: 'price', label: 'Giá' },
-                { key: 'dataAmount', label: 'Dung lượng' },
-                { key: 'validityDays', label: 'Thời hạn' },
+                { key: 'price', label: t('data_4g.sort_price') },
+                { key: 'dataAmount', label: t('data_4g.sort_data') },
+                { key: 'validityDays', label: t('data_4g.sort_validity') },
               ].map(option => (
                 <TouchableOpacity
                   key={option.key}
@@ -403,7 +438,7 @@ const Data4GScreen: React.FC = () => {
                   {sortBy === option.key && (
                     <Ionicons
                       name="checkmark-circle"
-                      size={18}
+                      size={20}
                       color="#09a0a5"
                     />
                   )}
@@ -419,18 +454,18 @@ const Data4GScreen: React.FC = () => {
                   setSortBy('price');
                 }}
               >
-                <Text style={styles.filterResetText}>Đặt lại</Text>
+                <Text style={styles.filterResetText}>{t('data_4g.reset')}</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 style={styles.filterApplyButton}
                 onPress={() => setShowFilterModal(false)}
               >
-                <Text style={styles.filterApplyText}>Áp dụng</Text>
+                <Text style={styles.filterApplyText}>{t('data_4g.apply')}</Text>
               </TouchableOpacity>
             </View>
-          </View>
-        </View>
+          </TouchableOpacity>
+        </TouchableOpacity>
       )}
     </SafeAreaView>
   );
@@ -504,7 +539,7 @@ const styles = StyleSheet.create({
   selectorPlaceholder: {
     color: '#9CA3AF',
   },
-  packageHeader: {
+  packageFilterHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -560,47 +595,76 @@ const styles = StyleSheet.create({
   packageItem: {
     backgroundColor: '#FFFFFF',
     borderRadius: 12,
-    padding: 16,
+    padding: 14,
     marginBottom: 12,
     borderWidth: 1.5,
     borderColor: '#E5E7EB',
-    position: 'relative',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
+    elevation: 1,
   },
   packageItemSelected: {
     borderColor: '#09a0a5',
     backgroundColor: '#F0FDFD',
+    borderWidth: 2,
+    shadowColor: '#09a0a5',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  packageContent: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  packageCheckContainer: {
+    width: 32,
+    alignItems: 'center',
+    paddingTop: 2,
+  },
+  packageMainContent: {
+    flex: 1,
+  },
+  packageHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 8,
   },
   packageName: {
     fontSize: 15,
-    fontWeight: '600',
+    fontWeight: '700',
     color: '#111827',
     flex: 1,
+    marginRight: 12,
   },
   packagePrice: {
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '700',
     color: '#09a0a5',
   },
   packageDetails: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 8,
+    marginBottom: 6,
   },
   packageData: {
-    fontSize: 17,
+    fontSize: 18,
     fontWeight: '700',
     color: '#059669',
-    marginRight: 16,
+    marginRight: 12,
   },
   packageValidity: {
-    fontSize: 13,
+    fontSize: 12,
     color: '#6B7280',
+    fontWeight: '500',
   },
   packageDescription: {
-    fontSize: 13,
+    fontSize: 12,
     color: '#6B7280',
-    marginTop: 4,
-    lineHeight: 18,
+    lineHeight: 17,
   },
   checkIcon: {
     position: 'absolute',
@@ -650,10 +714,10 @@ const styles = StyleSheet.create({
     maxHeight: '80%',
   },
   modalTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: '700',
     color: '#111827',
-    marginBottom: 20,
+    marginBottom: 24,
     textAlign: 'center',
   },
   modalList: {
@@ -693,13 +757,13 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   filterSection: {
-    marginBottom: 24,
+    marginBottom: 28,
   },
   filterLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#374151',
-    marginBottom: 10,
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#111827',
+    marginBottom: 12,
   },
   priceFilterRow: {
     flexDirection: 'row',
@@ -708,11 +772,13 @@ const styles = StyleSheet.create({
   priceInput: {
     flex: 1,
     backgroundColor: '#F9FAFB',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 14,
-    borderWidth: 1,
+    borderRadius: 10,
+    padding: 14,
+    fontSize: 15,
+    borderWidth: 1.5,
     borderColor: '#E5E7EB',
+    color: '#111827',
+    fontWeight: '500',
   },
   priceSeparator: {
     marginHorizontal: 12,
@@ -723,13 +789,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 14,
+    paddingVertical: 16,
+    paddingHorizontal: 4,
     borderBottomWidth: 1,
     borderBottomColor: '#F3F4F6',
   },
   sortOptionText: {
     fontSize: 15,
     color: '#374151',
+    fontWeight: '500',
   },
   filterButtons: {
     flexDirection: 'row',
@@ -739,26 +807,31 @@ const styles = StyleSheet.create({
   filterResetButton: {
     flex: 1,
     backgroundColor: '#F3F4F6',
-    borderRadius: 8,
-    padding: 14,
+    borderRadius: 10,
+    padding: 16,
     alignItems: 'center',
   },
   filterResetText: {
-    fontSize: 14,
+    fontSize: 15,
     color: '#6B7280',
-    fontWeight: '600',
+    fontWeight: '700',
   },
   filterApplyButton: {
     flex: 1,
     backgroundColor: '#09a0a5',
-    borderRadius: 8,
-    padding: 14,
+    borderRadius: 10,
+    padding: 16,
     alignItems: 'center',
+    shadowColor: '#09a0a5',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
   },
   filterApplyText: {
-    fontSize: 14,
+    fontSize: 15,
     color: '#FFFFFF',
-    fontWeight: '600',
+    fontWeight: '700',
   },
 });
 
