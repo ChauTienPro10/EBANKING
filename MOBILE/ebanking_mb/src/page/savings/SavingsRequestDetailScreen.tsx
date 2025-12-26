@@ -9,10 +9,15 @@ import {
   ActivityIndicator,
   RefreshControl,
 } from 'react-native';
-import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
+import {
+  useNavigation,
+  useRoute,
+  useFocusEffect,
+} from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp as NavigationRouteProp } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { RootStackParamList } from '../../navigation/types';
 import { RootState } from '../../store';
 import { SavingsService } from '../../services/SavingsService';
@@ -20,13 +25,16 @@ import { SavingsRequest } from '../../types/SavingsTypes';
 import Header from '../../components/Header';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
-type RouteProp = NavigationRouteProp<RootStackParamList, 'SavingsRequestDetail'>;
+type RouteProp = NavigationRouteProp<
+  RootStackParamList,
+  'SavingsRequestDetail'
+>;
 
 export default function SavingsRequestDetailScreen() {
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute<RouteProp>();
-  const { requestId } = route.params;
-  
+  const { requestNumber } = route.params;
+
   const [request, setRequest] = useState<SavingsRequest | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -34,7 +42,9 @@ export default function SavingsRequestDetailScreen() {
 
   const loadRequestDetail = async () => {
     try {
-      const requestData = await SavingsService.getSavingsRequestDetail(requestId);
+      const requestData = await SavingsService.getSavingsRequestDetail(
+        requestNumber,
+      );
       setRequest(requestData);
     } catch (error) {
       console.error('Error loading request detail:', error);
@@ -48,7 +58,7 @@ export default function SavingsRequestDetailScreen() {
   useFocusEffect(
     useCallback(() => {
       loadRequestDetail();
-    }, [requestId])
+    }, [requestNumber]),
   );
 
   const onRefresh = () => {
@@ -76,15 +86,15 @@ export default function SavingsRequestDetailScreen() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'PENDING':
-        return '#FF9800';
+        return '#F59E0B';
       case 'APPROVED':
-        return '#4CAF50';
+        return '#14B8A6';
       case 'REJECTED':
-        return '#F44336';
+        return '#EF4444';
       case 'CANCELLED':
-        return '#9E9E9E';
+        return '#94A3B8';
       default:
-        return '#9E9E9E';
+        return '#94A3B8';
     }
   };
 
@@ -108,54 +118,46 @@ export default function SavingsRequestDetailScreen() {
   };
 
   const getTypeIcon = (type: string) => {
-    return type === 'DEPOSIT' ? '💰' : '💸';
+    return type === 'DEPOSIT' ? 'cash-outline' : 'wallet-outline';
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'PENDING':
-        return '⏳';
+        return 'time-outline';
       case 'APPROVED':
-        return '✅';
+        return 'checkmark-circle-outline';
       case 'REJECTED':
-        return '❌';
+        return 'close-circle-outline';
       case 'CANCELLED':
-        return '🚫';
+        return 'ban-outline';
       default:
-        return '❓';
+        return 'help-circle-outline';
     }
   };
 
   const handleCancelRequest = () => {
     if (!request || request.status !== 'PENDING') return;
 
-    Alert.alert(
-      'Xác nhận hủy',
-      'Bạn có chắc chắn muốn hủy yêu cầu này?',
-      [
-        { text: 'Không', style: 'cancel' },
-        { text: 'Hủy yêu cầu', style: 'destructive', onPress: performCancel },
-      ]
-    );
+    Alert.alert('Xác nhận hủy', 'Bạn có chắc chắn muốn hủy yêu cầu này?', [
+      { text: 'Không', style: 'cancel' },
+      { text: 'Hủy yêu cầu', style: 'destructive', onPress: performCancel },
+    ]);
   };
 
   const performCancel = async () => {
     setCancelling(true);
     try {
-      await SavingsService.cancelSavingsRequest(requestId);
-      
-      Alert.alert(
-        'Thành công',
-        'Yêu cầu đã được hủy thành công',
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              loadRequestDetail(); // Reload để cập nhật trạng thái
-            },
+      await SavingsService.cancelSavingsRequest(requestNumber);
+
+      Alert.alert('Thành công', 'Yêu cầu đã được hủy thành công', [
+        {
+          text: 'OK',
+          onPress: () => {
+            loadRequestDetail();
           },
-        ]
-      );
+        },
+      ]);
     } catch (error) {
       console.error('Error cancelling request:', error);
       Alert.alert('Lỗi', 'Không thể hủy yêu cầu');
@@ -169,7 +171,7 @@ export default function SavingsRequestDetailScreen() {
       <View style={styles.container}>
         <Header title="Chi tiết yêu cầu" showBackButton />
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#1976D2" />
+          <ActivityIndicator size="large" color="#0D9488" />
           <Text style={styles.loadingText}>Đang tải...</Text>
         </View>
       </View>
@@ -181,6 +183,7 @@ export default function SavingsRequestDetailScreen() {
       <View style={styles.container}>
         <Header title="Chi tiết yêu cầu" showBackButton />
         <View style={styles.errorContainer}>
+          <Ionicons name="alert-circle-outline" size={64} color="#CBD5E1" />
           <Text style={styles.errorText}>Không tìm thấy thông tin yêu cầu</Text>
         </View>
       </View>
@@ -190,92 +193,121 @@ export default function SavingsRequestDetailScreen() {
   return (
     <View style={styles.container}>
       <Header title="Chi tiết yêu cầu" showBackButton />
-      
+
       <ScrollView
         style={styles.content}
+        showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={['#0D9488']}
+            tintColor="#0D9488"
+          />
         }
       >
-        {/* Header thông tin */}
+        {/* Header Card */}
         <View style={styles.headerCard}>
-          <View style={styles.typeContainer}>
-            <Text style={styles.typeIcon}>{getTypeIcon(request.type)}</Text>
-            <Text style={styles.typeText}>{getTypeText(request.type)}</Text>
+          <View style={styles.iconContainer}>
+            <Ionicons
+              name={getTypeIcon(request.type)}
+              size={28}
+              color="#0D9488"
+            />
           </View>
-          
-          <View style={styles.amountContainer}>
-            <Text style={styles.amount}>{formatCurrency(request.amount)}</Text>
-          </View>
-          
-          <View style={styles.statusContainer}>
-            <Text style={styles.statusIcon}>{getStatusIcon(request.status)}</Text>
-            <View
-              style={[
-                styles.statusBadge,
-                { backgroundColor: getStatusColor(request.status) },
-              ]}
-            >
-              <Text style={styles.statusText}>{getStatusText(request.status)}</Text>
-            </View>
+          <Text style={styles.typeText}>{getTypeText(request.type)}</Text>
+          <Text style={styles.amount}>{formatCurrency(request.amount)}</Text>
+
+          <View
+            style={[
+              styles.statusBadge,
+              { backgroundColor: getStatusColor(request.status) },
+            ]}
+          >
+            <Ionicons
+              name={getStatusIcon(request.status)}
+              size={15}
+              color="#FFFFFF"
+            />
+            <Text style={styles.statusText}>
+              {getStatusText(request.status)}
+            </Text>
           </View>
         </View>
 
-        {/* Thông tin chi tiết */}
-        <View style={styles.detailCard}>
-          <Text style={styles.cardTitle}>Thông tin yêu cầu</Text>
-          
-          <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Mã yêu cầu:</Text>
-            <Text style={styles.detailValue}>{request.id}</Text>
+        {/* Thông tin yêu cầu */}
+        <View style={styles.card}>
+          <View style={styles.cardHeader}>
+            <Ionicons name="document-text-outline" size={19} color="#94A3B8" />
+            <Text style={styles.cardTitle}>Thông tin yêu cầu</Text>
           </View>
-          
-          <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Tài khoản tiết kiệm:</Text>
-            <Text style={styles.detailValue}>{request.savingsAccountId}</Text>
+
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>Mã yêu cầu</Text>
+            <Text style={styles.infoValue}>{request.requestNumber}</Text>
           </View>
-          
-          <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Loại yêu cầu:</Text>
-            <Text style={styles.detailValue}>{getTypeText(request.type)}</Text>
+
+          <View style={styles.divider} />
+
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>Tài khoản tiết kiệm</Text>
+            <Text style={styles.infoValue}>{request.savingsAccountNumber}</Text>
           </View>
-          
-          <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Số tiền:</Text>
-            <Text style={[styles.detailValue, styles.amountValue]}>
+
+          <View style={styles.divider} />
+
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>Loại yêu cầu</Text>
+            <Text style={styles.infoValue}>{getTypeText(request.type)}</Text>
+          </View>
+
+          <View style={styles.divider} />
+
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>Số tiền</Text>
+            <Text style={[styles.infoValue, styles.amountValue]}>
               {formatCurrency(request.amount)}
             </Text>
           </View>
-          
-          <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Ngày tạo:</Text>
-            <Text style={styles.detailValue}>{formatDate(request.requestDate)}</Text>
-          </View>
-          
-          <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Trạng thái:</Text>
-            <Text style={[styles.detailValue, { color: getStatusColor(request.status) }]}>
-              {getStatusText(request.status)}
+
+          <View style={styles.divider} />
+
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>Ngày tạo</Text>
+            <Text style={styles.infoValue}>
+              {formatDate(request.requestDate)}
             </Text>
           </View>
         </View>
 
         {/* Thông tin xử lý */}
         {(request.processedDate || request.processedBy) && (
-          <View style={styles.detailCard}>
-            <Text style={styles.cardTitle}>Thông tin xử lý</Text>
-            
+          <View style={styles.card}>
+            <View style={styles.cardHeader}>
+              <Ionicons
+                name="checkmark-done-outline"
+                size={19}
+                color="#94A3B8"
+              />
+              <Text style={styles.cardTitle}>Thông tin xử lý</Text>
+            </View>
+
             {request.processedDate && (
-              <View style={styles.detailRow}>
-                <Text style={styles.detailLabel}>Ngày xử lý:</Text>
-                <Text style={styles.detailValue}>{formatDate(request.processedDate)}</Text>
-              </View>
+              <>
+                <View style={styles.infoRow}>
+                  <Text style={styles.infoLabel}>Ngày xử lý</Text>
+                  <Text style={styles.infoValue}>
+                    {formatDate(request.processedDate)}
+                  </Text>
+                </View>
+                {request.processedBy && <View style={styles.divider} />}
+              </>
             )}
-            
+
             {request.processedBy && (
-              <View style={styles.detailRow}>
-                <Text style={styles.detailLabel}>Người xử lý:</Text>
-                <Text style={styles.detailValue}>{request.processedBy}</Text>
+              <View style={styles.infoRow}>
+                <Text style={styles.infoLabel}>Người xử lý</Text>
+                <Text style={styles.infoValue}>{request.processedBy}</Text>
               </View>
             )}
           </View>
@@ -283,8 +315,11 @@ export default function SavingsRequestDetailScreen() {
 
         {/* Ghi chú */}
         {request.note && (
-          <View style={styles.detailCard}>
-            <Text style={styles.cardTitle}>Ghi chú</Text>
+          <View style={styles.card}>
+            <View style={styles.cardHeader}>
+              <Ionicons name="create-outline" size={19} color="#94A3B8" />
+              <Text style={styles.cardTitle}>Ghi chú</Text>
+            </View>
             <Text style={styles.noteText}>{request.note}</Text>
           </View>
         )}
@@ -292,65 +327,110 @@ export default function SavingsRequestDetailScreen() {
         {/* Lý do từ chối */}
         {request.reason && (
           <View style={styles.reasonCard}>
-            <Text style={styles.cardTitle}>Lý do từ chối</Text>
+            <View style={styles.cardHeader}>
+              <Ionicons name="alert-circle-outline" size={19} color="#DC2626" />
+              <Text style={[styles.cardTitle, { color: '#DC2626' }]}>
+                Lý do từ chối
+              </Text>
+            </View>
             <Text style={styles.reasonText}>{request.reason}</Text>
           </View>
         )}
 
         {/* Hướng dẫn */}
         <View style={styles.guideCard}>
-          <Text style={styles.cardTitle}>Hướng dẫn</Text>
-          
+          <View style={styles.cardHeader}>
+            <Ionicons
+              name="information-circle-outline"
+              size={19}
+              color="#0F766E"
+            />
+            <Text style={[styles.cardTitle, { color: '#0F766E' }]}>Chú ý</Text>
+          </View>
+
           {request.status === 'PENDING' && (
             <View style={styles.guideItem}>
-              <Text style={styles.guideIcon}>⏳</Text>
+              <Ionicons
+                name="time-outline"
+                size={17}
+                color="#0F766E"
+                style={styles.guideIcon}
+              />
               <Text style={styles.guideText}>
-                Yêu cầu đang được xử lý. Thời gian xử lý dự kiến: 1-2 ngày làm việc.
+                Yêu cầu đang được xử lý. Thời gian xử lý dự kiến: 1-2 ngày làm
+                việc.
               </Text>
             </View>
           )}
-          
+
           {request.status === 'APPROVED' && request.type === 'DEPOSIT' && (
             <View style={styles.guideItem}>
-              <Text style={styles.guideIcon}>✅</Text>
+              <Ionicons
+                name="checkmark-circle-outline"
+                size={17}
+                color="#0F766E"
+                style={styles.guideIcon}
+              />
               <Text style={styles.guideText}>
-                Yêu cầu đã được duyệt. Vui lòng đến ngân hàng để nạp tiền mặt vào tài khoản.
+                Yêu cầu đã được duyệt. Vui lòng đến ngân hàng để nạp tiền mặt
+                vào tài khoản.
               </Text>
             </View>
           )}
-          
+
           {request.status === 'APPROVED' && request.type === 'WITHDRAW' && (
             <View style={styles.guideItem}>
-              <Text style={styles.guideIcon}>✅</Text>
+              <Ionicons
+                name="checkmark-circle-outline"
+                size={18}
+                color="#059669"
+                style={styles.guideIcon}
+              />
               <Text style={styles.guideText}>
                 Yêu cầu đã được duyệt. Vui lòng đến ngân hàng để nhận tiền mặt.
               </Text>
             </View>
           )}
-          
+
           {request.status === 'REJECTED' && (
             <View style={styles.guideItem}>
-              <Text style={styles.guideIcon}>❌</Text>
+              <Ionicons
+                name="close-circle-outline"
+                size={17}
+                color="#0F766E"
+                style={styles.guideIcon}
+              />
               <Text style={styles.guideText}>
-                Yêu cầu bị từ chối. Bạn có thể tạo yêu cầu mới sau khi khắc phục lý do từ chối.
+                Yêu cầu bị từ chối. Bạn có thể tạo yêu cầu mới sau khi khắc phục
+                lý do từ chối.
               </Text>
             </View>
           )}
         </View>
+
+        <View style={{ height: 100 }} />
       </ScrollView>
 
       {/* Nút hủy yêu cầu */}
       {request.status === 'PENDING' && (
-        <View style={styles.buttonContainer}>
+        <View style={styles.bottomContainer}>
           <TouchableOpacity
             style={[styles.cancelButton, cancelling && styles.disabledButton]}
             onPress={handleCancelRequest}
             disabled={cancelling}
+            activeOpacity={0.8}
           >
             {cancelling ? (
               <ActivityIndicator color="#FFFFFF" />
             ) : (
-              <Text style={styles.cancelButtonText}>Hủy yêu cầu</Text>
+              <>
+                <Ionicons
+                  name="close-circle-outline"
+                  size={20}
+                  color="#FFFFFF"
+                />
+                <Text style={styles.cancelButtonText}>Hủy yêu cầu</Text>
+              </>
             )}
           </TouchableOpacity>
         </View>
@@ -362,7 +442,7 @@ export default function SavingsRequestDetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#F5F7FA',
   },
   content: {
     flex: 1,
@@ -371,172 +451,240 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#F5F7FA',
   },
   loadingText: {
     marginTop: 16,
-    fontSize: 16,
-    color: '#666666',
+    fontSize: 15,
+    color: '#8B92A6',
+    fontWeight: '500',
   },
   errorContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#F5F7FA',
+    paddingHorizontal: 32,
   },
   errorText: {
-    fontSize: 16,
-    color: '#666666',
+    fontSize: 15,
+    color: '#8B92A6',
+    marginTop: 16,
+    textAlign: 'center',
   },
+
+  // Header Card
   headerCard: {
     backgroundColor: '#FFFFFF',
-    margin: 16,
-    padding: 20,
-    borderRadius: 12,
+    marginHorizontal: 20,
+    marginTop: 20,
+    marginBottom: 16,
+    borderRadius: 20,
+    padding: 28,
     alignItems: 'center',
+    shadowColor: '#1F2937',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
     elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
   },
-  typeContainer: {
-    flexDirection: 'row',
+  iconContainer: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#F0F9FA',
     alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 12,
-  },
-  typeIcon: {
-    fontSize: 24,
-    marginRight: 8,
   },
   typeText: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#333333',
-  },
-  amountContainer: {
-    marginBottom: 16,
+    fontSize: 15,
+    fontWeight: '500',
+    color: '#64748B',
+    marginBottom: 8,
+    letterSpacing: 0.2,
   },
   amount: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#1976D2',
-  },
-  statusContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  statusIcon: {
-    fontSize: 20,
-    marginRight: 8,
+    fontSize: 34,
+    fontWeight: '700',
+    color: '#1E293B',
+    marginBottom: 16,
+    letterSpacing: -0.5,
   },
   statusBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 14,
+    paddingVertical: 7,
     borderRadius: 16,
+    gap: 5,
   },
   statusText: {
-    fontSize: 14,
+    fontSize: 13,
     color: '#FFFFFF',
     fontWeight: '600',
+    letterSpacing: 0.3,
   },
-  detailCard: {
+
+  // Card Styles
+  card: {
     backgroundColor: '#FFFFFF',
-    marginHorizontal: 16,
-    marginBottom: 16,
-    padding: 16,
-    borderRadius: 12,
-    elevation: 1,
-    shadowColor: '#000',
+    marginHorizontal: 20,
+    marginBottom: 12,
+    borderRadius: 16,
+    padding: 20,
+    shadowColor: '#1F2937',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
+    shadowOpacity: 0.03,
+    shadowRadius: 6,
+    elevation: 1,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 18,
+    gap: 8,
   },
   cardTitle: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '600',
-    color: '#333333',
-    marginBottom: 12,
+    color: '#475569',
+    letterSpacing: 0.1,
   },
-  detailRow: {
+
+  // Info Rows
+  infoRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 8,
+    alignItems: 'center',
+    paddingVertical: 10,
   },
-  detailLabel: {
+  infoLabel: {
     fontSize: 14,
-    color: '#666666',
+    color: '#94A3B8',
     flex: 1,
+    fontWeight: '500',
   },
-  detailValue: {
+  infoValue: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#333333',
+    color: '#1E293B',
     flex: 1,
     textAlign: 'right',
   },
   amountValue: {
-    color: '#1976D2',
-    fontSize: 16,
+    color: '#0F766E',
+    fontSize: 15,
+    fontWeight: '700',
   },
+  statusTag: {
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  statusTagText: {
+    fontSize: 12,
+    color: '#FFFFFF',
+    fontWeight: '600',
+  },
+  divider: {
+    height: 1,
+    backgroundColor: '#F1F5F9',
+    marginVertical: 2,
+  },
+
+  // Note
   noteText: {
     fontSize: 14,
-    color: '#333333',
-    lineHeight: 20,
+    color: '#475569',
+    lineHeight: 22,
+    fontWeight: '400',
   },
+
+  // Reason Card
   reasonCard: {
-    backgroundColor: '#FFEBEE',
-    marginHorizontal: 16,
-    marginBottom: 16,
-    padding: 16,
-    borderRadius: 12,
-    borderLeftWidth: 4,
-    borderLeftColor: '#F44336',
+    backgroundColor: '#FEF2F2',
+    marginHorizontal: 20,
+    marginBottom: 12,
+    borderRadius: 16,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: '#FECACA',
   },
   reasonText: {
     fontSize: 14,
-    color: '#D32F2F',
-    lineHeight: 20,
+    color: '#DC2626',
+    lineHeight: 22,
+    fontWeight: '500',
   },
+
+  // Guide Card
   guideCard: {
-    backgroundColor: '#E8F5E8',
-    marginHorizontal: 16,
-    marginBottom: 16,
-    padding: 16,
-    borderRadius: 12,
+    backgroundColor: '#F0FDFA',
+    marginHorizontal: 20,
+    marginBottom: 12,
+    borderRadius: 16,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: '#CCFBF1',
   },
   guideItem: {
     flexDirection: 'row',
     alignItems: 'flex-start',
   },
   guideIcon: {
-    fontSize: 16,
-    marginRight: 8,
+    marginRight: 10,
     marginTop: 2,
   },
   guideText: {
-    fontSize: 14,
-    color: '#2E7D32',
-    lineHeight: 20,
     flex: 1,
+    fontSize: 14,
+    color: '#0F766E',
+    lineHeight: 22,
+    fontWeight: '500',
   },
-  buttonContainer: {
-    padding: 16,
+
+  // Bottom Button
+  bottomContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
     backgroundColor: '#FFFFFF',
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 20,
     borderTopWidth: 1,
-    borderTopColor: '#E0E0E0',
+    borderTopColor: '#F1F5F9',
+    shadowColor: '#1F2937',
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 12,
+    elevation: 8,
   },
   cancelButton: {
-    backgroundColor: '#F44336',
+    backgroundColor: '#EF4444',
     paddingVertical: 16,
-    borderRadius: 8,
+    borderRadius: 14,
     alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    gap: 8,
+    shadowColor: '#EF4444',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+    elevation: 4,
   },
   disabledButton: {
-    backgroundColor: '#CCCCCC',
+    backgroundColor: '#CBD5E1',
+    shadowOpacity: 0,
+    elevation: 0,
   },
   cancelButtonText: {
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '600',
+    letterSpacing: 0.2,
   },
 });

@@ -54,6 +54,7 @@ import ChatConversationScreen from '../page/chat/ChatConversationScreen';
 
 // Savings screens
 import SavingsHomeScreen from '../page/savings/SavingsHomeScreen';
+import AllSavingsAccountsScreen from '../page/savings/AllSavingsAccountsScreen';
 import CreateSavingsAccountScreen from '../page/savings/CreateSavingsAccountScreen';
 import SavingsAccountDetailScreen from '../page/savings/SavingsAccountDetailScreen';
 import SavingsTransferScreen from '../page/savings/SavingsTransferScreen';
@@ -82,8 +83,14 @@ export default function MainStack() {
       <Stack.Screen name="Chatbot" component={ChatScreen} />
       <Stack.Screen name="Transfer" component={TransferScreen} />
       <Stack.Screen name="MobilePrepaid" component={MobilePrepaidScreen} />
-      <Stack.Screen name="MobilePrepaidConfirm" component={MobilePrepaidConfirmScreen} />
-      <Stack.Screen name="MobilePrepaidResult" component={MobilePrepaidResultScreen} />
+      <Stack.Screen
+        name="MobilePrepaidConfirm"
+        component={MobilePrepaidConfirmScreen}
+      />
+      <Stack.Screen
+        name="MobilePrepaidResult"
+        component={MobilePrepaidResultScreen}
+      />
       <Stack.Screen name="Data4G" component={Data4GScreen} />
       <Stack.Screen name="Data4GConfirm" component={Data4GConfirmScreen} />
       <Stack.Screen name="Data4GResult" component={Data4GResultScreen} />
@@ -149,6 +156,10 @@ export default function MainStack() {
 
       {/* Savings Account Screens */}
       <Stack.Screen name="SavingsHome" component={SavingsHomeScreen} />
+      <Stack.Screen
+        name="AllSavingsAccounts"
+        component={AllSavingsAccountsScreen}
+      />
       <Stack.Screen
         name="CreateSavingsAccount"
         component={CreateSavingsAccountScreen}

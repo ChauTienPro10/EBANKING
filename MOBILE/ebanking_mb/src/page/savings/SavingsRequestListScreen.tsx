@@ -62,9 +62,9 @@ export default function SavingsRequestListScreen() {
     loadRequests();
   };
 
-  const handleRequestPress = (requestId: string) => {
+  const handleRequestPress = (requestNumber: string) => {
     navigation.navigate('SavingsRequestDetail', {
-      requestId: Number(requestId),
+      requestNumber,
     });
   };
 
@@ -198,7 +198,7 @@ export default function SavingsRequestListScreen() {
               <RequestCard
                 key={request.id}
                 request={request}
-                onPress={() => handleRequestPress(request.id)}
+                onPress={() => handleRequestPress(request.requestNumber)}
               />
             ))}
           </>
