@@ -13,13 +13,13 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp as NavigationRouteProp } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
 import Toast from 'react-native-toast-message';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { RootStackParamList } from '../../navigation/types';
 import { RootState, AppDispatch } from '../../store';
 import { SavingsService } from '../../services/SavingsService';
 import { SavingsAccount } from '../../types/SavingsTypes';
 import { fetchAccountTransInfo } from '../../store/fetchAPI/AccountFetch';
 import { useEkycValidation } from '../../utils/useEkycValidation';
-import Header from '../../components/Header';
 import ConfirmModal from '../../components/ConfirmModal';
 import PinInputModal from '../../components/PinInputModal';
 
@@ -31,9 +31,13 @@ export default function SavingsTransferScreen() {
   const route = useRoute<RouteProp>();
   const dispatch = useDispatch<AppDispatch>();
   const { accountNumber, type } = route.params;
-  const { userInfoData: userInfo, accountTransResponse, loginResponse } = useSelector((state: RootState) => state.app);
+  const {
+    userInfoData: userInfo,
+    accountTransResponse,
+    loginResponse,
+  } = useSelector((state: RootState) => state.app);
   const { validateEkyc } = useEkycValidation();
-  
+
   const [account, setAccount] = useState<SavingsAccount | null>(null);
   const [amount, setAmount] = useState('');
   const [note, setNote] = useState('');
@@ -41,7 +45,8 @@ export default function SavingsTransferScreen() {
   const [transferring, setTransferring] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showPinModal, setShowPinModal] = useState(false);
-  const [showFullWithdrawalWarning, setShowFullWithdrawalWarning] = useState(false);
+  const [showFullWithdrawalWarning, setShowFullWithdrawalWarning] =
+    useState(false);
   const [showEKYCModal, setShowEKYCModal] = useState(false);
 
   useEffect(() => {
@@ -50,7 +55,9 @@ export default function SavingsTransferScreen() {
 
   const loadAccountDetail = async () => {
     try {
-      const accountData = await SavingsService.getSavingsAccountDetail(accountNumber);
+      const accountData = await SavingsService.getSavingsAccountDetail(
+        accountNumber,
+      );
       setAccount(accountData);
     } catch (error) {
       console.error('Error loading account detail:', error);
@@ -82,7 +89,7 @@ export default function SavingsTransferScreen() {
 
   const validateTransfer = () => {
     const transferAmount = parseCurrency(amount);
-    
+
     if (transferAmount <= 0) {
       Toast.show({
         type: 'error',
@@ -92,7 +99,11 @@ export default function SavingsTransferScreen() {
       return false;
     }
 
-    if (type === 'FROM_SAVINGS' && account && transferAmount > account.balance) {
+    if (
+      type === 'FROM_SAVINGS' &&
+      account &&
+      transferAmount > account.balance
+    ) {
       Toast.show({
         type: 'error',
         text1: 'Lỗi',
@@ -102,15 +113,16 @@ export default function SavingsTransferScreen() {
     }
 
     // Có thể thêm các validation khác như số dư tài khoản giao dịch
-    
+
     return true;
   };
 
   const handleTransfer = () => {
-    if (!validateTransfer() || !account || !accountTransResponse?.accountNumber) return;
-    
+    if (!validateTransfer() || !account || !accountTransResponse?.accountNumber)
+      return;
+
     const transferAmount = parseCurrency(amount);
-    
+
     // Check eKYC for high-value transactions (> 10M VND)
     if (transferAmount > 10000000) {
       const ekycValidation = validateEkyc(
@@ -123,9 +135,13 @@ export default function SavingsTransferScreen() {
         return;
       }
     }
-    
+
     // Check if this is a full withdrawal from savings
-    if (type === 'FROM_SAVINGS' && account && transferAmount === account.balance) {
+    if (
+      type === 'FROM_SAVINGS' &&
+      account &&
+      transferAmount === account.balance
+    ) {
       setShowFullWithdrawalWarning(true);
     } else {
       setShowConfirmModal(true);
@@ -143,22 +159,42 @@ export default function SavingsTransferScreen() {
   };
 
   const performTransfer = async () => {
-    if (!account || !accountTransResponse?.accountNumber || !userInfo?.id || !loginResponse?.username) return;
+    if (
+      !account ||
+      !accountTransResponse?.accountNumber ||
+      !userInfo?.id ||
+      !loginResponse?.username
+    )
+      return;
 
     setTransferring(true);
     try {
       const transferData = {
-        fromAccount: type === 'TO_SAVINGS' ? accountTransResponse.accountNumber : account.accountNumber,
-        toAccount: type === 'TO_SAVINGS' ? account.accountNumber : accountTransResponse.accountNumber,
+        fromAccount:
+          type === 'TO_SAVINGS'
+            ? accountTransResponse.accountNumber
+            : account.accountNumber,
+        toAccount:
+          type === 'TO_SAVINGS'
+            ? account.accountNumber
+            : accountTransResponse.accountNumber,
         amount: parseCurrency(amount),
         type,
         note: note.trim() || undefined,
       };
 
       if (type === 'TO_SAVINGS') {
-        await SavingsService.transferToSavings(transferData, userInfo.id, loginResponse.username);
+        await SavingsService.transferToSavings(
+          transferData,
+          userInfo.id,
+          loginResponse.username,
+        );
       } else {
-        await SavingsService.transferFromSavings(transferData, userInfo.id, loginResponse.username);
+        await SavingsService.transferFromSavings(
+          transferData,
+          userInfo.id,
+          loginResponse.username,
+        );
       }
 
       // Fetch lại thông tin tài khoản thanh toán để cập nhật số dư
@@ -191,7 +227,7 @@ export default function SavingsTransferScreen() {
   };
 
   const getDescription = () => {
-    return type === 'TO_SAVINGS' 
+    return type === 'TO_SAVINGS'
       ? 'Chuyển tiền từ tài khoản giao dịch vào tài khoản tiết kiệm'
       : 'Chuyển tiền từ tài khoản tiết kiệm về tài khoản giao dịch';
   };
@@ -199,9 +235,18 @@ export default function SavingsTransferScreen() {
   if (loading) {
     return (
       <View style={styles.container}>
-        <Header title={getTitle()} showBackButton />
+        <View style={styles.header}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={styles.backButton}
+          >
+            <Ionicons name="arrow-back" size={24} color="#1F2937" />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>{getTitle()}</Text>
+          <View style={styles.headerPlaceholder} />
+        </View>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#1976D2" />
+          <ActivityIndicator size="large" color="#09a0a5" />
           <Text style={styles.loadingText}>Đang tải...</Text>
         </View>
       </View>
@@ -211,9 +256,20 @@ export default function SavingsTransferScreen() {
   if (!account) {
     return (
       <View style={styles.container}>
-        <Header title={getTitle()} showBackButton />
+        <View style={styles.header}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={styles.backButton}
+          >
+            <Ionicons name="arrow-back" size={24} color="#1F2937" />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>{getTitle()}</Text>
+          <View style={styles.headerPlaceholder} />
+        </View>
         <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>Không tìm thấy thông tin tài khoản</Text>
+          <Text style={styles.errorText}>
+            Không tìm thấy thông tin tài khoản
+          </Text>
         </View>
       </View>
     );
@@ -221,101 +277,183 @@ export default function SavingsTransferScreen() {
 
   return (
     <View style={styles.container}>
-      <Header title={getTitle()} showBackButton />
-      
-      <ScrollView style={styles.content}>
-        {/* Mô tả */}
-        <View style={styles.descriptionContainer}>
-          <Text style={styles.description}>{getDescription()}</Text>
+      {/* Custom Header */}
+      <View style={styles.header}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
+          <Ionicons name="arrow-back" size={24} color="#1F2937" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>{getTitle()}</Text>
+        <View style={styles.headerPlaceholder} />
+      </View>
+
+      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+        {/* Info Banner */}
+        <View style={styles.infoBanner}>
+          <Ionicons
+            name={
+              type === 'TO_SAVINGS' ? 'arrow-down-circle' : 'arrow-up-circle'
+            }
+            size={20}
+            color="#1E40AF"
+          />
+          <Text style={styles.infoBannerText}>{getDescription()}</Text>
         </View>
 
-        {/* Thông tin tài khoản */}
-        <View style={styles.accountInfoContainer}>
-          <Text style={styles.sectionTitle}>Thông tin tài khoản</Text>
-          
-          <View style={styles.accountCard}>
-            <Text style={styles.accountName}>
-              {account.accountName || `Tài khoản tiết kiệm ${account.termMonths} tháng`}
+        {/* Transfer Flow Visualization */}
+        <View style={styles.transferFlow}>
+          {/* From Account */}
+          <View style={styles.flowCard}>
+            <View style={styles.flowHeader}>
+              <Ionicons
+                name={type === 'TO_SAVINGS' ? 'wallet' : 'piggy-bank'}
+                size={20}
+                color="#6B7280"
+              />
+              <Text style={styles.flowLabel}>Từ tài khoản</Text>
+            </View>
+            <Text style={styles.flowAccountNumber}>
+              {type === 'TO_SAVINGS'
+                ? accountTransResponse?.accountNumber
+                : account.accountNumber}
             </Text>
-            <Text style={styles.accountNumber}>STK: {account.accountNumber}</Text>
-            <Text style={styles.accountBalance}>
-              Số dư: {formatCurrency(account.balance)}
+            <Text style={styles.flowAccountType}>
+              {type === 'TO_SAVINGS'
+                ? 'Tài khoản giao dịch'
+                : 'Tài khoản tiết kiệm'}
             </Text>
+            {type === 'FROM_SAVINGS' && (
+              <Text style={styles.flowBalance}>
+                Số dư: {formatCurrency(account.balance)}
+              </Text>
+            )}
           </View>
 
-          <View style={styles.linkedAccountCard}>
-            <Text style={styles.linkedAccountTitle}>Tài khoản giao dịch</Text>
-            <Text style={styles.linkedAccountNumber}>
-              {accountTransResponse?.accountNumber || 'Chưa có tài khoản'}
+          {/* Arrow */}
+          <View style={styles.arrowContainer}>
+            <Ionicons name="arrow-down" size={24} color="#09a0a5" />
+          </View>
+
+          {/* To Account */}
+          <View style={styles.flowCard}>
+            <View style={styles.flowHeader}>
+              <Ionicons
+                name={type === 'TO_SAVINGS' ? 'piggy-bank' : 'wallet'}
+                size={20}
+                color="#6B7280"
+              />
+              <Text style={styles.flowLabel}>Đến tài khoản</Text>
+            </View>
+            <Text style={styles.flowAccountNumber}>
+              {type === 'TO_SAVINGS'
+                ? account.accountNumber
+                : accountTransResponse?.accountNumber}
+            </Text>
+            <Text style={styles.flowAccountType}>
+              {type === 'TO_SAVINGS'
+                ? 'Tài khoản tiết kiệm'
+                : 'Tài khoản giao dịch'}
             </Text>
           </View>
         </View>
 
-        {/* Nhập số tiền */}
-        <View style={styles.amountContainer}>
-          <Text style={styles.sectionTitle}>Số tiền</Text>
+        {/* Amount Input Card */}
+        <View style={styles.card}>
+          <View style={styles.cardHeader}>
+            <Ionicons name="cash-outline" size={20} color="#6B7280" />
+            <Text style={styles.cardTitle}>Số tiền chuyển</Text>
+          </View>
+
           <TextInput
             style={styles.amountInput}
             value={amount ? formatCurrency(parseCurrency(amount)) : ''}
             onChangeText={handleAmountChange}
-            placeholder="Nhập số tiền"
+            placeholder="0 ₫"
+            placeholderTextColor="#9CA3AF"
             keyboardType="numeric"
           />
-          
+
           {type === 'FROM_SAVINGS' && account && (
-            <>
-              <Text style={styles.maxAmountText}>
-                Số dư khả dụng: {formatCurrency(account.balance)}
-              </Text>
+            <Text style={styles.availableBalance}>
+              Khả dụng: {formatCurrency(account.balance)}
+            </Text>
+          )}
+
+          {/* Quick Amounts */}
+          <View style={styles.quickAmounts}>
+            {[1000000, 5000000, 10000000].map((quickAmount) => (
               <TouchableOpacity
-                style={styles.withdrawAllButton}
-                onPress={() => setAmount(account.balance.toString())}
+                key={quickAmount}
+                style={styles.quickAmountButton}
+                onPress={() => setAmount(quickAmount.toString())}
               >
-                <Text style={styles.withdrawAllText}>Rút tất cả</Text>
+                <Text style={styles.quickAmountText}>
+                  {formatCurrency(quickAmount)}
+                </Text>
               </TouchableOpacity>
-            </>
+            ))}
+          </View>
+
+          {/* Max Button */}
+          {type === 'FROM_SAVINGS' && account && (
+            <TouchableOpacity
+              style={styles.maxButton}
+              onPress={() => setAmount(account.balance.toString())}
+            >
+              <Text style={styles.maxButtonText}>Tối đa</Text>
+            </TouchableOpacity>
           )}
         </View>
 
-        {/* Ghi chú */}
-        <View style={styles.noteContainer}>
-          <Text style={styles.sectionTitle}>Ghi chú (tùy chọn)</Text>
+        {/* Note Card */}
+        <View style={styles.card}>
+          <View style={styles.cardHeader}>
+            <Ionicons name="create-outline" size={20} color="#6B7280" />
+            <Text style={styles.cardTitle}>Ghi chú</Text>
+            <Text style={styles.optionalBadge}>Tùy chọn</Text>
+          </View>
+
           <TextInput
             style={styles.noteInput}
             value={note}
             onChangeText={setNote}
-            placeholder="Nhập ghi chú cho giao dịch"
+            placeholder="Thêm ghi chú cho giao dịch..."
+            placeholderTextColor="#9CA3AF"
             multiline
             numberOfLines={3}
             maxLength={200}
           />
         </View>
 
-        {/* Thông tin giao dịch */}
-        <View style={styles.summaryContainer}>
-          <Text style={styles.sectionTitle}>Thông tin giao dịch</Text>
-          
+        {/* Summary Card */}
+        <View style={styles.summaryCard}>
+          <Text style={styles.summaryTitle}>Tóm tắt giao dịch</Text>
+
           <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Từ tài khoản:</Text>
+            <Text style={styles.summaryLabel}>Loại giao dịch</Text>
             <Text style={styles.summaryValue}>
-              {type === 'TO_SAVINGS' ? accountTransResponse?.accountNumber : account.accountNumber}
+              {type === 'TO_SAVINGS' ? 'Nạp vào tiết kiệm' : 'Rút từ tiết kiệm'}
             </Text>
           </View>
-          
+
           <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Đến tài khoản:</Text>
-            <Text style={styles.summaryValue}>
-              {type === 'TO_SAVINGS' ? account.accountNumber : accountTransResponse?.accountNumber}
-            </Text>
-          </View>
-          
-          <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Số tiền:</Text>
-            <Text style={[styles.summaryValue, styles.amountValue]}>
+            <Text style={styles.summaryLabel}>Số tiền</Text>
+            <Text style={styles.summaryAmount}>
               {amount ? formatCurrency(parseCurrency(amount)) : '0 ₫'}
             </Text>
           </View>
+
+          <View style={styles.summaryDivider} />
+
+          <View style={styles.summaryRow}>
+            <Text style={styles.summaryLabel}>Phí giao dịch</Text>
+            <Text style={styles.summaryValue}>Miễn phí</Text>
+          </View>
         </View>
+
+        <View style={{ height: 100 }} />
       </ScrollView>
 
       {/* Nút xác nhận */}
@@ -336,7 +474,11 @@ export default function SavingsTransferScreen() {
       <ConfirmModal
         visible={showConfirmModal}
         title="Xác nhận giao dịch"
-        message={`Bạn có chắc chắn muốn ${type === 'TO_SAVINGS' ? 'chuyển' : 'rút'} ${amount ? formatCurrency(parseCurrency(amount)) : '0 ₫'} ${type === 'TO_SAVINGS' ? 'vào' : 'từ'} tài khoản tiết kiệm?`}
+        message={`Bạn có chắc chắn muốn ${
+          type === 'TO_SAVINGS' ? 'chuyển' : 'rút'
+        } ${amount ? formatCurrency(parseCurrency(amount)) : '0 ₫'} ${
+          type === 'TO_SAVINGS' ? 'vào' : 'từ'
+        } tài khoản tiết kiệm?`}
         onConfirm={handleConfirmTransfer}
         onCancel={() => setShowConfirmModal(false)}
       />
@@ -344,7 +486,9 @@ export default function SavingsTransferScreen() {
       <PinInputModal
         visible={showPinModal}
         title="Nhập mã PIN"
-        message={`Vui lòng nhập mã PIN để xác nhận ${type === 'TO_SAVINGS' ? 'chuyển tiền vào' : 'rút tiền từ'} tài khoản tiết kiệm`}
+        message={`Vui lòng nhập mã PIN để xác nhận ${
+          type === 'TO_SAVINGS' ? 'chuyển tiền vào' : 'rút tiền từ'
+        } tài khoản tiết kiệm`}
         onConfirm={() => {
           setShowPinModal(false);
           performTransfer();
@@ -357,7 +501,9 @@ export default function SavingsTransferScreen() {
       <ConfirmModal
         visible={showFullWithdrawalWarning}
         title="⚠️ Cảnh báo tất toán"
-        message={`Bạn đang rút toàn bộ số dư ${formatCurrency(account?.balance || 0)} từ tài khoản tiết kiệm.\n\nViệc này sẽ dẫn đến TẤT TOÁN tài khoản tiết kiệm và tài khoản sẽ bị HỦY vĩnh viễn.\n\nBạn có chắc chắn muốn tiếp tục?`}
+        message={`Bạn đang rút toàn bộ số dư ${formatCurrency(
+          account?.balance || 0,
+        )} từ tài khoản tiết kiệm.\n\nViệc này sẽ dẫn đến TẤT TOÁN tài khoản tiết kiệm và tài khoản sẽ bị HỦY vĩnh viễn.\n\nBạn có chắc chắn muốn tiếp tục?`}
         confirmText="Tất toán"
         cancelText="Hủy bỏ"
         onConfirm={handleConfirmFullWithdrawal}
@@ -382,195 +528,50 @@ export default function SavingsTransferScreen() {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F5F5F5',
-  },
-  content: {
-    flex: 1,
-    padding: 16,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    marginTop: 16,
-    fontSize: 16,
-    color: '#666666',
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  errorText: {
-    fontSize: 16,
-    color: '#666666',
-  },
-  descriptionContainer: {
-    backgroundColor: '#E3F2FD',
-    padding: 16,
-    borderRadius: 8,
-    marginBottom: 16,
-  },
-  description: {
-    fontSize: 14,
-    color: '#1976D2',
-    textAlign: 'center',
-  },
-  accountInfoContainer: {
-    marginBottom: 16,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333333',
-    marginBottom: 12,
-  },
-  accountCard: {
-    backgroundColor: '#FFFFFF',
-    padding: 16,
-    borderRadius: 8,
-    marginBottom: 12,
-    elevation: 1,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
-  },
-  accountName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333333',
-    marginBottom: 4,
-  },
-  accountNumber: {
-    fontSize: 14,
-    color: '#666666',
-    marginBottom: 4,
-  },
-  accountBalance: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#2E7D32',
-  },
-  linkedAccountCard: {
-    backgroundColor: '#FFFFFF',
-    padding: 16,
-    borderRadius: 8,
-    elevation: 1,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
-  },
-  linkedAccountTitle: {
-    fontSize: 14,
-    color: '#666666',
-    marginBottom: 4,
-  },
-  linkedAccountNumber: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333333',
-  },
-  amountContainer: {
-    marginBottom: 16,
-  },
-  amountInput: {
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-    borderRadius: 8,
-    padding: 16,
-    fontSize: 18,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-  maxAmountText: {
-    fontSize: 12,
-    color: '#666666',
-    textAlign: 'center',
-    marginTop: 8,
-  },
-  noteContainer: {
-    marginBottom: 16,
-  },
-  noteInput: {
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    textAlignVertical: 'top',
-  },
-  summaryContainer: {
-    backgroundColor: '#FFFFFF',
-    padding: 16,
-    borderRadius: 8,
-    elevation: 1,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
-  },
-  summaryRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  summaryLabel: {
-    fontSize: 14,
-    color: '#666666',
-  },
-  summaryValue: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#333333',
-    flex: 1,
-    textAlign: 'right',
-  },
-  amountValue: {
-    color: '#1976D2',
-    fontSize: 16,
-  },
-  buttonContainer: {
-    padding: 16,
-    backgroundColor: '#FFFFFF',
-    borderTopWidth: 1,
-    borderTopColor: '#E0E0E0',
-  },
-  transferButton: {
-    backgroundColor: '#1976D2',
-    paddingVertical: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  disabledButton: {
-    backgroundColor: '#CCCCCC',
-  },
-  transferButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  withdrawAllButton: {
-    backgroundColor: '#FF9800',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 6,
-    alignSelf: 'center',
-    marginTop: 8,
-  },
-  withdrawAllText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '600',
-  },
+  container: { flex: 1, backgroundColor: '#F9FAFB' },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingTop: 12, paddingBottom: 16, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F3F4F6' },
+  backButton: { padding: 8 },
+  headerTitle: { fontSize: 18, fontWeight: '600', color: '#1F2937', flex: 1, textAlign: 'center' },
+  headerPlaceholder: { width: 40 },
+  content: { flex: 1 },
+  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#F9FAFB' },
+  loadingText: { marginTop: 16, fontSize: 15, color: '#6B7280' },
+  errorContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#F9FAFB' },
+  errorText: { fontSize: 15, color: '#6B7280' },
+  infoBanner: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#F0F9FF', marginHorizontal: 16, marginTop: 16, marginBottom: 12, padding: 14, borderRadius: 12, borderWidth: 1, borderColor: '#DBEAFE', gap: 10 },
+  infoBannerText: { flex: 1, fontSize: 13, color: '#1E40AF', lineHeight: 18 },
+  transferFlow: { marginHorizontal: 16, marginBottom: 12 },
+  flowCard: { backgroundColor: '#FFFFFF', padding: 16, borderRadius: 12, borderWidth: 1, borderColor: '#E5E7EB' },
+  flowHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 12, gap: 8 },
+  flowLabel: { fontSize: 13, color: '#6B7280', fontWeight: '500' },
+  flowAccountNumber: { fontSize: 16, fontWeight: '600', color: '#111827', fontFamily: 'monospace', marginBottom: 6 },
+  flowAccountType: { fontSize: 13, color: '#6B7280' },
+  flowBalance: { fontSize: 13, color: '#10B981', fontWeight: '600', marginTop: 6 },
+  arrowContainer: { alignItems: 'center', paddingVertical: 12 },
+  card: { backgroundColor: '#FFFFFF', marginHorizontal: 16, marginBottom: 12, borderRadius: 16, padding: 16, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.03, shadowRadius: 3, elevation: 1, borderWidth: 1, borderColor: '#F3F4F6' },
+  cardHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 16 },
+  cardTitle: { fontSize: 15, fontWeight: '600', color: '#374151', marginLeft: 8, flex: 1 },
+  optionalBadge: { fontSize: 11, color: '#9CA3AF', backgroundColor: '#F3F4F6', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
+  amountInput: { fontSize: 32, fontWeight: '700', color: '#111827', textAlign: 'center', paddingVertical: 16, borderBottomWidth: 2, borderBottomColor: '#09a0a5', marginBottom: 12 },
+  availableBalance: { fontSize: 13, color: '#6B7280', textAlign: 'center', marginBottom: 16 },
+  quickAmounts: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  quickAmountButton: { flex: 1, minWidth: '22%', backgroundColor: '#F9FAFB', paddingVertical: 10, paddingHorizontal: 8, borderRadius: 10, borderWidth: 1, borderColor: '#E5E7EB', alignItems: 'center' },
+  quickAmountText: { fontSize: 12, fontWeight: '500', color: '#374151' },
+  maxButton: { backgroundColor: '#FEF3C7', borderColor: '#FCD34D', borderWidth: 1, borderRadius: 10, paddingVertical: 10, alignItems: 'center', marginTop: 8, width: '100%' },
+  maxButtonText: { color: '#92400E', fontWeight: '600', fontSize: 14 },
+  noteInput: { fontSize: 14, color: '#111827', backgroundColor: '#F9FAFB', borderRadius: 10, padding: 12, minHeight: 80, textAlignVertical: 'top', borderWidth: 1, borderColor: '#E5E7EB' },
+  summaryCard: { backgroundColor: '#FFFFFF', marginHorizontal: 16, marginBottom: 12, borderRadius: 16, padding: 16, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.03, shadowRadius: 3, elevation: 1, borderWidth: 1, borderColor: '#F3F4F6' },
+  summaryTitle: { fontSize: 15, fontWeight: '600', color: '#374151', marginBottom: 16 },
+  summaryRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
+  summaryLabel: { fontSize: 14, color: '#6B7280' },
+  summaryValue: { fontSize: 14, fontWeight: '500', color: '#111827', textAlign: 'right' },
+  summaryAmount: { fontSize: 18, fontWeight: '700', color: '#09a0a5', textAlign: 'right' },
+  summaryDivider: { height: 1, backgroundColor: '#F3F4F6', marginVertical: 4 },
+  buttonContainer: { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: '#FFFFFF', paddingHorizontal: 16, paddingTop: 12, paddingBottom: 16, borderTopWidth: 1, borderTopColor: '#F3F4F6', shadowColor: '#000', shadowOffset: { width: 0, height: -2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 8 },
+  transferButton: { backgroundColor: '#09a0a5', paddingVertical: 16, borderRadius: 12, alignItems: 'center', justifyContent: 'center', shadowColor: '#09a0a5', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 4 },
+  disabledButton: { backgroundColor: '#D1D5DB', shadowOpacity: 0, elevation: 0 },
+  transferButtonText: { color: '#FFFFFF', fontSize: 16, fontWeight: '600' },
 });
+
+

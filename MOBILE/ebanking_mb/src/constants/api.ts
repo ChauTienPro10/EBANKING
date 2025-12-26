@@ -94,8 +94,8 @@ export const API = {
   TRANSFER_FROM_SAVINGS: `${AUTH_SERVICE}/savings-transfers/savings-to-payment`,
   CREATE_SAVINGS_REQUEST: `${AUTH_SERVICE}/transaction-requests/cash`,
   GET_SAVINGS_REQUESTS: `${AUTH_SERVICE}/transaction-requests/user/{userId}`,
-  GET_SAVINGS_REQUEST_DETAIL: `${AUTH_SERVICE}/savings/request/{requestId}`,
-  CANCEL_SAVINGS_REQUEST: `${AUTH_SERVICE}/savings/request/{requestId}/cancel`,
+  GET_SAVINGS_REQUEST_DETAIL: `${AUTH_SERVICE}/transaction-requests/{requestId}`,
+  CANCEL_SAVINGS_REQUEST: `${AUTH_SERVICE}/transaction-requests/{requestId}/cancel`,
 
   // Phone Top-up APIs
   GET_PHONE_TOPUP_PROVIDERS: `${AUTH_SERVICE}/phone-topup/providers`,

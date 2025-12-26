@@ -118,6 +118,7 @@ export type RootStackParamList = {
 
   // Savings Account Screens
   SavingsHome: undefined;
+  AllSavingsAccounts: undefined;
   CreateSavingsAccount: undefined;
   SavingsAccountDetail: {
     accountNumber: string;
@@ -131,7 +132,7 @@ export type RootStackParamList = {
     type: 'DEPOSIT' | 'WITHDRAW';
   };
   SavingsRequestList: undefined;
-  SavingsRequestDetail: { requestId: number };
+  SavingsRequestDetail: { requestNumber: string };
 
   // Chat screens
   ChatList: undefined;

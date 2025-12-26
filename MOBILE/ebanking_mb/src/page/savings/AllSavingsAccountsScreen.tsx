@@ -11,30 +11,25 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSelector } from 'react-redux';
 import Toast from 'react-native-toast-message';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import { RootStackParamList } from '../../navigation/types';
 import { RootState } from '../../store';
 import { SavingsService } from '../../services/SavingsService';
 import { SavingsAccount } from '../../types/SavingsTypes';
-import { useEkycValidation } from '../../utils/useEkycValidation';
 import SavingsCard from '../../components/savings/SavingsCard';
 import Header from '../../components/Header';
-import ConfirmModal from '../../components/ConfirmModal';
 import Colors from '../../constants/color';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
-export default function SavingsHomeScreen() {
+export default function AllSavingsAccountsScreen() {
   const navigation = useNavigation<NavigationProp>();
   const { userInfoData: userInfo } = useSelector(
     (state: RootState) => state.app,
   );
-  const { validateEkyc } = useEkycValidation();
 
   const [savingsAccounts, setSavingsAccounts] = useState<SavingsAccount[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [showEKYCModal, setShowEKYCModal] = useState(false);
 
   const loadSavingsAccounts = async () => {
     if (!userInfo?.id) return;
@@ -68,44 +63,14 @@ export default function SavingsHomeScreen() {
     loadSavingsAccounts();
   };
 
-  const handleCreateAccount = () => {
-    // Validate eKYC before allowing account creation
-    const ekycValidation = validateEkyc(
-      (reason: 'NOT_VERIFIED' | 'EXPIRED') => {
-        setShowEKYCModal(true);
-      },
-    );
-
-    if (!ekycValidation.isValid) {
-      return;
-    }
-
-    navigation.navigate('CreateSavingsAccount');
-  };
-
-  const handleViewRequests = () => {
-    navigation.navigate('SavingsRequestList');
-  };
-
-  const handleViewAllAccounts = () => {
-    navigation.navigate('AllSavingsAccounts');
-  };
-
   const handleAccountPress = (accountNumber: string) => {
     navigation.navigate('SavingsAccountDetail', { accountNumber });
   };
 
   const calculateTotalBalance = () => {
-    // Only include active and matured accounts in total balance calculation
-    // Exclude CLOSED accounts since they show closure time instead of balance
     return savingsAccounts
       .filter(account => account.status !== 'CLOSED')
       .reduce((total, account) => total + account.balance, 0);
-  };
-
-  const getActiveAccountsCount = () => {
-    return savingsAccounts.filter(account => account.status !== 'CLOSED')
-      .length;
   };
 
   const formatCurrency = (amount: number) => {
@@ -117,7 +82,7 @@ export default function SavingsHomeScreen() {
 
   return (
     <View style={styles.container}>
-      <Header title="Tài khoản tiết kiệm" showBackButton />
+      <Header title="Tất cả tài khoản tiết kiệm" showBackButton />
 
       <ScrollView
         style={styles.content}
@@ -132,7 +97,8 @@ export default function SavingsHomeScreen() {
             {formatCurrency(calculateTotalBalance())}
           </Text>
           <Text style={styles.accountCount}>
-            {getActiveAccountsCount()} tài khoản đang hoạt động
+            {savingsAccounts.filter(acc => acc.status !== 'CLOSED').length} tài
+            khoản đang hoạt động
             {savingsAccounts.filter(acc => acc.status === 'CLOSED').length >
               0 &&
               ` • ${
@@ -141,34 +107,8 @@ export default function SavingsHomeScreen() {
           </Text>
         </View>
 
-        {/* Các nút chức năng */}
-        <View style={styles.actionContainer}>
-          <TouchableOpacity
-            style={styles.actionButton}
-            onPress={handleCreateAccount}
-          >
-            <Text style={styles.actionButtonText}>Mở tài khoản mới</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.actionButton, styles.secondaryButton]}
-            onPress={handleViewRequests}
-          >
-            <Text style={[styles.actionButtonText, styles.secondaryButtonText]}>
-              Xem yêu cầu
-            </Text>
-          </TouchableOpacity>
-        </View>
-
         {/* Danh sách tài khoản */}
         <View style={styles.accountsContainer}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Tài khoản tiết kiệm của bạn</Text>
-            <TouchableOpacity onPress={handleViewAllAccounts}>
-              <Text style={styles.viewAllButton}>Tất cả</Text>
-            </TouchableOpacity>
-          </View>
-
           {loading ? (
             <View style={styles.loadingContainer}>
               <Text style={styles.loadingText}>Đang tải...</Text>
@@ -184,11 +124,9 @@ export default function SavingsHomeScreen() {
             </View>
           ) : (
             <>
-              {/* Active and Matured Accounts with balance > 0 */}
+              {/* Active and Matured Accounts */}
               {savingsAccounts
-                .filter(
-                  account => account.status !== 'CLOSED' && account.balance > 0,
-                )
+                .filter(account => account.status !== 'CLOSED')
                 .map(account => (
                   <SavingsCard
                     key={account.id}
@@ -228,21 +166,6 @@ export default function SavingsHomeScreen() {
           )}
         </View>
       </ScrollView>
-
-      {/* eKYC Modal */}
-      <ConfirmModal
-        visible={showEKYCModal}
-        title="⚠️ Yêu cầu xác thực eKYC"
-        message="Tính năng tiết kiệm yêu cầu xác thực eKYC. Vui lòng hoàn thành xác thực để tiếp tục."
-        confirmText="Xác thực ngay"
-        cancelText="Hủy bỏ"
-        onConfirm={() => {
-          setShowEKYCModal(false);
-          navigation.navigate('EKYC');
-        }}
-        onCancel={() => setShowEKYCModal(false)}
-        confirmButtonStyle={{ backgroundColor: Colors.main_bule }}
-      />
     </View>
   );
 }
@@ -287,60 +210,15 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: Colors.textSecondary,
   },
-  actionContainer: {
-    flexDirection: 'row',
-    marginHorizontal: 16,
-    marginBottom: 20,
-    gap: 12,
-  },
-  actionButton: {
-    flex: 1,
-    backgroundColor: Colors.main_bule,
-    paddingVertical: 14,
-    borderRadius: 12,
-    alignItems: 'center',
-    shadowColor: Colors.main_bule,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  secondaryButton: {
-    backgroundColor: Colors.white,
-    borderWidth: 1.5,
-    borderColor: Colors.main_bule,
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-  },
-  actionButtonText: {
-    color: Colors.white,
-    fontSize: 15,
-    fontWeight: '600',
-  },
-  secondaryButtonText: {
-    color: Colors.main_bule,
-  },
   accountsContainer: {
     marginBottom: 20,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginHorizontal: 16,
-    marginBottom: 12,
   },
   sectionTitle: {
     fontSize: 17,
     fontWeight: '600',
     color: Colors.textPrimary,
-  },
-  viewAllButton: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: Colors.main_bule,
-    textDecorationLine: 'underline',
-    marginEnd: 2,
+    marginHorizontal: 16,
+    marginBottom: 12,
   },
   loadingContainer: {
     padding: 40,

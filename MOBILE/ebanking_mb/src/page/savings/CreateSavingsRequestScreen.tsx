@@ -13,11 +13,11 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp as NavigationRouteProp } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import Toast from 'react-native-toast-message';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { RootStackParamList } from '../../navigation/types';
 import { RootState } from '../../store';
 import { SavingsService } from '../../services/SavingsService';
 import { SavingsAccount } from '../../types/SavingsTypes';
-import Header from '../../components/Header';
 import ConfirmModal from '../../components/ConfirmModal';
 import PinInputModal from '../../components/PinInputModal';
 
@@ -192,7 +192,16 @@ export default function CreateSavingsRequestScreen() {
   if (loading) {
     return (
       <View style={styles.container}>
-        <Header title={getTitle()} showBackButton />
+        <View style={styles.header}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={styles.backButton}
+          >
+            <Ionicons name="arrow-back" size={24} color="#1F2937" />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>{getTitle()}</Text>
+          <View style={styles.headerPlaceholder} />
+        </View>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#09a0a5" />
           <Text style={styles.loadingText}>Đang tải...</Text>
@@ -204,7 +213,16 @@ export default function CreateSavingsRequestScreen() {
   if (!account) {
     return (
       <View style={styles.container}>
-        <Header title={getTitle()} showBackButton />
+        <View style={styles.header}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={styles.backButton}
+          >
+            <Ionicons name="arrow-back" size={24} color="#1F2937" />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>{getTitle()}</Text>
+          <View style={styles.headerPlaceholder} />
+        </View>
         <View style={styles.errorContainer}>
           <Text style={styles.errorText}>
             Không tìm thấy thông tin tài khoản
@@ -216,152 +234,174 @@ export default function CreateSavingsRequestScreen() {
 
   return (
     <View style={styles.container}>
-      <Header title={getTitle()} showBackButton />
+      {/* Custom Header */}
+      <View style={styles.header}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
+          <Ionicons name="arrow-back" size={24} color="#1F2937" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>{getTitle()}</Text>
+        <View style={styles.headerPlaceholder} />
+      </View>
 
-      <ScrollView style={styles.content}>
-        {/* Mô tả */}
-        <View style={styles.descriptionContainer}>
-          <Text style={styles.icon}>{getIcon()}</Text>
-          <Text style={styles.description}>{getDescription()}</Text>
+      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+        {/* Info Banner */}
+        <View style={styles.infoBanner}>
+          <View style={styles.infoBannerIcon}>
+            <Text style={styles.infoBannerEmoji}>{getIcon()}</Text>
+          </View>
+          <Text style={styles.infoBannerText}>{getDescription()}</Text>
         </View>
 
-        {/* Thông tin tài khoản */}
-        <View style={styles.accountContainer}>
-          <Text style={styles.sectionTitle}>Tài khoản tiết kiệm</Text>
+        {/* Account Info Card */}
+        <View style={styles.card}>
+          <View style={styles.cardHeader}>
+            <Ionicons name="wallet-outline" size={20} color="#6B7280" />
+            <Text style={styles.cardTitle}>Tài khoản tiết kiệm</Text>
+          </View>
 
-          <View style={styles.accountCard}>
+          <View style={styles.accountInfo}>
             <Text style={styles.accountName}>
-              {account.accountName ||
-                `Tài khoản tiết kiệm ${account.termMonths} tháng`}
+              {account.accountName || `Tiết kiệm ${account.termMonths} tháng`}
             </Text>
-            <Text style={styles.accountNumber}>
-              STK: {account.accountNumber}
-            </Text>
-            <Text style={styles.accountBalance}>
-              Số dư: {formatCurrency(account.balance)}
-            </Text>
-            <Text style={styles.accountRate}>
-              Lãi suất: {(account.interestRate * 100).toFixed(2)}%/năm
-            </Text>
+            <Text style={styles.accountNumber}>{account.accountNumber}</Text>
+
+            <View style={styles.accountDetails}>
+              <View style={styles.accountDetailItem}>
+                <Text style={styles.accountDetailLabel}>Số dư</Text>
+                <Text style={styles.accountDetailValue}>
+                  {formatCurrency(account.balance)}
+                </Text>
+              </View>
+              <View style={styles.accountDetailDivider} />
+              <View style={styles.accountDetailItem}>
+                <Text style={styles.accountDetailLabel}>Lãi suất</Text>
+                <Text style={styles.accountDetailValue}>
+                  {(account.interestRate * 100).toFixed(2)}%
+                </Text>
+              </View>
+            </View>
           </View>
         </View>
 
-        {/* Nhập số tiền */}
-        <View style={styles.amountContainer}>
-          <Text style={styles.sectionTitle}>Số tiền</Text>
+        {/* Amount Input Card */}
+        <View style={styles.card}>
+          <View style={styles.cardHeader}>
+            <Ionicons name="cash-outline" size={20} color="#6B7280" />
+            <Text style={styles.cardTitle}>Số tiền</Text>
+          </View>
+
           <TextInput
             style={styles.amountInput}
             value={amount ? formatCurrency(parseCurrency(amount)) : ''}
             onChangeText={handleAmountChange}
-            placeholder="Nhập số tiền"
+            placeholder="0 ₫"
+            placeholderTextColor="#9CA3AF"
             keyboardType="numeric"
           />
 
           {type === 'WITHDRAW' && (
-            <Text style={styles.maxAmountText}>
-              Số dư khả dụng: {formatCurrency(account.balance)}
+            <Text style={styles.availableBalance}>
+              Khả dụng: {formatCurrency(account.balance)}
             </Text>
           )}
 
-          <View style={styles.amountHints}>
-            <Text style={styles.hintTitle}>Lưu ý:</Text>
-            <Text style={styles.hintText}>• Số tiền tối thiểu: 100,000 ₫</Text>
-            <Text style={styles.hintText}>
-              • Số tiền tối đa mỗi lần: 500,000,000 ₫
-            </Text>
-            <Text style={styles.hintText}>• Phí xử lý: Miễn phí</Text>
+          <View style={styles.quickAmounts}>
+            {[1000000, 5000000, 10000000].map(quickAmount => (
+              <TouchableOpacity
+                key={quickAmount}
+                style={styles.quickAmountButton}
+                onPress={() => setAmount(quickAmount.toString())}
+              >
+                <Text style={styles.quickAmountText}>
+                  {formatCurrency(quickAmount)}
+                </Text>
+              </TouchableOpacity>
+            ))}
           </View>
         </View>
 
-        {/* Ghi chú */}
-        <View style={styles.noteContainer}>
-          <Text style={styles.sectionTitle}>Ghi chú (tùy chọn)</Text>
+        {/* Note Card */}
+        <View style={styles.card}>
+          <View style={styles.cardHeader}>
+            <Ionicons name="create-outline" size={20} color="#6B7280" />
+            <Text style={styles.cardTitle}>Ghi chú</Text>
+            <Text style={styles.optionalBadge}>Tùy chọn</Text>
+          </View>
+
           <TextInput
             style={styles.noteInput}
             value={note}
             onChangeText={setNote}
-            placeholder="Nhập ghi chú cho yêu cầu"
+            placeholder="Thêm ghi chú cho yêu cầu này..."
+            placeholderTextColor="#9CA3AF"
             multiline
-            numberOfLines={4}
+            numberOfLines={3}
             maxLength={500}
           />
           <Text style={styles.characterCount}>{note.length}/500</Text>
         </View>
 
-        {/* Thông tin xử lý */}
-        <View style={styles.processingInfoContainer}>
-          <Text style={styles.sectionTitle}>Thông tin xử lý</Text>
+        {/* Summary Card */}
+        <View style={styles.summaryCard}>
+          <Text style={styles.summaryTitle}>Tóm tắt giao dịch</Text>
 
-          <View style={styles.infoCard}>
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Thời gian xử lý:</Text>
-              <Text style={styles.infoValue}>1-2 ngày làm việc</Text>
-            </View>
-
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Phí xử lý:</Text>
-              <Text style={styles.infoValue}>Miễn phí</Text>
-            </View>
-
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Trạng thái:</Text>
-              <Text style={styles.infoValue}>Chờ duyệt sau khi tạo</Text>
-            </View>
-          </View>
-
-          <View style={styles.warningContainer}>
-            <Text style={styles.warningText}>
-              ⚠️ Yêu cầu không thể chỉnh sửa sau khi tạo. Vui lòng kiểm tra kỹ
-              thông tin trước khi xác nhận.
+          <View style={styles.summaryRow}>
+            <Text style={styles.summaryLabel}>Loại giao dịch</Text>
+            <Text style={styles.summaryValue}>
+              {type === 'DEPOSIT' ? 'Nạp tiền' : 'Rút tiền'}
             </Text>
           </View>
-        </View>
 
-        {/* Tóm tắt yêu cầu */}
-        <View style={styles.summaryContainer}>
-          <Text style={styles.sectionTitle}>Tóm tắt yêu cầu</Text>
+          <View style={styles.summaryRow}>
+            <Text style={styles.summaryLabel}>Số tiền</Text>
+            <Text style={styles.summaryAmount}>
+              {amount ? formatCurrency(parseCurrency(amount)) : '0 ₫'}
+            </Text>
+          </View>
 
-          <View style={styles.summaryCard}>
-            <View style={styles.summaryRow}>
-              <Text style={styles.summaryLabel}>Loại yêu cầu:</Text>
-              <Text style={styles.summaryValue}>
-                {type === 'DEPOSIT' ? 'Nạp tiền mặt' : 'Rút tiền mặt'}
-              </Text>
-            </View>
+          <View style={styles.summaryDivider} />
 
-            <View style={styles.summaryRow}>
-              <Text style={styles.summaryLabel}>Tài khoản:</Text>
-              <Text style={styles.summaryValue}>{account.accountNumber}</Text>
-            </View>
+          <View style={styles.summaryRow}>
+            <Text style={styles.summaryLabel}>Phí giao dịch</Text>
+            <Text style={styles.summaryValue}>Miễn phí</Text>
+          </View>
 
-            <View style={styles.summaryRow}>
-              <Text style={styles.summaryLabel}>Số tiền:</Text>
-              <Text style={[styles.summaryValue, styles.amountValue]}>
-                {amount ? formatCurrency(parseCurrency(amount)) : '0 ₫'}
-              </Text>
-            </View>
-
-            {note.trim() && (
-              <View style={styles.summaryRow}>
-                <Text style={styles.summaryLabel}>Ghi chú:</Text>
-                <Text style={styles.summaryValue}>{note.trim()}</Text>
-              </View>
-            )}
+          <View style={styles.summaryRow}>
+            <Text style={styles.summaryLabel}>Thời gian xử lý</Text>
+            <Text style={styles.summaryValue}>1-2 ngày</Text>
           </View>
         </View>
+
+        {/* Info Note */}
+        <View style={styles.infoNote}>
+          <Ionicons name="information-circle" size={16} color="#6B7280" />
+          <Text style={styles.infoNoteText}>
+            Yêu cầu không thể chỉnh sửa sau khi tạo. Vui lòng kiểm tra kỹ thông
+            tin.
+          </Text>
+        </View>
+
+        <View style={{ height: 100 }} />
       </ScrollView>
 
-      {/* Nút tạo yêu cầu */}
-      <View style={styles.buttonContainer}>
+      {/* Bottom Button */}
+      <View style={styles.bottomContainer}>
         <TouchableOpacity
-          style={[styles.createButton, creating && styles.disabledButton]}
+          style={[
+            styles.submitButton,
+            (!amount || creating) && styles.submitButtonDisabled,
+          ]}
           onPress={handleCreateRequest}
           disabled={creating || !amount}
+          activeOpacity={0.8}
         >
           {creating ? (
             <ActivityIndicator color="#FFFFFF" />
           ) : (
-            <Text style={styles.createButtonText}>Tạo yêu cầu</Text>
+            <Text style={styles.submitButtonText}>Xác nhận giao dịch</Text>
           )}
         </TouchableOpacity>
       </View>
@@ -396,238 +436,336 @@ export default function CreateSavingsRequestScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#F9FAFB',
   },
+
+  // Header Styles
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 16,
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3F4F6',
+  },
+  backButton: {
+    padding: 8,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1F2937',
+    flex: 1,
+    textAlign: 'center',
+  },
+  headerPlaceholder: {
+    width: 40,
+  },
+
+  // Content
   content: {
     flex: 1,
-    padding: 16,
   },
+
+  // Loading States
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#F9FAFB',
   },
   loadingText: {
     marginTop: 16,
-    fontSize: 16,
-    color: '#666666',
+    fontSize: 15,
+    color: '#6B7280',
   },
   errorContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#F9FAFB',
   },
   errorText: {
-    fontSize: 16,
-    color: '#666666',
+    fontSize: 15,
+    color: '#6B7280',
   },
-  descriptionContainer: {
-    backgroundColor: '#FFFFFF',
-    padding: 20,
+
+  // Info Banner
+  infoBanner: {
+    flexDirection: 'row',
+    backgroundColor: '#F0F9FF',
+    marginHorizontal: 16,
+    marginTop: 16,
+    marginBottom: 12,
+    padding: 14,
     borderRadius: 12,
     alignItems: 'center',
-    marginBottom: 16,
-    elevation: 1,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
+    borderWidth: 1,
+    borderColor: '#DBEAFE',
   },
-  icon: {
-    fontSize: 48,
-    marginBottom: 12,
-  },
-  description: {
-    fontSize: 14,
-    color: '#666666',
-    textAlign: 'center',
-    lineHeight: 20,
-  },
-  accountContainer: {
-    marginBottom: 16,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333333',
-    marginBottom: 12,
-  },
-  accountCard: {
+  infoBannerIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  infoBannerEmoji: {
+    fontSize: 20,
+  },
+  infoBannerText: {
+    flex: 1,
+    fontSize: 13,
+    color: '#1E40AF',
+    lineHeight: 18,
+  },
+
+  // Card Styles
+  card: {
+    backgroundColor: '#FFFFFF',
+    marginHorizontal: 16,
+    marginBottom: 12,
+    borderRadius: 16,
     padding: 16,
-    borderRadius: 8,
-    elevation: 1,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
+    shadowOpacity: 0.03,
+    shadowRadius: 3,
+    elevation: 1,
+    borderWidth: 1,
+    borderColor: '#F3F4F6',
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  cardTitle: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#374151',
+    marginLeft: 8,
+    flex: 1,
+  },
+  optionalBadge: {
+    fontSize: 11,
+    color: '#9CA3AF',
+    backgroundColor: '#F3F4F6',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+  },
+
+  // Account Info
+  accountInfo: {
+    gap: 12,
   },
   accountName: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#333333',
+    color: '#111827',
     marginBottom: 4,
   },
   accountNumber: {
     fontSize: 14,
-    color: '#666666',
-    marginBottom: 4,
-  },
-  accountBalance: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#2E7D32',
-    marginBottom: 4,
-  },
-  accountRate: {
-    fontSize: 14,
-    color: '#666666',
-  },
-  amountContainer: {
-    marginBottom: 16,
-  },
-  amountInput: {
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-    borderRadius: 8,
-    padding: 16,
-    fontSize: 18,
-    fontWeight: '600',
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  maxAmountText: {
-    fontSize: 12,
-    color: '#666666',
-    textAlign: 'center',
+    color: '#6B7280',
+    fontFamily: 'monospace',
     marginBottom: 12,
   },
-  amountHints: {
-    backgroundColor: '#FFF3E0',
+  accountDetails: {
+    flexDirection: 'row',
+    backgroundColor: '#F9FAFB',
+    borderRadius: 12,
     padding: 12,
-    borderRadius: 8,
   },
-  hintTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#E65100',
-    marginBottom: 8,
+  accountDetailItem: {
+    flex: 1,
+    alignItems: 'center',
   },
-  hintText: {
+  accountDetailLabel: {
     fontSize: 12,
-    color: '#E65100',
-    marginBottom: 4,
+    color: '#6B7280',
+    marginBottom: 6,
   },
-  noteContainer: {
+  accountDetailValue: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#111827',
+  },
+  accountDetailDivider: {
+    width: 1,
+    backgroundColor: '#E5E7EB',
+    marginHorizontal: 12,
+  },
+
+  // Amount Input
+  amountInput: {
+    fontSize: 32,
+    fontWeight: '700',
+    color: '#111827',
+    textAlign: 'center',
+    paddingVertical: 16,
+    borderBottomWidth: 2,
+    borderBottomColor: '#09a0a5',
+    marginBottom: 12,
+  },
+  availableBalance: {
+    fontSize: 13,
+    color: '#6B7280',
+    textAlign: 'center',
     marginBottom: 16,
   },
-  noteInput: {
-    backgroundColor: '#FFFFFF',
+
+  // Quick Amounts
+  quickAmounts: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  quickAmountButton: {
+    flex: 1,
+    backgroundColor: '#F9FAFB',
+    paddingVertical: 10,
+    paddingHorizontal: 8,
+    borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#E0E0E0',
-    borderRadius: 8,
+    borderColor: '#E5E7EB',
+    alignItems: 'center',
+  },
+  quickAmountText: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: '#374151',
+  },
+
+  // Note Input
+  noteInput: {
+    fontSize: 14,
+    color: '#111827',
+    backgroundColor: '#F9FAFB',
+    borderRadius: 10,
     padding: 12,
-    fontSize: 16,
+    minHeight: 80,
     textAlignVertical: 'top',
-    minHeight: 100,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    marginBottom: 8,
   },
   characterCount: {
-    fontSize: 12,
-    color: '#999999',
+    fontSize: 11,
+    color: '#9CA3AF',
     textAlign: 'right',
-    marginTop: 4,
   },
-  processingInfoContainer: {
-    marginBottom: 16,
-  },
-  infoCard: {
-    backgroundColor: '#FFFFFF',
-    padding: 16,
-    borderRadius: 8,
-    marginBottom: 12,
-    elevation: 1,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
-  },
-  infoRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  infoLabel: {
-    fontSize: 14,
-    color: '#666666',
-  },
-  infoValue: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#333333',
-  },
-  warningContainer: {
-    backgroundColor: '#FFF3E0',
-    padding: 12,
-    borderRadius: 8,
-  },
-  warningText: {
-    fontSize: 12,
-    color: '#E65100',
-    lineHeight: 16,
-  },
-  summaryContainer: {
-    marginBottom: 16,
-  },
+
+  // Summary Card
   summaryCard: {
     backgroundColor: '#FFFFFF',
+    marginHorizontal: 16,
+    marginBottom: 12,
+    borderRadius: 16,
     padding: 16,
-    borderRadius: 8,
-    elevation: 1,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
+    shadowOpacity: 0.03,
+    shadowRadius: 3,
+    elevation: 1,
+    borderWidth: 1,
+    borderColor: '#F3F4F6',
+  },
+  summaryTitle: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#374151',
+    marginBottom: 16,
   },
   summaryRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 8,
+    alignItems: 'center',
+    marginBottom: 12,
   },
   summaryLabel: {
     fontSize: 14,
-    color: '#666666',
-    flex: 1,
+    color: '#6B7280',
   },
   summaryValue: {
     fontSize: 14,
-    fontWeight: '600',
-    color: '#333333',
-    flex: 2,
+    fontWeight: '500',
+    color: '#111827',
     textAlign: 'right',
   },
-  amountValue: {
-    color: '#1976D2',
-    fontSize: 16,
+  summaryAmount: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#09a0a5',
+    textAlign: 'right',
   },
-  buttonContainer: {
-    padding: 16,
+  summaryDivider: {
+    height: 1,
+    backgroundColor: '#F3F4F6',
+    marginVertical: 4,
+  },
+
+  // Info Note
+  infoNote: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    backgroundColor: '#FFFBEB',
+    marginHorizontal: 16,
+    marginBottom: 12,
+    padding: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#FEF3C7',
+    gap: 8,
+  },
+  infoNoteText: {
+    flex: 1,
+    fontSize: 12,
+    color: '#92400E',
+    lineHeight: 16,
+  },
+
+  // Bottom Button
+  bottomContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
     backgroundColor: '#FFFFFF',
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 16,
     borderTopWidth: 1,
-    borderTopColor: '#E0E0E0',
+    borderTopColor: '#F3F4F6',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 8,
   },
-  createButton: {
-    backgroundColor: '#1976D2',
+  submitButton: {
+    backgroundColor: '#09a0a5',
     paddingVertical: 16,
-    borderRadius: 8,
+    borderRadius: 12,
     alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#09a0a5',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
   },
-  disabledButton: {
-    backgroundColor: '#CCCCCC',
+  submitButtonDisabled: {
+    backgroundColor: '#D1D5DB',
+    shadowOpacity: 0,
+    elevation: 0,
   },
-  createButtonText: {
+  submitButtonText: {
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '600',
