@@ -11,6 +11,7 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSelector } from 'react-redux';
 import Toast from 'react-native-toast-message';
+import { useTranslation } from 'react-i18next';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { RootStackParamList } from '../../navigation/types';
 import { RootState } from '../../store';
@@ -26,6 +27,7 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 export default function SavingsHomeScreen() {
   const navigation = useNavigation<NavigationProp>();
+  const { t } = useTranslation();
   const { userInfoData: userInfo } = useSelector(
     (state: RootState) => state.app,
   );
@@ -48,8 +50,8 @@ export default function SavingsHomeScreen() {
       console.error('Error loading savings accounts:', error);
       Toast.show({
         type: 'error',
-        text1: 'Lỗi',
-        text2: 'Không thể tải danh sách tài khoản tiết kiệm',
+        text1: t('savings.error_title'),
+        text2: t('savings.error_load_accounts'),
       });
     } finally {
       setLoading(false);
@@ -117,7 +119,7 @@ export default function SavingsHomeScreen() {
 
   return (
     <View style={styles.container}>
-      <Header title="Tài khoản tiết kiệm" showBackButton />
+      <Header title={t('savings.home_title')} showBackButton />
 
       <ScrollView
         style={styles.content}
@@ -127,17 +129,17 @@ export default function SavingsHomeScreen() {
       >
         {/* Tổng quan */}
         <View style={styles.summaryContainer}>
-          <Text style={styles.summaryTitle}>Tổng số dư tiết kiệm</Text>
+          <Text style={styles.summaryTitle}>{t('savings.total_balance')}</Text>
           <Text style={styles.totalBalance}>
             {formatCurrency(calculateTotalBalance())}
           </Text>
           <Text style={styles.accountCount}>
-            {getActiveAccountsCount()} tài khoản đang hoạt động
+            {getActiveAccountsCount()} {t('savings.active_accounts')}
             {savingsAccounts.filter(acc => acc.status === 'CLOSED').length >
               0 &&
               ` • ${
                 savingsAccounts.filter(acc => acc.status === 'CLOSED').length
-              } đã đóng`}
+              } ${t('savings.closed_accounts')}`}
           </Text>
         </View>
 
@@ -147,7 +149,9 @@ export default function SavingsHomeScreen() {
             style={styles.actionButton}
             onPress={handleCreateAccount}
           >
-            <Text style={styles.actionButtonText}>Mở tài khoản mới</Text>
+            <Text style={styles.actionButtonText}>
+              {t('savings.create_new_account')}
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -155,7 +159,7 @@ export default function SavingsHomeScreen() {
             onPress={handleViewRequests}
           >
             <Text style={[styles.actionButtonText, styles.secondaryButtonText]}>
-              Xem yêu cầu
+              {t('savings.view_requests')}
             </Text>
           </TouchableOpacity>
         </View>
@@ -163,23 +167,23 @@ export default function SavingsHomeScreen() {
         {/* Danh sách tài khoản */}
         <View style={styles.accountsContainer}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Tài khoản tiết kiệm của bạn</Text>
+            <Text style={styles.sectionTitle}>
+              {t('savings.your_savings_accounts')}
+            </Text>
             <TouchableOpacity onPress={handleViewAllAccounts}>
-              <Text style={styles.viewAllButton}>Tất cả</Text>
+              <Text style={styles.viewAllButton}>{t('savings.view_all')}</Text>
             </TouchableOpacity>
           </View>
 
           {loading ? (
             <View style={styles.loadingContainer}>
-              <Text style={styles.loadingText}>Đang tải...</Text>
+              <Text style={styles.loadingText}>{t('savings.loading')}</Text>
             </View>
           ) : savingsAccounts.length === 0 ? (
             <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>
-                Bạn chưa có tài khoản tiết kiệm nào
-              </Text>
+              <Text style={styles.emptyText}>{t('savings.no_accounts')}</Text>
               <Text style={styles.emptySubText}>
-                Hãy mở tài khoản đầu tiên để bắt đầu tiết kiệm
+                {t('savings.no_accounts_subtitle')}
               </Text>
             </View>
           ) : (
@@ -203,7 +207,7 @@ export default function SavingsHomeScreen() {
                 <>
                   <View style={styles.closedAccountsHeader}>
                     <Text style={styles.closedAccountsTitle}>
-                      Tài khoản đã đóng (
+                      {t('savings.closed_accounts_section')} (
                       {
                         savingsAccounts.filter(acc => acc.status === 'CLOSED')
                           .length
@@ -232,10 +236,10 @@ export default function SavingsHomeScreen() {
       {/* eKYC Modal */}
       <ConfirmModal
         visible={showEKYCModal}
-        title="⚠️ Yêu cầu xác thực eKYC"
-        message="Tính năng tiết kiệm yêu cầu xác thực eKYC. Vui lòng hoàn thành xác thực để tiếp tục."
-        confirmText="Xác thực ngay"
-        cancelText="Hủy bỏ"
+        title={t('savings.ekyc_required_title')}
+        message={t('savings.ekyc_required_message')}
+        confirmText={t('savings.verify_now')}
+        cancelText={t('savings.cancel')}
         onConfirm={() => {
           setShowEKYCModal(false);
           navigation.navigate('EKYC');

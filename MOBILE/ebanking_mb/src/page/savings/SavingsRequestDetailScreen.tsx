@@ -18,6 +18,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp as NavigationRouteProp } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { useTranslation } from 'react-i18next';
 import { RootStackParamList } from '../../navigation/types';
 import { RootState } from '../../store';
 import { SavingsService } from '../../services/SavingsService';
@@ -39,6 +40,7 @@ export default function SavingsRequestDetailScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [cancelling, setCancelling] = useState(false);
+  const { t } = useTranslation();
 
   const loadRequestDetail = async () => {
     try {
@@ -48,7 +50,7 @@ export default function SavingsRequestDetailScreen() {
       setRequest(requestData);
     } catch (error) {
       console.error('Error loading request detail:', error);
-      Alert.alert('Lỗi', 'Không thể tải thông tin yêu cầu');
+      Alert.alert(t('savings.error_title'), t('savings.error_load_request'));
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -101,20 +103,22 @@ export default function SavingsRequestDetailScreen() {
   const getStatusText = (status: string) => {
     switch (status) {
       case 'PENDING':
-        return 'Đang chờ duyệt';
+        return t('savings.status_pending');
       case 'APPROVED':
-        return 'Đã duyệt';
+        return t('savings.status_approved');
       case 'REJECTED':
-        return 'Bị từ chối';
+        return t('savings.status_rejected');
       case 'CANCELLED':
-        return 'Đã hủy';
+        return t('savings.status_cancelled');
       default:
         return status;
     }
   };
 
   const getTypeText = (type: string) => {
-    return type === 'DEPOSIT' ? 'Nạp tiền mặt' : 'Rút tiền mặt';
+    return type === 'DEPOSIT'
+      ? t('savings.cash_deposit')
+      : t('savings.cash_withdraw');
   };
 
   const getTypeIcon = (type: string) => {
@@ -139,10 +143,18 @@ export default function SavingsRequestDetailScreen() {
   const handleCancelRequest = () => {
     if (!request || request.status !== 'PENDING') return;
 
-    Alert.alert('Xác nhận hủy', 'Bạn có chắc chắn muốn hủy yêu cầu này?', [
-      { text: 'Không', style: 'cancel' },
-      { text: 'Hủy yêu cầu', style: 'destructive', onPress: performCancel },
-    ]);
+    Alert.alert(
+      t('savings.confirm_cancel_title'),
+      t('savings.confirm_cancel_message'),
+      [
+        { text: t('common.no'), style: 'cancel' },
+        {
+          text: t('savings.cancel_request'),
+          style: 'destructive',
+          onPress: performCancel,
+        },
+      ],
+    );
   };
 
   const performCancel = async () => {
@@ -150,17 +162,21 @@ export default function SavingsRequestDetailScreen() {
     try {
       await SavingsService.cancelSavingsRequest(requestNumber);
 
-      Alert.alert('Thành công', 'Yêu cầu đã được hủy thành công', [
-        {
-          text: 'OK',
-          onPress: () => {
-            loadRequestDetail();
+      Alert.alert(
+        t('savings.success_title'),
+        t('savings.success_cancel_request'),
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              loadRequestDetail();
+            },
           },
-        },
-      ]);
+        ],
+      );
     } catch (error) {
       console.error('Error cancelling request:', error);
-      Alert.alert('Lỗi', 'Không thể hủy yêu cầu');
+      Alert.alert(t('savings.error_title'), t('savings.error_cancel_request'));
     } finally {
       setCancelling(false);
     }
@@ -169,10 +185,10 @@ export default function SavingsRequestDetailScreen() {
   if (loading) {
     return (
       <View style={styles.container}>
-        <Header title="Chi tiết yêu cầu" showBackButton />
+        <Header title={t('savings.request_detail_title')} showBackButton />
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#0D9488" />
-          <Text style={styles.loadingText}>Đang tải...</Text>
+          <Text style={styles.loadingText}>{t('savings.loading')}</Text>
         </View>
       </View>
     );
@@ -181,10 +197,12 @@ export default function SavingsRequestDetailScreen() {
   if (!request) {
     return (
       <View style={styles.container}>
-        <Header title="Chi tiết yêu cầu" showBackButton />
+        <Header title={t('savings.request_detail_title')} showBackButton />
         <View style={styles.errorContainer}>
           <Ionicons name="alert-circle-outline" size={64} color="#CBD5E1" />
-          <Text style={styles.errorText}>Không tìm thấy thông tin yêu cầu</Text>
+          <Text style={styles.errorText}>
+            {t('savings.error_request_not_found')}
+          </Text>
         </View>
       </View>
     );
@@ -192,7 +210,7 @@ export default function SavingsRequestDetailScreen() {
 
   return (
     <View style={styles.container}>
-      <Header title="Chi tiết yêu cầu" showBackButton />
+      <Header title={t('savings.request_detail_title')} showBackButton />
 
       <ScrollView
         style={styles.content}
@@ -239,32 +257,32 @@ export default function SavingsRequestDetailScreen() {
         <View style={styles.card}>
           <View style={styles.cardHeader}>
             <Ionicons name="document-text-outline" size={19} color="#94A3B8" />
-            <Text style={styles.cardTitle}>Thông tin yêu cầu</Text>
+            <Text style={styles.cardTitle}>{t('savings.request_info')}</Text>
           </View>
 
           <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Mã yêu cầu</Text>
+            <Text style={styles.infoLabel}>{t('savings.request_code')}</Text>
             <Text style={styles.infoValue}>{request.requestNumber}</Text>
           </View>
 
           <View style={styles.divider} />
 
           <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Tài khoản tiết kiệm</Text>
+            <Text style={styles.infoLabel}>{t('savings.savings_account')}</Text>
             <Text style={styles.infoValue}>{request.savingsAccountNumber}</Text>
           </View>
 
           <View style={styles.divider} />
 
           <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Loại yêu cầu</Text>
+            <Text style={styles.infoLabel}>{t('savings.request_type')}</Text>
             <Text style={styles.infoValue}>{getTypeText(request.type)}</Text>
           </View>
 
           <View style={styles.divider} />
 
           <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Số tiền</Text>
+            <Text style={styles.infoLabel}>{t('savings.amount')}</Text>
             <Text style={[styles.infoValue, styles.amountValue]}>
               {formatCurrency(request.amount)}
             </Text>
@@ -273,7 +291,7 @@ export default function SavingsRequestDetailScreen() {
           <View style={styles.divider} />
 
           <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Ngày tạo</Text>
+            <Text style={styles.infoLabel}>{t('savings.created_date')}</Text>
             <Text style={styles.infoValue}>
               {formatDate(request.requestDate)}
             </Text>
@@ -289,13 +307,17 @@ export default function SavingsRequestDetailScreen() {
                 size={19}
                 color="#94A3B8"
               />
-              <Text style={styles.cardTitle}>Thông tin xử lý</Text>
+              <Text style={styles.cardTitle}>
+                {t('savings.processing_info')}
+              </Text>
             </View>
 
             {request.processedDate && (
               <>
                 <View style={styles.infoRow}>
-                  <Text style={styles.infoLabel}>Ngày xử lý</Text>
+                  <Text style={styles.infoLabel}>
+                    {t('savings.processed_date')}
+                  </Text>
                   <Text style={styles.infoValue}>
                     {formatDate(request.processedDate)}
                   </Text>
@@ -306,7 +328,9 @@ export default function SavingsRequestDetailScreen() {
 
             {request.processedBy && (
               <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>Người xử lý</Text>
+                <Text style={styles.infoLabel}>
+                  {t('savings.processed_by')}
+                </Text>
                 <Text style={styles.infoValue}>{request.processedBy}</Text>
               </View>
             )}
@@ -318,7 +342,7 @@ export default function SavingsRequestDetailScreen() {
           <View style={styles.card}>
             <View style={styles.cardHeader}>
               <Ionicons name="create-outline" size={19} color="#94A3B8" />
-              <Text style={styles.cardTitle}>Ghi chú</Text>
+              <Text style={styles.cardTitle}>{t('savings.note')}</Text>
             </View>
             <Text style={styles.noteText}>{request.note}</Text>
           </View>
@@ -330,7 +354,7 @@ export default function SavingsRequestDetailScreen() {
             <View style={styles.cardHeader}>
               <Ionicons name="alert-circle-outline" size={19} color="#DC2626" />
               <Text style={[styles.cardTitle, { color: '#DC2626' }]}>
-                Lý do từ chối
+                {t('savings.rejection_reason')}
               </Text>
             </View>
             <Text style={styles.reasonText}>{request.reason}</Text>
@@ -345,7 +369,9 @@ export default function SavingsRequestDetailScreen() {
               size={19}
               color="#0F766E"
             />
-            <Text style={[styles.cardTitle, { color: '#0F766E' }]}>Chú ý</Text>
+            <Text style={[styles.cardTitle, { color: '#0F766E' }]}>
+              {t('savings.notice')}
+            </Text>
           </View>
 
           {request.status === 'PENDING' && (
@@ -356,10 +382,7 @@ export default function SavingsRequestDetailScreen() {
                 color="#0F766E"
                 style={styles.guideIcon}
               />
-              <Text style={styles.guideText}>
-                Yêu cầu đang được xử lý. Thời gian xử lý dự kiến: 1-2 ngày làm
-                việc.
-              </Text>
+              <Text style={styles.guideText}>{t('savings.guide_pending')}</Text>
             </View>
           )}
 
@@ -372,8 +395,7 @@ export default function SavingsRequestDetailScreen() {
                 style={styles.guideIcon}
               />
               <Text style={styles.guideText}>
-                Yêu cầu đã được duyệt. Vui lòng đến ngân hàng để nạp tiền mặt
-                vào tài khoản.
+                {t('savings.guide_approved_deposit')}
               </Text>
             </View>
           )}
@@ -387,7 +409,7 @@ export default function SavingsRequestDetailScreen() {
                 style={styles.guideIcon}
               />
               <Text style={styles.guideText}>
-                Yêu cầu đã được duyệt. Vui lòng đến ngân hàng để nhận tiền mặt.
+                {t('savings.guide_approved_withdraw')}
               </Text>
             </View>
           )}
@@ -401,8 +423,7 @@ export default function SavingsRequestDetailScreen() {
                 style={styles.guideIcon}
               />
               <Text style={styles.guideText}>
-                Yêu cầu bị từ chối. Bạn có thể tạo yêu cầu mới sau khi khắc phục
-                lý do từ chối.
+                {t('savings.guide_rejected')}
               </Text>
             </View>
           )}
@@ -429,7 +450,9 @@ export default function SavingsRequestDetailScreen() {
                   size={20}
                   color="#FFFFFF"
                 />
-                <Text style={styles.cancelButtonText}>Hủy yêu cầu</Text>
+                <Text style={styles.cancelButtonText}>
+                  {t('savings.cancel_request')}
+                </Text>
               </>
             )}
           </TouchableOpacity>

@@ -13,6 +13,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp as NavigationRouteProp } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import Toast from 'react-native-toast-message';
+import { useTranslation } from 'react-i18next';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { RootStackParamList } from '../../navigation/types';
 import { RootState } from '../../store';
@@ -42,6 +43,7 @@ export default function CreateSavingsRequestScreen() {
   const [creating, setCreating] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showPinModal, setShowPinModal] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     loadAccountDetail();
@@ -57,8 +59,8 @@ export default function CreateSavingsRequestScreen() {
       console.error('Error loading account detail:', error);
       Toast.show({
         type: 'error',
-        text1: 'Lỗi',
-        text2: 'Không thể tải thông tin tài khoản',
+        text1: t('savings.error_title'),
+        text2: t('savings.error_account_not_found'),
       });
     } finally {
       setLoading(false);
@@ -87,8 +89,8 @@ export default function CreateSavingsRequestScreen() {
     if (requestAmount <= 0) {
       Toast.show({
         type: 'error',
-        text1: 'Lỗi',
-        text2: 'Vui lòng nhập số tiền hợp lệ',
+        text1: t('savings.error_title'),
+        text2: t('savings.error_invalid_amount'),
       });
       return false;
     }
@@ -96,8 +98,8 @@ export default function CreateSavingsRequestScreen() {
     if (type === 'WITHDRAW' && account && requestAmount > account.balance) {
       Toast.show({
         type: 'error',
-        text1: 'Lỗi',
-        text2: 'Số dư tài khoản tiết kiệm không đủ',
+        text1: t('savings.error_title'),
+        text2: t('savings.error_insufficient_balance'),
       });
       return false;
     }
@@ -155,8 +157,8 @@ export default function CreateSavingsRequestScreen() {
 
       Toast.show({
         type: 'success',
-        text1: 'Thành công',
-        text2: 'Yêu cầu đã được tạo thành công và đang chờ xử lý',
+        text1: t('savings.success_title'),
+        text2: t('savings.success_create_request'),
       });
 
       // Delay để user thấy toast message trước khi navigate
@@ -167,8 +169,8 @@ export default function CreateSavingsRequestScreen() {
       console.error('Error creating request:', error);
       Toast.show({
         type: 'error',
-        text1: 'Lỗi',
-        text2: 'Không thể tạo yêu cầu',
+        text1: t('savings.error_title'),
+        text2: t('savings.error_create_request'),
       });
     } finally {
       setCreating(false);
@@ -176,13 +178,15 @@ export default function CreateSavingsRequestScreen() {
   };
 
   const getTitle = () => {
-    return type === 'DEPOSIT' ? 'Yêu cầu nạp tiền mặt' : 'Yêu cầu rút tiền mặt';
+    return type === 'DEPOSIT'
+      ? t('savings.cash_deposit_request')
+      : t('savings.cash_withdraw_request');
   };
 
   const getDescription = () => {
     return type === 'DEPOSIT'
-      ? 'Tạo yêu cầu nạp tiền mặt vào tài khoản tiết kiệm. Yêu cầu sẽ được xử lý trong vòng 1-2 ngày làm việc.'
-      : 'Tạo yêu cầu rút tiền mặt từ tài khoản tiết kiệm. Yêu cầu sẽ được xử lý trong vòng 1-2 ngày làm việc.';
+      ? t('savings.deposit_request_description')
+      : t('savings.withdraw_request_description');
   };
 
   const getIcon = () => {
@@ -204,7 +208,7 @@ export default function CreateSavingsRequestScreen() {
         </View>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#09a0a5" />
-          <Text style={styles.loadingText}>Đang tải...</Text>
+          <Text style={styles.loadingText}>{t('savings.loading')}</Text>
         </View>
       </View>
     );
@@ -225,7 +229,7 @@ export default function CreateSavingsRequestScreen() {
         </View>
         <View style={styles.errorContainer}>
           <Text style={styles.errorText}>
-            Không tìm thấy thông tin tài khoản
+            {t('savings.error_account_not_found')}
           </Text>
         </View>
       </View>
@@ -259,7 +263,7 @@ export default function CreateSavingsRequestScreen() {
         <View style={styles.card}>
           <View style={styles.cardHeader}>
             <Ionicons name="wallet-outline" size={20} color="#6B7280" />
-            <Text style={styles.cardTitle}>Tài khoản tiết kiệm</Text>
+            <Text style={styles.cardTitle}>{t('savings.savings_account')}</Text>
           </View>
 
           <View style={styles.accountInfo}>
@@ -270,14 +274,18 @@ export default function CreateSavingsRequestScreen() {
 
             <View style={styles.accountDetails}>
               <View style={styles.accountDetailItem}>
-                <Text style={styles.accountDetailLabel}>Số dư</Text>
+                <Text style={styles.accountDetailLabel}>
+                  {t('savings.balance')}
+                </Text>
                 <Text style={styles.accountDetailValue}>
                   {formatCurrency(account.balance)}
                 </Text>
               </View>
               <View style={styles.accountDetailDivider} />
               <View style={styles.accountDetailItem}>
-                <Text style={styles.accountDetailLabel}>Lãi suất</Text>
+                <Text style={styles.accountDetailLabel}>
+                  {t('savings.interest_rate')}
+                </Text>
                 <Text style={styles.accountDetailValue}>
                   {(account.interestRate * 100).toFixed(2)}%
                 </Text>
@@ -290,7 +298,7 @@ export default function CreateSavingsRequestScreen() {
         <View style={styles.card}>
           <View style={styles.cardHeader}>
             <Ionicons name="cash-outline" size={20} color="#6B7280" />
-            <Text style={styles.cardTitle}>Số tiền</Text>
+            <Text style={styles.cardTitle}>{t('savings.amount')}</Text>
           </View>
 
           <TextInput
@@ -304,7 +312,7 @@ export default function CreateSavingsRequestScreen() {
 
           {type === 'WITHDRAW' && (
             <Text style={styles.availableBalance}>
-              Khả dụng: {formatCurrency(account.balance)}
+              {t('savings.available')}: {formatCurrency(account.balance)}
             </Text>
           )}
 
@@ -327,15 +335,15 @@ export default function CreateSavingsRequestScreen() {
         <View style={styles.card}>
           <View style={styles.cardHeader}>
             <Ionicons name="create-outline" size={20} color="#6B7280" />
-            <Text style={styles.cardTitle}>Ghi chú</Text>
-            <Text style={styles.optionalBadge}>Tùy chọn</Text>
+            <Text style={styles.cardTitle}>{t('savings.note')}</Text>
+            <Text style={styles.optionalBadge}>{t('savings.optional')}</Text>
           </View>
 
           <TextInput
             style={styles.noteInput}
             value={note}
             onChangeText={setNote}
-            placeholder="Thêm ghi chú cho yêu cầu này..."
+            placeholder={t('savings.add_note_placeholder')}
             placeholderTextColor="#9CA3AF"
             multiline
             numberOfLines={3}
@@ -346,17 +354,23 @@ export default function CreateSavingsRequestScreen() {
 
         {/* Summary Card */}
         <View style={styles.summaryCard}>
-          <Text style={styles.summaryTitle}>Tóm tắt giao dịch</Text>
+          <Text style={styles.summaryTitle}>
+            {t('savings.transaction_summary')}
+          </Text>
 
           <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Loại giao dịch</Text>
+            <Text style={styles.summaryLabel}>
+              {t('savings.transaction_type')}
+            </Text>
             <Text style={styles.summaryValue}>
-              {type === 'DEPOSIT' ? 'Nạp tiền' : 'Rút tiền'}
+              {type === 'DEPOSIT'
+                ? t('savings.deposit')
+                : t('savings.withdraw')}
             </Text>
           </View>
 
           <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Số tiền</Text>
+            <Text style={styles.summaryLabel}>{t('savings.amount')}</Text>
             <Text style={styles.summaryAmount}>
               {amount ? formatCurrency(parseCurrency(amount)) : '0 ₫'}
             </Text>
@@ -365,23 +379,26 @@ export default function CreateSavingsRequestScreen() {
           <View style={styles.summaryDivider} />
 
           <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Phí giao dịch</Text>
-            <Text style={styles.summaryValue}>Miễn phí</Text>
+            <Text style={styles.summaryLabel}>
+              {t('savings.transaction_fee')}
+            </Text>
+            <Text style={styles.summaryValue}>{t('savings.free')}</Text>
           </View>
 
           <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Thời gian xử lý</Text>
-            <Text style={styles.summaryValue}>1-2 ngày</Text>
+            <Text style={styles.summaryLabel}>
+              {t('savings.processing_time_label')}
+            </Text>
+            <Text style={styles.summaryValue}>
+              {t('savings.processing_days')}
+            </Text>
           </View>
         </View>
 
         {/* Info Note */}
         <View style={styles.infoNote}>
           <Ionicons name="information-circle" size={16} color="#6B7280" />
-          <Text style={styles.infoNoteText}>
-            Yêu cầu không thể chỉnh sửa sau khi tạo. Vui lòng kiểm tra kỹ thông
-            tin.
-          </Text>
+          <Text style={styles.infoNoteText}>{t('savings.request_note')}</Text>
         </View>
 
         <View style={{ height: 100 }} />
@@ -401,7 +418,9 @@ export default function CreateSavingsRequestScreen() {
           {creating ? (
             <ActivityIndicator color="#FFFFFF" />
           ) : (
-            <Text style={styles.submitButtonText}>Xác nhận giao dịch</Text>
+            <Text style={styles.submitButtonText}>
+              {t('savings.confirm_transaction')}
+            </Text>
           )}
         </TouchableOpacity>
       </View>

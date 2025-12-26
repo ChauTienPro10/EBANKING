@@ -16,6 +16,7 @@ import {
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp as NavigationRouteProp } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
+import { useTranslation } from 'react-i18next';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { RootStackParamList } from '../../navigation/types';
 import { SavingsService } from '../../services/SavingsService';
@@ -36,11 +37,35 @@ export default function SavingsAccountDetailScreen() {
   const route = useRoute<RouteProp>();
   const { accountNumber } = route.params;
   const { validateEkyc } = useEkycValidation();
+  const { t } = useTranslation();
 
   const [account, setAccount] = useState<SavingsAccount | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [showEKYCModal, setShowEKYCModal] = useState(false);
+
+  const getTermName = (months: number) => {
+    const key = `term_name_${months}` as const;
+    return t(`savings.${key}`, {
+      defaultValue: `${t('savings.savings_term')} ${months} ${t(
+        'savings.months',
+      )}`,
+    });
+  };
+
+  const getDisplayName = (
+    accountName: string | null | undefined,
+    termMonths: number,
+  ) => {
+    if (
+      !accountName ||
+      accountName.includes('Tài khoản tiết kiệm') ||
+      accountName.includes('Tiết kiệm')
+    ) {
+      return getTermName(termMonths);
+    }
+    return accountName;
+  };
 
   const loadAccountDetail = async () => {
     try {
@@ -52,8 +77,8 @@ export default function SavingsAccountDetailScreen() {
       console.error('Error loading account detail:', error);
       Toast.show({
         type: 'error',
-        text1: 'Lỗi',
-        text2: 'Không thể tải thông tin tài khoản',
+        text1: t('savings.error_title'),
+        text2: t('savings.error_load_account_detail'),
       });
     } finally {
       setLoading(false);
@@ -90,19 +115,19 @@ export default function SavingsAccountDetailScreen() {
         return {
           color: '#10B981',
           bgColor: '#ECFDF5',
-          text: 'Đang hoạt động',
+          text: t('savings.status_active'),
         };
       case 'MATURED':
         return {
           color: '#F59E0B',
           bgColor: '#FEF3C7',
-          text: 'Đã đến hạn',
+          text: t('savings.status_matured'),
         };
       case 'CLOSED':
         return {
           color: '#6B7280',
           bgColor: '#F3F4F6',
-          text: 'Đã đóng',
+          text: t('savings.status_closed'),
         };
       default:
         return {
@@ -207,7 +232,7 @@ export default function SavingsAccountDetailScreen() {
         <Header title="Chi tiết tài khoản" showBackButton />
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={Colors.main_bule} />
-          <Text style={styles.loadingText}>Đang tải...</Text>
+          <Text style={styles.loadingText}>{t('savings.loading')}</Text>
         </View>
       </View>
     );
@@ -219,7 +244,7 @@ export default function SavingsAccountDetailScreen() {
         <Header title="Chi tiết tài khoản" showBackButton />
         <View style={styles.errorContainer}>
           <Text style={styles.errorText}>
-            Không tìm thấy thông tin tài khoản
+            {t('savings.error_account_not_found')}
           </Text>
         </View>
       </View>
@@ -231,7 +256,7 @@ export default function SavingsAccountDetailScreen() {
 
   return (
     <View style={styles.container}>
-      <Header title="Chi tiết tài khoản" showBackButton />
+      <Header title={t('savings.account_detail_title')} showBackButton />
 
       <ScrollView
         style={styles.content}
@@ -248,8 +273,7 @@ export default function SavingsAccountDetailScreen() {
               </View>
               <View style={styles.headerTextContainer}>
                 <Text style={styles.accountName}>
-                  {account.accountName ||
-                    `Tiết kiệm ${account.termMonths} tháng`}
+                  {getDisplayName(account.accountName, account.termMonths)}
                 </Text>
                 <Text style={styles.accountNumber}>
                   {account.accountNumber}
@@ -274,7 +298,9 @@ export default function SavingsAccountDetailScreen() {
           </View>
 
           <View style={styles.balanceContainer}>
-            <Text style={styles.balanceLabel}>Số dư hiện tại</Text>
+            <Text style={styles.balanceLabel}>
+              {t('savings.current_balance')}
+            </Text>
             <Text style={styles.balance}>
               {formatCurrency(account.balance)}{' '}
               <Text style={styles.currency}>₫</Text>
@@ -284,61 +310,69 @@ export default function SavingsAccountDetailScreen() {
           <View style={styles.detailsRow}>
             <View style={styles.detailCard}>
               <Ionicons name="trending-up" size={16} color={Colors.main_bule} />
-              <Text style={styles.detailLabel}>Lãi suất</Text>
+              <Text style={styles.detailLabel}>
+                {t('savings.interest_rate')}
+              </Text>
               <Text style={styles.detailValue}>
                 {(account.interestRate * 100).toFixed(2)}%/năm
               </Text>
             </View>
             <View style={styles.detailCard}>
               <Ionicons name="calendar" size={16} color={Colors.main_bule} />
-              <Text style={styles.detailLabel}>Kỳ hạn</Text>
-              <Text style={styles.detailValue}>{account.termMonths} tháng</Text>
+              <Text style={styles.detailLabel}>{t('savings.term')}</Text>
+              <Text style={styles.detailValue}>
+                {account.termMonths} {t('savings.months')}
+              </Text>
             </View>
           </View>
         </View>
 
         {/* Thông tin kỳ hạn */}
         <View style={styles.infoCard}>
-          <Text style={styles.cardTitle}>Thông tin kỳ hạn</Text>
+          <Text style={styles.cardTitle}>{t('savings.term_info')}</Text>
 
           <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Ngày mở tài khoản:</Text>
+            <Text style={styles.infoLabel}>{t('savings.open_date')}:</Text>
             <Text style={styles.infoValue}>{formatDate(account.openDate)}</Text>
           </View>
 
           <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Ngày đến hạn:</Text>
+            <Text style={styles.infoLabel}>{t('savings.maturity_date')}:</Text>
             <Text style={styles.infoValue}>
               {formatDate(account.maturityDate)}
             </Text>
           </View>
 
           <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Số ngày còn lại:</Text>
+            <Text style={styles.infoLabel}>{t('savings.days_remaining')}:</Text>
             <Text
               style={[
                 styles.infoValue,
                 { color: daysToMaturity > 0 ? '#10B981' : '#EF4444' },
               ]}
             >
-              {daysToMaturity > 0 ? `${daysToMaturity} ngày` : 'Đã đến hạn'}
+              {daysToMaturity > 0
+                ? `${daysToMaturity} ${t('savings.days')}`
+                : t('savings.matured')}
             </Text>
           </View>
 
           <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Tự động gia hạn:</Text>
+            <Text style={styles.infoLabel}>{t('savings.auto_renewal')}:</Text>
             <Text style={styles.infoValue}>
               {account.autoRenewal !== undefined
                 ? account.autoRenewal
-                  ? 'Có'
-                  : 'Không'
-                : 'Không'}
+                  ? t('savings.yes')
+                  : t('savings.no')
+                : t('savings.no')}
             </Text>
           </View>
 
           {account.totalInterestEarned !== undefined && (
             <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Tổng lãi đã nhận:</Text>
+              <Text style={styles.infoLabel}>
+                {t('savings.total_interest_earned')}:
+              </Text>
               <Text style={[styles.infoValue, { color: '#10B981' }]}>
                 {formatCurrency(account.totalInterestEarned)} ₫
               </Text>
@@ -347,7 +381,9 @@ export default function SavingsAccountDetailScreen() {
 
           {account.currency && (
             <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Đơn vị tiền tệ:</Text>
+              <Text style={styles.infoLabel}>
+                {t('savings.currency_unit')}:
+              </Text>
               <Text style={styles.infoValue}>{account.currency}</Text>
             </View>
           )}
@@ -355,17 +391,21 @@ export default function SavingsAccountDetailScreen() {
 
         {/* Ước tính lãi */}
         <View style={styles.infoCard}>
-          <Text style={styles.cardTitle}>Ước tính lãi suất</Text>
+          <Text style={styles.cardTitle}>
+            {t('savings.interest_estimation')}
+          </Text>
 
           <View style={styles.interestContainer}>
-            <Text style={styles.interestLabel}>Lãi dự kiến khi đến hạn</Text>
+            <Text style={styles.interestLabel}>
+              {t('savings.estimated_interest')}
+            </Text>
             <Text style={styles.interestValue}>
               {formatCurrency(estimatedInterest)} ₫
             </Text>
           </View>
 
           <View style={styles.totalContainer}>
-            <Text style={styles.totalLabel}>Tổng tiền nhận được</Text>
+            <Text style={styles.totalLabel}>{t('savings.total_amount')}</Text>
             <Text style={styles.totalValue}>
               {formatCurrency(account.balance + estimatedInterest)} ₫
             </Text>
@@ -374,25 +414,27 @@ export default function SavingsAccountDetailScreen() {
 
         {/* Tài khoản liên kết */}
         <View style={styles.infoCard}>
-          <Text style={styles.cardTitle}>Tài khoản liên kết</Text>
+          <Text style={styles.cardTitle}>{t('savings.linked_account')}</Text>
           <Text style={styles.linkedAccount}>
             {account.linkedTransactionAccount}
           </Text>
           <Text style={styles.linkedAccountLabel}>
-            Tài khoản giao dịch chính
+            {t('savings.main_transaction_account')}
           </Text>
         </View>
 
         {/* Các nút chức năng */}
         <View style={styles.actionsContainer}>
-          <Text style={styles.actionsTitle}>Giao dịch</Text>
+          <Text style={styles.actionsTitle}>{t('savings.transactions')}</Text>
 
           <View style={styles.actionRow}>
             <TouchableOpacity
               style={styles.actionButton}
               onPress={handleTransferToSavings}
             >
-              <Text style={styles.actionButtonText}>Nạp từ TK giao dịch</Text>
+              <Text style={styles.actionButtonText}>
+                {t('savings.deposit_from_payment')}
+              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -402,7 +444,7 @@ export default function SavingsAccountDetailScreen() {
               <Text
                 style={[styles.actionButtonText, styles.secondaryButtonText]}
               >
-                Chuyển về TK giao dịch
+                {t('savings.transfer_to_payment')}
               </Text>
             </TouchableOpacity>
           </View>
@@ -415,7 +457,7 @@ export default function SavingsAccountDetailScreen() {
               <Text
                 style={[styles.actionButtonText, styles.tertiaryButtonText]}
               >
-                Yêu cầu nạp tiền mặt
+                {t('savings.cash_deposit_request')}
               </Text>
             </TouchableOpacity>
 
@@ -426,7 +468,7 @@ export default function SavingsAccountDetailScreen() {
               <Text
                 style={[styles.actionButtonText, styles.tertiaryButtonText]}
               >
-                Yêu cầu rút tiền mặt
+                {t('savings.cash_withdraw_request')}
               </Text>
             </TouchableOpacity>
           </View>
@@ -436,10 +478,10 @@ export default function SavingsAccountDetailScreen() {
       {/* eKYC Modal */}
       <ConfirmModal
         visible={showEKYCModal}
-        title="⚠️ Yêu cầu xác thực eKYC"
-        message="Giao dịch tiết kiệm yêu cầu xác thực eKYC. Vui lòng hoàn thành xác thực để tiếp tục."
-        confirmText="Xác thực ngay"
-        cancelText="Hủy bỏ"
+        title={t('savings.ekyc_required_title')}
+        message={t('savings.ekyc_transaction_message')}
+        confirmText={t('savings.verify_now')}
+        cancelText={t('savings.cancel')}
         onConfirm={() => {
           setShowEKYCModal(false);
           navigation.navigate('EKYC');
