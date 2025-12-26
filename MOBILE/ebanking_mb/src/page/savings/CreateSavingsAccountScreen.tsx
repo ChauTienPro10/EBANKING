@@ -13,6 +13,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSelector, useDispatch } from 'react-redux';
 import Toast from 'react-native-toast-message';
+import { useTranslation } from 'react-i18next';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { RootStackParamList } from '../../navigation/types';
 import { RootState, AppDispatch } from '../../store';
@@ -31,6 +32,7 @@ export default function CreateSavingsAccountScreen() {
   const { userInfoData: userInfo, accountTransResponse } = useSelector(
     (state: RootState) => state.app,
   );
+  const { t } = useTranslation();
 
   const [selectedTerm, setSelectedTerm] = useState<SavingsTermType | null>(
     null,
@@ -54,8 +56,8 @@ export default function CreateSavingsAccountScreen() {
       console.error('Error loading interest rates:', error);
       Toast.show({
         type: 'error',
-        text1: 'Lỗi',
-        text2: 'Không thể tải danh sách lãi suất',
+        text1: t('savings.error_title'),
+        text2: t('savings.error_load_rates'),
       });
     } finally {
       setLoading(false);
@@ -75,12 +77,19 @@ export default function CreateSavingsAccountScreen() {
     setInitialAmount(numericValue.toString());
   };
 
+  const getTermName = (months: number) => {
+    const key = `term_name_${months}` as const;
+    return t(`savings.${key}`, {
+      defaultValue: `${months} ${t('savings.months')}`,
+    });
+  };
+
   const validateForm = () => {
     if (!userInfo?.id) {
       Toast.show({
         type: 'error',
-        text1: 'Lỗi',
-        text2: 'Không tìm thấy thông tin người dùng',
+        text1: t('savings.error_title'),
+        text2: t('savings.error_user_not_found'),
       });
       return false;
     }
@@ -88,8 +97,8 @@ export default function CreateSavingsAccountScreen() {
     if (!accountTransResponse?.accountId) {
       Toast.show({
         type: 'error',
-        text1: 'Lỗi',
-        text2: 'Không tìm thấy tài khoản thanh toán',
+        text1: t('savings.error_title'),
+        text2: t('savings.error_payment_account_not_found'),
       });
       return false;
     }
@@ -97,8 +106,8 @@ export default function CreateSavingsAccountScreen() {
     if (!selectedTerm) {
       Toast.show({
         type: 'error',
-        text1: 'Lỗi',
-        text2: 'Vui lòng chọn kỳ hạn gửi tiết kiệm',
+        text1: t('savings.error_title'),
+        text2: t('savings.error_select_term'),
       });
       return false;
     }
@@ -108,7 +117,7 @@ export default function CreateSavingsAccountScreen() {
       Toast.show({
         type: 'error',
         text1: 'Lỗi',
-        text2: `Số tiền gửi tối thiểu là ${formatCurrency(
+        text2: `${t('savings.error_minimum_amount')} ${formatCurrency(
           selectedTerm.minAmount,
         )} ₫`,
       });
@@ -148,8 +157,8 @@ export default function CreateSavingsAccountScreen() {
 
       Toast.show({
         type: 'success',
-        text1: 'Thành công',
-        text2: 'Tài khoản tiết kiệm đã được tạo thành công',
+        text1: t('savings.success_title'),
+        text2: t('savings.success_create_account'),
       });
 
       // Delay để user thấy toast message trước khi navigate
@@ -160,8 +169,8 @@ export default function CreateSavingsAccountScreen() {
       console.error('Error creating savings account:', error);
       Toast.show({
         type: 'error',
-        text1: 'Lỗi',
-        text2: 'Không thể tạo tài khoản tiết kiệm',
+        text1: t('savings.error_title'),
+        text2: t('savings.error_create_account'),
       });
     } finally {
       setCreating(false);
@@ -174,7 +183,7 @@ export default function CreateSavingsAccountScreen() {
         <Header title="Mở tài khoản tiết kiệm" showBackButton />
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={Colors.main_bule} />
-          <Text style={styles.loadingText}>Đang tải...</Text>
+          <Text style={styles.loadingText}>{t('savings.loading')}</Text>
         </View>
       </View>
     );
@@ -182,12 +191,14 @@ export default function CreateSavingsAccountScreen() {
 
   return (
     <View style={styles.container}>
-      <Header title="Mở tài khoản tiết kiệm" showBackButton />
+      <Header title={t('savings.create_account_title')} showBackButton />
 
       <ScrollView style={styles.content}>
         {/* Tài khoản thanh toán */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Tài khoản thanh toán</Text>
+          <Text style={styles.sectionTitle}>
+            {t('savings.payment_account')}
+          </Text>
           <View style={styles.linkedAccountCard}>
             <View style={styles.linkedAccountHeader}>
               <Ionicons name="card" size={20} color={Colors.main_bule} />
@@ -198,19 +209,25 @@ export default function CreateSavingsAccountScreen() {
             </View>
             <View style={styles.linkedAccountDetails}>
               <View style={styles.linkedAccountRow}>
-                <Text style={styles.linkedAccountLabel}>Tên:</Text>
+                <Text style={styles.linkedAccountLabel}>
+                  {t('savings.name_label')}
+                </Text>
                 <Text style={styles.linkedAccountValue}>
                   {userInfo?.fullName || 'N/A'}
                 </Text>
               </View>
               <View style={styles.linkedAccountRow}>
-                <Text style={styles.linkedAccountLabel}>Loại:</Text>
+                <Text style={styles.linkedAccountLabel}>
+                  {t('savings.type_label')}
+                </Text>
                 <Text style={styles.linkedAccountValue}>
                   {accountTransResponse?.accountType || 'N/A'}
                 </Text>
               </View>
               <View style={styles.linkedAccountRow}>
-                <Text style={styles.linkedAccountLabel}>Số dư:</Text>
+                <Text style={styles.linkedAccountLabel}>
+                  {t('savings.balance_label')}
+                </Text>
                 <Text style={[styles.linkedAccountValue, styles.balanceValue]}>
                   {accountTransResponse
                     ? `${formatCurrency(accountTransResponse.balance)} ₫`
@@ -223,7 +240,7 @@ export default function CreateSavingsAccountScreen() {
 
         {/* Số tiền gửi ban đầu */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Số tiền gửi ban đầu</Text>
+          <Text style={styles.sectionTitle}>{t('savings.initial_amount')}</Text>
           <View style={styles.inputContainer}>
             <Ionicons
               name="cash-outline"
@@ -239,7 +256,7 @@ export default function CreateSavingsAccountScreen() {
                   : ''
               }
               onChangeText={handleAmountChange}
-              placeholder="Nhập số tiền"
+              placeholder={t('savings.enter_amount')}
               placeholderTextColor={Colors.textSecondary}
               keyboardType="numeric"
             />
@@ -249,9 +266,9 @@ export default function CreateSavingsAccountScreen() {
 
         {/* Chọn kỳ hạn */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Chọn kỳ hạn gửi tiết kiệm</Text>
+          <Text style={styles.sectionTitle}>{t('savings.select_term')}</Text>
           <Text style={styles.sectionSubtitle}>
-            Nhận lãi cuối kỳ. Rút trước hạn hưởng lãi không kỳ hạn.
+            {t('savings.term_subtitle')}
           </Text>
           {terms.map(term => {
             const amount = parseCurrency(initialAmount);
@@ -293,9 +310,11 @@ export default function CreateSavingsAccountScreen() {
                         />
                       </View>
                       <View>
-                        <Text style={styles.termName}>{term.name}</Text>
+                        <Text style={styles.termName}>
+                          {getTermName(term.termMonths)}
+                        </Text>
                         <Text style={styles.termDuration}>
-                          {term.termMonths} tháng
+                          {term.termMonths} {t('savings.months')}
                         </Text>
                       </View>
                     </View>
@@ -305,13 +324,20 @@ export default function CreateSavingsAccountScreen() {
                         isSelected && styles.selectedTermRate,
                       ]}
                     >
-                      {(term.annualRate * 100).toFixed(2)}%/năm
+                      {(term.annualRate * 100).toFixed(2)}%
+                      {t('savings.per_year')}
                     </Text>
                   </View>
                   <Text style={styles.termAmount}>
-                    Số tiền: {formatCurrency(term.minAmount)} ₫ trở lên
+                    {t('savings.minimum_amount')}:{' '}
+                    {formatCurrency(term.minAmount)} ₫ {t('savings.or_more')}
                   </Text>
-                  <Text style={styles.termDescription}>{term.description}</Text>
+                  <Text style={styles.termDescription}>
+                    {t('savings.term_description', {
+                      rate: (term.annualRate * 100).toFixed(2),
+                      months: term.termMonths,
+                    })}
+                  </Text>
                 </TouchableOpacity>
 
                 {/* Interest Preview - Only show when THIS term is selected AND amount is valid */}
@@ -324,22 +350,23 @@ export default function CreateSavingsAccountScreen() {
                         color={Colors.main_bule}
                       />
                       <Text style={styles.previewMainText}>
-                        Bạn sẽ nhận được{' '}
+                        {t('savings.you_will_receive')}{' '}
                         <Text style={styles.previewHighlight}>
                           {formatCurrency(totalAmount)} ₫
                         </Text>{' '}
-                        sau {term.termMonths} tháng
+                        {t('savings.after')} {term.termMonths}{' '}
+                        {t('savings.months')}
                       </Text>
                     </View>
                     <View style={styles.previewSubRow}>
                       <Text style={styles.previewSubText}>
-                        Lãi:{' '}
+                        {t('savings.interest')}:{' '}
                         <Text style={styles.previewInterestAmount}>
                           +{formatCurrency(interest)} ₫
                         </Text>{' '}
                         (
                         {formatCurrency(Math.round(interest / term.termMonths))}{' '}
-                        ₫/tháng)
+                        ₫{t('savings.per_month')})
                       </Text>
                     </View>
                   </View>
@@ -368,7 +395,9 @@ export default function CreateSavingsAccountScreen() {
                 color={Colors.white}
                 style={styles.buttonIcon}
               />
-              <Text style={styles.createButtonText}>Tạo tài khoản</Text>
+              <Text style={styles.createButtonText}>
+                {t('savings.create_account')}
+              </Text>
             </>
           )}
         </TouchableOpacity>
@@ -383,31 +412,42 @@ export default function CreateSavingsAccountScreen() {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Xác nhận tạo tài khoản</Text>
+            <Text style={styles.modalTitle}>
+              {t('savings.confirm_create_title')}
+            </Text>
 
             {selectedTerm && initialAmount && (
               <View style={styles.modalDetailsCard}>
                 <View style={styles.modalRow}>
-                  <Text style={styles.modalLabel}>Kỳ hạn:</Text>
+                  <Text style={styles.modalLabel}>
+                    {t('savings.confirm_term')}:
+                  </Text>
                   <Text style={styles.modalValue}>
-                    {selectedTerm.termMonths} tháng
+                    {selectedTerm.termMonths} {t('savings.months')}
                   </Text>
                 </View>
                 <View style={styles.modalRow}>
-                  <Text style={styles.modalLabel}>Lãi suất:</Text>
+                  <Text style={styles.modalLabel}>
+                    {t('savings.confirm_interest_rate')}:
+                  </Text>
                   <Text style={styles.modalValue}>
-                    {(selectedTerm.annualRate * 100).toFixed(2)}%/năm
+                    {(selectedTerm.annualRate * 100).toFixed(2)}%
+                    {t('savings.per_year')}
                   </Text>
                 </View>
                 <View style={styles.modalRow}>
-                  <Text style={styles.modalLabel}>Số tiền gửi:</Text>
+                  <Text style={styles.modalLabel}>
+                    {t('savings.confirm_deposit_amount')}:
+                  </Text>
                   <Text style={[styles.modalValue, styles.modalAmountValue]}>
                     {formatCurrency(parseCurrency(initialAmount))} ₫
                   </Text>
                 </View>
                 <View style={styles.modalDivider} />
                 <View style={styles.modalRow}>
-                  <Text style={styles.modalLabelBold}>Lãi dự kiến:</Text>
+                  <Text style={styles.modalLabelBold}>
+                    {t('savings.confirm_estimated_interest')}:
+                  </Text>
                   <Text style={[styles.modalValue, styles.modalInterestValue]}>
                     {formatCurrency(
                       Math.round(
@@ -428,14 +468,16 @@ export default function CreateSavingsAccountScreen() {
                 onPress={() => setShowConfirmModal(false)}
                 activeOpacity={0.7}
               >
-                <Text style={styles.modalCancelText}>Hủy</Text>
+                <Text style={styles.modalCancelText}>{t('common.cancel')}</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.modalConfirmButton}
                 onPress={handleConfirmCreate}
                 activeOpacity={0.8}
               >
-                <Text style={styles.modalConfirmText}>Xác nhận</Text>
+                <Text style={styles.modalConfirmText}>
+                  {t('common.confirm')}
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -444,8 +486,8 @@ export default function CreateSavingsAccountScreen() {
 
       <PinInputModal
         visible={showPinModal}
-        title="Nhập mã PIN"
-        message="Vui lòng nhập mã PIN để xác nhận tạo tài khoản tiết kiệm"
+        title={t('savings.enter_pin')}
+        message={t('savings.enter_pin_message')}
         onConfirm={() => {
           setShowPinModal(false);
           performCreateAccount();

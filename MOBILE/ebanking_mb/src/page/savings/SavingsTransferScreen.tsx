@@ -13,6 +13,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp as NavigationRouteProp } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
 import Toast from 'react-native-toast-message';
+import { useTranslation } from 'react-i18next';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { RootStackParamList } from '../../navigation/types';
 import { RootState, AppDispatch } from '../../store';
@@ -48,6 +49,7 @@ export default function SavingsTransferScreen() {
   const [showFullWithdrawalWarning, setShowFullWithdrawalWarning] =
     useState(false);
   const [showEKYCModal, setShowEKYCModal] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     loadAccountDetail();
@@ -223,13 +225,15 @@ export default function SavingsTransferScreen() {
   };
 
   const getTitle = () => {
-    return type === 'TO_SAVINGS' ? 'Nạp vào tiết kiệm' : 'Rút từ tiết kiệm';
+    return type === 'TO_SAVINGS'
+      ? t('savings.deposit_to_savings')
+      : t('savings.withdraw_from_savings');
   };
 
   const getDescription = () => {
     return type === 'TO_SAVINGS'
-      ? 'Chuyển tiền từ tài khoản giao dịch vào tài khoản tiết kiệm'
-      : 'Chuyển tiền từ tài khoản tiết kiệm về tài khoản giao dịch';
+      ? t('savings.transfer_to_savings_description')
+      : t('savings.transfer_from_savings_description');
   };
 
   if (loading) {
@@ -247,7 +251,7 @@ export default function SavingsTransferScreen() {
         </View>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#09a0a5" />
-          <Text style={styles.loadingText}>Đang tải...</Text>
+          <Text style={styles.loadingText}>{t('savings.loading')}</Text>
         </View>
       </View>
     );
@@ -268,7 +272,7 @@ export default function SavingsTransferScreen() {
         </View>
         <View style={styles.errorContainer}>
           <Text style={styles.errorText}>
-            Không tìm thấy thông tin tài khoản
+            {t('savings.error_account_not_found')}
           </Text>
         </View>
       </View>
@@ -312,7 +316,7 @@ export default function SavingsTransferScreen() {
                 size={20}
                 color="#6B7280"
               />
-              <Text style={styles.flowLabel}>Từ tài khoản</Text>
+              <Text style={styles.flowLabel}>{t('savings.from_account')}</Text>
             </View>
             <Text style={styles.flowAccountNumber}>
               {type === 'TO_SAVINGS'
@@ -321,12 +325,12 @@ export default function SavingsTransferScreen() {
             </Text>
             <Text style={styles.flowAccountType}>
               {type === 'TO_SAVINGS'
-                ? 'Tài khoản giao dịch'
-                : 'Tài khoản tiết kiệm'}
+                ? t('savings.payment_account')
+                : t('savings.savings_account')}
             </Text>
             {type === 'FROM_SAVINGS' && (
               <Text style={styles.flowBalance}>
-                Số dư: {formatCurrency(account.balance)}
+                {t('savings.balance')}: {formatCurrency(account.balance)}
               </Text>
             )}
           </View>
@@ -344,7 +348,7 @@ export default function SavingsTransferScreen() {
                 size={20}
                 color="#6B7280"
               />
-              <Text style={styles.flowLabel}>Đến tài khoản</Text>
+              <Text style={styles.flowLabel}>{t('savings.to_account')}</Text>
             </View>
             <Text style={styles.flowAccountNumber}>
               {type === 'TO_SAVINGS'
@@ -353,8 +357,8 @@ export default function SavingsTransferScreen() {
             </Text>
             <Text style={styles.flowAccountType}>
               {type === 'TO_SAVINGS'
-                ? 'Tài khoản tiết kiệm'
-                : 'Tài khoản giao dịch'}
+                ? t('savings.savings_account')
+                : t('savings.payment_account')}
             </Text>
           </View>
         </View>
@@ -363,7 +367,7 @@ export default function SavingsTransferScreen() {
         <View style={styles.card}>
           <View style={styles.cardHeader}>
             <Ionicons name="cash-outline" size={20} color="#6B7280" />
-            <Text style={styles.cardTitle}>Số tiền chuyển</Text>
+            <Text style={styles.cardTitle}>{t('savings.transfer_amount')}</Text>
           </View>
 
           <TextInput
@@ -377,13 +381,13 @@ export default function SavingsTransferScreen() {
 
           {type === 'FROM_SAVINGS' && account && (
             <Text style={styles.availableBalance}>
-              Khả dụng: {formatCurrency(account.balance)}
+              {t('savings.available')}: {formatCurrency(account.balance)}
             </Text>
           )}
 
           {/* Quick Amounts */}
           <View style={styles.quickAmounts}>
-            {[1000000, 5000000, 10000000].map((quickAmount) => (
+            {[1000000, 5000000, 10000000].map(quickAmount => (
               <TouchableOpacity
                 key={quickAmount}
                 style={styles.quickAmountButton}
@@ -402,7 +406,7 @@ export default function SavingsTransferScreen() {
               style={styles.maxButton}
               onPress={() => setAmount(account.balance.toString())}
             >
-              <Text style={styles.maxButtonText}>Tối đa</Text>
+              <Text style={styles.maxButtonText}>{t('savings.max')}</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -419,7 +423,7 @@ export default function SavingsTransferScreen() {
             style={styles.noteInput}
             value={note}
             onChangeText={setNote}
-            placeholder="Thêm ghi chú cho giao dịch..."
+            placeholder={t('savings.add_transfer_note_placeholder')}
             placeholderTextColor="#9CA3AF"
             multiline
             numberOfLines={3}
@@ -429,17 +433,23 @@ export default function SavingsTransferScreen() {
 
         {/* Summary Card */}
         <View style={styles.summaryCard}>
-          <Text style={styles.summaryTitle}>Tóm tắt giao dịch</Text>
+          <Text style={styles.summaryTitle}>
+            {t('savings.transaction_summary')}
+          </Text>
 
           <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Loại giao dịch</Text>
+            <Text style={styles.summaryLabel}>
+              {t('savings.transaction_type')}
+            </Text>
             <Text style={styles.summaryValue}>
-              {type === 'TO_SAVINGS' ? 'Nạp vào tiết kiệm' : 'Rút từ tiết kiệm'}
+              {type === 'TO_SAVINGS'
+                ? t('savings.deposit_to_savings')
+                : t('savings.withdraw_from_savings')}
             </Text>
           </View>
 
           <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Số tiền</Text>
+            <Text style={styles.summaryLabel}>{t('savings.amount')}</Text>
             <Text style={styles.summaryAmount}>
               {amount ? formatCurrency(parseCurrency(amount)) : '0 ₫'}
             </Text>
@@ -466,7 +476,9 @@ export default function SavingsTransferScreen() {
           {transferring ? (
             <ActivityIndicator color="#FFFFFF" />
           ) : (
-            <Text style={styles.transferButtonText}>Xác nhận giao dịch</Text>
+            <Text style={styles.transferButtonText}>
+              {t('savings.confirm_transaction')}
+            </Text>
           )}
         </TouchableOpacity>
       </View>
@@ -530,48 +542,239 @@ export default function SavingsTransferScreen() {
 }
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F9FAFB' },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingTop: 12, paddingBottom: 16, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F3F4F6' },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 16,
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3F4F6',
+  },
   backButton: { padding: 8 },
-  headerTitle: { fontSize: 18, fontWeight: '600', color: '#1F2937', flex: 1, textAlign: 'center' },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1F2937',
+    flex: 1,
+    textAlign: 'center',
+  },
   headerPlaceholder: { width: 40 },
   content: { flex: 1 },
-  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#F9FAFB' },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F9FAFB',
+  },
   loadingText: { marginTop: 16, fontSize: 15, color: '#6B7280' },
-  errorContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#F9FAFB' },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F9FAFB',
+  },
   errorText: { fontSize: 15, color: '#6B7280' },
-  infoBanner: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#F0F9FF', marginHorizontal: 16, marginTop: 16, marginBottom: 12, padding: 14, borderRadius: 12, borderWidth: 1, borderColor: '#DBEAFE', gap: 10 },
+  infoBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F0F9FF',
+    marginHorizontal: 16,
+    marginTop: 16,
+    marginBottom: 12,
+    padding: 14,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#DBEAFE',
+    gap: 10,
+  },
   infoBannerText: { flex: 1, fontSize: 13, color: '#1E40AF', lineHeight: 18 },
   transferFlow: { marginHorizontal: 16, marginBottom: 12 },
-  flowCard: { backgroundColor: '#FFFFFF', padding: 16, borderRadius: 12, borderWidth: 1, borderColor: '#E5E7EB' },
-  flowHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 12, gap: 8 },
+  flowCard: {
+    backgroundColor: '#FFFFFF',
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+  },
+  flowHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+    gap: 8,
+  },
   flowLabel: { fontSize: 13, color: '#6B7280', fontWeight: '500' },
-  flowAccountNumber: { fontSize: 16, fontWeight: '600', color: '#111827', fontFamily: 'monospace', marginBottom: 6 },
+  flowAccountNumber: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#111827',
+    fontFamily: 'monospace',
+    marginBottom: 6,
+  },
   flowAccountType: { fontSize: 13, color: '#6B7280' },
-  flowBalance: { fontSize: 13, color: '#10B981', fontWeight: '600', marginTop: 6 },
+  flowBalance: {
+    fontSize: 13,
+    color: '#10B981',
+    fontWeight: '600',
+    marginTop: 6,
+  },
   arrowContainer: { alignItems: 'center', paddingVertical: 12 },
-  card: { backgroundColor: '#FFFFFF', marginHorizontal: 16, marginBottom: 12, borderRadius: 16, padding: 16, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.03, shadowRadius: 3, elevation: 1, borderWidth: 1, borderColor: '#F3F4F6' },
+  card: {
+    backgroundColor: '#FFFFFF',
+    marginHorizontal: 16,
+    marginBottom: 12,
+    borderRadius: 16,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.03,
+    shadowRadius: 3,
+    elevation: 1,
+    borderWidth: 1,
+    borderColor: '#F3F4F6',
+  },
   cardHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 16 },
-  cardTitle: { fontSize: 15, fontWeight: '600', color: '#374151', marginLeft: 8, flex: 1 },
-  optionalBadge: { fontSize: 11, color: '#9CA3AF', backgroundColor: '#F3F4F6', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
-  amountInput: { fontSize: 32, fontWeight: '700', color: '#111827', textAlign: 'center', paddingVertical: 16, borderBottomWidth: 2, borderBottomColor: '#09a0a5', marginBottom: 12 },
-  availableBalance: { fontSize: 13, color: '#6B7280', textAlign: 'center', marginBottom: 16 },
+  cardTitle: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#374151',
+    marginLeft: 8,
+    flex: 1,
+  },
+  optionalBadge: {
+    fontSize: 11,
+    color: '#9CA3AF',
+    backgroundColor: '#F3F4F6',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+  },
+  amountInput: {
+    fontSize: 32,
+    fontWeight: '700',
+    color: '#111827',
+    textAlign: 'center',
+    paddingVertical: 16,
+    borderBottomWidth: 2,
+    borderBottomColor: '#09a0a5',
+    marginBottom: 12,
+  },
+  availableBalance: {
+    fontSize: 13,
+    color: '#6B7280',
+    textAlign: 'center',
+    marginBottom: 16,
+  },
   quickAmounts: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  quickAmountButton: { flex: 1, minWidth: '22%', backgroundColor: '#F9FAFB', paddingVertical: 10, paddingHorizontal: 8, borderRadius: 10, borderWidth: 1, borderColor: '#E5E7EB', alignItems: 'center' },
+  quickAmountButton: {
+    flex: 1,
+    minWidth: '22%',
+    backgroundColor: '#F9FAFB',
+    paddingVertical: 10,
+    paddingHorizontal: 8,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    alignItems: 'center',
+  },
   quickAmountText: { fontSize: 12, fontWeight: '500', color: '#374151' },
-  maxButton: { backgroundColor: '#FEF3C7', borderColor: '#FCD34D', borderWidth: 1, borderRadius: 10, paddingVertical: 10, alignItems: 'center', marginTop: 8, width: '100%' },
+  maxButton: {
+    backgroundColor: '#FEF3C7',
+    borderColor: '#FCD34D',
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingVertical: 10,
+    alignItems: 'center',
+    marginTop: 8,
+    width: '100%',
+  },
   maxButtonText: { color: '#92400E', fontWeight: '600', fontSize: 14 },
-  noteInput: { fontSize: 14, color: '#111827', backgroundColor: '#F9FAFB', borderRadius: 10, padding: 12, minHeight: 80, textAlignVertical: 'top', borderWidth: 1, borderColor: '#E5E7EB' },
-  summaryCard: { backgroundColor: '#FFFFFF', marginHorizontal: 16, marginBottom: 12, borderRadius: 16, padding: 16, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.03, shadowRadius: 3, elevation: 1, borderWidth: 1, borderColor: '#F3F4F6' },
-  summaryTitle: { fontSize: 15, fontWeight: '600', color: '#374151', marginBottom: 16 },
-  summaryRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
+  noteInput: {
+    fontSize: 14,
+    color: '#111827',
+    backgroundColor: '#F9FAFB',
+    borderRadius: 10,
+    padding: 12,
+    minHeight: 80,
+    textAlignVertical: 'top',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+  },
+  summaryCard: {
+    backgroundColor: '#FFFFFF',
+    marginHorizontal: 16,
+    marginBottom: 12,
+    borderRadius: 16,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.03,
+    shadowRadius: 3,
+    elevation: 1,
+    borderWidth: 1,
+    borderColor: '#F3F4F6',
+  },
+  summaryTitle: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#374151',
+    marginBottom: 16,
+  },
+  summaryRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
   summaryLabel: { fontSize: 14, color: '#6B7280' },
-  summaryValue: { fontSize: 14, fontWeight: '500', color: '#111827', textAlign: 'right' },
-  summaryAmount: { fontSize: 18, fontWeight: '700', color: '#09a0a5', textAlign: 'right' },
+  summaryValue: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#111827',
+    textAlign: 'right',
+  },
+  summaryAmount: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#09a0a5',
+    textAlign: 'right',
+  },
   summaryDivider: { height: 1, backgroundColor: '#F3F4F6', marginVertical: 4 },
-  buttonContainer: { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: '#FFFFFF', paddingHorizontal: 16, paddingTop: 12, paddingBottom: 16, borderTopWidth: 1, borderTopColor: '#F3F4F6', shadowColor: '#000', shadowOffset: { width: 0, height: -2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 8 },
-  transferButton: { backgroundColor: '#09a0a5', paddingVertical: 16, borderRadius: 12, alignItems: 'center', justifyContent: 'center', shadowColor: '#09a0a5', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 4 },
-  disabledButton: { backgroundColor: '#D1D5DB', shadowOpacity: 0, elevation: 0 },
+  buttonContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#F3F4F6',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  transferButton: {
+    backgroundColor: '#09a0a5',
+    paddingVertical: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#09a0a5',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  disabledButton: {
+    backgroundColor: '#D1D5DB',
+    shadowOpacity: 0,
+    elevation: 0,
+  },
   transferButtonText: { color: '#FFFFFF', fontSize: 16, fontWeight: '600' },
 });
-
-

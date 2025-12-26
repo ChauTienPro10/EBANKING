@@ -12,6 +12,7 @@ import {
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { RootStackParamList } from '../../navigation/types';
 import { RootState } from '../../store';
 import { SavingsService } from '../../services/SavingsService';
@@ -23,6 +24,7 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 export default function SavingsRequestListScreen() {
   const navigation = useNavigation<NavigationProp>();
+  const { t } = useTranslation();
   const { userInfoData: userInfo } = useSelector(
     (state: RootState) => state.app,
   );
@@ -44,7 +46,7 @@ export default function SavingsRequestListScreen() {
       setRequests(requestsData);
     } catch (error) {
       console.error('Error loading requests:', error);
-      Alert.alert('Lỗi', 'Không thể tải danh sách yêu cầu');
+      Alert.alert(t('savings.error_title'), t('savings.error_load_requests'));
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -96,7 +98,7 @@ export default function SavingsRequestListScreen() {
 
   return (
     <View style={styles.container}>
-      <Header title="Danh sách yêu cầu" showBackButton />
+      <Header title={t('savings.request_list_title')} showBackButton />
 
       {/* Bộ lọc */}
       <View style={styles.filterContainer}>
@@ -106,7 +108,7 @@ export default function SavingsRequestListScreen() {
             onPress={() => setFilter('ALL')}
           >
             <Text style={getFilterButtonTextStyle('ALL')}>
-              Tất cả ({getStatusCount('ALL')})
+              {t('savings.filter_all')} ({getStatusCount('ALL')})
             </Text>
           </TouchableOpacity>
 
@@ -115,7 +117,7 @@ export default function SavingsRequestListScreen() {
             onPress={() => setFilter('PENDING')}
           >
             <Text style={getFilterButtonTextStyle('PENDING')}>
-              Chờ duyệt ({getStatusCount('PENDING')})
+              {t('savings.filter_pending')} ({getStatusCount('PENDING')})
             </Text>
           </TouchableOpacity>
 
@@ -124,7 +126,7 @@ export default function SavingsRequestListScreen() {
             onPress={() => setFilter('APPROVED')}
           >
             <Text style={getFilterButtonTextStyle('APPROVED')}>
-              Đã duyệt ({getStatusCount('APPROVED')})
+              {t('savings.filter_approved')} ({getStatusCount('APPROVED')})
             </Text>
           </TouchableOpacity>
 
@@ -133,7 +135,7 @@ export default function SavingsRequestListScreen() {
             onPress={() => setFilter('REJECTED')}
           >
             <Text style={getFilterButtonTextStyle('REJECTED')}>
-              Bị từ chối ({getStatusCount('REJECTED')})
+              {t('savings.filter_rejected')} ({getStatusCount('REJECTED')})
             </Text>
           </TouchableOpacity>
         </ScrollView>
@@ -149,20 +151,20 @@ export default function SavingsRequestListScreen() {
         {loading ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color="#09a0a5" />
-            <Text style={styles.loadingText}>Đang tải...</Text>
+            <Text style={styles.loadingText}>{t('savings.loading')}</Text>
           </View>
         ) : filteredRequests.length === 0 ? (
           <View style={styles.emptyContainer}>
             <Text style={styles.emptyIcon}>📋</Text>
             <Text style={styles.emptyText}>
               {filter === 'ALL'
-                ? 'Bạn chưa có yêu cầu nào'
-                : `Không có yêu cầu ${
+                ? t('savings.no_requests')
+                : `${t('savings.no_requests_filter')} ${
                     filter === 'PENDING'
-                      ? 'chờ duyệt'
+                      ? t('savings.no_pending_requests')
                       : filter === 'APPROVED'
-                      ? 'đã duyệt'
-                      : 'bị từ chối'
+                      ? t('savings.no_approved_requests')
+                      : t('savings.no_rejected_requests')
                   }`}
             </Text>
             <Text style={styles.emptySubText}>
@@ -177,19 +179,25 @@ export default function SavingsRequestListScreen() {
                 <Text style={styles.statNumber}>
                   {getStatusCount('PENDING')}
                 </Text>
-                <Text style={styles.statLabel}>Chờ duyệt</Text>
+                <Text style={styles.statLabel}>
+                  {t('savings.filter_pending')}
+                </Text>
               </View>
               <View style={styles.statItem}>
                 <Text style={styles.statNumber}>
                   {getStatusCount('APPROVED')}
                 </Text>
-                <Text style={styles.statLabel}>Đã duyệt</Text>
+                <Text style={styles.statLabel}>
+                  {t('savings.filter_approved')}
+                </Text>
               </View>
               <View style={styles.statItem}>
                 <Text style={styles.statNumber}>
                   {getStatusCount('REJECTED')}
                 </Text>
-                <Text style={styles.statLabel}>Bị từ chối</Text>
+                <Text style={styles.statLabel}>
+                  {t('savings.filter_rejected')}
+                </Text>
               </View>
             </View>
 
@@ -207,9 +215,7 @@ export default function SavingsRequestListScreen() {
 
       {/* Ghi chú */}
       <View style={styles.noteContainer}>
-        <Text style={styles.noteText}>
-          💡 Yêu cầu sẽ được xử lý trong vòng 1-2 ngày làm việc
-        </Text>
+        <Text style={styles.noteText}>{t('savings.processing_time')}</Text>
       </View>
     </View>
   );

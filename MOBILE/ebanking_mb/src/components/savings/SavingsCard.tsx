@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { useTranslation } from 'react-i18next';
 import { SavingsAccount } from '../../types/SavingsTypes';
 import Colors from '../../constants/color';
 
@@ -10,6 +11,7 @@ interface SavingsCardProps {
 }
 
 export default function SavingsCard({ account, onPress }: SavingsCardProps) {
+  const { t } = useTranslation();
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('vi-VN').format(amount);
   };
@@ -32,27 +34,50 @@ export default function SavingsCard({ account, onPress }: SavingsCardProps) {
     });
   };
 
+  const getTermName = (months: number) => {
+    const key = `term_name_${months}` as const;
+    return t(`savings.${key}`, {
+      defaultValue: `${t('savings.savings_term')} ${months} ${t(
+        'savings.months',
+      )}`,
+    });
+  };
+
+  const getDisplayName = (
+    accountName: string | null | undefined,
+    termMonths: number,
+  ) => {
+    if (
+      !accountName ||
+      accountName.includes('Tài khoản tiết kiệm') ||
+      accountName.includes('Tiết kiệm')
+    ) {
+      return getTermName(termMonths);
+    }
+    return accountName;
+  };
+
   const getStatusConfig = (status: string) => {
     switch (status) {
       case 'ACTIVE':
         return {
           color: '#10B981',
           bgColor: '#ECFDF5',
-          text: 'Đang hoạt động',
+          text: t('savings.status_active'),
           icon: 'checkmark-circle' as const,
         };
       case 'MATURED':
         return {
           color: '#F59E0B',
           bgColor: '#FEF3C7',
-          text: 'Đã đến hạn',
+          text: t('savings.status_matured'),
           icon: 'time' as const,
         };
       case 'CLOSED':
         return {
           color: '#6B7280',
           bgColor: '#F3F4F6',
-          text: 'Đã đóng',
+          text: t('savings.status_closed'),
           icon: 'close-circle' as const,
         };
       default:
@@ -88,7 +113,7 @@ export default function SavingsCard({ account, onPress }: SavingsCardProps) {
             </View>
             <View style={styles.headerTextContainer}>
               <Text style={styles.accountName} numberOfLines={1}>
-                {account.accountName || `Tiết kiệm ${account.termMonths} tháng`}
+                {getDisplayName(account.accountName, account.termMonths)}
               </Text>
               <Text style={styles.accountNumber}>{account.accountNumber}</Text>
             </View>
@@ -114,16 +139,20 @@ export default function SavingsCard({ account, onPress }: SavingsCardProps) {
         <View style={styles.balanceSection}>
           {isClosedAccount ? (
             <>
-              <Text style={styles.balanceLabel}>Thời gian tất toán</Text>
+              <Text style={styles.balanceLabel}>
+                {t('savings.closure_time')}
+              </Text>
               <Text style={styles.closureTime}>
                 {account.updatedAt
                   ? formatDateTime(account.updatedAt)
-                  : 'Không xác định'}
+                  : t('savings.unknown')}
               </Text>
             </>
           ) : (
             <>
-              <Text style={styles.balanceLabel}>Số dư hiện tại</Text>
+              <Text style={styles.balanceLabel}>
+                {t('savings.current_balance')}
+              </Text>
               <Text style={styles.balance}>
                 {formatCurrency(account.balance)}{' '}
                 <Text style={styles.currency}>₫</Text>
@@ -138,9 +167,9 @@ export default function SavingsCard({ account, onPress }: SavingsCardProps) {
             <View style={styles.detailIconWrapper}>
               <Ionicons name="trending-up" size={14} color={Colors.main_bule} />
             </View>
-            <Text style={styles.detailLabel}>Lãi suất</Text>
+            <Text style={styles.detailLabel}>{t('savings.interest_rate')}</Text>
             <Text style={styles.detailValue}>
-              {(account.interestRate * 100).toFixed(2)}%/năm
+              {(account.interestRate * 100).toFixed(2)}%{t('savings.per_year')}
             </Text>
           </View>
 
@@ -148,8 +177,10 @@ export default function SavingsCard({ account, onPress }: SavingsCardProps) {
             <View style={styles.detailIconWrapper}>
               <Ionicons name="calendar" size={14} color={Colors.main_bule} />
             </View>
-            <Text style={styles.detailLabel}>Kỳ hạn</Text>
-            <Text style={styles.detailValue}>{account.termMonths} tháng</Text>
+            <Text style={styles.detailLabel}>{t('savings.term')}</Text>
+            <Text style={styles.detailValue}>
+              {account.termMonths} {t('savings.months')}
+            </Text>
           </View>
 
           {account.totalInterestEarned !== undefined && (
@@ -157,7 +188,9 @@ export default function SavingsCard({ account, onPress }: SavingsCardProps) {
               <View style={styles.detailIconWrapper}>
                 <Ionicons name="cash" size={14} color={Colors.main_bule} />
               </View>
-              <Text style={styles.detailLabel}>Lãi đã nhận</Text>
+              <Text style={styles.detailLabel}>
+                {t('savings.total_interest_earned')}
+              </Text>
               <Text style={styles.detailValue}>
                 {formatCurrency(account.totalInterestEarned)} ₫
               </Text>
@@ -170,13 +203,13 @@ export default function SavingsCard({ account, onPress }: SavingsCardProps) {
           <View style={styles.dateRow}>
             <Ionicons name="calendar-outline" size={12} color={Colors.grey3} />
             <Text style={styles.dateText}>
-              Ngày mở: {formatDate(account.openDate)}
+              {t('savings.open_date')}: {formatDate(account.openDate)}
             </Text>
           </View>
           <View style={styles.dateRow}>
             <Ionicons name="calendar-outline" size={12} color={Colors.grey3} />
             <Text style={styles.dateText}>
-              Đến hạn: {formatDate(account.maturityDate)}
+              {t('savings.maturity_date')}: {formatDate(account.maturityDate)}
             </Text>
           </View>
         </View>

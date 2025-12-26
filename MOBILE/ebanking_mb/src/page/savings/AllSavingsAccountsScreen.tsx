@@ -11,6 +11,7 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSelector } from 'react-redux';
 import Toast from 'react-native-toast-message';
+import { useTranslation } from 'react-i18next';
 import { RootStackParamList } from '../../navigation/types';
 import { RootState } from '../../store';
 import { SavingsService } from '../../services/SavingsService';
@@ -23,6 +24,7 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 export default function AllSavingsAccountsScreen() {
   const navigation = useNavigation<NavigationProp>();
+  const { t } = useTranslation();
   const { userInfoData: userInfo } = useSelector(
     (state: RootState) => state.app,
   );
@@ -43,8 +45,8 @@ export default function AllSavingsAccountsScreen() {
       console.error('Error loading savings accounts:', error);
       Toast.show({
         type: 'error',
-        text1: 'Lỗi',
-        text2: 'Không thể tải danh sách tài khoản tiết kiệm',
+        text1: t('savings.error_title'),
+        text2: t('savings.error_load_accounts'),
       });
     } finally {
       setLoading(false);
@@ -82,7 +84,7 @@ export default function AllSavingsAccountsScreen() {
 
   return (
     <View style={styles.container}>
-      <Header title="Tất cả tài khoản tiết kiệm" showBackButton />
+      <Header title={t('savings.all_accounts_title')} showBackButton />
 
       <ScrollView
         style={styles.content}
@@ -92,18 +94,18 @@ export default function AllSavingsAccountsScreen() {
       >
         {/* Tổng quan */}
         <View style={styles.summaryContainer}>
-          <Text style={styles.summaryTitle}>Tổng số dư tiết kiệm</Text>
+          <Text style={styles.summaryTitle}>{t('savings.total_balance')}</Text>
           <Text style={styles.totalBalance}>
             {formatCurrency(calculateTotalBalance())}
           </Text>
           <Text style={styles.accountCount}>
-            {savingsAccounts.filter(acc => acc.status !== 'CLOSED').length} tài
-            khoản đang hoạt động
+            {savingsAccounts.filter(acc => acc.status !== 'CLOSED').length}{' '}
+            {t('savings.active_accounts')}
             {savingsAccounts.filter(acc => acc.status === 'CLOSED').length >
               0 &&
               ` • ${
                 savingsAccounts.filter(acc => acc.status === 'CLOSED').length
-              } đã đóng`}
+              } ${t('savings.closed_accounts')}`}
           </Text>
         </View>
 
@@ -111,15 +113,13 @@ export default function AllSavingsAccountsScreen() {
         <View style={styles.accountsContainer}>
           {loading ? (
             <View style={styles.loadingContainer}>
-              <Text style={styles.loadingText}>Đang tải...</Text>
+              <Text style={styles.loadingText}>{t('savings.loading')}</Text>
             </View>
           ) : savingsAccounts.length === 0 ? (
             <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>
-                Bạn chưa có tài khoản tiết kiệm nào
-              </Text>
+              <Text style={styles.emptyText}>{t('savings.no_accounts')}</Text>
               <Text style={styles.emptySubText}>
-                Hãy mở tài khoản đầu tiên để bắt đầu tiết kiệm
+                {t('savings.no_accounts_subtitle')}
               </Text>
             </View>
           ) : (
@@ -141,7 +141,7 @@ export default function AllSavingsAccountsScreen() {
                 <>
                   <View style={styles.closedAccountsHeader}>
                     <Text style={styles.closedAccountsTitle}>
-                      Tài khoản đã đóng (
+                      {t('savings.closed_accounts_section')} (
                       {
                         savingsAccounts.filter(acc => acc.status === 'CLOSED')
                           .length
