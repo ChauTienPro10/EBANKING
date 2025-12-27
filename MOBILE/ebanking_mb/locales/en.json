@@ -78,6 +78,7 @@
     "investments": "Investments",
     "insurance": "Insurance",
     "suspicious_transactions": "Alerts",
+    "spending_management": "Spending Management",
     "chat": "Chat"
   },
   "bottom_navigation": {
@@ -629,6 +630,8 @@
     "transfer_type": "Transfer Type",
     "internal_transfer": "Internal Transfer",
     "external_transfer": "External Transfer",
+    "category_label": "Spending Category",
+    "select_category": "Select Category",
     "select_bank": "Select Bank",
     "select_bank_placeholder": "Select beneficiary bank",
     "search_bank_placeholder": "Search bank...",

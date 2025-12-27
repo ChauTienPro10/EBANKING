@@ -34,15 +34,43 @@ const CategorySelectionModal: React.FC<CategorySelectionModalProps> = ({
 
   // Map icon names to Ionicons
   const getIconName = (icon: string): string => {
+    // If icon already ends with '-outline', it's already an Ionicon name
+    if (icon && icon.includes('-outline')) {
+      return icon;
+    }
+
+    // Otherwise map short names to Ionicon names
     const iconMap: Record<string, string> = {
-      shop: 'cart-outline',
-      food: 'restaurant-outline',
+      // Shopping & Food
+      shop: 'bag-outline',
+      shopping: 'bag-outline',
       cart: 'cart-outline',
-      play: 'game-controller-outline',
-      book: 'book-outline',
-      medkit: 'medkit-outline',
+      bag: 'bag-outline',
+      food: 'restaurant-outline',
+      restaurant: 'restaurant-outline',
+      cafe: 'cafe-outline',
+      // Transportation
       car: 'car-outline',
+      bus: 'bus-outline',
+      bicycle: 'bicycle-outline',
+      // Bills & Documents
       document: 'document-text-outline',
+      receipt: 'receipt-outline',
+      bill: 'receipt-outline',
+      invoice: 'receipt-outline',
+      // Entertainment
+      play: 'game-controller-outline',
+      game: 'game-controller-outline',
+      movie: 'film-outline',
+      music: 'musical-notes-outline',
+      // Education & Health
+      book: 'book-outline',
+      education: 'school-outline',
+      medkit: 'medkit-outline',
+      health: 'fitness-outline',
+      // Other
+      more: 'ellipsis-horizontal-outline',
+      other: 'ellipsis-horizontal-outline',
       'ellipsis-horizontal': 'ellipsis-horizontal-outline',
     };
     return iconMap[icon] || 'pricetag-outline';

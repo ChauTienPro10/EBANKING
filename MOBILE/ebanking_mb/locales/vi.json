@@ -83,6 +83,7 @@
     "investments": "Đầu tư",
     "insurance": "Bảo hiểm",
     "suspicious_transactions": "Cảnh báo",
+    "spending_management": "Quản lý chi tiêu",
     "chat": "Trò chuyện"
   },
   "bottom_navigation": {
@@ -634,6 +635,8 @@
     "transfer_type": "Loại chuyển tiền",
     "internal_transfer": "Chuyển nội bộ",
     "external_transfer": "Chuyển liên ngân hàng",
+    "category_label": "Danh mục chi tiêu",
+    "select_category": "Chọn danh mục",
     "select_bank": "Chọn ngân hàng",
     "select_bank_placeholder": "Chọn ngân hàng thụ hưởng",
     "search_bank_placeholder": "Tìm kiếm ngân hàng...",
