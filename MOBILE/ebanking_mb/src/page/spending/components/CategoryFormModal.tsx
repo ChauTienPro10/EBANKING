@@ -151,7 +151,11 @@ const CategoryFormModal: React.FC<CategoryFormModalProps> = ({
             <View style={styles.placeholder} />
           </View>
 
-          <ScrollView style={styles.form} showsVerticalScrollIndicator={false}>
+          <ScrollView
+            style={styles.form}
+            contentContainerStyle={styles.formContent}
+            showsVerticalScrollIndicator={false}
+          >
             {/* Name Input */}
             <View style={styles.formGroup}>
               <Text style={styles.label}>
@@ -296,7 +300,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
-    maxHeight: '90%',
+    maxHeight: '80%',
   },
   header: {
     flexDirection: 'row',
@@ -320,8 +324,11 @@ const styles = StyleSheet.create({
   form: {
     padding: 20,
   },
+  formContent: {
+    paddingBottom: 30,
+  },
   formGroup: {
-    marginBottom: 24,
+    marginBottom: 20,
   },
   label: {
     fontSize: 14,
