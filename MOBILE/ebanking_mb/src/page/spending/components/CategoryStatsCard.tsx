@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from '../../../constants/color';
 import { CategoryStatistics } from '../../../types/SpendingCategory.types';
 import { translateDynamicText } from '../../../utils/translationHelpers';
@@ -26,7 +27,11 @@ const CategoryStatsCard: React.FC<CategoryStatsCardProps> = ({
     >
       <View style={styles.header}>
         <View style={styles.iconContainer}>
-          <Text style={styles.icon}>{category.categoryIcon}</Text>
+          <Ionicons
+            name={category.categoryIcon as any}
+            size={24}
+            color={category.categoryColor}
+          />
         </View>
         <View style={styles.info}>
           <Text style={styles.name}>

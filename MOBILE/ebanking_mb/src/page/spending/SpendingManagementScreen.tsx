@@ -13,7 +13,7 @@ import { useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from '../../constants/color';
 import { translateDynamicText } from '../../utils/translationHelpers';
-import {SpendingCategoryService} from '../../services/SpendingCategoryService';
+import { SpendingCategoryService } from '../../services/SpendingCategoryService';
 import {
   CategoryStatistics,
   PeriodType,
@@ -139,9 +139,11 @@ const SpendingManagementScreen: React.FC = () => {
 
               {topCategory && (
                 <View style={styles.summaryCard}>
-                  <Text style={styles.categoryIcon}>
-                    {topCategory.categoryIcon}
-                  </Text>
+                  <Ionicons
+                    name={topCategory.categoryIcon as any}
+                    size={32}
+                    color={topCategory.categoryColor}
+                  />
                   <Text style={styles.summaryLabel}>
                     {translateDynamicText('Danh mục chi nhiều nhất')}
                   </Text>

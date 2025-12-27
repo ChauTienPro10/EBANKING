@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import Svg, { G, Circle, Text as SvgText } from 'react-native-svg';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from '../../../constants/color';
 import { CategoryStatistics } from '../../../types/SpendingCategory.types';
 import { translateDynamicText } from '../../../utils/translationHelpers';
@@ -124,7 +125,12 @@ const CategoryPieChart: React.FC<CategoryPieChartProps> = ({ data }) => {
                 { backgroundColor: item.categoryColor },
               ]}
             />
-            <Text style={styles.legendIcon}>{item.categoryIcon}</Text>
+            <Ionicons
+              name={item.categoryIcon as any}
+              size={16}
+              color={item.categoryColor}
+              style={{ marginRight: 8 }}
+            />
             <Text style={styles.legendText} numberOfLines={1}>
               {translateDynamicText(item.categoryName)}
             </Text>
