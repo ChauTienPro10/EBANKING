@@ -1,8 +1,10 @@
 package com.ebanking.transactionService.service;
 
 import com.ebanking.transactionService.dto.*;
+import com.ebanking.transactionService.entity.Account;
 import com.ebanking.transactionService.entity.SpendingCategory;
 import com.ebanking.transactionService.entity.Transaction;
+import com.ebanking.transactionService.repository.AccountRepository;
 import com.ebanking.transactionService.repository.SpendingCategoryRepository;
 import com.ebanking.transactionService.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,7 @@ public class SpendingCategoryService {
 
     private final SpendingCategoryRepository categoryRepository;
     private final TransactionRepository transactionRepository;
+    private final AccountRepository accountRepository;
 
     /**
      * Get all active categories for a user
@@ -219,7 +222,7 @@ public class SpendingCategoryService {
             // Get all transactions in the period for this user (outgoing only)
             List<Transaction> transactions = transactionRepository
                     .findBySenderAccountNumberAndTransactionAtBetween(
-                            getUserAccountNumber(username), 
+                            getUserAccountNumber(userId), 
                             startDate, 
                             endDate
                     );
@@ -333,10 +336,17 @@ public class SpendingCategoryService {
         };
     }
 
-    private String getUserAccountNumber(String username) {
-        // This should be implemented based on your user service
-        // For now, returning username as placeholder
-        // TODO: Implement proper account number retrieval
-        return username;
+    private String getUserAccountNumber(Long userId) {
+        try {
+            Account account = accountRepository.findByUserId(userId);
+            if (account != null) {
+                return account.getAccountNumber();
+            }
+            log.warn("No account found for userId: {}", userId);
+            return null;
+        } catch (Exception e) {
+            log.error("Error getting account number for userId: {}", userId, e);
+            return null;
+        }
     }
 }
