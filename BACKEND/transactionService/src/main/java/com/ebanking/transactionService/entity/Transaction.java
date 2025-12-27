@@ -45,6 +45,10 @@ public class Transaction {
     @Column(name = "purpose_code", length = 20)
     private String purposeCode;
 
+    @Column(name = "category_id", length = 50)
+    private String categoryId;
+
+
     private String failureReason;
 
     private LocalDateTime transactionAt;

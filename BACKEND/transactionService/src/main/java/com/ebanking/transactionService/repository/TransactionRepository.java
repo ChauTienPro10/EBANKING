@@ -179,4 +179,17 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
                         @Param("minTransactions") int minTransactions,
                         @Param("timeWindowMinutes") int timeWindowMinutes,
                         Pageable pageable);
+
+        /**
+         * Find transactions by sender account number and date range
+         * Used for category statistics calculation
+         */
+        @Query("SELECT t FROM Transaction t WHERE " +
+                        "t.senderAccountNumber = :senderAccountNumber AND " +
+                        "t.transactionAt BETWEEN :fromDate AND :toDate " +
+                        "ORDER BY t.transactionAt DESC")
+        java.util.List<Transaction> findBySenderAccountNumberAndTransactionAtBetween(
+                        @Param("senderAccountNumber") String senderAccountNumber,
+                        @Param("fromDate") LocalDateTime fromDate,
+                        @Param("toDate") LocalDateTime toDate);
 }
