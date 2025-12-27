@@ -56,7 +56,7 @@ docker network create ebanking-network
 :: docker install
 echo.
 echo === Starting Docker Compose in ./DB ===
-cd /d "%~dp0DB"
+cd /d "%~dp0..\DB"
 IF EXIST docker-compose.yml (
     docker-compose up -d
     echo Docker mysql containers started.
@@ -69,7 +69,7 @@ IF EXIST docker-compose.yml (
 :: i jenkins
 echo.
 echo === Start Docker compose in ./JENSKINS ===
-cd /d "%~dp0JENSKINS"
+cd /d "%~dp0..\JENSKINS"
 IF EXIST docker-compose.yml (
     docker-compose up -d
     echo Docker jenkins container started.
@@ -97,7 +97,7 @@ echo === Done ===
 :: i redis
 echo.
 echo === Starting Docker Compose in ./REDIS ===
-cd /d "%~dp0REDiS"
+cd /d "%~dp0..\REDiS"
 IF EXIST docker-compose.yml (
     docker-compose up -d
     echo Docker redis containers started.
@@ -110,7 +110,7 @@ IF EXIST docker-compose.yml (
 :: i kafka
 echo.
 echo === Starting Docker Compose in ./KAFKA ===
-cd /d "%~dp0KAFKA"
+cd /d "%~dp0..\KAFKA"
 IF EXIST docker-compose.yml (
     docker-compose up -d
     echo Docker kafka containers started.
@@ -123,7 +123,7 @@ IF EXIST docker-compose.yml (
 @REM :: i NGINX-BE
 @REM echo.
 @REM echo === Starting Docker Compose in ./NGINX-BE ===
-@REM cd /d "%~dp0NGINX-BE"
+@REM cd /d "%~dp0..\NGINX-BE"
 @REM IF EXIST docker-compose.yml (
 @REM     docker-compose up -d
 @REM     echo Docker kafka containers started.
@@ -136,7 +136,7 @@ IF EXIST docker-compose.yml (
 @REM :: Đi vào thư mục dự án web và cài npm
 @REM echo.
 @REM echo === Starting install web package ===
-@REM cd /d "%~dp0FRONTEND\ebanking-fe"
+@REM cd /d "%~dp0..\FRONTEND\ebanking-fe"
 
 @REM IF EXIST package.json (
 @REM     echo Running npm install...
@@ -158,7 +158,7 @@ IF EXIST docker-compose.yml (
 @REM :: Đi vào thư mục dự án mobile và cài npm
 @REM echo.
 @REM echo === Starting install mobile package ===
-@REM cd /d "%~dp0MOBILE\ebanking-mb"
+@REM cd /d "%~dp0..\MOBILE\ebanking-mb"
 @REM IF EXIST package.json (
 @REM     echo Running npm install...
 @REM     call npm install

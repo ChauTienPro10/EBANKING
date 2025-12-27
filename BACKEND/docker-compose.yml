@@ -1,0 +1,359 @@
+version: '3.8'
+
+services:
+  # Infrastructure Services
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.0
+    hostname: zookeeper
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - ebanking-network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.4.0
+    hostname: kafka
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+      - "9101:9101"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_JMX_PORT: 9101
+      KAFKA_JMX_HOSTNAME: localhost
+    networks:
+      - ebanking-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    networks:
+      - ebanking-network
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: ebanking
+      MYSQL_USER: ebanking
+      MYSQL_PASSWORD: ebankingpassword
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - ebanking-network
+
+  # Service Discovery
+  eureka-server:
+    image: springcloud/eureka
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    environment:
+      - EUREKA_CLIENT_REGISTER_WITH_EUREKA=false
+      - EUREKA_CLIENT_FETCH_REGISTRY=false
+    networks:
+      - ebanking-network
+
+  # API Gateway
+  api-gateway:
+    image: nginx:alpine
+    container_name: api-gateway
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - admin-tool
+      - auth-service
+      - user-service
+      - transaction-service
+      - chat-service
+      - firebase-service
+    networks:
+      - ebanking-network
+
+  # Microservices
+  admin-tool:
+    build:
+      context: ./adminTool
+      dockerfile: Dockerfile
+    container_name: admin-tool
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/ebanking
+      - SPRING_DATASOURCE_USERNAME=ebanking
+      - SPRING_DATASOURCE_PASSWORD=ebankingpassword
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - SPRING_REDIS_HOST=redis
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka
+    depends_on:
+      - mysql
+      - kafka
+      - redis
+      - eureka-server
+    networks:
+      - ebanking-network
+
+  auth-service:
+    build:
+      context: ./authService
+      dockerfile: Dockerfile
+    container_name: auth-service
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/ebanking
+      - SPRING_DATASOURCE_USERNAME=ebanking
+      - SPRING_DATASOURCE_PASSWORD=ebankingpassword
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - SPRING_REDIS_HOST=redis
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka
+    depends_on:
+      - mysql
+      - kafka
+      - redis
+      - eureka-server
+    networks:
+      - ebanking-network
+
+  user-service:
+    build:
+      context: ./userService
+      dockerfile: Dockerfile
+    container_name: user-service
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/ebanking
+      - SPRING_DATASOURCE_USERNAME=ebanking
+      - SPRING_DATASOURCE_PASSWORD=ebankingpassword
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - SPRING_REDIS_HOST=redis
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka
+    depends_on:
+      - mysql
+      - kafka
+      - redis
+      - eureka-server
+    networks:
+      - ebanking-network
+
+  transaction-service:
+    build:
+      context: ./transactionService
+      dockerfile: Dockerfile
+    container_name: transaction-service
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/ebanking
+      - SPRING_DATASOURCE_USERNAME=ebanking
+      - SPRING_DATASOURCE_PASSWORD=ebankingpassword
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - SPRING_REDIS_HOST=redis
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka
+    depends_on:
+      - mysql
+      - kafka
+      - redis
+      - eureka-server
+    networks:
+      - ebanking-network
+
+  chat-service:
+    build:
+      context: ./chatService
+      dockerfile: Dockerfile
+    container_name: chat-service
+    ports:
+      - "8084:8084"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/ebanking
+      - SPRING_DATASOURCE_USERNAME=ebanking
+      - SPRING_DATASOURCE_PASSWORD=ebankingpassword
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - SPRING_REDIS_HOST=redis
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka
+    depends_on:
+      - mysql
+      - kafka
+      - redis
+      - eureka-server
+    networks:
+      - ebanking-network
+
+  chatbot-service:
+    build:
+      context: ./chatbotService
+      dockerfile: Dockerfile
+    container_name: chatbot-service
+    ports:
+      - "8085:8085"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/ebanking
+      - SPRING_DATASOURCE_USERNAME=ebanking
+      - SPRING_DATASOURCE_PASSWORD=ebankingpassword
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - SPRING_REDIS_HOST=redis
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka
+    depends_on:
+      - mysql
+      - kafka
+      - redis
+      - eureka-server
+    networks:
+      - ebanking-network
+
+  ekyc-service:
+    build:
+      context: ./ekycService
+      dockerfile: Dockerfile
+    container_name: ekyc-service
+    ports:
+      - "8086:8086"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/ebanking
+      - SPRING_DATASOURCE_USERNAME=ebanking
+      - SPRING_DATASOURCE_PASSWORD=ebankingpassword
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - SPRING_REDIS_HOST=redis
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka
+    depends_on:
+      - mysql
+      - kafka
+      - redis
+      - eureka-server
+    networks:
+      - ebanking-network
+
+  email-service:
+    build:
+      context: ./emailService
+      dockerfile: Dockerfile
+    container_name: email-service
+    ports:
+      - "8087:8087"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/ebanking
+      - SPRING_DATASOURCE_USERNAME=ebanking
+      - SPRING_DATASOURCE_PASSWORD=ebankingpassword
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - SPRING_REDIS_HOST=redis
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka
+    depends_on:
+      - mysql
+      - kafka
+      - redis
+      - eureka-server
+    networks:
+      - ebanking-network
+
+  firebase-service:
+    build:
+      context: ./firebaseService
+      dockerfile: Dockerfile
+    container_name: firebase-service
+    ports:
+      - "8088:8088"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/ebanking
+      - SPRING_DATASOURCE_USERNAME=ebanking
+      - SPRING_DATASOURCE_PASSWORD=ebankingpassword
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - SPRING_REDIS_HOST=redis
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka
+    depends_on:
+      - mysql
+      - kafka
+      - redis
+      - eureka-server
+    networks:
+      - ebanking-network
+
+  socket-service:
+    build:
+      context: ./socket
+      dockerfile: Dockerfile
+    container_name: socket-service
+    ports:
+      - "8089:8089"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/ebanking
+      - SPRING_DATASOURCE_USERNAME=ebanking
+      - SPRING_DATASOURCE_PASSWORD=ebankingpassword
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - SPRING_REDIS_HOST=redis
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka
+    depends_on:
+      - mysql
+      - kafka
+      - redis
+      - eureka-server
+    networks:
+      - ebanking-network
+
+  # Monitoring
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - ebanking-network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana-data:/var/lib/grafana
+    networks:
+      - ebanking-network
+
+volumes:
+  mysql-data:
+  redis-data:
+  grafana-data:
+
+networks:
+  ebanking-network:
+    driver: bridge

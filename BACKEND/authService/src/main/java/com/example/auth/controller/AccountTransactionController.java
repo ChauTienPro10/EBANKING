@@ -3,6 +3,7 @@ package com.example.auth.controller;
 import com.example.auth.consts.IURL;
 import com.example.auth.dto.request.CheckAccountNumberRequest;
 import com.example.auth.dto.request.NewAccountRequest;
+import com.example.auth.dto.request.TransferRequest;
 import com.example.auth.dto.response.AccountResponse;
 import com.example.auth.dto.response.CheckAccountNumberResponse;
 import com.example.auth.dto.response.NewAccountResponse;
@@ -61,8 +62,15 @@ public class AccountTransactionController {
 
     @PostMapping("/checkAccountNumber")
     public ResponseEntity<CheckAccountNumberResponse> checkAccountNumber(@RequestBody CheckAccountNumberRequest r) {
-        log.info("GET:::/checkAccountNumber/" + r.getAccountNumber());
+        log.info("POST:::/checkAccountNumber/" + r.getAccountNumber());
         return ResponseEntity.status(HttpStatus.OK).body(accountTransactionService.checkAccountExist(r));
+    }
+
+    @PostMapping("/createTransaction")
+    public ResponseEntity<CheckAccountNumberResponse> createTransaction(@RequestBody TransferRequest r) {
+        log.info("POST:::/createTransaction/");
+        CheckAccountNumberRequest checkAccount = CheckAccountNumberRequest.builder().accountNumber(r.getReceiverAccountNumber()).build();
+        return ResponseEntity.status(HttpStatus.OK).body(accountTransactionService.checkAccountExist(checkAccount));
     }
 
     /**
