@@ -50,8 +50,31 @@ public class SpendingCategoryService {
         try {
             log.info("Creating category for user: {}, code: {}", userId, request.getCode());
             
-            // Validate: Check if code already exists for this user
-            if (categoryRepository.existsByUserIdAndCode(userId, request.getCode())) {
+            // Check if an inactive category with this code exists
+            Optional<SpendingCategory> existingInactive = categoryRepository
+                    .findByUserIdAndCode(userId, request.getCode())
+                    .filter(cat -> !cat.getIsActive());
+            
+            if (existingInactive.isPresent()) {
+                // Reactivate existing category instead of creating new one
+                log.info("Found inactive category with code {}, reactivating instead of creating new", request.getCode());
+                SpendingCategory category = existingInactive.get();
+                
+                // Update with new values
+                category.setName(request.getName());
+                category.setIcon(request.getIcon() != null ? request.getIcon() : category.getIcon());
+                category.setColor(request.getColor() != null ? request.getColor() : category.getColor());
+                category.setIsActive(true);
+                category.setIsDefault(false); // User-created categories are not default
+                
+                SpendingCategory reactivated = categoryRepository.save(category);
+                log.info("Category reactivated successfully: {}", reactivated.getId());
+                
+                return convertToDto(reactivated);
+            }
+            
+            // Validate: Check if code already exists for this user (among ACTIVE categories only)
+            if (categoryRepository.existsByUserIdAndCodeAndIsActive(userId, request.getCode(), true)) {
                 throw new IllegalArgumentException("Category code already exists: " + request.getCode());
             }
             

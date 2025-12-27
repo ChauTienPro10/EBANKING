@@ -27,7 +27,7 @@ import { useTransferForm } from './hooks/useTransferForm';
 import { useTransferValidation } from './hooks/useTransferValidation';
 import { useSavedAccounts } from './hooks/useSavedAccounts';
 import { useTransferSubmit } from './hooks/useTransferSubmit';
-import { useTransferPurposes } from './hooks/useTransferPurposes';
+import { useSpendingCategories } from './hooks/useSpendingCategories';
 
 // Import components
 import TransferTypeSelector from './components/TransferTypeSelector';
@@ -35,10 +35,10 @@ import BankSelector from './components/BankSelector';
 import RecipientAccountInput from './components/RecipientAccountInput';
 import AmountInput from './components/AmountInput';
 import ContentInput from './components/ContentInput';
-import PurposeSelector from './components/PurposeSelector';
+import CategorySelector from './components/CategorySelector';
 import BankSelectionModal from './components/BankSelectionModal';
 import SavedAccountsModal from './components/SavedAccountsModal';
-import PurposeSelectionModal from './components/PurposeSelectionModal';
+import CategorySelectionModal from './components/CategorySelectionModal';
 import PinRequiredModal from '../../components/PinRequiredModal';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -78,12 +78,13 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({
     handleAmountChange,
     handleBankSelect,
     handlePurposeSelect,
+    handleCategorySelect,
     setFormErrors,
   } = useTransferForm(route.params);
   const { validateForm } = useTransferValidation();
   const { savedAccounts, saveRecipientAccountToStorage, deleteSavedAccount } =
     useSavedAccounts();
-  const { purposes, loading: purposesLoading } = useTransferPurposes();
+  const { categories, loading: categoriesLoading } = useSpendingCategories();
   const {
     isLoading,
     receiverName,
@@ -98,7 +99,7 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({
   // Local UI state
   const [showBankModal, setShowBankModal] = useState(false);
   const [showSavedAccountsModal, setShowSavedAccountsModal] = useState(false);
-  const [showPurposeModal, setShowPurposeModal] = useState(false);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [saveRecipientAccount, setSaveRecipientAccount] = useState(false);
   const [faceAuthSessionId, setFaceAuthSessionId] = useState<string | null>(
     null,
@@ -181,9 +182,9 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({
           error={errors.content}
         />
 
-        <PurposeSelector
-          selectedPurpose={formData.purpose}
-          onPress={() => setShowPurposeModal(true)}
+        <CategorySelector
+          selectedCategory={formData.category}
+          onPress={() => setShowCategoryModal(true)}
         />
 
         <View style={styles.buttonContainer}>
@@ -214,13 +215,13 @@ const TransferScreen: React.FC<{ route: { params: TransferParams } }> = ({
         onDeleteAccount={deleteSavedAccount}
       />
 
-      <PurposeSelectionModal
-        visible={showPurposeModal}
-        onClose={() => setShowPurposeModal(false)}
-        purposes={purposes}
-        selectedPurpose={formData.purpose}
-        onSelectPurpose={handlePurposeSelect}
-        loading={purposesLoading}
+      <CategorySelectionModal
+        visible={showCategoryModal}
+        onClose={() => setShowCategoryModal(false)}
+        categories={categories}
+        selectedCategory={formData.category}
+        onSelectCategory={handleCategorySelect}
+        loading={categoriesLoading}
       />
 
       <ConfirmTransferModal

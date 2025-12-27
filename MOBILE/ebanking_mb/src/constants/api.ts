@@ -119,4 +119,13 @@ export const API = {
 
   // Transfer Purpose APIs
   GET_TRANSFER_PURPOSES: `${AUTH_SERVICE}/transfer/purposes`,
+
+  // Spending Category APIs (Direct call to TransactionService with URL parameters)
+  TRANSACTION_SERVICE_DIRECT: `http://${HOST_SERVER}:8003`,
+  GET_SPENDING_CATEGORIES: `http://${HOST_SERVER}:8003/api/categories/user/{userId}`,
+  CREATE_SPENDING_CATEGORY: `http://${HOST_SERVER}:8003/api/categories/user/{userId}`,
+  UPDATE_SPENDING_CATEGORY: `http://${HOST_SERVER}:8003/api/categories/user/{userId}/{categoryId}`,
+  DELETE_SPENDING_CATEGORY: `http://${HOST_SERVER}:8003/api/categories/user/{userId}/{categoryId}`,
+  INITIALIZE_CATEGORIES: `http://${HOST_SERVER}:8003/api/categories/user/{userId}/initialize`,
+  GET_CATEGORY_STATISTICS: `http://${HOST_SERVER}:8003/api/categories/user/{userId}/statistics`,
 };

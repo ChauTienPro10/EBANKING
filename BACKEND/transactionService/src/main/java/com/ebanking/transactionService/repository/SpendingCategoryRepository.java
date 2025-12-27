@@ -34,6 +34,11 @@ public interface SpendingCategoryRepository extends JpaRepository<SpendingCatego
     boolean existsByUserIdAndCode(Long userId, String code);
     
     /**
+     * Check if an ACTIVE category code already exists for a user
+     */
+    boolean existsByUserIdAndCodeAndIsActive(Long userId, String code, Boolean isActive);
+    
+    /**
      * Check if a category code exists for a user, excluding a specific category ID
      */
     @Query("SELECT CASE WHEN COUNT(c) > 0 THEN true ELSE false END FROM SpendingCategory c " +

@@ -28,7 +28,7 @@ public class SpendingCategory {
     @Column(nullable = false, length = 20)
     private String code;
 
-    @Column(length = 10)
+    @Column(length = 50)
     private String icon;
 
     @Column(length = 7)

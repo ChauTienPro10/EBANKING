@@ -141,4 +141,8 @@ export type RootStackParamList = {
     otherUserId: string;
     otherUserName: string;
   };
+
+  // Spending Management screens
+  SpendingManagement: undefined;
+  CategoryManagement: undefined;
 };

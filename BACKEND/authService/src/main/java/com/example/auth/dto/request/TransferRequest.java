@@ -20,6 +20,7 @@ public class TransferRequest {
     String currency;
     String transactionType;
     String description;
+    String categoryId; // Spending category reference
     // Face authentication fields
     Boolean requiresFaceAuth;
     String faceAuthSessionId;

@@ -51,9 +51,9 @@ export const useHomeData = (unreadCount: number = 0) => {
         tag: null,
       },
       {
-        id: 'withdraw',
-        title: t('action_grid.withdraw'),
-        icon: 'cash',
+        id: 'spending_management',
+        title: t('action_grid.spending_management'),
+        icon: 'pie-chart',
         color: Colors.main_bule,
         tag: null,
       },

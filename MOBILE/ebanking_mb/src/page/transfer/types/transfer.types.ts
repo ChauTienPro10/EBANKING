@@ -28,6 +28,7 @@ export interface TransferFormData {
   transferType: 'internal' | 'external';
   selectedBank?: Bank;
   purpose?: TransferPurpose;
+  category?: import('../../../types/SpendingCategory.types').SpendingCategory;
 }
 
 export interface FormErrors {

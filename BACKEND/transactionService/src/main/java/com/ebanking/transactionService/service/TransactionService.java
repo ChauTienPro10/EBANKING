@@ -215,6 +215,7 @@ public class TransactionService {
                 .status(TransactionStatus.PENDING.name())
                 .description(parseResult.getContent()) // Store clean content without prefix
                 .purposeCode(parseResult.getPurposeCode()) // Store purpose code separately
+                .categoryId(data.getCategoryId() != null && !data.getCategoryId().isEmpty() ? data.getCategoryId() : null) // Store spending category
                 .transactionAt(LocalDateTime.now())
                 .username(data.getUsername())
                 .requiresFaceAuth(requiresFaceAuth)

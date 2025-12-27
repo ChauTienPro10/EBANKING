@@ -24,13 +24,13 @@ public class SpendingCategoryController {
 
     /**
      * Get all categories for the authenticated user
-     * GET /api/categories
+     * GET /api/categories/user/{userId}
      */
-    @GetMapping
+    @GetMapping("/user/{userId}")
     public ResponseEntity<Map<String, Object>> getUserCategories(
-            @RequestHeader("X-User-Id") Long userId) {
+            @PathVariable Long userId) {
         try {
-            log.info("GET /api/categories - userId: {}", userId);
+            log.info("GET /api/categories/user/{} - userId: {}", userId, userId);
             
             List<SpendingCategoryDto> categories = categoryService.getUserCategories(userId);
             
@@ -49,14 +49,14 @@ public class SpendingCategoryController {
 
     /**
      * Create a new category
-     * POST /api/categories
+     * POST /api/categories/user/{userId}
      */
-    @PostMapping
+    @PostMapping("/user/{userId}")
     public ResponseEntity<Map<String, Object>> createCategory(
-            @RequestHeader("X-User-Id") Long userId,
+            @PathVariable Long userId,
             @Valid @RequestBody CreateCategoryRequest request) {
         try {
-            log.info("POST /api/categories - userId: {}, code: {}", userId, request.getCode());
+            log.info("POST /api/categories/user/{} - userId: {}, code: {}", userId, userId, request.getCode());
             
             SpendingCategoryDto category = categoryService.createCategory(userId, request);
             
@@ -79,15 +79,15 @@ public class SpendingCategoryController {
 
     /**
      * Update an existing category
-     * PUT /api/categories/{id}
+     * PUT /api/categories/user/{userId}/{id}
      */
-    @PutMapping("/{id}")
+    @PutMapping("/user/{userId}/{id}")
     public ResponseEntity<Map<String, Object>> updateCategory(
-            @RequestHeader("X-User-Id") Long userId,
+            @PathVariable Long userId,
             @PathVariable String id,
             @Valid @RequestBody UpdateCategoryRequest request) {
         try {
-            log.info("PUT /api/categories/{} - userId: {}", id, userId);
+            log.info("PUT /api/categories/user/{}/{} - userId: {}, id: {}", userId, id, userId, id);
             
             SpendingCategoryDto category = categoryService.updateCategory(userId, id, request);
             
@@ -110,14 +110,14 @@ public class SpendingCategoryController {
 
     /**
      * Delete a category (soft delete)
-     * DELETE /api/categories/{id}
+     * DELETE /api/categories/user/{userId}/{id}
      */
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/user/{userId}/{id}")
     public ResponseEntity<Map<String, Object>> deleteCategory(
-            @RequestHeader("X-User-Id") Long userId,
+            @PathVariable Long userId,
             @PathVariable String id) {
         try {
-            log.info("DELETE /api/categories/{} - userId: {}", id, userId);
+            log.info("DELETE /api/categories/user/{}/{} - userId: {}, id: {}", userId, id, userId, id);
             
             categoryService.deleteCategory(userId, id);
             
@@ -139,13 +139,13 @@ public class SpendingCategoryController {
 
     /**
      * Initialize default categories for a user
-     * POST /api/categories/initialize
+     * POST /api/categories/user/{userId}/initialize
      */
-    @PostMapping("/initialize")
+    @PostMapping("/user/{userId}/initialize")
     public ResponseEntity<Map<String, Object>> initializeDefaultCategories(
-            @RequestHeader("X-User-Id") Long userId) {
+            @PathVariable Long userId) {
         try {
-            log.info("POST /api/categories/initialize - userId: {}", userId);
+            log.info("POST /api/categories/user/{}/initialize - userId: {}", userId, userId);
             
             categoryService.initializeDefaultCategories(userId);
             
@@ -163,15 +163,17 @@ public class SpendingCategoryController {
 
     /**
      * Get category statistics for pie chart
-     * GET /api/categories/statistics?period=month
+     * GET /api/categories/user/{userId}/statistics?period=month
      */
-    @GetMapping("/statistics")
+    @GetMapping("/user/{userId}/statistics")
     public ResponseEntity<Map<String, Object>> getCategoryStatistics(
-            @RequestHeader("X-User-Id") Long userId,
-            @RequestHeader("X-Username") String username,
+            @PathVariable Long userId,
             @RequestParam(defaultValue = "month") String period) {
         try {
-            log.info("GET /api/categories/statistics - userId: {}, period: {}", userId, period);
+            log.info("GET /api/categories/user/{}/statistics - userId: {}, period: {}", userId, userId, period);
+            
+            // Get username from userId (can be optimized with a user lookup service)
+            String username = "user_" + userId; // TODO: Replace with actual username lookup
             
             List<CategoryStatisticsDto> statistics = categoryService
                     .getCategoryStatistics(userId, username, period);

@@ -13,6 +13,7 @@ message TransferRequest {
   string username = 7;
   bool requiresFaceAuth = 8;
   string faceAuthSessionId = 9;
+  string categoryId = 10; // Spending category reference
 }
 
 
