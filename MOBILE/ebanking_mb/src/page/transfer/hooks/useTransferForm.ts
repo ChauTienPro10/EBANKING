@@ -79,6 +79,12 @@ export const useTransferForm = (initialParams?: TransferParams) => {
     setFormData(prev => ({ ...prev, purpose }));
   };
 
+  const handleCategorySelect = (
+    category: import('../../../types/SpendingCategory.types').SpendingCategory,
+  ) => {
+    setFormData(prev => ({ ...prev, category }));
+  };
+
   const setFormErrors = (newErrors: FormErrors) => {
     setErrors(newErrors);
   };
@@ -90,6 +96,7 @@ export const useTransferForm = (initialParams?: TransferParams) => {
     handleAmountChange,
     handleBankSelect,
     handlePurposeSelect,
+    handleCategorySelect,
     setFormErrors,
     setFormData,
   };

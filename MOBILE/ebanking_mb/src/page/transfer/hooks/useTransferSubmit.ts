@@ -11,7 +11,10 @@ import { API } from '../../../constants/api';
 import Toast from 'react-native-toast-message';
 import { TransferFormData } from '../types/transfer.types';
 import { RootStackParamList } from '../../../navigation/types';
-import { sanitizeTransferContent, buildTransferContent } from '../utils/transfer.utils';
+import {
+  sanitizeTransferContent,
+  buildTransferContent,
+} from '../utils/transfer.utils';
 import { useEkycValidation } from '../../../utils/useEkycValidation';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Transfer'>;
@@ -151,7 +154,10 @@ export const useTransferSubmit = () => {
   ) => {
     try {
       // Build content with purpose prefix if selected
-      const finalContent = buildTransferContent(formData.content, formData.purpose);
+      const finalContent = buildTransferContent(
+        formData.content,
+        formData.purpose,
+      );
 
       const payload = {
         pin: pin,
@@ -162,6 +168,7 @@ export const useTransferSubmit = () => {
         currency: 'VND',
         transactionType: 'TRANSFER',
         description: finalContent, // Use content with purpose prefix
+        categoryId: formData.category?.id, // Add selected category ID
         requiresFaceAuth: requiresFaceAuth,
         faceAuthSessionId: faceAuthSessionId,
       };

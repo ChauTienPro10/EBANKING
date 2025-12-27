@@ -111,6 +111,32 @@ export const translateDynamicText = (text: string): string => {
     ngày: 'day(s)',
     tuần: 'week(s)',
     tháng: 'month(s)',
+    // Spending management
+    'Quản lý chi tiêu': 'Spending Management',
+    'Quản lý danh mục': 'Category Management',
+    'Tạo danh mục mới': 'Create New Category',
+    'Chỉnh sửa danh mục': 'Edit Category',
+    'Xóa danh mục': 'Delete Category',
+    'Tên danh mục': 'Category Name',
+    'Mã danh mục': 'Category Code',
+    'Biểu tượng': 'Icon',
+    'Màu sắc': 'Color',
+    'Chọn danh mục': 'Select Category',
+    'Chưa có danh mục nào': 'No categories yet',
+    'Tạo danh mục đầu tiên': 'Create your first category',
+    'Phân tích chi tiêu': 'Spending Analysis',
+    'Tổng chi tiêu': 'Total Spending',
+    'Danh mục chi nhiều nhất': 'Top Spending Category',
+    Tuần: 'Week',
+    Tháng: 'Month',
+    Năm: 'Year',
+    'Chưa có dữ liệu chi tiêu': 'No spending data',
+    'Bạn có chắc muốn xóa danh mục này?':
+      'Are you sure you want to delete this category?',
+    'Không thể xóa danh mục mặc định': 'Cannot delete default categories',
+    'Đã tạo danh mục thành công': 'Category created successfully',
+    'Đã cập nhật danh mục': 'Category updated successfully',
+    'Đã xóa danh mục': 'Category deleted successfully',
   };
 
   Object.entries(replacements).forEach(([vi, en]) => {

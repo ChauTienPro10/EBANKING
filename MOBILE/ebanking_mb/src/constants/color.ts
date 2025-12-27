@@ -34,6 +34,13 @@ const Colors = {
   infoLight: '#E3F2FD',
   backgroundLight: '#FAFAFA',
   text: '#212121',
+
+  // Additional colors for spending management
+  gray: '#6B7280',
+  gray_light: '#D1D5DB',
+  text_dark: '#1F2937',
+  background_light: '#F8F9FA',
+  danger: '#EF4444',
 };
 
 export default Colors;

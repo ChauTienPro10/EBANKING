@@ -62,6 +62,10 @@ import CreateSavingsRequestScreen from '../page/savings/CreateSavingsRequestScre
 import SavingsRequestListScreen from '../page/savings/SavingsRequestListScreen';
 import SavingsRequestDetailScreen from '../page/savings/SavingsRequestDetailScreen';
 
+// Spending Management screens
+import SpendingManagementScreen from '../page/spending/SpendingManagementScreen';
+import CategoryManagementScreen from '../page/spending/CategoryManagementScreen';
+
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function MainStack() {
@@ -180,6 +184,16 @@ export default function MainStack() {
       <Stack.Screen
         name="SavingsRequestDetail"
         component={SavingsRequestDetailScreen}
+      />
+
+      {/* Spending Management Screens */}
+      <Stack.Screen
+        name="SpendingManagement"
+        component={SpendingManagementScreen}
+      />
+      <Stack.Screen
+        name="CategoryManagement"
+        component={CategoryManagementScreen}
       />
     </Stack.Navigator>
   );

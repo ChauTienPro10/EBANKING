@@ -100,6 +100,9 @@ export const useHomeNavigation = (
       case 'suspicious':
         navigation.navigate('SuspiciousTransactions' as never);
         break;
+      case 'spending_management':
+        navigation.navigate('SpendingManagement' as never);
+        break;
       case 'chat':
         navigation.navigate('ChatList' as never);
         break;
