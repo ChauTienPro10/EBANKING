@@ -24,4 +24,6 @@ public class TransferRequest {
     // Face authentication fields
     Boolean requiresFaceAuth;
     String faceAuthSessionId;
+    String signature;
+    String payload;
 }

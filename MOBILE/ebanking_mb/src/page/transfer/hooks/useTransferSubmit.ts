@@ -16,6 +16,7 @@ import {
   buildTransferContent,
 } from '../utils/transfer.utils';
 import { useEkycValidation } from '../../../utils/useEkycValidation';
+import { signPayload } from '../../../utils/crypto.util';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Transfer'>;
 
@@ -39,12 +40,47 @@ export const useTransferSubmit = () => {
   const [transferModalVisible, setTransferModalVisible] = useState(false);
   const [showEKYCModal, setShowEKYCModal] = useState(false);
 
+  // const proceedWithAccountCheck = async (formData: TransferFormData) => {
+  //   setIsLoading(true);
+  //   try {
+  //     const response = await fetch.post(API.CHECK_ACCOUNT_NUMBER, {
+  //       accountNumber: formData.recipientAccount,
+  //     });
+  //     if (response?.isExist) {
+  //       setReceiverName(response?.fullName);
+  //       setTransferModalVisible(true);
+  //       return true;
+  //     } else {
+  //       Toast.show({
+  //         type: 'error',
+  //         text1: 'Giao dịch thất bại',
+  //         text2: 'Tài khoản không tồn tại!',
+  //       });
+  //       return false;
+  //     }
+  //   } catch (error) {
+  //     Alert.alert(t('transfer.error.title'), t('transfer.error.message'));
+  //     return false;
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+
   const proceedWithAccountCheck = async (formData: TransferFormData) => {
     setIsLoading(true);
+    const payload = {
+        username: loginResponse?.username,
+        senderAccountNumber: account?.accountNumber,
+        receiverAccountNumber: formData.recipientAccount,
+        amount: formData.amount.replace(/,/g, ''),
+        currency: 'VND',
+        transactionType: 'TRANSFER',
+        categoryId: formData.category?.id, // Add selected category ID
+        requiresFaceAuth: requiresFaceAuth,
+        faceAuthSessionId: faceAuthSessionId,
+      };
     try {
-      const response = await fetch.post(API.CHECK_ACCOUNT_NUMBER, {
-        accountNumber: formData.recipientAccount,
-      });
+      const response = await fetch.post(API.CHECK_AND_CREATE_TRANSACTION, payload);
       if (response?.isExist) {
         setReceiverName(response?.fullName);
         setTransferModalVisible(true);
@@ -64,6 +100,7 @@ export const useTransferSubmit = () => {
       setIsLoading(false);
     }
   };
+
 
   const handleTransfer = async (
     formData: TransferFormData,
@@ -159,7 +196,11 @@ export const useTransferSubmit = () => {
         formData.purpose,
       );
 
-      const payload = {
+      const payloadStr = `FROM=${account?.accountNumber}|` +
+          `TO=${formData.recipientAccount}|` +
+          `AMOUNT=${formData.amount.replace(/,/g, '')}`
+
+      const data = {
         pin: pin,
         username: loginResponse?.username,
         senderAccountNumber: account?.accountNumber,
@@ -171,9 +212,11 @@ export const useTransferSubmit = () => {
         categoryId: formData.category?.id, // Add selected category ID
         requiresFaceAuth: requiresFaceAuth,
         faceAuthSessionId: faceAuthSessionId,
-      };
+        signature: signPayload(payloadStr, loginResponse?.privateKey),
+        payload: payloadStr
+      }; 
 
-      const transferResponse = await fetch.post(API.TRANSFER, payload);
+      const transferResponse = await fetch.post(API.TRANSFER, data);
 
       if (transferResponse?.transactionId) {
         if (loginResponse?.id !== undefined) {
