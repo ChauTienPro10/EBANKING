@@ -10,5 +10,6 @@ interface LoginResponse {
   roles: Set<string> | string[];
   jwt: string;
   ekycStatus?: 'NOT_VERIFIED' | 'VERIFIED' | 'EXPIRED' | 'REJECTED';
-    pinStatus?: boolean;
+  pinStatus?: boolean;
+  privateKey: any;
 }

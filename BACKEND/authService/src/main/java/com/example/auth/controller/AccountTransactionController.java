@@ -7,6 +7,8 @@ import com.example.auth.dto.request.TransferRequest;
 import com.example.auth.dto.response.AccountResponse;
 import com.example.auth.dto.response.CheckAccountNumberResponse;
 import com.example.auth.dto.response.NewAccountResponse;
+import com.example.auth.entity.TransactionPayload;
+import com.example.auth.repository.TransactionPayloadRepository;
 import com.example.auth.services.AccountTransactionService;
 import com.example.auth.services.AuthenticationService;
 import com.example.auth.utils.HttpUltils;
@@ -19,6 +21,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,6 +35,9 @@ public class AccountTransactionController {
 
     @Autowired
     AuthenticationService authenticationService;
+
+    @Autowired
+    TransactionPayloadRepository transactionPayloadRepository;
 
     @Autowired
     private HttpUltils httpUtils;
@@ -70,6 +77,20 @@ public class AccountTransactionController {
     public ResponseEntity<CheckAccountNumberResponse> createTransaction(@RequestBody TransferRequest r) {
         log.info("POST:::/createTransaction/");
         CheckAccountNumberRequest checkAccount = CheckAccountNumberRequest.builder().accountNumber(r.getReceiverAccountNumber()).build();
+        TransactionPayload transactionPayload = transactionPayloadRepository.findByUsername(r.getUsername());
+        if (transactionPayload == null) {
+            TransactionPayload payload = TransactionPayload.builder()
+                    .username(r.getUsername())
+                    .payload(genPayloadTransactionString(r))
+                    .createAt(System.currentTimeMillis())
+                    .updatedAt(System.currentTimeMillis()).build();
+            transactionPayloadRepository.save(payload);
+        }
+        else {
+            transactionPayload.setPayload(genPayloadTransactionString(r));
+            transactionPayload.setUpdatedAt(System.currentTimeMillis());
+            transactionPayloadRepository.save(transactionPayload);
+        }
         return ResponseEntity.status(HttpStatus.OK).body(accountTransactionService.checkAccountExist(checkAccount));
     }
 
@@ -190,4 +211,26 @@ public class AccountTransactionController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
+
+    public String genPayloadTransactionString(
+            TransferRequest request
+    ) {
+        return "FROM=" + request.getSenderAccountNumber() + "|"
+                + "TO=" + request.getReceiverAccountNumber() + "|"
+                + "AMOUNT=" + normalizeAmount(BigDecimal.valueOf(request.getAmount())) + "|"
+                + "CCY=VND";
+    }
+
+    private String normalizeAmount(BigDecimal amount) {
+        return amount.setScale(0, RoundingMode.UNNECESSARY).toPlainString();
+    }
+
+    private String normalizeDesc(String desc) {
+        return desc == null
+                ? ""
+                : desc.trim()
+                .replaceAll("\\s+", " ")
+                .toUpperCase();
+    }
+
 }

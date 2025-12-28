@@ -1,4 +1,4 @@
-export const HOST_SERVER = '192.168.0.185';
+export const HOST_SERVER = '192.168.1.5';
 
 export const BASE_URL = `http://${HOST_SERVER}:8000/`;
 export const FCM_SERVICE = `http://${HOST_SERVER}:8004/`;
@@ -20,6 +20,7 @@ export const API = {
   UPDATE_USER_INFO: `${AUTH_SERVICE}/auth/update`,
   OPEN_ACCOUNT_TRANSACTION: `${AUTH_SERVICE}/trans/account/new`,
   CHECK_ACCOUNT_NUMBER: `${AUTH_SERVICE}/trans/account/checkAccountNumber`,
+  CHECK_AND_CREATE_TRANSACTION: `${AUTH_SERVICE}/trans/account/createTransaction`,
   TRANSFER: `${AUTH_SERVICE}/transaction/transfer`,
   GET_TRANSFER_HISTORY: `${AUTH_SERVICE}/transaction/history`,
   FORGOT_PASS_REQUEST_OTP: `${AUTH_SERVICE}/auth/forgot-password-send-otp`,

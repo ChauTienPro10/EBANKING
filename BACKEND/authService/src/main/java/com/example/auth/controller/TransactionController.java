@@ -3,9 +3,14 @@ package com.example.auth.controller;
 import com.example.auth.consts.IURL;
 import com.example.auth.dto.request.TransferRequest;
 import com.example.auth.dto.response.TransferResponse;
+import com.example.auth.entity.PublicKey;
+import com.example.auth.entity.TransactionPayload;
 import com.example.auth.protopkg.TransactionProto;
+import com.example.auth.repository.PublicKeyRepository;
+import com.example.auth.repository.TransactionPayloadRepository;
 import com.example.auth.services.TransactionService;
 import com.example.auth.utils.SecurityUtils;
+import com.example.auth.utils.SignatureUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,11 +32,23 @@ public class TransactionController {
     @Autowired
     private SecurityUtils securityUtils;
 
+    @Autowired
+    PublicKeyRepository publicKeyRepository;
+
     @PostMapping(IURL.TRANSFER)
     public ResponseEntity<TransferResponse> transfer(@RequestHeader Map<String, String> headers, @RequestBody TransferRequest rq) throws AuthenticationException {
         log.info("POST:::" + IURL.TRANSFER);
         if(!securityUtils.checkUser(headers, rq.getUsername())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        if (rq.getSignature() == null || rq.getSignature().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+        } else {
+            PublicKey pk = publicKeyRepository.findByUsername(rq.getUsername());
+            String pl = genPayload(rq.getSenderAccountNumber(), rq.getReceiverAccountNumber(), rq.getAmount().toString());
+            if (!SignatureUtils.verifySignature(pl, rq.getSignature(), pk.getPublicKey())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+            }
         }
         return ResponseEntity.status(HttpStatus.OK).body(transactionService.transfer(rq));
     }
@@ -66,6 +83,10 @@ public class TransactionController {
                 .build();
 
         return ResponseEntity.status(HttpStatus.OK).body(transactionService.getHisTrans(request));
+    }
+
+    private String genPayload(String from, String to, String amount) {
+        return "FROM=" + from + "|" + "TO=" + to + "|" + "AMOUNT=" + amount;
     }
 
 }

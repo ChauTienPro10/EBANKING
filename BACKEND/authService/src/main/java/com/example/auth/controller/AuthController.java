@@ -3,8 +3,10 @@ package com.example.auth.controller;
 import com.example.auth.consts.IURL;
 import com.example.auth.dto.request.*;
 import com.example.auth.dto.response.*;
+import com.example.auth.entity.PublicKey;
 import com.example.auth.mapper.UserMapper;
 import com.example.auth.protopkg.UserProto;
+import com.example.auth.repository.PublicKeyRepository;
 import com.example.auth.services.AuthService;
 import com.example.auth.utils.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +15,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.PrivateKey;
+import java.util.Base64;
 import java.util.Map;
 
 @RestController
@@ -22,6 +28,9 @@ public class AuthController {
 
     @Autowired
     AuthService authService;
+
+    @Autowired
+    PublicKeyRepository publicKeyRepository;
 
     @Autowired
     private SecurityUtils securityUtils;
@@ -42,7 +51,23 @@ public class AuthController {
     @PostMapping(IURL.LOGIN_URL)
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
         log.info("POST:::" + IURL.LOGIN_URL);
+        PublicKey publicKey = publicKeyRepository.findByUsername(request.getUsername());
+        KeyPair keyPair = genKey();
+        if (publicKey == null) {
+            PublicKey pK = PublicKey.builder()
+                    .username(request.getUsername())
+                    .createdAt(System.currentTimeMillis())
+                    .updatedAt(System.currentTimeMillis())
+                    .publicKey(publicKeyToString(keyPair.getPublic()))
+                    .build();
+            publicKeyRepository.save(pK);
+        } else {
+            publicKey.setPublicKey(publicKeyToString(keyPair.getPublic()));
+            publicKey.setUpdatedAt(System.currentTimeMillis());
+            publicKeyRepository.save(publicKey);
+        }
         LoginResponse rs = authService.login(request);
+        rs.setPrivateKey(privateKeyToString(keyPair.getPrivate()));
         return ResponseEntity.status(HttpStatus.OK).body(rs);
     }
 
@@ -87,4 +112,22 @@ public class AuthController {
     }
 
     // Avatar endpoints moved to AvatarController
+
+    private KeyPair genKey() {
+        try {
+            KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
+            kpg.initialize(2048);
+            return kpg.generateKeyPair();
+        } catch (Exception e) {
+            throw new RuntimeException("Generate RSA key pair failed", e);
+        }
+    }
+
+    public static String publicKeyToString(java.security.PublicKey key) {
+        return Base64.getEncoder().encodeToString(key.getEncoded());
+    }
+
+    public static String privateKeyToString(PrivateKey privateKey) {
+        return Base64.getEncoder().encodeToString(privateKey.getEncoded());
+    }
 }

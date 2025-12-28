@@ -3,6 +3,7 @@ package com.example.auth.dto.response;
 import lombok.Builder;
 import lombok.Data;
 
+import java.security.PrivateKey;
 import java.util.Set;
 
 @Data
@@ -18,4 +19,5 @@ public class LoginResponse {
     private boolean isMale;
     private Set<String> roles;
     private String jwt;
+    String privateKey;
 }
