@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { TransferResponse } from '../../../store/fetchAPI/TransactionHistory';
 import TransactionItem from './TransactionItem';
-import MonthStatsModal from './MonthStatsModal';
 import Colors from '../../../constants/color';
 
 interface MonthSectionProps {
@@ -16,14 +16,18 @@ const MonthSection: React.FC<MonthSectionProps> = ({
   transactions,
   currentAccountNumber,
 }) => {
-  const [showStatsModal, setShowStatsModal] = useState(false);
+  const navigation = useNavigation();
+
+  const handleStatsPress = () => {
+    navigation.navigate('Statistics' as never);
+  };
 
   return (
     <>
       <View style={styles.monthSection}>
         <View style={styles.monthHeader}>
           <Text style={styles.monthTitle}>{monthYear}</Text>
-          <TouchableOpacity onPress={() => setShowStatsModal(true)}>
+          <TouchableOpacity onPress={handleStatsPress}>
             <Text style={styles.statsLink}>Thống kê ›</Text>
           </TouchableOpacity>
         </View>
@@ -35,15 +39,6 @@ const MonthSection: React.FC<MonthSectionProps> = ({
           />
         ))}
       </View>
-
-      {/* Stats Modal */}
-      <MonthStatsModal
-        visible={showStatsModal}
-        onClose={() => setShowStatsModal(false)}
-        monthYear={monthYear}
-        transactions={transactions}
-        currentAccountNumber={currentAccountNumber}
-      />
     </>
   );
 };

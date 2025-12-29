@@ -20,6 +20,6 @@ public class PublicKey {
     long createdAt;
     long updatedAt;
     @Lob
-    @Column(name = "public_key", nullable = false)
+    @Column(name = "public_key", nullable = false, columnDefinition = "LONGTEXT")
     private String publicKey;
 }

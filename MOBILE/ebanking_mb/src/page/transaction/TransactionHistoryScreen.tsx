@@ -6,11 +6,13 @@ import {
   RefreshControl,
   ScrollView,
   Text,
+  TouchableOpacity,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../../store';
 import {
   fetchTransactionHistory,
+  loadMoreTransactions,
   TransferResponse,
 } from '../../store/fetchAPI/TransactionHistory';
 import Colors from '../../constants/color';
@@ -54,6 +56,15 @@ const TransactionHistoryScreen: React.FC = () => {
   const loading = useSelector(
     (state: RootState) => state.transactionHistories.loading,
   );
+  const hasMore = useSelector(
+    (state: RootState) => state.transactionHistories.hasMore,
+  );
+  const loadingMore = useSelector(
+    (state: RootState) => state.transactionHistories.loadingMore,
+  );
+  const currentPage = useSelector(
+    (state: RootState) => state.transactionHistories.currentPage,
+  );
 
   const currentAccountNumber = sender || '1234567890';
 
@@ -78,6 +89,19 @@ const TransactionHistoryScreen: React.FC = () => {
 
   const handleApplyFilters = (filters: FilterState) => {
     setAppliedFilters(filters);
+  };
+
+  const handleLoadMore = () => {
+    if (username && sender && hasMore && !loadingMore) {
+      dispatch(
+        loadMoreTransactions({
+          username,
+          sender,
+          page: currentPage + 1,
+          limit: 20,
+        }),
+      );
+    }
   };
 
   // Apply tab filter first, then advanced filters
@@ -183,16 +207,31 @@ const TransactionHistoryScreen: React.FC = () => {
             <Text style={styles.emptyText}>Chưa có giao dịch</Text>
           </View>
         ) : (
-          Object.entries(groupedTransactions).map(
-            ([monthYear, transactions]) => (
-              <MonthSection
-                key={monthYear}
-                monthYear={monthYear}
-                transactions={transactions}
-                currentAccountNumber={currentAccountNumber}
-              />
-            ),
-          )
+          <>
+            {Object.entries(groupedTransactions).map(
+              ([monthYear, transactions]) => (
+                <MonthSection
+                  key={monthYear}
+                  monthYear={monthYear}
+                  transactions={transactions}
+                  currentAccountNumber={currentAccountNumber}
+                />
+              ),
+            )}
+            {hasMore && (
+              <TouchableOpacity
+                style={styles.loadMoreButton}
+                onPress={handleLoadMore}
+                disabled={loadingMore}
+              >
+                {loadingMore ? (
+                  <ActivityIndicator size="small" color={Colors.main_bule} />
+                ) : (
+                  <Text style={styles.loadMoreText}>Xem thêm</Text>
+                )}
+              </TouchableOpacity>
+            )}
+          </>
         )}
       </ScrollView>
     </View>
@@ -229,5 +268,24 @@ const styles = StyleSheet.create({
     marginTop: 16,
     textAlign: 'center',
     fontWeight: '500',
+  },
+  loadMoreButton: {
+    backgroundColor: '#FFFFFF',
+    marginHorizontal: 16,
+    marginVertical: 16,
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  loadMoreText: {
+    fontSize: 16,
+    color: Colors.main_bule,
+    fontWeight: '600',
   },
 });

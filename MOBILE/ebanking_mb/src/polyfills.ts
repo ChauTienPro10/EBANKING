@@ -2,7 +2,13 @@
 import { install } from 'react-native-quick-crypto';
 
 // Install crypto polyfills
-install();
+try {
+  install();
+  console.log('✅ react-native-quick-crypto installed successfully');
+} catch (error) {
+  console.warn('⚠️ react-native-quick-crypto installation failed:', error);
+  console.warn('Crypto operations may use fallback implementations');
+}
 
 // Make Buffer available globally
 import { Buffer } from '@craftzdog/react-native-buffer';
@@ -22,15 +28,18 @@ try {
 } catch (e) {
   // Fallback base64 polyfills using Buffer
   if (!global.base64FromArrayBuffer) {
-    global.base64FromArrayBuffer = function(arrayBuffer: ArrayBuffer): string {
+    global.base64FromArrayBuffer = function (arrayBuffer: ArrayBuffer): string {
       return Buffer.from(arrayBuffer).toString('base64');
     };
   }
 
   if (!global.base64ToArrayBuffer) {
-    global.base64ToArrayBuffer = function(base64: string): ArrayBuffer {
+    global.base64ToArrayBuffer = function (base64: string): ArrayBuffer {
       const buffer = Buffer.from(base64, 'base64');
-      return buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
+      return buffer.buffer.slice(
+        buffer.byteOffset,
+        buffer.byteOffset + buffer.byteLength,
+      );
     };
   }
 }
