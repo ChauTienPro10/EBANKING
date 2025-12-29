@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 // Re-trigger bundle
 import {
   View,
@@ -9,7 +9,7 @@ import {
   StatusBar,
   TouchableOpacity,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -137,10 +137,11 @@ const StatisticsScreen: React.FC = () => {
 
   // Calculate trend data for line chart
   const trendData = useMemo(() => {
-    // For current period, use only REAL transactions (no mock data)
-    // This ensures we only show actual transaction history
+    // IMPORTANT: Use currentTotal from API instead of calculating from transactions
+    // because transactions history might not have all data (limited to 100)
+
+    // Filter real transactions
     const filteredReal = realTransactions.filter(t => {
-      // Filter by transaction type
       if (
         t.transactionType === 'PAYMENT_TO_SAVINGS' ||
         t.transactionType === 'SAVINGS_TO_PAYMENT'
@@ -148,7 +149,6 @@ const StatisticsScreen: React.FC = () => {
         return false;
       }
 
-      // Filter by description (case-insensitive)
       const desc = (t.description || '').toLowerCase();
       if (
         desc.includes('tiết kiệm') ||
@@ -161,22 +161,48 @@ const StatisticsScreen: React.FC = () => {
       return true;
     });
 
-    if (filteredReal.length > 0) {
-      const currentPeriodTransactions = filterTransactionsByPeriod(
-        filteredReal,
-        selectedPeriod,
-        0,
-      );
+    // Get transactions for current period
+    const currentPeriodTransactions = filterTransactionsByPeriod(
+      filteredReal,
+      selectedPeriod,
+      0,
+    );
 
-      return calculateTrendData(
-        currentPeriodTransactions,
-        selectedPeriod,
-        currentAccountNumber,
-      );
+    // Calculate raw trend data from transactions
+    const rawTrendData = calculateTrendData(
+      currentPeriodTransactions,
+      selectedPeriod,
+      currentAccountNumber,
+    );
+
+    // Get actual total from API (more accurate than summing transactions)
+    const apiTotal = periodData.current?.totalAmountInPeriodByUsername || 0;
+
+    // Calculate total from trend data
+    const trendTotal = rawTrendData.data.reduce((sum, val) => sum + val, 0);
+
+    // If there's a discrepancy and API total is higher, scale the data proportionally
+    if (
+      apiTotal > 0 &&
+      trendTotal > 0 &&
+      Math.abs(apiTotal - trendTotal) > 1000
+    ) {
+      const scaleFactor = apiTotal / trendTotal;
+      const scaledData = rawTrendData.data.map(val => val * scaleFactor);
+
+      return {
+        labels: rawTrendData.labels,
+        data: scaledData,
+      };
     }
 
-    return { labels: [], data: [] };
-  }, [selectedPeriod, realTransactions, currentAccountNumber]);
+    return rawTrendData;
+  }, [
+    selectedPeriod,
+    realTransactions,
+    currentAccountNumber,
+    periodData.current,
+  ]);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -201,9 +227,50 @@ const StatisticsScreen: React.FC = () => {
     setRefreshing(false);
   };
 
+  // Auto-fetch data when screen is focused (user navigates to this screen)
+  useFocusEffect(
+    useCallback(() => {
+      if (isLoggedIn && loginResponse?.username && currentAccountNumber) {
+        // Fetch all statistics data when user enters the screen
+        Promise.all([
+          dispatch(fetchAnalysis30Days(loginResponse.username)),
+          dispatch(fetchAnalysisCurrentMonth(loginResponse.username)),
+          dispatch(fetchAnalysisPreviousMonth(loginResponse.username)),
+          dispatch(fetchAnalysisCurrentWeek(loginResponse.username)),
+          dispatch(fetchAnalysisPreviousWeek(loginResponse.username)),
+          dispatch(fetchAnalysisWeeklyStats(loginResponse.username)),
+          dispatch(
+            fetchTransactionHistory({
+              username: loginResponse.username,
+              sender: currentAccountNumber,
+              page: 0,
+              limit: 100,
+            }),
+          ),
+        ]);
+      }
+    }, [isLoggedIn, loginResponse?.username, currentAccountNumber, dispatch]),
+  );
+
   const currentTotal = periodData.current?.totalAmountInPeriodByUsername || 0;
   const previousTotal = periodData.previous?.totalAmountInPeriodByUsername || 0;
-  const totalIncoming = periodData.current?.totalIncomingAmount || 0;
+
+  // Calculate totalIncoming from real transactions instead of relying on API
+  const totalIncoming = useMemo(() => {
+    const currentPeriodTransactions = filterTransactionsByPeriod(
+      allTransactions,
+      selectedPeriod,
+      0,
+    );
+
+    return currentPeriodTransactions.reduce((sum, t) => {
+      // Count incoming transactions (where current account is receiver)
+      if (t.receiverAccountNumber === currentAccountNumber) {
+        return sum + parseFloat(t.amount.toString());
+      }
+      return sum;
+    }, 0);
+  }, [allTransactions, selectedPeriod, currentAccountNumber]);
 
   const currentTransactionCount =
     periodData.current?.transactionCountInPeriodByUsername || 0;
