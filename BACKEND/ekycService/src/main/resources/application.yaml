@@ -1,5 +1,5 @@
 #spring.application.name=ekycService
-machine.host: localhost
+machine.host: 3.85.17.154
 # Redis Configuration for Face Auth Sessions
 redis:
   host: ${machine.host}
@@ -80,4 +80,4 @@ services:
     api-key: EKYC_SERVICE_SECRET_KEY # Use environment variable in production
 
 machine:
-  host: localhost
+  host: 3.85.17.154

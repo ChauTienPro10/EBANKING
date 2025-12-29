@@ -21,7 +21,7 @@ public class InterestRateController {
     @Autowired
     private HttpUltils httpUtils;
 
-    @Value("${service.trans.url:http://localhost:8003}")
+    @Value("${service.trans.url:http://3.85.17.154:8003}")
     private String transactionServiceUrl;
 
     /**
@@ -101,7 +101,8 @@ public class InterestRateController {
         try {
             log.info("Finding applicable rate for term: {} months, amount: {}", termMonths, amount);
 
-            String url = transactionServiceUrl + "/api/interest-rates/applicable?termMonths=" + termMonths + "&amount=" + amount;
+            String url = transactionServiceUrl + "/api/interest-rates/applicable?termMonths=" + termMonths + "&amount="
+                    + amount;
             Object response = httpUtils.get(url, Object.class);
 
             return ResponseEntity.ok(response);

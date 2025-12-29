@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Advanced Test script for Transaction Request API
-BASE_URL="http://localhost:7999"
+BASE_URL="http://3.85.17.154:7999"
 
 echo "=== Testing Advanced Transaction Request API ==="
 echo

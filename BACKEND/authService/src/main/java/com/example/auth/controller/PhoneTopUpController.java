@@ -29,7 +29,7 @@ public class PhoneTopUpController {
     @Autowired
     private SecurityUtils securityUtils;
 
-    @Value("${service.trans.url:http://localhost:8003}")
+    @Value("${service.trans.url:http://3.85.17.154:8003}")
     private String transactionServiceUrl;
 
     /**
@@ -42,7 +42,7 @@ public class PhoneTopUpController {
             @RequestBody Map<String, Object> request) {
         try {
             String username = (String) request.get("username");
-            
+
             if (!securityUtils.checkUser(headers, username)) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
@@ -74,15 +74,15 @@ public class PhoneTopUpController {
             @RequestParam(defaultValue = "10") int size) {
         try {
             String jwt = authHeader.replace("Bearer ", "").trim();
-            
+
             if (!authenticationService.checkValidUser(jwt, userId)) {
                 throw new AuthenticationException("Bạn không có quyền thao tác");
             }
 
             log.info("Getting top-up history for user: {}", userId);
 
-            String url = transactionServiceUrl + "/api/phone-topup/history/" + userId + 
-                        "?page=" + page + "&size=" + size;
+            String url = transactionServiceUrl + "/api/phone-topup/history/" + userId +
+                    "?page=" + page + "&size=" + size;
             Object response = httpUtils.get(url, Object.class);
 
             return ResponseEntity.ok(response);

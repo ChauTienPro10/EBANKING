@@ -20,7 +20,7 @@ public class AnalyticsController {
     private HttpUltils httpUtils;
 
     // URL của transactionService - có thể config trong application.properties
-    @Value("${service.trans.url:http://localhost:8003}")
+    @Value("${service.trans.url:http://3.85.17.154:8003}")
     private String transactionServiceUrl;
 
     /**

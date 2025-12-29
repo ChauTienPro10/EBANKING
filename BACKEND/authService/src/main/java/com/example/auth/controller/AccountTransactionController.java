@@ -45,16 +45,16 @@ public class AccountTransactionController {
     @Autowired
     private SecurityUtils securityUtils;
 
-    @Value("${service.trans.url:http://localhost:8003}")
+    @Value("${service.trans.url:http://3.85.17.154:8003}")
     private String transactionServiceUrl;
 
     @PostMapping(IURL.OPEN_ACC_TRANS)
     public ResponseEntity<NewAccountResponse> openAccount(@RequestHeader("Authorization") String authHeader,
-                                                          @RequestBody NewAccountRequest r)
+            @RequestBody NewAccountRequest r)
             throws AuthenticationException {
 
         String jwt = authHeader.replace("Bearer ", "").trim();
-        if(!authenticationService.checkValidUser(jwt, r.getUserId())) {
+        if (!authenticationService.checkValidUser(jwt, r.getUserId())) {
             throw new AuthenticationException("Bạn không có quyền thao tác");
         }
         return ResponseEntity.status(HttpStatus.OK).body(accountTransactionService.newAccount(r));
@@ -62,7 +62,7 @@ public class AccountTransactionController {
 
     @GetMapping("/info/{userId}")
     public ResponseEntity<AccountResponse> getAccountInfo(@RequestHeader("Authorization") String authHeader,
-                                                          @PathVariable("userId") Long userId) {
+            @PathVariable("userId") Long userId) {
         log.info("GET:::/info/" + userId);
         return ResponseEntity.status(HttpStatus.OK).body(accountTransactionService.getAccountInfo(userId));
     }
@@ -76,7 +76,8 @@ public class AccountTransactionController {
     @PostMapping("/createTransaction")
     public ResponseEntity<CheckAccountNumberResponse> createTransaction(@RequestBody TransferRequest r) {
         log.info("POST:::/createTransaction/");
-        CheckAccountNumberRequest checkAccount = CheckAccountNumberRequest.builder().accountNumber(r.getReceiverAccountNumber()).build();
+        CheckAccountNumberRequest checkAccount = CheckAccountNumberRequest.builder()
+                .accountNumber(r.getReceiverAccountNumber()).build();
         TransactionPayload transactionPayload = transactionPayloadRepository.findByUsername(r.getUsername());
         if (transactionPayload == null) {
             TransactionPayload payload = TransactionPayload.builder()
@@ -85,8 +86,7 @@ public class AccountTransactionController {
                     .createAt(System.currentTimeMillis())
                     .updatedAt(System.currentTimeMillis()).build();
             transactionPayloadRepository.save(payload);
-        }
-        else {
+        } else {
             transactionPayload.setPayload(genPayloadTransactionString(r));
             transactionPayload.setUpdatedAt(System.currentTimeMillis());
             transactionPayloadRepository.save(transactionPayload);
@@ -199,7 +199,8 @@ public class AccountTransactionController {
 
             log.info("Checking face auth required for user {}: {}", username, amount);
 
-            String url = transactionServiceUrl + "/api/accounts/check-face-auth?userId=" + userId + "&username=" + username + "&amount=" + amount;
+            String url = transactionServiceUrl + "/api/accounts/check-face-auth?userId=" + userId + "&username="
+                    + username + "&amount=" + amount;
             Object response = httpUtils.post(url, null, Object.class);
 
             return ResponseEntity.ok(response);
@@ -213,8 +214,7 @@ public class AccountTransactionController {
     }
 
     public String genPayloadTransactionString(
-            TransferRequest request
-    ) {
+            TransferRequest request) {
         return "FROM=" + request.getSenderAccountNumber() + "|"
                 + "TO=" + request.getReceiverAccountNumber() + "|"
                 + "AMOUNT=" + normalizeAmount(BigDecimal.valueOf(request.getAmount())) + "|"
@@ -229,8 +229,8 @@ public class AccountTransactionController {
         return desc == null
                 ? ""
                 : desc.trim()
-                .replaceAll("\\s+", " ")
-                .toUpperCase();
+                        .replaceAll("\\s+", " ")
+                        .toUpperCase();
     }
 
 }

@@ -24,7 +24,7 @@ public class SavingsTransferController {
     @Autowired
     private SecurityUtils securityUtils;
 
-    @Value("${service.trans.url:http://localhost:8003}")
+    @Value("${service.trans.url:http://3.85.17.154:8003}")
     private String transactionServiceUrl;
 
     /**
@@ -37,7 +37,7 @@ public class SavingsTransferController {
             @RequestBody Map<String, Object> request) {
         try {
             String username = (String) request.get("username");
-            
+
             if (!securityUtils.checkUser(headers, username)) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
@@ -67,7 +67,7 @@ public class SavingsTransferController {
             @RequestBody Map<String, Object> request) {
         try {
             String username = (String) request.get("username");
-            
+
             if (!securityUtils.checkUser(headers, username)) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }

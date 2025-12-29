@@ -17,10 +17,10 @@ import java.util.Map;
 public class AvatarService {
 
     @Autowired
-    private RestTemplate restTemplate;  // ✅ Inject bean, không new
+    private RestTemplate restTemplate; // ✅ Inject bean, không new
 
-    @Value("${services.user.url:http://localhost:8001}")
-    private String userServiceUrl;  // ✅ Extract URL từ config
+    @Value("${services.user.url:http://3.85.17.154:8001}")
+    private String userServiceUrl; // ✅ Extract URL từ config
 
     /**
      * Proxy avatar upload to UserService via HTTP
@@ -28,18 +28,18 @@ public class AvatarService {
     public ResponseEntity<?> uploadAvatar(Long userId, String imageBase64) {
         try {
             String url = userServiceUrl + "/user/" + userId + "/avatar";
-            
+
             Map<String, String> requestBody = new HashMap<>();
             requestBody.put("imageBase64", imageBase64);
-            
+
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            
+
             HttpEntity<Map<String, String>> entity = new HttpEntity<>(requestBody, headers);
-            
+
             log.info("Uploading avatar for user {} to UserService", userId);
             ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
-            
+
             log.info("Avatar upload successful for user {}", userId);
             return response;
         } catch (Exception e) {
@@ -54,10 +54,10 @@ public class AvatarService {
     public ResponseEntity<Void> deleteAvatar(Long userId) {
         try {
             String url = userServiceUrl + "/user/" + userId + "/avatar";
-            
+
             log.info("Deleting avatar for user {} from UserService", userId);
             restTemplate.delete(url);
-            
+
             log.info("Avatar delete successful for user {}", userId);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
@@ -72,13 +72,13 @@ public class AvatarService {
     public ResponseEntity<?> getAvatar(Long userId) {
         try {
             String url = userServiceUrl + "/user/" + userId + "/avatar";
-            
+
             log.info("Getting avatar for user {} from UserService", userId);
             byte[] imageBytes = restTemplate.getForObject(url, byte[].class);
-            
+
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.IMAGE_JPEG);
-            
+
             return ResponseEntity.ok()
                     .headers(headers)
                     .body(imageBytes);

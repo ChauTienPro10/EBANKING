@@ -37,7 +37,7 @@ public class DataSeeder implements CommandLineRunner {
 
         long auditCount = auditLogRepository.count();
         log.info("Current audit log count: {}", auditCount);
-        
+
         if (auditCount == 0) {
             AuditLog testLog = AuditLog.builder()
                     .staffUsername("admin")
@@ -46,7 +46,7 @@ public class DataSeeder implements CommandLineRunner {
                     .targetId(null)
                     .details("Test login - system initialized")
                     .success(true)
-                    .ipAddress("127.0.0.1")
+                    .ipAddress("3.85.17.154")
                     .timestamp(LocalDateTime.now())
                     .build();
             auditLogRepository.save(testLog);

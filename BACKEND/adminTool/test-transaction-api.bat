@@ -2,7 +2,7 @@
 setlocal enabledelayedexpansion
 
 REM Test script for Transaction Request API (Windows)
-set BASE_URL=http://localhost:7999
+set BASE_URL=http://3.85.17.154:7999
 
 echo === Testing Transaction Request API ===
 echo.

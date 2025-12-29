@@ -18,6 +18,7 @@ Hệ thống hỗ trợ username context, cho phép Gemini tự động sử d�
 ### Ví dụ:
 
 **Request:**
+
 ```json
 {
   "username": "john_doe",
@@ -27,6 +28,7 @@ Hệ thống hỗ trợ username context, cho phép Gemini tự động sử d�
 ```
 
 **Gemini sẽ tự động:**
+
 - Nhận diện "của tôi" → sử dụng username "john_doe"
 - Gọi function `getUserInfo` với username="john_doe"
 - Trả về thông tin của john_doe
@@ -34,42 +36,52 @@ Hệ thống hỗ trợ username context, cho phép Gemini tự động sử d�
 ## Các Function được hỗ trợ
 
 ### 1. getUserInfo
+
 **Mục đích**: Lấy thông tin chi tiết người dùng
 **Tham số**:
+
 - `username` (tùy chọn): Tên đăng nhập. Nếu không cung cấp, sử dụng username từ context
 
 **Ví dụ câu hỏi kích hoạt**:
+
 - "Thông tin của tôi" (sử dụng username từ context)
 - "Thông tin tài khoản của user123" (chỉ định username cụ thể)
 - "Hồ sơ cá nhân của tôi"
 - "Trạng thái eKYC của tôi"
 
 ### 2. getUserId
+
 **Mục đích**: Lấy ID người dùng từ username
 **Tham số**:
+
 - `username` (tùy chọn): Tên đăng nhập. Nếu không cung cấp, sử dụng username từ context
 
 **Ví dụ câu hỏi kích hoạt**:
+
 - "ID của tôi là gì?" (sử dụng username từ context)
 - "ID của user123 là gì?" (chỉ định username cụ thể)
 - "Mã người dùng của tôi"
 
 ### 3. getUserDetailsWithId
+
 **Mục đích**: Lấy thông tin chi tiết bao gồm userId để các service khác sử dụng
 **Tham số**:
+
 - `username` (tùy chọn): Tên đăng nhập. Nếu không cung cấp, sử dụng username từ context
 
 **Ví dụ câu hỏi kích hoạt**:
+
 - "Thông tin chi tiết của tôi để truy vấn các service khác"
 - "Lấy userId để kiểm tra tài khoản"
 
 ## Cấu hình
 
 ### Application Properties
+
 ```properties
 # External Database Configuration - Kết nối DB_USER_SERVICE
 external-dbs.names=userService
-external-dbs.userService.url=jdbc:mysql://127.0.0.1:3306/DB_USER_SERVICE?useSSL=false&serverTimezone=UTC
+external-dbs.userService.url=jdbc:mysql://3.85.17.154:3306/DB_USER_SERVICE?useSSL=false&serverTimezone=UTC
 external-dbs.userService.username=root
 external-dbs.userService.password=root@123
 external-dbs.userService.driver-class-name=com.mysql.cj.jdbc.Driver
@@ -82,6 +94,7 @@ external-dbs.hikari.connection-timeout=5000
 ## API Testing
 
 ### Chat với Username Context:
+
 ```bash
 # Test chat với context
 POST /chat/ask
@@ -98,11 +111,13 @@ Content-Type: text/plain
 ```
 
 ### Xem function schemas:
+
 ```bash
 GET /api/functions/schemas
 ```
 
 ### Test từng function:
+
 ```bash
 # Test thông tin user
 POST /api/functions/test/user-info
@@ -139,6 +154,7 @@ POST /api/functions/test/user-details
 5. **Function Call**: Gemini gọi function không cần parameters (sử dụng context)
 
 6. **BankingApiService**: Nhận call với username context:
+
    ```java
    getUserInfo("john_doe", "john_doe")
    ```
@@ -150,13 +166,16 @@ POST /api/functions/test/user-details
 ## Lợi ích của việc có userId
 
 ### 1. **Truy vấn các service khác**
+
 Với userId, bạn có thể:
+
 - Gọi Account Service để lấy danh sách tài khoản
 - Gọi Transaction Service để lấy lịch sử giao dịch
 - Gọi Loan Service để lấy thông tin khoản vay
 - Gọi Card Service để lấy thông tin thẻ
 
 ### 2. **Ví dụ sử dụng userId**
+
 ```java
 // Sau khi có userId từ getUserDetailsWithId
 Long userId = 12345L;
@@ -168,6 +187,7 @@ Long userId = 12345L;
 ```
 
 ### 3. **Tích hợp với hệ thống**
+
 - **Single Source of Truth**: User info từ DB_USER_SERVICE
 - **Microservice Architecture**: userId làm key để liên kết các service
 - **Security**: Mỗi request đều có user context để audit
@@ -178,11 +198,12 @@ Long userId = 12345L;
 Khi cần thêm function mới:
 
 1. **Thêm function declaration** trong `FunctionSchemaConfig.java`
-2. **Implement logic** trong `BankingApiService.java`  
+2. **Implement logic** trong `BankingApiService.java`
 3. **Update switch case** trong `GeminiService.executeFunctionCall()`
 4. **Thêm test endpoint** trong `FunctionTestController.java`
 
 Ví dụ thêm function `getAccountsByUserId`:
+
 ```java
 // Sử dụng userId để lấy danh sách tài khoản
 public String getAccountsByUserId(Long userId, String requestingUser) {

@@ -3,6 +3,7 @@
 ## 🎯 Tổng quan
 
 Backend hỗ trợ **2 phương thức eKYC**:
+
 1. **SDK Integration** (Khuyến nghị cho WebView) - FE nhúng FPT AI WebView, BE chỉ nhận kết quả
 2. **Direct Upload** (Legacy) - FE upload file, BE xử lý
 
@@ -11,6 +12,7 @@ Backend hỗ trợ **2 phương thức eKYC**:
 ## 📊 LUỒNG HOẠT ĐỘNG SDK INTEGRATION (CHO WEBVIEW)
 
 ### Flow tổng quan:
+
 ```
 FE Mobile App → Tạo Session (1) → BE
                                     ↓
@@ -49,6 +51,7 @@ FE Navigate to Success Screen
 ## 🔌 API ENDPOINTS CHI TIẾT
 
 ### 1️⃣ Tạo Session
+
 **Bước đầu tiên - Tạo session eKYC**
 
 ```http
@@ -56,14 +59,17 @@ POST /api/ekyc/sessions?userId={userId}
 ```
 
 **Query Params:**
+
 - `userId` (Long, optional, default=1): ID của user
 
 **Request:**
+
 ```
-POST http://localhost:8081/api/ekyc/sessions?userId=123
+POST http://3.85.17.154:8081/api/ekyc/sessions?userId=123
 ```
 
 **Response Success (200 OK):**
+
 ```json
 {
   "success": true,
@@ -79,6 +85,7 @@ POST http://localhost:8081/api/ekyc/sessions?userId=123
 ```
 
 **Các Status có thể:**
+
 - `INITIATED` - Mới khởi tạo
 - `OCR_COMPLETED` - Đã hoàn thành OCR
 - `LIVENESS_COMPLETED` - Đã hoàn thành Liveness
@@ -86,6 +93,7 @@ POST http://localhost:8081/api/ekyc/sessions?userId=123
 - `FAILED` - Thất bại
 
 **Các Step có thể:**
+
 - `OCR` - Bước quét CCCD
 - `VERIFICATION` - Kiểm tra thông tin
 - `LIVENESS` - Xác thực khuôn mặt
@@ -93,24 +101,25 @@ POST http://localhost:8081/api/ekyc/sessions?userId=123
 - `COMPLETED` - Hoàn thành
 
 **Code FE (React Native):**
+
 ```javascript
 const createSession = async (userId) => {
   try {
     const response = await fetch(
       `http://your-backend:8081/api/ekyc/sessions?userId=${userId}`,
-      { method: 'POST' }
+      { method: "POST" }
     );
     const result = await response.json();
-    
+
     if (result.success) {
       const sessionId = result.data.sessionId;
-      console.log('Session created:', sessionId);
+      console.log("Session created:", sessionId);
       return sessionId;
     } else {
       throw new Error(result.message);
     }
   } catch (error) {
-    console.error('Create session error:', error);
+    console.error("Create session error:", error);
     throw error;
   }
 };
@@ -119,6 +128,7 @@ const createSession = async (userId) => {
 ---
 
 ### 2️⃣ Khởi tạo SDK Config
+
 **Lấy config để mở WebView FPT AI SDK**
 
 ```http
@@ -126,15 +136,18 @@ POST /api/ekyc/sdk/init?sessionId={sessionId}&language={language}
 ```
 
 **Query Params:**
+
 - `sessionId` (String, required): Session ID từ bước 1
 - `language` (String, optional, default="vi"): Ngôn ngữ (vi/en)
 
 **Request:**
+
 ```
-POST http://localhost:8081/api/ekyc/sdk/init?sessionId=550e8400-e29b-41d4-a716-446655440000&language=vi
+POST http://3.85.17.154:8081/api/ekyc/sdk/init?sessionId=550e8400-e29b-41d4-a716-446655440000&language=vi
 ```
 
 **Response Success (200 OK):**
+
 ```json
 {
   "success": true,
@@ -142,7 +155,7 @@ POST http://localhost:8081/api/ekyc/sdk/init?sessionId=550e8400-e29b-41d4-a716-4
     "sessionId": "550e8400-e29b-41d4-a716-446655440000",
     "apiKey": "juexeQ3Q2nVoK59t6SCmp1J5ioXe3GTY",
     "baseUrl": "https://api.fpt.ai",
-    "callbackUrl": "http://localhost:8081/api/ekyc/sdk/webhook",
+    "callbackUrl": "http://3.85.17.154:8081/api/ekyc/sdk/webhook",
     "sessionToken": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
     "steps": {
       "ocrEnabled": true,
@@ -154,25 +167,26 @@ POST http://localhost:8081/api/ekyc/sdk/init?sessionId=550e8400-e29b-41d4-a716-4
 ```
 
 **Code FE (React Native):**
+
 ```javascript
 const initSdk = async (sessionId) => {
   try {
     const response = await fetch(
       `http://your-backend:8081/api/ekyc/sdk/init?sessionId=${sessionId}&language=vi`,
-      { method: 'POST' }
+      { method: "POST" }
     );
     const result = await response.json();
-    
+
     if (result.success) {
       const sdkConfig = result.data;
-      console.log('SDK Config:', sdkConfig);
+      console.log("SDK Config:", sdkConfig);
       // Dùng config này để mở WebView
       return sdkConfig;
     } else {
       throw new Error(result.message);
     }
   } catch (error) {
-    console.error('Init SDK error:', error);
+    console.error("Init SDK error:", error);
     throw error;
   }
 };
@@ -181,6 +195,7 @@ const initSdk = async (sessionId) => {
 ---
 
 ### 3️⃣ Gửi Callback từ Frontend
+
 **Gửi kết quả từ WebView về Backend**
 
 ```http
@@ -189,6 +204,7 @@ Content-Type: application/json
 ```
 
 **Request Body - OCR Callback:**
+
 ```json
 {
   "sessionId": "550e8400-e29b-41d4-a716-446655440000",
@@ -216,6 +232,7 @@ Content-Type: application/json
 ```
 
 **Request Body - Liveness Callback:**
+
 ```json
 {
   "sessionId": "550e8400-e29b-41d4-a716-446655440000",
@@ -233,6 +250,7 @@ Content-Type: application/json
 ```
 
 **Request Body - Face Match Callback:**
+
 ```json
 {
   "sessionId": "550e8400-e29b-41d4-a716-446655440000",
@@ -248,6 +266,7 @@ Content-Type: application/json
 ```
 
 **Response Success (200 OK):**
+
 ```json
 {
   "success": true,
@@ -258,29 +277,30 @@ Content-Type: application/json
 ```
 
 **Code FE (React Native):**
+
 ```javascript
 const sendCallback = async (sessionId, type, data) => {
   try {
     const callbackData = {
       sessionId: sessionId,
       transactionId: `fpt-ai-txn-${Date.now()}`,
-      status: 'SUCCESS',
+      status: "SUCCESS",
       type: type, // 'OCR', 'LIVENESS', or 'FACE_MATCH'
       data: data,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
-    
+
     const response = await fetch(
-      'http://your-backend:8081/api/ekyc/sdk/callback',
+      "http://your-backend:8081/api/ekyc/sdk/callback",
       {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(callbackData)
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(callbackData),
       }
     );
-    
+
     const result = await response.json();
-    
+
     if (result.success) {
       console.log(`${type} callback processed`);
       return true;
@@ -297,6 +317,7 @@ const sendCallback = async (sessionId, type, data) => {
 ---
 
 ### 4️⃣ Kiểm tra Status
+
 **Kiểm tra trạng thái hiện tại của session**
 
 ```http
@@ -304,14 +325,17 @@ GET /api/ekyc/sdk/status/{sessionId}
 ```
 
 **Path Params:**
+
 - `sessionId` (String, required): Session ID
 
 **Request:**
+
 ```
-GET http://localhost:8081/api/ekyc/sdk/status/550e8400-e29b-41d4-a716-446655440000
+GET http://3.85.17.154:8081/api/ekyc/sdk/status/550e8400-e29b-41d4-a716-446655440000
 ```
 
 **Response Success (200 OK):**
+
 ```json
 {
   "success": true,
@@ -321,6 +345,7 @@ GET http://localhost:8081/api/ekyc/sdk/status/550e8400-e29b-41d4-a716-4466554400
 ```
 
 **Các giá trị status:**
+
 - `"INITIATED"` - Vừa tạo session
 - `"OCR_COMPLETED"` - Đã xong OCR
 - `"LIVENESS_COMPLETED"` - Đã xong Liveness
@@ -328,6 +353,7 @@ GET http://localhost:8081/api/ekyc/sdk/status/550e8400-e29b-41d4-a716-4466554400
 - `"FAILED"` - Thất bại ❌
 
 **Code FE (React Native):**
+
 ```javascript
 const checkStatus = async (sessionId) => {
   try {
@@ -335,16 +361,16 @@ const checkStatus = async (sessionId) => {
       `http://your-backend:8081/api/ekyc/sdk/status/${sessionId}`
     );
     const result = await response.json();
-    
+
     if (result.success) {
       const status = result.data;
-      console.log('Current status:', status);
+      console.log("Current status:", status);
       return status;
     } else {
       throw new Error(result.message);
     }
   } catch (error) {
-    console.error('Check status error:', error);
+    console.error("Check status error:", error);
     throw error;
   }
 };
@@ -353,6 +379,7 @@ const checkStatus = async (sessionId) => {
 ---
 
 ### 5️⃣ Lấy thông tin Session
+
 **Lấy chi tiết session (optional)**
 
 ```http
@@ -360,6 +387,7 @@ GET /api/ekyc/sessions/{sessionId}
 ```
 
 **Response Success (200 OK):**
+
 ```json
 {
   "success": true,
@@ -379,20 +407,20 @@ GET /api/ekyc/sessions/{sessionId}
 ### React Native Implementation
 
 ```javascript
-import React, { useState, useRef } from 'react';
-import { View, StyleSheet, Alert, ActivityIndicator, Text } from 'react-native';
-import { WebView } from 'react-native-webview';
+import React, { useState, useRef } from "react";
+import { View, StyleSheet, Alert, ActivityIndicator, Text } from "react-native";
+import { WebView } from "react-native-webview";
 
-const BACKEND_URL = 'http://your-backend:8081';
+const BACKEND_URL = "http://your-backend:8081";
 
 const EkycWebViewScreen = ({ route, navigation }) => {
   const { userId } = route.params; // Nhận userId từ navigation
-  
+
   const [loading, setLoading] = useState(true);
   const [sessionId, setSessionId] = useState(null);
   const [sdkConfig, setSdkConfig] = useState(null);
-  const [currentStep, setCurrentStep] = useState('Đang khởi tạo...');
-  
+  const [currentStep, setCurrentStep] = useState("Đang khởi tạo...");
+
   const webViewRef = useRef(null);
 
   // Bước 1: Tạo session và init SDK
@@ -402,43 +430,42 @@ const EkycWebViewScreen = ({ route, navigation }) => {
 
   const initializeEkyc = async () => {
     try {
-      setCurrentStep('Đang tạo session...');
-      
+      setCurrentStep("Đang tạo session...");
+
       // 1. Tạo session
       const sessionResponse = await fetch(
         `${BACKEND_URL}/api/ekyc/sessions?userId=${userId}`,
-        { method: 'POST' }
+        { method: "POST" }
       );
       const sessionResult = await sessionResponse.json();
-      
+
       if (!sessionResult.success) {
-        throw new Error('Không thể tạo session');
+        throw new Error("Không thể tạo session");
       }
-      
+
       const newSessionId = sessionResult.data.sessionId;
       setSessionId(newSessionId);
-      console.log('✅ Session created:', newSessionId);
-      
+      console.log("✅ Session created:", newSessionId);
+
       // 2. Init SDK config
-      setCurrentStep('Đang khởi tạo SDK...');
+      setCurrentStep("Đang khởi tạo SDK...");
       const configResponse = await fetch(
         `${BACKEND_URL}/api/ekyc/sdk/init?sessionId=${newSessionId}&language=vi`,
-        { method: 'POST' }
+        { method: "POST" }
       );
       const configResult = await configResponse.json();
-      
+
       if (!configResult.success) {
-        throw new Error('Không thể khởi tạo SDK');
+        throw new Error("Không thể khởi tạo SDK");
       }
-      
+
       setSdkConfig(configResult.data);
-      console.log('✅ SDK Config ready');
+      console.log("✅ SDK Config ready");
       setLoading(false);
-      setCurrentStep('Sẵn sàng');
-      
+      setCurrentStep("Sẵn sàng");
     } catch (error) {
-      console.error('❌ Initialization error:', error);
-      Alert.alert('Lỗi', 'Không thể khởi tạo eKYC. Vui lòng thử lại.');
+      console.error("❌ Initialization error:", error);
+      Alert.alert("Lỗi", "Không thể khởi tạo eKYC. Vui lòng thử lại.");
       navigation.goBack();
     }
   };
@@ -447,26 +474,28 @@ const EkycWebViewScreen = ({ route, navigation }) => {
   const handleWebViewMessage = async (event) => {
     try {
       const message = JSON.parse(event.nativeEvent.data);
-      console.log('📨 Message from WebView:', message);
-      
+      console.log("📨 Message from WebView:", message);
+
       // Message format từ FPT AI SDK:
       // { type: 'OCR'|'LIVENESS'|'FACE_MATCH', status: 'success'|'error', data: {...} }
-      
-      if (message.status === 'error') {
-        Alert.alert('Lỗi', message.message || 'Có lỗi xảy ra trong quá trình eKYC');
+
+      if (message.status === "error") {
+        Alert.alert(
+          "Lỗi",
+          message.message || "Có lỗi xảy ra trong quá trình eKYC"
+        );
         return;
       }
-      
+
       // Gửi callback về backend
       await sendCallbackToBackend(message.type, message.data);
-      
+
       // Nếu hoàn thành Face Match (bước cuối)
-      if (message.type === 'FACE_MATCH') {
+      if (message.type === "FACE_MATCH") {
         await handleCompletion();
       }
-      
     } catch (error) {
-      console.error('❌ Error handling WebView message:', error);
+      console.error("❌ Error handling WebView message:", error);
     }
   };
 
@@ -474,82 +503,73 @@ const EkycWebViewScreen = ({ route, navigation }) => {
   const sendCallbackToBackend = async (type, data) => {
     try {
       setCurrentStep(`Đang xử lý ${type}...`);
-      
+
       const callbackData = {
         sessionId: sessionId,
         transactionId: `txn-${Date.now()}`,
-        status: 'SUCCESS',
+        status: "SUCCESS",
         type: type,
         data: data,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
-      
-      const response = await fetch(
-        `${BACKEND_URL}/api/ekyc/sdk/callback`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(callbackData)
-        }
-      );
-      
+
+      const response = await fetch(`${BACKEND_URL}/api/ekyc/sdk/callback`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(callbackData),
+      });
+
       const result = await response.json();
-      
+
       if (result.success) {
         console.log(`✅ ${type} callback processed`);
         setCurrentStep(`Đã hoàn thành ${type}`);
       } else {
         throw new Error(result.message);
       }
-      
     } catch (error) {
       console.error(`❌ ${type} callback error:`, error);
-      Alert.alert('Lỗi', `Không thể xử lý ${type}`);
+      Alert.alert("Lỗi", `Không thể xử lý ${type}`);
     }
   };
 
   // Xử lý khi hoàn thành
   const handleCompletion = async () => {
     try {
-      setCurrentStep('Đang kiểm tra kết quả...');
-      
+      setCurrentStep("Đang kiểm tra kết quả...");
+
       // Kiểm tra status cuối cùng
       const statusResponse = await fetch(
         `${BACKEND_URL}/api/ekyc/sdk/status/${sessionId}`
       );
       const statusResult = await statusResponse.json();
-      
-      if (statusResult.success && statusResult.data === 'COMPLETED') {
-        console.log('🎉 eKYC COMPLETED!');
-        
+
+      if (statusResult.success && statusResult.data === "COMPLETED") {
+        console.log("🎉 eKYC COMPLETED!");
+
         // Hiển thị thông báo thành công
-        Alert.alert(
-          'Thành công',
-          'Xác thực eKYC hoàn tất!',
-          [
-            {
-              text: 'OK',
-              onPress: () => {
-                // Navigate to success screen hoặc back
-                navigation.navigate('EkycSuccess', { sessionId: sessionId });
-              }
-            }
-          ]
-        );
+        Alert.alert("Thành công", "Xác thực eKYC hoàn tất!", [
+          {
+            text: "OK",
+            onPress: () => {
+              // Navigate to success screen hoặc back
+              navigation.navigate("EkycSuccess", { sessionId: sessionId });
+            },
+          },
+        ]);
       } else {
-        throw new Error('eKYC chưa hoàn thành');
+        throw new Error("eKYC chưa hoàn thành");
       }
-      
     } catch (error) {
-      console.error('❌ Completion check error:', error);
-      Alert.alert('Lỗi', 'Không thể xác nhận kết quả eKYC');
+      console.error("❌ Completion check error:", error);
+      Alert.alert("Lỗi", "Không thể xác nhận kết quả eKYC");
     }
   };
 
   // HTML để inject vào WebView
   const getWebViewHTML = () => {
-    if (!sdkConfig) return '';
-    
+    if (!sdkConfig) return "";
+
     return `
       <!DOCTYPE html>
       <html>
@@ -557,20 +577,20 @@ const EkycWebViewScreen = ({ route, navigation }) => {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script src="https://cdn.fpt.ai/ekyc-sdk.js"></script>
         <style>
-          body { 
-            margin: 0; 
-            padding: 0; 
+          body {
+            margin: 0;
+            padding: 0;
             font-family: Arial, sans-serif;
           }
-          #ekyc-container { 
-            width: 100vw; 
-            height: 100vh; 
+          #ekyc-container {
+            width: 100vw;
+            height: 100vh;
           }
         </style>
       </head>
       <body>
         <div id="ekyc-container"></div>
-        
+
         <script>
           // Khởi tạo FPT AI eKYC SDK
           const ekyc = new FPTAIEkyc({
@@ -578,7 +598,7 @@ const EkycWebViewScreen = ({ route, navigation }) => {
             container: '#ekyc-container',
             language: 'vi',
             sessionId: '${sdkConfig.sessionId}',
-            
+
             // Callbacks
             callbacks: {
               // Callback khi hoàn thành OCR
@@ -590,7 +610,7 @@ const EkycWebViewScreen = ({ route, navigation }) => {
                   data: data
                 }));
               },
-              
+
               // Callback khi hoàn thành Liveness
               onLivenessComplete: (data) => {
                 console.log('Liveness completed:', data);
@@ -600,7 +620,7 @@ const EkycWebViewScreen = ({ route, navigation }) => {
                   data: data
                 }));
               },
-              
+
               // Callback khi hoàn thành Face Match
               onFaceMatchComplete: (data) => {
                 console.log('Face Match completed:', data);
@@ -610,7 +630,7 @@ const EkycWebViewScreen = ({ route, navigation }) => {
                   data: data
                 }));
               },
-              
+
               // Callback khi có lỗi
               onError: (error) => {
                 console.error('eKYC error:', error);
@@ -622,7 +642,7 @@ const EkycWebViewScreen = ({ route, navigation }) => {
               }
             }
           });
-          
+
           // Bắt đầu quy trình eKYC
           ekyc.start();
         </script>
@@ -646,7 +666,7 @@ const EkycWebViewScreen = ({ route, navigation }) => {
       <View style={styles.header}>
         <Text style={styles.headerText}>{currentStep}</Text>
       </View>
-      
+
       {/* WebView */}
       <WebView
         ref={webViewRef}
@@ -665,28 +685,28 @@ const EkycWebViewScreen = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
   },
   loadingText: {
     marginTop: 16,
     fontSize: 16,
-    color: '#666',
+    color: "#666",
   },
   header: {
-    backgroundColor: '#0066cc',
+    backgroundColor: "#0066cc",
     padding: 16,
-    alignItems: 'center',
+    alignItems: "center",
   },
   headerText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   webview: {
     flex: 1,
@@ -701,6 +721,7 @@ export default EkycWebViewScreen;
 ## 🗄️ DỮ LIỆU ĐƯỢC LƯU TRONG DATABASE
 
 ### Session (ekyc_sessions)
+
 ```
 - id (UUID): Session ID
 - user_id: ID của user
@@ -712,6 +733,7 @@ export default EkycWebViewScreen;
 ```
 
 ### Document Info (document_info)
+
 ```
 Được lưu khi callback OCR:
 - id_number: Số CCCD
@@ -727,6 +749,7 @@ export default EkycWebViewScreen;
 ```
 
 ### Biometric Data (biometric_data)
+
 ```
 Được lưu khi callback Liveness & Face Match:
 - video_path: Path video liveness
@@ -742,6 +765,7 @@ export default EkycWebViewScreen;
 ## ⚙️ CẤU HÌNH BACKEND
 
 ### application.yaml
+
 ```yaml
 # Server
 server:
@@ -757,18 +781,18 @@ fpt:
 
 # App Config
 app:
-  base-url: http://localhost:8081  # Thay đổi khi deploy production
-  
+  base-url: http://3.85.17.154:8081 # Thay đổi khi deploy production
+
   upload:
     base-dir: ./uploads
     max-file-size-mb: 10
-  
+
   session:
     expiry-minutes: 10
 
 # CORS (cho phép FE gọi API)
 cors:
-  allowed-origins: http://localhost:3000,http://localhost:19006
+  allowed-origins: http://3.85.17.154:3000,http://3.85.17.154:19006
 ```
 
 ---
@@ -776,11 +800,13 @@ cors:
 ## 🔐 BẢO MẬT
 
 ### Session Token
+
 - Được generate tự động khi init SDK
 - Dùng để authenticate webhook (optional)
 - Header: `X-Session-Token: {token}`
 
 ### Session Expiry
+
 - Session hết hạn sau 10 phút
 - BE tự động reject request với session đã hết hạn
 
@@ -791,6 +817,7 @@ cors:
 ### Lỗi thường gặp:
 
 **1. Session not found**
+
 ```json
 {
   "success": false,
@@ -798,9 +825,11 @@ cors:
   "timestamp": "2025-11-09T10:00:00"
 }
 ```
+
 → SessionId không tồn tại hoặc đã bị xóa
 
 **2. Session expired**
+
 ```json
 {
   "success": false,
@@ -808,9 +837,11 @@ cors:
   "timestamp": "2025-11-09T10:00:00"
 }
 ```
+
 → Session quá 10 phút, cần tạo session mới
 
 **3. Invalid callback data**
+
 ```json
 {
   "success": false,
@@ -818,6 +849,7 @@ cors:
   "timestamp": "2025-11-09T10:00:00"
 }
 ```
+
 → Data từ FPT AI không đầy đủ
 
 ---
@@ -825,10 +857,12 @@ cors:
 ## 📝 CHECKLIST TÍCH HỢP FE
 
 ### Bước 1: Setup Dependencies
+
 - [ ] Install `react-native-webview`
 - [ ] Cấu hình permissions (camera, storage)
 
 ### Bước 2: Implement Screen
+
 - [ ] Tạo EkycWebViewScreen
 - [ ] Handle create session
 - [ ] Handle init SDK config
@@ -836,24 +870,28 @@ cors:
 - [ ] Handle onMessage từ WebView
 
 ### Bước 3: Handle Callbacks
+
 - [ ] Xử lý OCR callback → gửi về BE
 - [ ] Xử lý Liveness callback → gửi về BE
 - [ ] Xử lý Face Match callback → gửi về BE
 - [ ] Check status cuối cùng
 
 ### Bước 4: Error Handling
+
 - [ ] Handle network errors
 - [ ] Handle session expired
 - [ ] Handle FPT AI SDK errors
 - [ ] Show loading states
 
 ### Bước 5: UI/UX
+
 - [ ] Progress indicator
 - [ ] Loading states
 - [ ] Success screen
 - [ ] Error messages
 
 ### Bước 6: Testing
+
 - [ ] Test happy flow (OCR → Liveness → Face Match)
 - [ ] Test error cases
 - [ ] Test session expiry
@@ -864,6 +902,7 @@ cors:
 ## 🚀 PRODUCTION CHECKLIST
 
 ### Backend
+
 - [ ] Update `app.base-url` trong application.yaml
 - [ ] Enable HTTPS cho webhook
 - [ ] Update CORS allowed-origins
@@ -871,6 +910,7 @@ cors:
 - [ ] Database backup
 
 ### Frontend
+
 - [ ] Update BACKEND_URL to production
 - [ ] Test với production backend
 - [ ] Handle production FPT AI SDK URL
@@ -887,7 +927,6 @@ cors:
 
 ---
 
-**Version**: 1.0.0  
-**Last Updated**: November 9, 2025  
+**Version**: 1.0.0
+**Last Updated**: November 9, 2025
 **Status**: ✅ Ready for Frontend Integration
-

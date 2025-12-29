@@ -10,18 +10,19 @@ import java.util.Map;
 @Component
 @Slf4j
 public class TransactionServiceClient {
-    
-    @Value("${services.transaction-service.url:http://localhost:8003}")
+
+    @Value("${services.transaction-service.url:http://3.85.17.154:8003}")
     private String transactionServiceUrl;
-    
+
     private final RestTemplate restTemplate;
-    
+
     public TransactionServiceClient(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
-    
+
     /**
      * Get userId by account number
+     * 
      * @param accountNumber the account number
      * @return userId or null if not found
      */
@@ -29,7 +30,7 @@ public class TransactionServiceClient {
         try {
             String url = transactionServiceUrl + "/api/accounts/" + accountNumber + "/user-id";
             Map<String, Object> response = restTemplate.getForObject(url, Map.class);
-            
+
             if (response != null && response.containsKey("userId")) {
                 Object userIdObj = response.get("userId");
                 if (userIdObj instanceof Number) {

@@ -15,7 +15,7 @@ import java.util.UUID;
 @Slf4j
 public class UserServiceClient {
 
-    @Value("${services.user-service.url:http://localhost:8001}")
+    @Value("${services.user-service.url:http://3.85.17.154:8001}")
     private String userServiceUrl;
 
     @Value("${services.user-service.api-key:EKYC_SERVICE_SECRET_KEY}")
@@ -38,12 +38,12 @@ public class UserServiceClient {
         if (documentInfo != null) {
             request.put("idNumber", documentInfo.getIdNumber());
             request.put("fullName", documentInfo.getFullName());
-            
+
             // dateOfBirth is already LocalDate, convert to ISO string (yyyy-MM-dd)
             if (documentInfo.getDateOfBirth() != null) {
                 request.put("dateOfBirth", documentInfo.getDateOfBirth().toString());
             }
-            
+
             request.put("gender", documentInfo.getGender());
             request.put("address", documentInfo.getAddress());
         }
@@ -75,24 +75,25 @@ public class UserServiceClient {
     /**
      * Check if citizenId belongs to another user
      * Used to validate duplicate citizenId before completing eKYC
-     * 
-     * @param citizenId The citizenId to check
+     *
+     * @param citizenId     The citizenId to check
      * @param currentUserId The current user's ID (to exclude from check)
      * @return true if citizenId belongs to another user, false otherwise
      */
     public boolean checkCitizenIdDuplicate(String citizenId, Long currentUserId) {
-        String url = userServiceUrl + "/user/check-citizenid?citizenId=" + citizenId + "&currentUserId=" + currentUserId;
+        String url = userServiceUrl + "/user/check-citizenid?citizenId=" + citizenId + "&currentUserId="
+                + currentUserId;
 
         try {
             ResponseEntity<Boolean> response = restTemplate.getForEntity(url, Boolean.class);
-            
+
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
                 boolean isDuplicate = response.getBody();
-                log.info("CitizenId check: citizenId={}, currentUserId={}, isDuplicate={}", 
-                    citizenId, currentUserId, isDuplicate);
+                log.info("CitizenId check: citizenId={}, currentUserId={}, isDuplicate={}",
+                        citizenId, currentUserId, isDuplicate);
                 return isDuplicate;
             }
-            
+
             log.warn("UserService returned unexpected status: {}", response.getStatusCode());
             return false; // Default to allow if service is unavailable
         } catch (Exception e) {

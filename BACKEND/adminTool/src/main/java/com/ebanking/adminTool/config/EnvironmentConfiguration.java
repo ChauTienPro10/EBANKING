@@ -45,13 +45,13 @@ public class EnvironmentConfiguration {
     private Integer jwtRefreshDays;
 
     // gRPC Configuration
-    @Value("${grpc.user.service.host:localhost}")
+    @Value("${grpc.user.service.host:3.85.17.154}")
     private String grpcUserServiceHost;
 
     @Value("${grpc.user.service.port:9001}")
     private Integer grpcUserServicePort;
 
-    @Value("${grpc.transaction.service.host:localhost}")
+    @Value("${grpc.transaction.service.host:3.85.17.154}")
     private String grpcTransactionServiceHost;
 
     @Value("${grpc.transaction.service.port:9003}")
@@ -124,4 +124,3 @@ public class EnvironmentConfiguration {
         return rateLimiterLockMinutes * 60 * 1000L;
     }
 }
-

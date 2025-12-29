@@ -76,7 +76,7 @@ public class AccountTransactionService {
     @Autowired
     private RestTemplate restTemplate;
 
-    private static final String TRANSACTION_SERVICE_URL = "http://localhost:8003";
+    private static final String TRANSACTION_SERVICE_URL = "http://3.85.17.154:8003";
 
     public Object getUserLimits(Long userId) {
         String url = TRANSACTION_SERVICE_URL + "/api/transaction-limits/" + userId;

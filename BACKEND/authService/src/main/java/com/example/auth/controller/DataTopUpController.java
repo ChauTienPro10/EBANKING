@@ -30,7 +30,7 @@ public class DataTopUpController {
     @Autowired
     private SecurityUtils securityUtils;
 
-    @Value("${service.trans.url:http://localhost:8003}")
+    @Value("${service.trans.url:http://3.85.17.154:8003}")
     private String transactionServiceUrl;
 
     /**
@@ -155,8 +155,8 @@ public class DataTopUpController {
         try {
             log.info("Getting data packages for provider {} with price range: {} - {}", providerId, minPrice, maxPrice);
 
-            String url = transactionServiceUrl + "/api/data-topup/packages/provider/" + providerId + 
-                        "/price-range?minPrice=" + minPrice + "&maxPrice=" + maxPrice;
+            String url = transactionServiceUrl + "/api/data-topup/packages/provider/" + providerId +
+                    "/price-range?minPrice=" + minPrice + "&maxPrice=" + maxPrice;
             Object response = httpUtils.get(url, Object.class);
 
             return ResponseEntity.ok(response);
@@ -181,7 +181,7 @@ public class DataTopUpController {
             String jwt = authHeader.replace("Bearer ", "").trim();
             String username = (String) request.get("username");
             Long userId = Long.valueOf(request.get("userId").toString());
-            
+
             if (!authenticationService.checkValidUser(jwt, userId)) {
                 throw new AuthenticationException("Bạn không có quyền thao tác");
             }
@@ -268,7 +268,7 @@ public class DataTopUpController {
             @RequestParam Long userId) {
         try {
             String jwt = authHeader.replace("Bearer ", "").trim();
-            
+
             if (!authenticationService.checkValidUser(jwt, userId)) {
                 throw new AuthenticationException("Bạn không có quyền thao tác");
             }
@@ -307,7 +307,7 @@ public class DataTopUpController {
             @RequestParam(defaultValue = "createdAt,desc") String sort) {
         try {
             String jwt = authHeader.replace("Bearer ", "").trim();
-            
+
             if (!authenticationService.checkValidUser(jwt, userId)) {
                 throw new AuthenticationException("Bạn không có quyền thao tác");
             }
@@ -318,7 +318,7 @@ public class DataTopUpController {
             headers.set("User-ID", userId.toString());
 
             String url = transactionServiceUrl + "/api/data-topup/history/paginated" +
-                        "?page=" + page + "&size=" + size + "&sort=" + sort;
+                    "?page=" + page + "&size=" + size + "&sort=" + sort;
             ResponseEntity<Object> responseEntity = httpUtils.getWithHeaders(url, Object.class, headers);
             Object response = responseEntity.getBody();
 

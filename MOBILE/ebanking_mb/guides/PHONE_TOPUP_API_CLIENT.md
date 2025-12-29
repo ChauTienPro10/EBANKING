@@ -1,13 +1,16 @@
 # API Nạp Tiền Điện Thoại - Tài Liệu Client
 
 ## Base URL
+
 ```
 Production: https://api.ebanking.com
-Development: http://localhost:8080
+Development: http://3.85.17.154:8080
 ```
 
 ## Authentication
+
 Tất cả API yêu cầu JWT token:
+
 ```
 Authorization: Bearer <jwt_token>
 ```
@@ -17,11 +20,13 @@ Authorization: Bearer <jwt_token>
 **GET** `/authService/phone-topup/providers`
 
 ### Headers
+
 ```
 Content-Type: application/json
 ```
 
 ### Response
+
 ```json
 [
   {
@@ -81,12 +86,14 @@ Content-Type: application/json
 **POST** `/authService/phone-topup`
 
 ### Headers
+
 ```
 Content-Type: application/json
 Authorization: Bearer <jwt_token>
 ```
 
 ### Request Body
+
 ```json
 {
   "userId": 123,
@@ -102,6 +109,7 @@ Authorization: Bearer <jwt_token>
 ```
 
 ### Response - Thành Công
+
 ```json
 {
   "topUpId": 1,
@@ -122,6 +130,7 @@ Authorization: Bearer <jwt_token>
 ```
 
 ### Response - Cần Face Auth
+
 ```json
 {
   "topUpId": 2,
@@ -146,12 +155,14 @@ Authorization: Bearer <jwt_token>
 **POST** `/authService/phone-topup/verify-face-auth/{faceAuthSessionId}`
 
 ### Headers
+
 ```
 Content-Type: application/json
 Authorization: Bearer <jwt_token>
 ```
 
 ### Response
+
 ```json
 {
   "topUpId": 2,
@@ -176,16 +187,19 @@ Authorization: Bearer <jwt_token>
 **GET** `/authService/phone-topup/history/{userId}?page=0&size=10`
 
 ### Headers
+
 ```
 Content-Type: application/json
 Authorization: Bearer <jwt_token>
 ```
 
 ### Query Parameters
+
 - `page`: Số trang (bắt đầu từ 0)
 - `size`: Số bản ghi mỗi trang (tối đa 100)
 
 ### Response
+
 ```json
 {
   "content": [
@@ -235,12 +249,14 @@ Authorization: Bearer <jwt_token>
 **GET** `/authService/phone-topup/transaction/{transactionId}`
 
 ### Headers
+
 ```
 Content-Type: application/json
 Authorization: Bearer <jwt_token>
 ```
 
 ### Response
+
 ```json
 {
   "topUpId": 1,
@@ -263,20 +279,23 @@ Authorization: Bearer <jwt_token>
 ## Mã Trạng Thái
 
 ### Transaction Status
+
 - `PENDING`: Đang chờ xử lý (thường là chờ face auth)
 - `PROCESSING`: Đang xử lý
 - `COMPLETED`: Thành công
 - `FAILED`: Thất bại
 
 ### Provider Codes
+
 - `VIETTEL`: Viettel
-- `MOBIFONE`: Mobifone  
+- `MOBIFONE`: Mobifone
 - `VINAPHONE`: Vinaphone
 - `VIETNAMOBILE`: Vietnamobile
 
 ## Xử Lý Lỗi
 
 ### HTTP Status Codes
+
 - `200`: Thành công
 - `400`: Dữ liệu không hợp lệ
 - `401`: Chưa xác thực hoặc token hết hạn
@@ -285,6 +304,7 @@ Authorization: Bearer <jwt_token>
 - `500`: Lỗi server
 
 ### Error Response Format
+
 ```json
 {
   "error": "Top-up failed",
@@ -293,6 +313,7 @@ Authorization: Bearer <jwt_token>
 ```
 
 ### Account Locked Response (403)
+
 ```json
 {
   "error": "ACCOUNT_LOCKED",
@@ -310,16 +331,19 @@ Authorization: Bearer <jwt_token>
 ## Validation Rules
 
 ### Phone Number
+
 - Format: Số điện thoại Việt Nam (10-11 chữ số)
 - Regex: `^(84|0)(3[2-9]|5[689]|7[06-9]|8[1-689]|9[0-46-9])[0-9]{7}$`
 - Examples: `0987654321`, `84987654321`
 
 ### Amount
+
 - Minimum: Theo từng nhà mạng (thường 10,000 VND)
 - Maximum: Theo từng nhà mạng (thường 500,000 VND)
 - Type: Number (integer)
 
 ### Required Fields
+
 - `userId`: ID người dùng
 - `username`: Tên đăng nhập
 - `accountNumber`: Số tài khoản nguồn
@@ -331,12 +355,14 @@ Authorization: Bearer <jwt_token>
 ## Luồng Xử Lý
 
 ### Luồng Cơ Bản (Không Face Auth)
+
 1. Gọi API lấy danh sách nhà mạng
 2. Người dùng chọn nhà mạng và nhập thông tin
 3. Gọi API nạp tiền
 4. Nhận kết quả `status: "COMPLETED"`
 
 ### Luồng Face Auth
+
 1. Gọi API lấy danh sách nhà mạng
 2. Người dùng chọn nhà mạng và nhập thông tin
 3. Gọi API nạp tiền

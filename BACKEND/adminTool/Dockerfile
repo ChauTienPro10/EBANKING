@@ -30,7 +30,7 @@ EXPOSE 8081
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --retries=5 \
-  CMD curl -f http://localhost:8081/api/admin/health || exit 1
+  CMD curl -f http://3.85.17.154:8081/api/admin/health || exit 1
 
 # Run application
 ENTRYPOINT ["java", "-Xmx512m", "-Xms256m", "-jar", "app.jar"]

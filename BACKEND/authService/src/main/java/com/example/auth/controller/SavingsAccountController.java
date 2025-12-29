@@ -29,7 +29,7 @@ public class SavingsAccountController {
     @Autowired
     private SecurityUtils securityUtils;
 
-    @Value("${service.trans.url:http://localhost:8003}")
+    @Value("${service.trans.url:http://3.85.17.154:8003}")
     private String transactionServiceUrl;
 
     /**
@@ -43,7 +43,7 @@ public class SavingsAccountController {
         try {
             Long userId = Long.valueOf(request.get("userId").toString());
             String jwt = authHeader.replace("Bearer ", "").trim();
-            
+
             if (!authenticationService.checkValidUser(jwt, userId)) {
                 throw new AuthenticationException("Bạn không có quyền thao tác");
             }
@@ -75,7 +75,7 @@ public class SavingsAccountController {
             @PathVariable Long userId) {
         try {
             String jwt = authHeader.replace("Bearer ", "").trim();
-            
+
             if (!authenticationService.checkValidUser(jwt, userId)) {
                 throw new AuthenticationException("Bạn không có quyền thao tác");
             }

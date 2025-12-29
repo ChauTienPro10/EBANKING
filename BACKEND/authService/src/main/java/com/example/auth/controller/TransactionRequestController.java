@@ -29,7 +29,7 @@ public class TransactionRequestController {
     @Autowired
     private SecurityUtils securityUtils;
 
-    @Value("${service.trans.url:http://localhost:8003}")
+    @Value("${service.trans.url:http://3.85.17.154:8003}")
     private String transactionServiceUrl;
 
     /**
@@ -43,7 +43,7 @@ public class TransactionRequestController {
         try {
             Long userId = Long.valueOf(request.get("userId").toString());
             String jwt = authHeader.replace("Bearer ", "").trim();
-            
+
             if (!authenticationService.checkValidUser(jwt, userId)) {
                 throw new AuthenticationException("Bạn không có quyền thao tác");
             }
@@ -75,7 +75,7 @@ public class TransactionRequestController {
             @PathVariable Long userId) {
         try {
             String jwt = authHeader.replace("Bearer ", "").trim();
-            
+
             if (!authenticationService.checkValidUser(jwt, userId)) {
                 throw new AuthenticationException("Bạn không có quyền thao tác");
             }
@@ -155,7 +155,8 @@ public class TransactionRequestController {
         try {
             log.info("Approving request: {} by admin: {}", requestId, adminUsername);
 
-            String url = transactionServiceUrl + "/api/transaction-requests/" + requestId + "/approve?adminUsername=" + adminUsername;
+            String url = transactionServiceUrl + "/api/transaction-requests/" + requestId + "/approve?adminUsername="
+                    + adminUsername;
             Object response = httpUtils.post(url, null, Object.class);
 
             return ResponseEntity.ok(response);
@@ -181,7 +182,8 @@ public class TransactionRequestController {
         try {
             log.info("Rejecting request: {} by admin: {}", requestId, adminUsername);
 
-            String url = transactionServiceUrl + "/api/transaction-requests/" + requestId + "/reject?adminUsername=" + adminUsername + "&rejectionReason=" + rejectionReason;
+            String url = transactionServiceUrl + "/api/transaction-requests/" + requestId + "/reject?adminUsername="
+                    + adminUsername + "&rejectionReason=" + rejectionReason;
             Object response = httpUtils.post(url, null, Object.class);
 
             return ResponseEntity.ok(response);

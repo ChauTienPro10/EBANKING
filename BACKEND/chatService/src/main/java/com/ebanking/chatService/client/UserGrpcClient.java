@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class UserGrpcClient {
 
-    @Value("${grpc.user-service.host:localhost}")
+    @Value("${grpc.user-service.host:3.85.17.154}")
     private String userServiceHost;
 
     @Value("${grpc.user-service.port:9001}")

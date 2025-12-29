@@ -1,9 +1,11 @@
 # Personal Notification API Documentation
 
 ## Overview
+
 This API provides endpoints for sending and managing personal notifications to specific users in the Firebase Service.
 
 ## Base URL
+
 ```
 /notify
 ```
@@ -11,11 +13,13 @@ This API provides endpoints for sending and managing personal notifications to s
 ## Endpoints
 
 ### 1. Send Personal Notification
+
 **POST** `/notify/push-noti-persional`
 
 Send a personal notification to a specific user by username.
 
 **Request Body:**
+
 ```json
 {
   "username": "john_doe",
@@ -25,6 +29,7 @@ Send a personal notification to a specific user by username.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -33,21 +38,25 @@ Send a personal notification to a specific user by username.
 ```
 
 **Error Responses:**
+
 - `400 Bad Request`: Missing required fields or user has no FCM token
 - `500 Internal Server Error`: Server error during notification sending
 
 **Features:**
+
 - Validates that the user has an FCM token registered
 - Saves the notification to the `persional_noti` table
 - Sends real-time push notification via Firebase
 - Returns detailed success/error messages
 
 ### 2. Send Bulk Personal Notifications
+
 **POST** `/notify/push-noti-bulk`
 
 Send personal notifications to multiple users at once.
 
 **Request Body:**
+
 ```json
 {
   "usernames": ["john_doe", "jane_smith", "bob_wilson"],
@@ -57,6 +66,7 @@ Send personal notifications to multiple users at once.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -69,6 +79,7 @@ Send personal notifications to multiple users at once.
 ```
 
 **Features:**
+
 - **Batch Processing**: Efficiently processes multiple users in a single request
 - **Firebase Multicast**: Uses Firebase's multicast feature for optimal performance
 - **Detailed Reporting**: Returns success/failure counts and failed user list
@@ -76,26 +87,31 @@ Send personal notifications to multiple users at once.
 - **Error Resilience**: Continues processing even if some users fail
 
 **Error Responses:**
+
 - `400 Bad Request`: Missing required fields or empty usernames list
 - `500 Internal Server Error`: Server error during bulk processing
 
 ### 3. Get Personal Notifications
+
 **GET** `/notify/getPersonalNoti`
 
 Retrieve personal notifications with pagination and optional username filtering.
 
 **Parameters:**
+
 - `index` (query, optional): Page index (default: 0)
 - `limit` (query, optional): Number of items per page (default: 10)
 - `username` (query, optional): Filter by specific username
 
 **Examples:**
+
 - `/notify/getPersonalNoti` - Get all personal notifications (paginated)
 - `/notify/getPersonalNoti?index=0&limit=5` - Get first 5 notifications
 - `/notify/getPersonalNoti?username=john_doe` - Get notifications for specific user
 - `/notify/getPersonalNoti?username=john_doe&index=1&limit=10` - Get user's notifications with pagination
 
 **Response:**
+
 ```json
 [
   {
@@ -120,6 +136,7 @@ Retrieve personal notifications with pagination and optional username filtering.
 ## Personal Notification Entity Structure
 
 The `PersionalNoti` entity contains:
+
 - `id`: Unique identifier (Long)
 - `userId`: User identifier (String)
 - `username`: Username (String)
@@ -130,10 +147,12 @@ The `PersionalNoti` entity contains:
 ## Integration with FCM
 
 ### Prerequisites
+
 - User must have registered an FCM token using `/notify/save-token`
 - FCM token must be active and valid
 
 ### Notification Flow
+
 1. **Validation**: Check if username, title, and content are provided
 2. **Token Lookup**: Find FCM token for the specified username
 3. **Database Save**: Store notification in `persional_noti` table
@@ -141,6 +160,7 @@ The `PersionalNoti` entity contains:
 5. **Response**: Return success/failure status
 
 ### Error Handling
+
 - **No FCM Token**: Returns error if user hasn't registered a token
 - **Invalid Token**: Firebase handles invalid/expired tokens gracefully
 - **Database Errors**: Proper error logging and user feedback
@@ -149,8 +169,9 @@ The `PersionalNoti` entity contains:
 ## Usage Examples
 
 ### Send Personal Notification
+
 ```bash
-curl -X POST http://localhost:8080/notify/push-noti-persional \
+curl -X POST http://3.85.17.154:8080/notify/push-noti-persional \
   -H "Content-Type: application/json" \
   -d '{
     "username": "john_doe",
@@ -160,8 +181,9 @@ curl -X POST http://localhost:8080/notify/push-noti-persional \
 ```
 
 ### Send Bulk Personal Notifications
+
 ```bash
-curl -X POST http://localhost:8080/notify/push-noti-bulk \
+curl -X POST http://3.85.17.154:8080/notify/push-noti-bulk \
   -H "Content-Type: application/json" \
   -d '{
     "usernames": ["john_doe", "jane_smith", "alice_cooper"],
@@ -171,29 +193,34 @@ curl -X POST http://localhost:8080/notify/push-noti-bulk \
 ```
 
 ### Get User's Personal Notifications
+
 ```bash
-curl -X GET "http://localhost:8080/notify/getPersonalNoti?username=john_doe&limit=5"
+curl -X GET "http://3.85.17.154:8080/notify/getPersonalNoti?username=john_doe&limit=5"
 ```
 
 ### Get All Personal Notifications (Admin)
+
 ```bash
-curl -X GET "http://localhost:8080/notify/getPersonalNoti?index=0&limit=20"
+curl -X GET "http://3.85.17.154:8080/notify/getPersonalNoti?index=0&limit=20"
 ```
 
 ## Bulk Notification Features
 
 ### Performance Optimization
+
 - **Firebase Multicast**: Uses Firebase's multicast messaging for efficient delivery to multiple devices
 - **Batch Database Operations**: Optimized database writes for multiple notifications
 - **Parallel Processing**: Processes user tokens concurrently where possible
 
 ### Error Handling & Resilience
+
 - **Individual User Failures**: If one user fails, others continue processing
 - **Token Validation**: Checks FCM token existence before processing
 - **Detailed Error Reporting**: Returns specific information about failed users
 - **Graceful Degradation**: Saves to database even if FCM delivery fails
 
 ### Response Structure
+
 ```json
 {
   "success": true,
@@ -206,6 +233,7 @@ curl -X GET "http://localhost:8080/notify/getPersonalNoti?index=0&limit=20"
 ```
 
 ### Use Cases
+
 - **System Announcements**: Notify all active users about maintenance or updates
 - **Targeted Campaigns**: Send promotions to specific user segments
 - **Emergency Alerts**: Quickly notify multiple users about urgent matters

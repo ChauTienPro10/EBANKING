@@ -6,7 +6,7 @@
 2025-12-19 00:07:08 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8081 (http)
 2025-12-19 00:07:08 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
 2025-12-19 00:07:08 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.48]
-2025-12-19 00:07:08 [main] INFO  o.a.c.c.C.[.[localhost].[/api] - Initializing Spring embedded WebApplicationContext
+2025-12-19 00:07:08 [main] INFO  o.a.c.c.C.[.[3.85.17.154].[/api] - Initializing Spring embedded WebApplicationContext
 2025-12-19 00:07:08 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1859 ms
 2025-12-19 00:07:08 [main] INFO  c.ebanking.admintool.utils.JWTUtils - ✅ JWT Secret Key loaded successfully (length: 256 characters)
 2025-12-19 00:07:08 [main] DEBUG c.e.a.filter.JwtAuthenticationFilter - Filter 'jwtAuthenticationFilter' configured for use
@@ -23,7 +23,7 @@ Message    : Communications link failure
 The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server.
 
 2025-12-19 00:07:10 [main] INFO  o.a.catalina.core.StandardService - Stopping service [Tomcat]
-2025-12-19 00:07:10 [main] INFO  o.s.b.a.l.ConditionEvaluationReportLogger - 
+2025-12-19 00:07:10 [main] INFO  o.s.b.a.l.ConditionEvaluationReportLogger -
 
 Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
 2025-12-19 00:07:10 [main] ERROR o.s.boot.SpringApplication - Application run failed
@@ -138,7 +138,7 @@ Caused by: java.net.ConnectException: Connection refused: getsockopt
 2025-12-19 00:08:22 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8081 (http)
 2025-12-19 00:08:22 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
 2025-12-19 00:08:22 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.48]
-2025-12-19 00:08:22 [main] INFO  o.a.c.c.C.[.[localhost].[/api] - Initializing Spring embedded WebApplicationContext
+2025-12-19 00:08:22 [main] INFO  o.a.c.c.C.[.[3.85.17.154].[/api] - Initializing Spring embedded WebApplicationContext
 2025-12-19 00:08:22 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1780 ms
 2025-12-19 00:08:22 [main] INFO  c.ebanking.admintool.utils.JWTUtils - ✅ JWT Secret Key loaded successfully (length: 256 characters)
 2025-12-19 00:08:22 [main] DEBUG c.e.a.filter.JwtAuthenticationFilter - Filter 'jwtAuthenticationFilter' configured for use
@@ -155,7 +155,7 @@ Message    : Communications link failure
 The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server.
 
 2025-12-19 00:08:23 [main] INFO  o.a.catalina.core.StandardService - Stopping service [Tomcat]
-2025-12-19 00:08:23 [main] INFO  o.s.b.a.l.ConditionEvaluationReportLogger - 
+2025-12-19 00:08:23 [main] INFO  o.s.b.a.l.ConditionEvaluationReportLogger -
 
 Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
 2025-12-19 00:08:23 [main] ERROR o.s.boot.SpringApplication - Application run failed

@@ -1,15 +1,19 @@
 # Data 4G API Documentation - Auth Service
 
 ## Overview
+
 API gateway trong authService để gọi các API nạp data 4G từ transactionService. Tất cả các request sẽ được xác thực và forward đến transactionService.
 
 ## Base URL
+
 ```
 /authService/data-topup
 ```
 
 ## Authentication
+
 Tất cả các endpoint yêu cầu JWT token trong header:
+
 ```
 Authorization: Bearer <jwt_token>
 ```
@@ -21,6 +25,7 @@ Authorization: Bearer <jwt_token>
 **GET** `/packages`
 
 **Response:**
+
 ```json
 [
   {
@@ -46,11 +51,13 @@ Authorization: Bearer <jwt_token>
 **GET** `/packages/provider/{providerId}`
 
 **Parameters:**
+
 - `providerId` (path): ID của nhà mạng
 
 **GET** `/packages/provider-code/{providerCode}`
 
 **Parameters:**
+
 - `providerCode` (path): Mã nhà mạng (VIETTEL, VINAPHONE, MOBIFONE)
 
 ### 3. Lấy thông tin gói data
@@ -58,11 +65,13 @@ Authorization: Bearer <jwt_token>
 **GET** `/packages/{packageId}`
 
 **Parameters:**
+
 - `packageId` (path): ID của gói data
 
 **GET** `/packages/code/{packageCode}`
 
 **Parameters:**
+
 - `packageCode` (path): Mã gói data
 
 ### 4. Lấy gói data theo khoảng giá
@@ -70,6 +79,7 @@ Authorization: Bearer <jwt_token>
 **GET** `/packages/provider/{providerId}/price-range`
 
 **Parameters:**
+
 - `providerId` (path): ID của nhà mạng
 - `minPrice` (query): Giá tối thiểu
 - `maxPrice` (query): Giá tối đa
@@ -79,9 +89,11 @@ Authorization: Bearer <jwt_token>
 **POST** `/initiate`
 
 **Headers:**
+
 - `Authorization`: Bearer JWT token
 
 **Request Body:**
+
 ```json
 {
   "userId": 1,
@@ -96,6 +108,7 @@ Authorization: Bearer <jwt_token>
 ```
 
 **Response:**
+
 ```json
 {
   "dataTopUpId": 1,
@@ -123,6 +136,7 @@ Authorization: Bearer <jwt_token>
 **POST** `/verify-face-auth`
 
 **Request Body:**
+
 ```json
 {
   "transactionId": "DATA_1703123456789_ABC12345",
@@ -135,6 +149,7 @@ Authorization: Bearer <jwt_token>
 **GET** `/transaction/{transactionId}`
 
 **Parameters:**
+
 - `transactionId` (path): ID giao dịch
 
 ### 8. Lấy lịch sử nạp data
@@ -142,17 +157,21 @@ Authorization: Bearer <jwt_token>
 **GET** `/history`
 
 **Headers:**
+
 - `Authorization`: Bearer JWT token
 
 **Parameters:**
+
 - `userId` (query): ID người dùng
 
 **GET** `/history/paginated`
 
 **Headers:**
+
 - `Authorization`: Bearer JWT token
 
 **Parameters:**
+
 - `userId` (query): ID người dùng
 - `page` (query): Số trang (default: 0)
 - `size` (query): Kích thước trang (default: 20)
@@ -168,6 +187,7 @@ Authorization: Bearer <jwt_token>
 ```
 
 ### Common Error Codes
+
 - `UNAUTHORIZED`: Token không hợp lệ hoặc hết hạn
 - `PACKAGE_NOT_FOUND`: Không tìm thấy gói data
 - `ACCOUNT_NOT_FOUND`: Không tìm thấy tài khoản
@@ -184,11 +204,14 @@ Authorization: Bearer <jwt_token>
 ```javascript
 // 1. Lấy danh sách gói data theo nhà mạng
 async function getDataPackages(providerCode) {
-  const response = await fetch(`/authService/data-topup/packages/provider-code/${providerCode}`, {
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`
-    }
-  });
+  const response = await fetch(
+    `/authService/data-topup/packages/provider-code/${providerCode}`,
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('jwt_token')}`,
+      },
+    },
+  );
   return await response.json();
 }
 
@@ -198,20 +221,23 @@ async function initiateDataTopUp(requestData) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`
+      Authorization: `Bearer ${localStorage.getItem('jwt_token')}`,
     },
-    body: JSON.stringify(requestData)
+    body: JSON.stringify(requestData),
   });
   return await response.json();
 }
 
 // 3. Lấy lịch sử nạp data
 async function getDataTopUpHistory(userId) {
-  const response = await fetch(`/authService/data-topup/history?userId=${userId}`, {
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`
-    }
-  });
+  const response = await fetch(
+    `/authService/data-topup/history?userId=${userId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('jwt_token')}`,
+      },
+    },
+  );
   return await response.json();
 }
 
@@ -225,7 +251,7 @@ const topUpRequest = {
   phoneNumber: '0987654321',
   packageId: 1,
   accountNumber: '1234567890',
-  requiresFaceAuth: false
+  requiresFaceAuth: false,
 };
 
 const result = await initiateDataTopUp(topUpRequest);
@@ -245,16 +271,19 @@ class DataTopUpService {
   async getAuthHeaders() {
     const token = await AsyncStorage.getItem('jwt_token');
     return {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
     };
   }
 
   async getDataPackagesByProvider(providerCode) {
     const headers = await this.getAuthHeaders();
-    const response = await fetch(`${this.baseUrl}/packages/provider-code/${providerCode}`, {
-      headers
-    });
+    const response = await fetch(
+      `${this.baseUrl}/packages/provider-code/${providerCode}`,
+      {
+        headers,
+      },
+    );
     return await response.json();
   }
 
@@ -263,7 +292,7 @@ class DataTopUpService {
     const response = await fetch(`${this.baseUrl}/initiate`, {
       method: 'POST',
       headers,
-      body: JSON.stringify(requestData)
+      body: JSON.stringify(requestData),
     });
     return await response.json();
   }
@@ -272,7 +301,7 @@ class DataTopUpService {
     const headers = await this.getAuthHeaders();
     const response = await fetch(
       `${this.baseUrl}/history/paginated?userId=${userId}&page=${page}&size=${size}`,
-      { headers }
+      { headers },
     );
     return await response.json();
   }
@@ -282,7 +311,9 @@ class DataTopUpService {
 const dataTopUpService = new DataTopUpService();
 
 // Get packages for Viettel
-const viettelPackages = await dataTopUpService.getDataPackagesByProvider('VIETTEL');
+const viettelPackages = await dataTopUpService.getDataPackagesByProvider(
+  'VIETTEL',
+);
 
 // Initiate top-up
 const topUpResult = await dataTopUpService.initiateDataTopUp({
@@ -290,7 +321,7 @@ const topUpResult = await dataTopUpService.initiateDataTopUp({
   username: 'user123',
   phoneNumber: '0987654321',
   packageId: 1,
-  accountNumber: '1234567890'
+  accountNumber: '1234567890',
 });
 ```
 
@@ -301,15 +332,15 @@ const topUpResult = await dataTopUpService.initiateDataTopUp({
 JWT_TOKEN="your_jwt_token_here"
 
 # 1. Get all data packages
-curl -X GET "http://localhost:8080/authService/data-topup/packages" \
+curl -X GET "http://3.85.17.154:8080/authService/data-topup/packages" \
   -H "Authorization: Bearer $JWT_TOKEN"
 
 # 2. Get packages by provider
-curl -X GET "http://localhost:8080/authService/data-topup/packages/provider-code/VIETTEL" \
+curl -X GET "http://3.85.17.154:8080/authService/data-topup/packages/provider-code/VIETTEL" \
   -H "Authorization: Bearer $JWT_TOKEN"
 
 # 3. Initiate data top-up
-curl -X POST "http://localhost:8080/authService/data-topup/initiate" \
+curl -X POST "http://3.85.17.154:8080/authService/data-topup/initiate" \
   -H "Authorization: Bearer $JWT_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -322,11 +353,11 @@ curl -X POST "http://localhost:8080/authService/data-topup/initiate" \
   }'
 
 # 4. Get history
-curl -X GET "http://localhost:8080/authService/data-topup/history?userId=1" \
+curl -X GET "http://3.85.17.154:8080/authService/data-topup/history?userId=1" \
   -H "Authorization: Bearer $JWT_TOKEN"
 
 # 5. Get transaction details
-curl -X GET "http://localhost:8080/authService/data-topup/transaction/DATA_1703123456789_ABC12345" \
+curl -X GET "http://3.85.17.154:8080/authService/data-topup/transaction/DATA_1703123456789_ABC12345" \
   -H "Authorization: Bearer $JWT_TOKEN"
 ```
 
