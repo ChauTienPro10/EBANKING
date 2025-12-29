@@ -11,7 +11,7 @@ set VERSION=%~1
 set DOCKER_USER=tien22012003
 
 REM Danh sach service
-set SERVICES=authservice userservice emailservice firebaseservice transactionservice 
+set SERVICES=authservice userservice emailservice firebaseservice transactionservice chatservice ekycservice socket admintool chatbotservice
 
 echo =================================
 echo 🔹 Docker Login

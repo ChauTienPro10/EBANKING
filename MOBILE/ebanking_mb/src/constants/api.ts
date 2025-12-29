@@ -1,4 +1,4 @@
-export const HOST_SERVER = '192.168.1.5';
+export const HOST_SERVER = '3.85.17.154';
 
 export const BASE_URL = `http://${HOST_SERVER}:8000/`;
 export const FCM_SERVICE = `http://${HOST_SERVER}:8004/`;

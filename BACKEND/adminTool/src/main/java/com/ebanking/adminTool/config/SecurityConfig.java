@@ -72,24 +72,26 @@ public class SecurityConfig {
                 return http.build();
         }
 
-        @Bean
-        public CorsConfigurationSource corsConfigurationSource() {
-                CorsConfiguration configuration = new CorsConfiguration();
-                configuration.setAllowedOrigins(Arrays.asList(
-                                "http://3.85.17.154:3000",
-                                "http://3.85.17.154:3001",
-                                "http://3.85.17.154:5175",
-                                "http://3.85.17.154:5173"));
-                configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-                configuration.setAllowedHeaders(Arrays.asList("*"));
-                configuration.setExposedHeaders(Arrays.asList("Authorization"));
-                configuration.setAllowCredentials(true);
-                configuration.setMaxAge(3600L);
+            @Bean
+            public CorsConfigurationSource corsConfigurationSource() {
+                    CorsConfiguration configuration = new CorsConfiguration();
+    //                configuration.setAllowedOrigins(Arrays.asList(
+    //                                "http://3.85.17.154:3000",
+    //                                "http://3.85.17.154:3001",
+    //                                "http://3.85.17.154:5175",
+    //                                "http://3.85.17.154:5173"));
+                    configuration.setAllowedOrigins(Arrays.asList("*"));
+                    configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                    configuration.setAllowedHeaders(Arrays.asList("*"));
+                    configuration.setExposedHeaders(Arrays.asList("Authorization"));
+//                    configuration.setAllowCredentials(true);
+                    configuration.setAllowCredentials(false);
+                    configuration.setMaxAge(3600L);
 
-                UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-                source.registerCorsConfiguration("/**", configuration);
-                return source;
-        }
+                    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+                    source.registerCorsConfiguration("/**", configuration);
+                    return source;
+            }
 
         @Bean
         public org.springframework.security.authentication.AuthenticationManager authenticationManager(

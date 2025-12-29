@@ -1,5 +1,5 @@
 FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
-COPY transactionService.jar app.jar
-EXPOSE 8003 9003
+COPY adminTool.jar app.jar
+EXPOSE 7999 
 ENTRYPOINT ["java", "-jar", "app.jar"]
