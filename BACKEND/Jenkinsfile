@@ -2,8 +2,6 @@ pipeline {
     agent any
     
     environment {
-        DOCKER_REGISTRY = 'your-registry.com'
-        DOCKER_REPO = 'ebanking'
         MAVEN_OPTS = '-Xmx1024m'
         JAVA_HOME = '/usr/lib/jvm/java-17-openjdk'
     }
@@ -31,12 +29,10 @@ pipeline {
                 stage('Admin Tool') {
                     steps {
                         dir('adminTool') {
-                            sh 'mvn clean compile test'
-                        }
-                    }
-                    post {
-                        always {
-                            publishTestResults testResultsPattern: 'adminTool/target/surefire-reports/*.xml'
+                            script {
+                                def buildScript = load 'build.groovy'
+                                buildScript.buildModule()
+                            }
                         }
                     }
                 }
@@ -44,12 +40,10 @@ pipeline {
                 stage('Auth Service') {
                     steps {
                         dir('authService') {
-                            sh 'mvn clean compile test'
-                        }
-                    }
-                    post {
-                        always {
-                            publishTestResults testResultsPattern: 'authService/target/surefire-reports/*.xml'
+                            script {
+                                def buildScript = load 'build.groovy'
+                                buildScript.buildModule()
+                            }
                         }
                     }
                 }
@@ -57,12 +51,10 @@ pipeline {
                 stage('Chat Service') {
                     steps {
                         dir('chatService') {
-                            sh 'mvn clean compile test'
-                        }
-                    }
-                    post {
-                        always {
-                            publishTestResults testResultsPattern: 'chatService/target/surefire-reports/*.xml'
+                            script {
+                                def buildScript = load 'build.groovy'
+                                buildScript.buildModule()
+                            }
                         }
                     }
                 }
@@ -70,12 +62,10 @@ pipeline {
                 stage('Chatbot Service') {
                     steps {
                         dir('chatbotService') {
-                            sh 'mvn clean compile test'
-                        }
-                    }
-                    post {
-                        always {
-                            publishTestResults testResultsPattern: 'chatbotService/target/surefire-reports/*.xml'
+                            script {
+                                def buildScript = load 'build.groovy'
+                                buildScript.buildModule()
+                            }
                         }
                     }
                 }
@@ -83,12 +73,10 @@ pipeline {
                 stage('eKYC Service') {
                     steps {
                         dir('ekycService') {
-                            sh 'mvn clean compile test'
-                        }
-                    }
-                    post {
-                        always {
-                            publishTestResults testResultsPattern: 'ekycService/target/surefire-reports/*.xml'
+                            script {
+                                def buildScript = load 'build.groovy'
+                                buildScript.buildModule()
+                            }
                         }
                     }
                 }
@@ -96,12 +84,10 @@ pipeline {
                 stage('Email Service') {
                     steps {
                         dir('emailService') {
-                            sh 'mvn clean compile test'
-                        }
-                    }
-                    post {
-                        always {
-                            publishTestResults testResultsPattern: 'emailService/target/surefire-reports/*.xml'
+                            script {
+                                def buildScript = load 'build.groovy'
+                                buildScript.buildModule()
+                            }
                         }
                     }
                 }
@@ -109,12 +95,10 @@ pipeline {
                 stage('Firebase Service') {
                     steps {
                         dir('firebaseService') {
-                            sh 'mvn clean compile test'
-                        }
-                    }
-                    post {
-                        always {
-                            publishTestResults testResultsPattern: 'firebaseService/target/surefire-reports/*.xml'
+                            script {
+                                def buildScript = load 'build.groovy'
+                                buildScript.buildModule()
+                            }
                         }
                     }
                 }
@@ -122,12 +106,10 @@ pipeline {
                 stage('Transaction Service') {
                     steps {
                         dir('transactionService') {
-                            sh 'mvn clean compile test'
-                        }
-                    }
-                    post {
-                        always {
-                            publishTestResults testResultsPattern: 'transactionService/target/surefire-reports/*.xml'
+                            script {
+                                def buildScript = load 'build.groovy'
+                                buildScript.buildModule()
+                            }
                         }
                     }
                 }
@@ -135,12 +117,10 @@ pipeline {
                 stage('User Service') {
                     steps {
                         dir('userService') {
-                            sh 'mvn clean compile test'
-                        }
-                    }
-                    post {
-                        always {
-                            publishTestResults testResultsPattern: 'userService/target/surefire-reports/*.xml'
+                            script {
+                                def buildScript = load 'build.groovy'
+                                buildScript.buildModule()
+                            }
                         }
                     }
                 }
@@ -148,12 +128,10 @@ pipeline {
                 stage('Socket Service') {
                     steps {
                         dir('socket') {
-                            sh 'mvn clean compile test'
-                        }
-                    }
-                    post {
-                        always {
-                            publishTestResults testResultsPattern: 'socket/target/surefire-reports/*.xml'
+                            script {
+                                def buildScript = load 'build.groovy'
+                                buildScript.buildModule()
+                            }
                         }
                     }
                 }
@@ -253,211 +231,12 @@ pipeline {
                 }
             }
         }
-        
-        stage('Docker Build & Push') {
-            when {
-                anyOf {
-                    branch 'main'
-                    branch 'develop'
-                }
-            }
-            parallel {
-                stage('Build Admin Tool Image') {
-                    steps {
-                        dir('adminTool') {
-                            script {
-                                def image = docker.build("${DOCKER_REGISTRY}/${DOCKER_REPO}/admin-tool:${BUILD_VERSION}")
-                                docker.withRegistry("https://${DOCKER_REGISTRY}", 'docker-registry-credentials') {
-                                    image.push()
-                                    image.push('latest')
-                                }
-                            }
-                        }
-                    }
-                }
-                
-                stage('Build Auth Service Image') {
-                    steps {
-                        dir('authService') {
-                            script {
-                                def image = docker.build("${DOCKER_REGISTRY}/${DOCKER_REPO}/auth-service:${BUILD_VERSION}")
-                                docker.withRegistry("https://${DOCKER_REGISTRY}", 'docker-registry-credentials') {
-                                    image.push()
-                                    image.push('latest')
-                                }
-                            }
-                        }
-                    }
-                }
-                
-                stage('Build Chat Service Image') {
-                    steps {
-                        dir('chatService') {
-                            script {
-                                def image = docker.build("${DOCKER_REGISTRY}/${DOCKER_REPO}/chat-service:${BUILD_VERSION}")
-                                docker.withRegistry("https://${DOCKER_REGISTRY}", 'docker-registry-credentials') {
-                                    image.push()
-                                    image.push('latest')
-                                }
-                            }
-                        }
-                    }
-                }
-                
-                stage('Build Chatbot Service Image') {
-                    steps {
-                        dir('chatbotService') {
-                            script {
-                                def image = docker.build("${DOCKER_REGISTRY}/${DOCKER_REPO}/chatbot-service:${BUILD_VERSION}")
-                                docker.withRegistry("https://${DOCKER_REGISTRY}", 'docker-registry-credentials') {
-                                    image.push()
-                                    image.push('latest')
-                                }
-                            }
-                        }
-                    }
-                }
-                
-                stage('Build eKYC Service Image') {
-                    steps {
-                        dir('ekycService') {
-                            script {
-                                def image = docker.build("${DOCKER_REGISTRY}/${DOCKER_REPO}/ekyc-service:${BUILD_VERSION}")
-                                docker.withRegistry("https://${DOCKER_REGISTRY}", 'docker-registry-credentials') {
-                                    image.push()
-                                    image.push('latest')
-                                }
-                            }
-                        }
-                    }
-                }
-                
-                stage('Build Email Service Image') {
-                    steps {
-                        dir('emailService') {
-                            script {
-                                def image = docker.build("${DOCKER_REGISTRY}/${DOCKER_REPO}/email-service:${BUILD_VERSION}")
-                                docker.withRegistry("https://${DOCKER_REGISTRY}", 'docker-registry-credentials') {
-                                    image.push()
-                                    image.push('latest')
-                                }
-                            }
-                        }
-                    }
-                }
-                
-                stage('Build Firebase Service Image') {
-                    steps {
-                        dir('firebaseService') {
-                            script {
-                                def image = docker.build("${DOCKER_REGISTRY}/${DOCKER_REPO}/firebase-service:${BUILD_VERSION}")
-                                docker.withRegistry("https://${DOCKER_REGISTRY}", 'docker-registry-credentials') {
-                                    image.push()
-                                    image.push('latest')
-                                }
-                            }
-                        }
-                    }
-                }
-                
-                stage('Build Transaction Service Image') {
-                    steps {
-                        dir('transactionService') {
-                            script {
-                                def image = docker.build("${DOCKER_REGISTRY}/${DOCKER_REPO}/transaction-service:${BUILD_VERSION}")
-                                docker.withRegistry("https://${DOCKER_REGISTRY}", 'docker-registry-credentials') {
-                                    image.push()
-                                    image.push('latest')
-                                }
-                            }
-                        }
-                    }
-                }
-                
-                stage('Build User Service Image') {
-                    steps {
-                        dir('userService') {
-                            script {
-                                def image = docker.build("${DOCKER_REGISTRY}/${DOCKER_REPO}/user-service:${BUILD_VERSION}")
-                                docker.withRegistry("https://${DOCKER_REGISTRY}", 'docker-registry-credentials') {
-                                    image.push()
-                                    image.push('latest')
-                                }
-                            }
-                        }
-                    }
-                }
-                
-                stage('Build Socket Service Image') {
-                    steps {
-                        dir('socket') {
-                            script {
-                                def image = docker.build("${DOCKER_REGISTRY}/${DOCKER_REPO}/socket-service:${BUILD_VERSION}")
-                                docker.withRegistry("https://${DOCKER_REGISTRY}", 'docker-registry-credentials') {
-                                    image.push()
-                                    image.push('latest')
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        
-        stage('Deploy to Development') {
-            when {
-                branch 'develop'
-            }
-            steps {
-                script {
-                    // Deploy to development environment
-                    sh """
-                        kubectl set image deployment/admin-tool admin-tool=${DOCKER_REGISTRY}/${DOCKER_REPO}/admin-tool:${BUILD_VERSION} -n development
-                        kubectl set image deployment/auth-service auth-service=${DOCKER_REGISTRY}/${DOCKER_REPO}/auth-service:${BUILD_VERSION} -n development
-                        kubectl set image deployment/chat-service chat-service=${DOCKER_REGISTRY}/${DOCKER_REPO}/chat-service:${BUILD_VERSION} -n development
-                        kubectl set image deployment/chatbot-service chatbot-service=${DOCKER_REGISTRY}/${DOCKER_REPO}/chatbot-service:${BUILD_VERSION} -n development
-                        kubectl set image deployment/ekyc-service ekyc-service=${DOCKER_REGISTRY}/${DOCKER_REPO}/ekyc-service:${BUILD_VERSION} -n development
-                        kubectl set image deployment/email-service email-service=${DOCKER_REGISTRY}/${DOCKER_REPO}/email-service:${BUILD_VERSION} -n development
-                        kubectl set image deployment/firebase-service firebase-service=${DOCKER_REGISTRY}/${DOCKER_REPO}/firebase-service:${BUILD_VERSION} -n development
-                        kubectl set image deployment/transaction-service transaction-service=${DOCKER_REGISTRY}/${DOCKER_REPO}/transaction-service:${BUILD_VERSION} -n development
-                        kubectl set image deployment/user-service user-service=${DOCKER_REGISTRY}/${DOCKER_REPO}/user-service:${BUILD_VERSION} -n development
-                        kubectl set image deployment/socket-service socket-service=${DOCKER_REGISTRY}/${DOCKER_REPO}/socket-service:${BUILD_VERSION} -n development
-                    """
-                }
-            }
-        }
-        
-        stage('Deploy to Production') {
-            when {
-                branch 'main'
-            }
-            steps {
-                input message: 'Deploy to Production?', ok: 'Deploy'
-                script {
-                    // Deploy to production environment
-                    sh """
-                        kubectl set image deployment/admin-tool admin-tool=${DOCKER_REGISTRY}/${DOCKER_REPO}/admin-tool:${BUILD_VERSION} -n production
-                        kubectl set image deployment/auth-service auth-service=${DOCKER_REGISTRY}/${DOCKER_REPO}/auth-service:${BUILD_VERSION} -n production
-                        kubectl set image deployment/chat-service chat-service=${DOCKER_REGISTRY}/${DOCKER_REPO}/chat-service:${BUILD_VERSION} -n production
-                        kubectl set image deployment/chatbot-service chatbot-service=${DOCKER_REGISTRY}/${DOCKER_REPO}/chatbot-service:${BUILD_VERSION} -n production
-                        kubectl set image deployment/ekyc-service ekyc-service=${DOCKER_REGISTRY}/${DOCKER_REPO}/ekyc-service:${BUILD_VERSION} -n production
-                        kubectl set image deployment/email-service email-service=${DOCKER_REGISTRY}/${DOCKER_REPO}/email-service:${BUILD_VERSION} -n production
-                        kubectl set image deployment/firebase-service firebase-service=${DOCKER_REGISTRY}/${DOCKER_REPO}/firebase-service:${BUILD_VERSION} -n production
-                        kubectl set image deployment/transaction-service transaction-service=${DOCKER_REGISTRY}/${DOCKER_REPO}/transaction-service:${BUILD_VERSION} -n production
-                        kubectl set image deployment/user-service user-service=${DOCKER_REGISTRY}/${DOCKER_REPO}/user-service:${BUILD_VERSION} -n production
-                        kubectl set image deployment/socket-service socket-service=${DOCKER_REGISTRY}/${DOCKER_REPO}/socket-service:${BUILD_VERSION} -n production
-                    """
-                }
-            }
-        }
     }
     
     post {
-        always {
-            cleanWs()
-        }
         success {
             echo 'Pipeline succeeded!'
+            echo 'JAR files are available at: /var/jenkins_home/workspace/EBANKING/output_jar_file/'
             // Send success notification
         }
         failure {

@@ -29,8 +29,21 @@ docker cp jenkins:/var/jenkins_home/workspace/EBANKING/output_jar_file/transacti
 echo Copying firebaseService.jar...
 docker cp jenkins:/var/jenkins_home/workspace/EBANKING/output_jar_file/firebaseService.jar "%OUTPUT_DIR%\firebaseService"
 
-@REM echo Copying AIService.jar...
-@REM docker cp jenkins:/var/jenkins_home/workspace/EBANKING/output_jar_file/AIService.jar "%OUTPUT_DIR%/"
+
+echo Copying chatbotService.jar...
+docker cp jenkins:/var/jenkins_home/workspace/EBANKING/output_jar_file/chatbotService.jar "%OUTPUT_DIR%\chatbotService"
+
+echo Copying ekycService.jar...
+docker cp jenkins:/var/jenkins_home/workspace/EBANKING/output_jar_file/ekycService.jar "%OUTPUT_DIR%\ekycService"
+
+echo Copying socket.jar...
+docker cp jenkins:/var/jenkins_home/workspace/EBANKING/output_jar_file/socket.jar "%OUTPUT_DIR%\socket"
+
+echo Copying adminTool.jar...
+docker cp jenkins:/var/jenkins_home/workspace/EBANKING/output_jar_file/adminTool.jar "%OUTPUT_DIR%\adminTool"
+
+echo Copying chatService.jar...
+docker cp jenkins:/var/jenkins_home/workspace/EBANKING/output_jar_file/chatService.jar "%OUTPUT_DIR%\chatService"
 
 if errorlevel 1 (
     echo Failed to copy one or more files from Docker container.
